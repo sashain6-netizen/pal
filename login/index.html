@@ -4,37 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login • Pal</title>
-  
-  <link rel="icon" href="/favicon.png" type="image/png">
-  
   <link rel="stylesheet" href="../style.css">
-  
-  <link rel="stylesheet" href="style.css"> 
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="auth-page">
-
   <div class="auth-card">
     <div class="auth-logo"><a href="/">PAL</a></div>
     <h1>Welcome Back</h1>
-    <p>Log in to access your school tools.</p>
-
     <form id="loginForm">
       <div class="input-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Your username" required>
+        <label for="identifier">Username or Email</label>
+        <input type="text" id="identifier" placeholder="Enter either one" required>
       </div>
       <div class="input-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="••••••••" required>
+        <input type="password" id="password" placeholder="••••••••" required>
       </div>
       <button type="submit" class="nav-btn auth-btn">Log In</button>
     </form>
-
-    <p class="switch-link">New here? <a href="/signup">Create an account</a></p>
+    <p class="switch-link">New? <a href="/signup">Create account</a></p>
   </div>
-
-  <script src="../script.js"></script>
-  
   <script src="script.js"></script>
-  </body>
+</body>
 </html>

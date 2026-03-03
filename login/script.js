@@ -1,47 +1,30 @@
-document.getElementById('signupForm').addEventListener('submit', async (e) => {
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    const identifier = document.getElementById('identifier').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = e.target.querySelector('button');
 
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = e.target.querySelector('button');
-
-    // 1. Client-side validation (Immediate feedback)
-    if (passwordInput.value.length < 8) {
-        alert("Password must be at least 8 characters long.");
-        return;
-    }
-
-    // 2. UI Feedback
-    const originalBtnText = submitBtn.innerText;
-    submitBtn.innerText = "Creating Account...";
-    submitBtn.disabled = true;
+    btn.innerText = "Verifying...";
+    btn.disabled = true;
 
     try {
-        // 3. Post to your Cloudflare Function
-        const response = await fetch('/api/signup', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: usernameInput.value.trim(),
-                password: passwordInput.value
-            })
+            body: JSON.stringify({ identifier, password })
         });
 
         if (response.ok) {
-            // Success! 
-            alert("Account created successfully! Redirecting to login...");
-            window.location.href = "/login"; 
+            window.location.href = "/"; 
         } else {
-            // Handle errors from the backend (e.g., "Username already taken")
-            const errorMsg = await response.text();
-            alert("Signup failed: " + errorMsg);
-            submitBtn.innerText = originalBtnText;
-            submitBtn.disabled = false;
+            const msg = await response.text();
+            alert(msg);
+            btn.innerText = "Log In";
+            btn.disabled = false;
         }
     } catch (err) {
-        console.error("Signup error:", err);
-        alert("Connection error. Is the server online?");
-        submitBtn.innerText = originalBtnText;
-        submitBtn.disabled = false;
+        alert("Connection error.");
+        btn.disabled = false;
     }
 });
