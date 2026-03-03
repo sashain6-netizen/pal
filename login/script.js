@@ -1,45 +1,47 @@
-import { verifyPassword } from "./_crypto.js";
-import { createToken } from "./_jwt.js";
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = e.target.querySelector('button');
 
-  try {
-    // 1. Parse the incoming JSON credentials
-    const { username, password } = await request.json();
-
-    if (!username || !password) {
-      return new Response("Username and password are required", { status: 400 });
+    // 1. Client-side validation (Immediate feedback)
+    if (passwordInput.value.length < 8) {
+        alert("Password must be at least 8 characters long.");
+        return;
     }
 
-    // 2. Fetch the user from Cloudflare KV
-    const userData = await env.USERS_KV.get(username);
-    if (!userData) {
-      // Security tip: Use generic error messages to prevent "username enumeration"
-      return new Response("Invalid username or password", { status: 401 });
+    // 2. UI Feedback
+    const originalBtnText = submitBtn.innerText;
+    submitBtn.innerText = "Creating Account...";
+    submitBtn.disabled = true;
+
+    try {
+        // 3. Post to your Cloudflare Function
+        const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: usernameInput.value.trim(),
+                password: passwordInput.value
+            })
+        });
+
+        if (response.ok) {
+            // Success! 
+            alert("Account created successfully! Redirecting to login...");
+            window.location.href = "/login"; 
+        } else {
+            // Handle errors from the backend (e.g., "Username already taken")
+            const errorMsg = await response.text();
+            alert("Signup failed: " + errorMsg);
+            submitBtn.innerText = originalBtnText;
+            submitBtn.disabled = false;
+        }
+    } catch (err) {
+        console.error("Signup error:", err);
+        alert("Connection error. Is the server online?");
+        submitBtn.innerText = originalBtnText;
+        submitBtn.disabled = false;
     }
-
-    const user = JSON.parse(userData);
-
-    // 3. Verify the password hash with the stored salt
-    const isValid = await verifyPassword(password, user.hash, user.salt);
-    if (!isValid) {
-      return new Response("Invalid username or password", { status: 401 });
-    }
-
-    // 4. Create a JWT Session Token
-    // Ensure you have defined JWT_SECRET in your Cloudflare Pages Environment Variables
-    const token = await createToken(username, env.JWT_SECRET);
-
-    // 5. Return success and set the Secure HttpOnly Cookie
-    return new Response(JSON.stringify({ success: true, username: user.username }), {
-      headers: {
-        "Content-Type": "application/json",
-        "Set-Cookie": `pal_session=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`
-      }
-    });
-
-  } catch (err) {
-    return new Response("Server Error", { status: 500 });
-  }
-}
+});
