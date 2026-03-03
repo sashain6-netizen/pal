@@ -52,3 +52,15 @@ async function logout() {
     await fetch('/api/logout'); // Tells the server to clear the cookie
     window.location.reload();   // Refreshes the page to reset the UI
 }
+
+async function handleLogout() {
+  try {
+    const response = await fetch('/api/logout');
+    if (response.ok) {
+      // Once the cookie is cleared, refresh the page to update the UI
+      window.location.reload(); 
+    }
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+}

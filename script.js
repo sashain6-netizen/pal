@@ -113,3 +113,15 @@
   });
 
 })();
+
+async function handleLogout() {
+  try {
+    const response = await fetch('/api/logout');
+    if (response.ok) {
+      // Once the cookie is cleared, refresh the page to update the UI
+      window.location.reload(); 
+    }
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+}
