@@ -4,6 +4,12 @@ import { createToken } from "./_jwt.js";
 export async function onRequestPost(context) {
   const { request, env } = context;
 
+  // Quick Diagnostic check
+  if (!env.USERS_KV || !env.JWT_SECRET) {
+    console.error("Missing KV binding or JWT_SECRET");
+    return new Response("Server Configuration Error", { status: 500 });
+  }
+
   try {
     // 1. Parse the incoming credentials (identifier can be username OR email)
     const { identifier, password } = await request.json();
