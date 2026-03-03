@@ -1,135 +1,115 @@
 (function () {
   'use strict';
 
-  /* ── Element refs ─────────────────────────────────────────── */
-  const palText       = document.getElementById('palText');
-  const smilePath     = document.getElementById('smilePath');
-  const tagline       = document.getElementById('tagline');
+  /* ── Element refs (Wrapped in a check for safety) ── */
+  const palText = document.getElementById('palText');
+  const smilePath = document.getElementById('smilePath');
+  const tagline = document.getElementById('tagline');
   const logoContainer = document.getElementById('logoContainer');
 
-  /* ── Setup Shine Overlay ───────────────────────────────────── */
-  const shineEl = document.createElement('div');
-  shineEl.className = 'shine-overlay';
-  logoContainer.appendChild(shineEl);
+  // Only setup animations if the elements actually exist (e.g., on the Home page)
+  const hasHeroAnimation = palText && smilePath && logoContainer;
 
-  /* ── Phase 1: Squeeze Entrance ─────────────────────────────── */
-  function runSqueeze(onDone) {
-    palText.classList.remove('squeezing');
-    void palText.offsetWidth; // Force reflow
-    palText.classList.add('squeezing');
-    
-    // Use a simple timeout matching the CSS duration (1s)
-    setTimeout(() => {
-      if (onDone) onDone();
-    }, 1000);
+  let shineEl;
+  if (hasHeroAnimation) {
+    shineEl = document.createElement('div');
+    shineEl.className = 'shine-overlay';
+    logoContainer.appendChild(shineEl);
   }
 
-  /* ── Phase 2: Draw the smile ───────────────────────────────── */
-  function runSmile() {
-    // Instead of measuring, we use the path's own length for precision
-    const length = smilePath.getTotalLength();
-    smilePath.style.strokeDasharray = length;
-    smilePath.style.strokeDashoffset = length;
-    
-    requestAnimationFrame(() => {
-      smilePath.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-      smilePath.style.strokeDashoffset = '0';
-    });
-  }
+  /* ── Master sequence (The "Reload") ── */
+  window.playFullSequence = function() {
+    if (!hasHeroAnimation) return; // Exit if not on home page
 
-  /* ── Phase 3: Shine sweep ───────────────────────────────────── */
-  function runShine() {
-    shineEl.classList.remove('shining');
-    void shineEl.offsetWidth;
-    shineEl.classList.add('shining');
-  }
-
-  /* ── Master sequence (The "Reload") ─────────────────────────── */
-  /* ── Master sequence (The "Reload") ─────────────────────────── */
-  function playFullSequence() {
-    // 1. Reset all states immediately
     tagline.classList.remove('visible');
-    
-    // Reset the smile path
     smilePath.style.transition = 'none';
     const length = smilePath.getTotalLength();
     smilePath.style.strokeDasharray = length;
     smilePath.style.strokeDashoffset = length;
 
-    // 2. THE FIX: Reset the PAL text animation
     palText.classList.remove('squeezing');
-    
-    // This line forces the browser to "notice" the class was removed
     void palText.offsetWidth; 
-    
-    // Now add it back to trigger the boing
     palText.classList.add('squeezing');
 
-    // 3. Run the supporting animations
-    runShine();
+    // Run Shine
+    shineEl.classList.remove('shining');
+    void shineEl.offsetWidth;
+    shineEl.classList.add('shining');
 
-    // Delay the smile and tagline so they follow the "boing"
     setTimeout(() => {
-      runSmile();
+      // Run Smile
+      smilePath.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      smilePath.style.strokeDashoffset = '0';
+      
       setTimeout(() => {
         tagline.classList.add('visible');
       }, 500);
     }, 400); 
+  };
+
+  /* ── Listeners ── */
+  if (hasHeroAnimation) {
+    logoContainer.addEventListener('click', playFullSequence);
+    logoContainer.style.cursor = 'pointer';
+    logoContainer.style.transition = 'transform 0.3s ease';
+    logoContainer.addEventListener('mouseenter', () => logoContainer.style.transform = 'translateY(-5px)');
+    logoContainer.addEventListener('mouseleave', () => logoContainer.style.transform = 'translateY(0)');
   }
 
-  /* ── Listener ─────────────────────────────────────────── */
-  logoContainer.addEventListener('click', () => {
-    playFullSequence();
+  const navLogo = document.querySelector('.nav-logo');
+  if (navLogo) {
+    navLogo.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof window.playFullSequence === 'function') window.playFullSequence();
+    });
+  }
+
+  /* ── Intersection Observer (For Team Cards) ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.staff-card, .social-card').forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+    observer.observe(card);
   });
 
-  /* ── Init: Only run on load ────────────────────────────────── */
+  /* ── Authentication Logic ── */
+  async function checkAuth() {
+    try {
+      const response = await fetch('/api/me');
+      const data = await response.json();
+
+      const loggedInLinks = document.getElementById('loggedInLinks');
+      const loggedOutLinks = document.getElementById('loggedOutLinks');
+      const profileImg = document.querySelector('.profile-icon img');
+
+      if (data.loggedIn) {
+        if (loggedInLinks) loggedInLinks.style.display = 'block';
+        if (loggedOutLinks) loggedOutLinks.style.display = 'none';
+        if (profileImg) {
+          profileImg.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`;
+        }
+      } else {
+        if (loggedInLinks) loggedInLinks.style.display = 'none';
+        if (loggedOutLinks) loggedOutLinks.style.display = 'block';
+      }
+    } catch (e) {
+      console.error("Auth check failed", e);
+    }
+  }
+
+  // Run on load
   window.addEventListener('load', () => {
-    playFullSequence();
-  });
-
-  // 2. MODERN HOVER: Just a subtle "lift" effect via CSS
-  // (We don't need JS for the hover anymore, making it less glitchy)
-  logoContainer.style.cursor = 'pointer';
-  logoContainer.style.transition = 'transform 0.3s ease';
-  
-  logoContainer.addEventListener('mouseenter', () => {
-    logoContainer.style.transform = 'translateY(-5px)';
-  });
-  
-  logoContainer.addEventListener('mouseleave', () => {
-    logoContainer.style.transform = 'translateY(0)';
+    checkAuth();
+    if (hasHeroAnimation) playFullSequence();
   });
 
 })();
-
-document.querySelector('.nav-logo').addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  playFullSequence();
-});
-
-// This is a simple flag to simulate login status
-let userIsLoggedIn = false; 
-
-function updateNavbarUI() {
-    const loggedInDiv = document.getElementById('loggedInLinks');
-    const loggedOutDiv = document.getElementById('loggedOutLinks');
-
-    if (userIsLoggedIn) {
-        loggedInDiv.style.display = 'block';
-        loggedOutDiv.style.display = 'none';
-    } else {
-        loggedInDiv.style.display = 'none';
-        loggedOutDiv.style.display = 'block';
-    }
-}
-
-// Function to call when user logs in or out
-function toggleLogin(status) {
-    userIsLoggedIn = status;
-    updateNavbarUI();
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    updateNavbarUI();
-});
