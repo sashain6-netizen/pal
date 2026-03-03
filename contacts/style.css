@@ -1,0 +1,206 @@
+/* ===========================
+   PAL — Contacts Page Style
+   =========================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --blue-primary: #2563eb;
+  --blue-deep:    #1e40af;
+  --blue-soft:    #64748b;
+  --white:        #ffffff;
+  --off-white:    #f8faff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  background: var(--off-white);
+  font-family: 'Varela Round', sans-serif;
+  color: var(--blue-soft);
+  line-height: 1.6;
+}
+
+/* ---- Navigation Bar ---- */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(248, 250, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.05);
+}
+
+.nav-logo a {
+  font-weight: 900;
+  color: var(--blue-primary);
+  font-size: 1.5rem;
+  letter-spacing: -1px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--blue-soft);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--blue-primary);
+}
+
+.nav-btn {
+  background: var(--blue-primary);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: var(--blue-deep);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* ---- Contacts Layout ---- */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.contacts-page {
+  padding-top: 140px; /* Space for navbar */
+  padding-bottom: 80px;
+}
+
+.contacts-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.contacts-header h1 {
+  font-size: 3rem;
+  color: var(--blue-deep);
+  margin-bottom: 15px;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: var(--blue-deep);
+  margin: 60px 0 30px;
+  text-align: center;
+}
+
+/* ---- Staff Grid ---- */
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+
+.staff-card {
+  background: var(--white);
+  padding: 40px 20px;
+  border-radius: 24px;
+  text-align: center;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.staff-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
+}
+
+.staff-avatar {
+  width: 90px;
+  height: 90px;
+  background: var(--off-white);
+  color: var(--blue-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0 auto 20px;
+  border: 2px solid var(--blue-primary);
+}
+
+.staff-card h3 {
+  color: var(--blue-primary);
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+}
+
+/* ---- Socials Grid ---- */
+.socials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.social-card {
+  text-decoration: none;
+  padding: 35px;
+  border-radius: 24px;
+  color: var(--white);
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.social-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 5px;
+}
+
+.discord { background: #5865F2; }
+.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.facebook { background: #1877F2; }
+
+.social-card:hover {
+  transform: scale(1.03);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ---- Footer ---- */
+.main-footer {
+  background: var(--white);
+  padding: 40px 20px;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .navbar { padding: 15px 20px; }
+  .nav-links { display: none; }
+  .contacts-header h1 { font-size: 2.2rem; }
+}
