@@ -106,3 +106,30 @@ document.querySelector('.nav-logo').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   playFullSequence();
 });
+
+// This is a simple flag to simulate login status
+let userIsLoggedIn = false; 
+
+function updateNavbarUI() {
+    const loggedInDiv = document.getElementById('loggedInLinks');
+    const loggedOutDiv = document.getElementById('loggedOutLinks');
+
+    if (userIsLoggedIn) {
+        loggedInDiv.style.display = 'block';
+        loggedOutDiv.style.display = 'none';
+    } else {
+        loggedInDiv.style.display = 'none';
+        loggedOutDiv.style.display = 'block';
+    }
+}
+
+// Function to call when user logs in or out
+function toggleLogin(status) {
+    userIsLoggedIn = status;
+    updateNavbarUI();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateNavbarUI();
+});

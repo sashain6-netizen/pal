@@ -224,3 +224,93 @@ body {
   object-fit: cover; /* This prevents the image from stretching */
   display: block;
 }
+
+/* ---- Profile & Dropdown Styles ---- */
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between Home button and Profile */
+}
+
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--blue-primary);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--white);
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropdown-menu {
+  display: none; /* Hidden until hover/click */
+  position: absolute;
+  right: 0;
+  top: 50px;
+  background: var(--white);
+  min-width: 180px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  padding: 10px 0;
+  z-index: 2000;
+  animation: slideDown 0.3s ease forwards;
+}
+
+/* Show menu on hover of the container */
+.profile-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu a {
+  color: var(--blue-soft);
+  padding: 12px 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background: var(--off-white);
+  color: var(--blue-primary);
+}
+
+.dropdown-menu hr {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin: 8px 0;
+}
+
+.logout-btn {
+  color: #ef4444 !important; /* Red color for Logout */
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Adjustment */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+}
