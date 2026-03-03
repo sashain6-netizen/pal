@@ -114,14 +114,32 @@
 
 })();
 
-async function handleLogout() {
+// Function to handle the actual logout
+async function handleLogout(e) {
+  if (e) e.preventDefault(); // Stop the page from jumping to the top (#)
+
   try {
+    // 1. Tell the Cloudflare Function to clear the cookie
     const response = await fetch('/api/logout');
+    
     if (response.ok) {
-      // Once the cookie is cleared, refresh the page to update the UI
-      window.location.reload(); 
+      // 2. Clear any local data (optional)
+      localStorage.removeItem('pal_user');
+      
+      // 3. Refresh the page to reset the UI to "Logged Out" state
+      window.location.reload();
     }
   } catch (err) {
     console.error("Logout failed:", err);
+    // Fallback: just reload if the API fails
+    window.location.reload();
   }
 }
+
+// Attach the listener to the button
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutBtn = document.getElementById('logoutLink');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+  }
+});
