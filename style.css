@@ -1,6 +1,6 @@
 /* ===========================
-   PAL Logo — Modernized Style
-   Rounded, App-Style Aesthetic
+   PAL Logo — Clean Hero Style
+   Box Removed & Upscaled
    =========================== */
 
 *, *::before, *::after {
@@ -10,65 +10,36 @@
 }
 
 :root {
-  --blue-primary: #2563eb; /* More vibrant modern blue */
+  --blue-primary: #2563eb;
   --blue-deep:    #1e40af;
   --blue-soft:    #64748b;
-  --blue-pale:    #dce8ff;
   --white:        #ffffff;
   --off-white:    #f8faff;
-  --glass-bg:     rgba(255, 255, 255, 0.7);
 }
 
 html, body {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden; /* Allow scrolling if page is long, but hide horizontal */
   background: var(--off-white);
-  /* Using Varela Round for that modern, friendly geometric feel */
   font-family: 'Varela Round', sans-serif;
 }
 
 /* ---- Background Scene ---- */
 .scene {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh; /* Set to 100 to fill the screen */
   display: flex;
+  flex-direction: column; /* Stacks logo and circles correctly */
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
   overflow: hidden;
+  padding-top: 80px; /* Pushes content down so the Navbar doesn't cover it */
 }
 
-/* Decorative background circles - Softer Opacity */
-.bg-circle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.12;
-  background: radial-gradient(circle, var(--blue-primary), transparent 75%);
-  pointer-events: none;
-}
-.bg-circle--1 {
-  width: 600px; height: 600px;
-  top: -150px; left: -150px;
-  animation: floatA 10s ease-in-out infinite alternate;
-}
-.bg-circle--2 {
-  width: 450px; height: 450px;
-  bottom: -100px; right: -50px;
-  animation: floatB 12s ease-in-out infinite alternate;
-}
-
-@keyframes floatA {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(40px, 20px) scale(1.1); }
-}
-@keyframes floatB {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(-30px, -40px) scale(1.05); }
-}
-
-/* ---- Logo Wrapper & Glass Card ---- */
+/* ---- Logo Wrapper (BOX REMOVED) ---- */
 .logo-wrapper {
   position: relative;
   display: flex;
@@ -76,25 +47,11 @@ html, body {
   align-items: center;
   opacity: 0;
   animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.2s;
-}
-
-.logo-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -40px -50px;
-  border-radius: 40px; /* Increased rounding for modern feel */
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.04),
-    0 1px 3px rgba(0, 0, 0, 0.02);
-  z-index: -1;
+  /* Removed the ::before selector that created the glass box */
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -104,59 +61,79 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
 }
 
-/* ---- PAL SVG text ---- */
+/* ---- PAL SVG text (MADE BIGGER) ---- */
 .pal-text {
-  width: 300px;
+  width: 600px; /* Increased for high-impact website header */
+  max-width: 90vw; /* Responsive safety */
   height: auto;
   display: block;
-  transform-origin: center center;
+  transform-origin: 50% 95%; 
   will-change: transform;
+  transform: skewX(-7deg);
+  stroke: none !important;
+  paint-order: fill; 
 }
 
-/* ---- Smile SVG ---- */
+/* ---- Smile SVG (SCALED TO MATCH) ---- */
 .smile-svg {
-  width: 220px; /* Sized slightly inward from the text width */
+  width: 450px; /* Scaled proportionally to the 600px text */
+  max-width: 80vw;
   height: auto;
   display: block;
-  margin-top: -15px; /* Tighter lockup with the text */
+  margin-top: -30px; /* Adjusted gap for larger size */
   overflow: visible;
 }
 
 #smilePath {
-  stroke-width: 8; /* Thicker, rounded stroke */
+  stroke-width: 10; /* Slightly thicker for the larger scale */
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ---- Tagline ---- */
+/* ---- Tagline (ENLARGED) ---- */
 .tagline {
-  margin-top: 18px;
+  margin-top: 40px;
   font-family: 'Varela Round', sans-serif;
   font-weight: 500;
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
+  font-size: 1.2rem; /* Bigger for readability on web */
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--blue-soft);
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(10px);
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .tagline.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* ---- Modern Shine Sweep ---- */
+/* ---- Squeeze Animation (WITH TILT PRESERVED) ---- */
+@keyframes squeeze {
+  0%   { transform: skewX(-7deg) scale(1, 1); }
+  20%  { transform: skewX(-7deg) scale(1.15, 0.85); }
+  40%  { transform: skewX(-7deg) scale(0.95, 1.05); }
+  60%  { transform: skewX(-7deg) scale(1.05, 0.95); }
+  80%  { transform: skewX(-7deg) scale(0.98, 1.02); }
+  100% { transform: skewX(-7deg) scale(1, 1); }
+}
+
+.pal-text.squeezing {
+  animation: squeeze 1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+/* ---- Shine Overlay (WIDENED) ---- */
 .shine-overlay {
   position: absolute;
   top: 0; left: 0;
-  width: 100px;
+  width: 180px; /* Wider for the 600px text */
   height: 100%;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.5) 50%,
     transparent 100%
   );
   pointer-events: none;
@@ -165,25 +142,180 @@ html, body {
 }
 
 @keyframes shine {
-  0%   { opacity: 0; transform: translateX(-150%); }
+  0%   { opacity: 0; transform: translateX(-150%) skewX(-15deg); }
   50%  { opacity: 1; }
-  100% { opacity: 0; transform: translateX(250%); }
+  100% { opacity: 0; transform: translateX(250%) skewX(-15deg); }
 }
 
 .shine-overlay.shining {
   animation: shine 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* ---- Soft Squeeze Animation ---- */
-@keyframes squeeze {
-  0%   { transform: scale(1, 1); }
-  20%  { transform: scale(0.92, 1.08); }
-  40%  { transform: scale(1.05, 0.95); }
-  60%  { transform: scale(0.97, 1.03); }
-  80%  { transform: scale(1.02, 0.98); }
-  100% { transform: scale(1, 1); }
+/* ---- Content Area Layout ---- */
+.content-area {
+  background: #ffffff;
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
 }
 
-.pal-text.squeezing {
-  animation: squeeze 1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+.container {
+  max-width: 1000px;
+  width: 100%;
+  text-align: center;
+}
+
+.content-area h2 {
+  font-size: 2.5rem;
+  color: var(--blue-deep);
+  margin-bottom: 20px;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--blue-soft);
+  max-width: 700px;
+  margin: 0 auto 60px;
+}
+
+/* ---- Features Grid ---- */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  padding: 40px;
+  background: var(--off-white);
+  border-radius: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
+  background: #ffffff;
+}
+
+.feature-card h3 {
+  color: var(--blue-primary);
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+}
+
+.feature-card p {
+  color: var(--blue-soft);
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+/* Remove overflow:hidden from body to allow scrolling to the text */
+html, body {
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scene {
+  height: 100vh; /* Keeps the logo centered on its own screen at start */
+}
+
+/* ---- Smooth Scrolling ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---- Navigation Bar Styles ---- */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(248, 250, 255, 0.8); /* Semi-transparent */
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+  border-bottom: 1px solid rgba(37, 99, 235, 0.05);
+}
+
+.nav-logo {
+  font-weight: 900;
+  color: var(--blue-primary);
+  font-size: 1.5rem;
+  letter-spacing: -1px;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--blue-soft);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--blue-primary);
+}
+
+.nav-btn {
+  background: var(--blue-primary);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: var(--blue-deep);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* ---- Footer Styles ---- */
+.main-footer {
+  background: var(--white);
+  padding: 60px 20px;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.main-footer p {
+  color: var(--blue-soft);
+  font-size: 0.9rem;
+}
+
+/* ---- Mobile Responsive Fixes ---- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 15px 20px;
+  }
+  
+  .nav-links {
+    display: none; /* Usually, you'd add a hamburger menu here */
+  }
+
+  .pal-text {
+    width: 85vw; /* Shrinks logo so it doesn't clip on phones */
+  }
+
+  .smile-svg {
+    width: 65vw;
+  }
 }
