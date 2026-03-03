@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up • Pal</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css"> </head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo"><a href="/">PAL</a></div>
+      <h1>Create Account</h1>
+      <p class="auth-subtitle">Join the community of students.</p>
+
+      <form id="authForm" onsubmit="handleSignup(event)">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Choose a username" required>
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="At least 8 characters" required>
+        </div>
+        <button type="submit" class="nav-btn auth-btn">Sign Up</button>
+      </form>
+
+      <p class="switch-mode">Already have an account? <a href="/login">Log In</a></p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
