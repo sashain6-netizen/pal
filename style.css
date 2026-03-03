@@ -409,3 +409,85 @@ html {
 @media (max-width: 768px) {
   .nav-links { display: none; }
 }
+
+/* ---- Profile & Dropdown ---- */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+  /* This padding ensures the mouse is always 'over' the element 
+     while moving from icon to menu, preventing the glitch */
+  padding-bottom: 20px; 
+  margin-bottom: -20px;
+}
+
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--blue-primary);
+  background: var(--white);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 45px; /* Aligned to cover the invisible padding bridge */
+  width: 180px;
+  z-index: 1000;
+  padding-top: 15px; /* The 'bridge' that fixes the flickering */
+}
+
+/* Maintain display when hovering over the menu itself */
+.profile-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.menu-content {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  padding: 8px 0;
+  overflow: hidden;
+}
+
+.menu-content a {
+  color: var(--blue-soft);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.menu-content a:hover {
+  background: var(--off-white);
+  color: var(--blue-primary);
+  padding-left: 20px; /* Subtle slide effect */
+}
+
+.menu-content hr {
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin: 5px 0;
+}
+
+.logout-btn {
+  color: #ff4d4d !important;
+}
