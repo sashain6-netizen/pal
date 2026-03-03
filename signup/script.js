@@ -1,21 +1,21 @@
 async function handleSignup(e) {
   e.preventDefault();
   
-  // 1. Get all three values now
-  const user = document.getElementById('username').value;
-  const email = document.getElementById('email').value; // New field
-  const pass = document.getElementById('password').value;
-  const btn = e.target.querySelector('button');
-
-  // 2. Simple Frontend Email Validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    alert("Please enter a valid email address.");
+  const userEl = document.getElementById('username');
+  const emailEl = document.getElementById('email');
+  const passEl = document.getElementById('password');
+  
+  // Safety check: Make sure elements actually exist before getting .value
+  if (!userEl || !emailEl || !passEl) {
+    console.error("Missing form fields in HTML");
     return;
   }
 
-  btn.innerText = "Creating Account...";
-  btn.disabled = true;
+  const user = userEl.value;
+  const email = emailEl.value;
+  const pass = passEl.value;
+  
+  const btn = e.target.querySelector('button');
 
   try {
     const res = await fetch('/api/signup', {
