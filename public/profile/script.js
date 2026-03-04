@@ -31,19 +31,23 @@ function showToast(message, type = 'success') {
 // 1. Fetch current profile data when the page opens
 async function loadProfile() {
     try {
-        // We'll create this API next
         const res = await fetch('/api/get-profile');
         if (!res.ok) throw new Error("Not logged in");
 
         const user = await res.json();
         
-        // Fill the form
         document.getElementById('display-username').value = user.username;
         document.getElementById('displayName').value = user.displayName || "";
         document.getElementById('bio').value = user.bio || "";
         document.getElementById('themeColor').value = user.themeColor || "#2563eb";
+        
+        // Update the image preview if a URL exists
+        if (user.avatarUrl) {
+            document.getElementById('avatar-img').src = user.avatarUrl;
+            document.getElementById('avatar-url').value = user.avatarUrl;
+        }
     } catch (err) {
-        window.location.href = "/login"; // Redirect if not authenticated
+        window.location.href = "/login";
     }
 }
 
@@ -77,6 +81,37 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     } finally {
         btn.innerText = "Save Changes";
         btn.disabled = false;
+    }
+});
+
+const avatarInput = document.getElementById('avatar-input');
+const avatarImg = document.getElementById('avatar-img');
+
+avatarInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Show instant preview
+    avatarImg.src = URL.createObjectURL(file);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData 
+            // Note: Cloudflare Functions handle FormData automatically
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            // Store the returned URL in a hidden input to save with the profile later
+            document.getElementById('avatar-url').value = data.url;
+            showToast("Image uploaded!", "success");
+        }
+    } catch (err) {
+        showToast("Upload failed", "error");
     }
 });
 

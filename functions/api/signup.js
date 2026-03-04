@@ -37,13 +37,20 @@ export async function onRequestPost(context) {
 
     // 5. Hash & Prepare Data
     const { hash, salt } = await hashPassword(password);
-    
+
     const userData = {
       username: cleanUsername,
       email: cleanEmail,
       hash,
       salt,
-      joined: new Date().toISOString()
+      joined: new Date().toISOString(),
+      displayName: cleanUsername, 
+      bio: "",
+      themeColor: "#2563eb",
+      avatarUrl: "",
+      xp: 0,
+      rank: "Guest",
+      currency: 0
     };
 
     // 6. STORAGE

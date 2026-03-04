@@ -3,7 +3,6 @@ import { verifyAndDecodeToken } from "./_jwt.js";
 export async function onRequestGet(context) {
     const { request, env } = context;
     
-    // 1. Extract the token from the Cookie header
     const cookieHeader = request.headers.get("Cookie") || "";
     const token = cookieHeader
         .split('; ')
@@ -18,11 +17,9 @@ export async function onRequestGet(context) {
     }
 
     try {
-        // 2. Verify JWT and get username
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
         const username = payload.username;
 
-        // 3. Fetch user data from KV
         const rawData = await env.USERS_KV.get(username);
         
         if (!rawData) {
@@ -31,16 +28,20 @@ export async function onRequestGet(context) {
 
         const user = JSON.parse(rawData);
 
-        // 4. Return the data (excluding sensitive info like passwords)
+        // Sanitize and include the new avatar field
         const profileData = {
             username: user.username,
             displayName: user.displayName || "",
             bio: user.bio || "",
-            themeColor: user.themeColor || "#2563eb"
+            themeColor: user.themeColor || "#2563eb",
+            avatarUrl: user.avatarUrl || "" // Added this!
         };
 
         return new Response(JSON.stringify(profileData), {
-            headers: { "Content-Type": "application/json" }
+            headers: { 
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store" // Ensures the UI reflects changes immediately
+            }
         });
 
     } catch (err) {
