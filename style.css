@@ -443,3 +443,17 @@ html {
 .feature-card {
   cursor: pointer; /* Shows the hand icon to let users know it's a link */
 }
+
+/* 1. Ensure the content area is on top of the background decorations */
+.content-area {
+  position: relative;
+    z-index: 10; 
+      background: #ffffff;
+ }
+
+      /* 2. Force the background circles to stay in the background */
+      .bg-circle {
+        position: absolute;
+          z-index: -1; 
+            pointer-events: none; /* This makes clicks "pass through" the circles */
+}
