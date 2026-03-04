@@ -15,38 +15,36 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
     const loggedInLinks = document.getElementById('loggedInLinks');
     const loggedOutLinks = document.getElementById('loggedOutLinks');
     const profileIcon = document.querySelector('.profile-icon');
-    const navAvatar = document.getElementById('nav-avatar');
+    
+    // We target the container to swap between <img> and <svg>
+    if (!profileIcon) return;
 
     if (isLoggedIn) {
-        // 1. Toggle Menu Visibility
         if (loggedInLinks) loggedInLinks.style.display = 'flex';
         if (loggedOutLinks) loggedOutLinks.style.display = 'none';
         
-        // 2. Update Border Color
         const userColor = userData.themeColor || "#2563eb";
-        if (profileIcon) {
-            profileIcon.style.borderColor = userColor;
-        }
+        profileIcon.style.borderColor = userColor;
 
-        // 3. Update Avatar Image (Don't overwrite the whole HTML)
-        if (navAvatar) {
-            // Only update the src if the user actually has a custom avatar URL
-            if (userData.avatarUrl) {
-                navAvatar.src = userData.avatarUrl;
-            }
-            navAvatar.style.display = 'block'; // Ensure it's visible
+        // Check if user has a custom uploaded photo
+        if (userData.avatarUrl && userData.avatarUrl !== "" && userData.avatarUrl !== "/default-avatar.png") {
+            // SHOW THE PHOTO
+            profileIcon.innerHTML = `<img src="${userData.avatarUrl}" id="nav-avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        } else {
+            // SHOW THE COLORED SILHOUETTE
+            // We use the 'fill' attribute to apply the user's color to the person shape
+            profileIcon.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:70%; height:70%;">
+                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" 
+                          fill="${userColor}" />
+                </svg>`;
         }
     } else {
-        // 4. Logged Out State
+        // Logged Out State
         if (loggedInLinks) loggedInLinks.style.display = 'none';
         if (loggedOutLinks) loggedOutLinks.style.display = 'flex';
-        
-        if (navAvatar) {
-            navAvatar.src = "/default-avatar.png"; // Revert to default
-        }
-        if (profileIcon) {
-            profileIcon.style.borderColor = "var(--blue-primary)";
-        }
+        profileIcon.style.borderColor = "var(--blue-primary)";
+        profileIcon.innerHTML = `<img src="/default-avatar.png" id="nav-avatar">`;
     }
 }
 
