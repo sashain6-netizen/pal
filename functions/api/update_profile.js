@@ -9,30 +9,32 @@ export async function onRequestPost(context) {
     if (!token) return new Response("Unauthorized", { status: 401 });
 
     try {
-        // 1. Get username from JWT
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
-        const username = payload.username;
+    const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
+    const username = payload.username;
 
-        const updates = await request.json();
+    const updates = await request.json();
 
-        // 2. Get old data
-        const rawData = await env.USERS_KV.get(username);
-        const user = JSON.parse(rawData);
+    // 1. Get old data
+    const rawData = await env.USERS_KV.get(username);
+    // FALLBACK: If rawData is null, start with a basic object
+    const user = rawData ? JSON.parse(rawData) : { username: username };
 
-        // 3. Update fields
-        const updatedUser = {
-            ...user,
-            displayName: updates.displayName.substring(0, 50),
-            bio: updates.bio.substring(0, 160),
-            themeColor: updates.themeColor
-        };
+    // 2. Update fields with safety fallbacks (|| "") 
+    // This prevents .substring() from crashing if the field is missing
+    const updatedUser = {
+        ...user,
+        displayName: (updates.displayName || "").substring(0, 50),
+        bio: (updates.bio || "").substring(0, 160),
+        themeColor: updates.themeColor || "#2563eb"
+    };
 
-        await env.USERS_KV.put(username, JSON.stringify(updatedUser));
+    // 3. Save back to KV
+    await env.USERS_KV.put(username, JSON.stringify(updatedUser));
 
-        return new Response(JSON.stringify({ success: true }), {
-            headers: { "Content-Type": "application/json" }
-        });
-    } catch (err) {
-        return new Response("Invalid Session", { status: 401 });
-    }
+    return new Response(JSON.stringify({ success: true }), {
+        headers: { "Content-Type": "application/json" }
+    });
+} catch (err) {
+    return new Response("Error: " + err.message, { status: 500 });
+}
 }
