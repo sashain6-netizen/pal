@@ -100,23 +100,12 @@ html, body {
 /* ===========================
    2. PROFILE DROPDOWN
    =========================== */
+/* ===========================
+   2. PROFILE DROPDOWN
+   =========================== */
 .profile-dropdown {
   position: relative;
   display: inline-block;
-}
-
-.profile-dropdown::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  display: none;
-}
-
-.profile-dropdown:hover::after {
-  display: block;
 }
 
 .profile-icon {
@@ -131,18 +120,13 @@ html, body {
   display: flex;
 }
 
-.profile-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .dropdown-menu {
   display: none;
   position: absolute;
   right: 0;
-  top: calc(100% + 10px);
-  width: 180px;
+  top: 100%; /* Changed from top: calc(100% + 10px) to prevent flickering */
+  padding-top: 10px; /* This creates the visual gap safely */
+  width: 200px;
   z-index: 2000;
   animation: slideDown 0.2s ease-out forwards;
 }
@@ -157,39 +141,43 @@ html, body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(37, 99, 235, 0.1);
   padding: 8px 0;
-  
-  /* THE FIX: Force vertical layout */
   display: flex;
-  flex-direction: column; 
-  min-width: 180px; /* Prevents the "squishing" that makes options disappear */
-  overflow: visible; /* Changed from hidden so we can see everything */
+  flex-direction: column; /* Forces vertical stacking */
+  overflow: hidden;
 }
 
-.menu-content a {
-  display: block; /* Ensures the link takes up the full width of the column */
+/* THE STYLE ENFORCER: Targets links inside your dynamic containers */
+.menu-content a,
+#loggedInLinks a,
+#loggedOutLinks a {
+  color: var(--blue-soft);
+  padding: 12px 18px;
+  text-decoration: none;
+  display: block; /* Force them to be full-width rows */
   width: 100%;
-  white-space: nowrap; /* Prevents text from wrapping and looking weird */
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
 }
 
-.menu-content a:hover {
+/* Ensure dynamic containers themselves don't break the layout */
+#loggedInLinks, #loggedOutLinks {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.menu-content a:hover,
+#loggedInLinks a:hover,
+#loggedOutLinks a:hover {
   background: var(--off-white);
   color: var(--blue-primary);
   padding-left: 22px;
 }
 
-.menu-content hr {
-  border: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  margin: 6px 0;
-}
-
 .logout-btn {
   color: #ef4444 !important;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===========================
