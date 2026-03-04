@@ -102,3 +102,42 @@ document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
 });
 
 loadProfile();
+
+// 5. Handle Signup
+document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    const originalText = btn.innerText;
+    
+    // Get inputs
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    btn.innerText = "Creating Account...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            showToast("Success! Redirecting to login...", "success");
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 2000);
+        } else {
+            showToast(data.error || "Signup failed", "error");
+        }
+    } catch (err) {
+        showToast("Connection error", "error");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+});
