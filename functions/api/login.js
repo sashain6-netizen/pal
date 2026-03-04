@@ -4,56 +4,63 @@ import { createToken } from "./_jwt.js";
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  // Quick Diagnostic check
   if (!env.USERS_KV || !env.JWT_SECRET) {
-    console.error("Missing KV binding or JWT_SECRET");
     return new Response("Server Configuration Error", { status: 500 });
   }
 
   try {
-    // 1. Parse the incoming credentials (identifier can be username OR email)
     const { identifier, password } = await request.json();
 
     if (!identifier || !password) {
-      return new Response("Missing credentials", { status: 400 });
+      return new Response("Please enter both fields", { status: 400 });
     }
 
-    let username = identifier;
+    // Normalizing the identifier
+    const cleanIdentifier = identifier.trim();
+    let targetUsername = cleanIdentifier;
 
-    // 2. Determine if the user provided an email
-    const isEmail = identifier.includes('@');
-    
-    if (isEmail) {
-      // Look up the username associated with this email marker
-      const emailKey = `email:${identifier.toLowerCase()}`;
+    // 1. EMAIL LOOKUP LOGIC
+    if (cleanIdentifier.includes('@')) {
+      const emailKey = `email:${cleanIdentifier.toLowerCase()}`;
       const foundUsername = await env.USERS_KV.get(emailKey);
       
       if (!foundUsername) {
-        // We use a generic error to prevent account snooping
-        return new Response("Invalid username or password", { status: 401 });
+        // Generic error to prevent email harvesting
+        return new Response("Invalid credentials", { status: 401 });
       }
-      username = foundUsername;
+      targetUsername = foundUsername;
     }
 
-    // 3. Fetch the actual User Profile using the username
-    const userData = await env.USERS_KV.get(username);
+    // 2. FETCH PROFILE
+    // We use the foundUsername (from email) OR the raw identifier (if they typed username)
+    const userData = await env.USERS_KV.get(targetUsername);
     if (!userData) {
-      return new Response("Invalid username or password", { status: 401 });
+      return new Response("Invalid credentials", { status: 401 });
     }
 
-    const user = JSON.parse(userData);
+    // 3. SAFE PARSE
+    let user;
+    try {
+      user = JSON.parse(userData);
+    } catch (e) {
+      console.error("KV Data Corruption for user:", targetUsername);
+      return new Response("Account error", { status: 500 });
+    }
 
-    // 4. Verify the password hash
+    // 4. VERIFY PASSWORD
     const isValid = await verifyPassword(password, user.hash, user.salt);
     if (!isValid) {
-      return new Response("Invalid username or password", { status: 401 });
+      return new Response("Invalid credentials", { status: 401 });
     }
 
-    // 5. Create a JWT Session Token
-    const token = await createToken(username, env.JWT_SECRET);
+    // 5. JWT GENERATION
+    const token = await createToken(user.username, env.JWT_SECRET);
 
-    // 6. Return success and set the Secure HttpOnly Cookie
-    return new Response(JSON.stringify({ success: true, username: user.username }), {
+    // 6. RESPONSE
+    return new Response(JSON.stringify({ 
+      success: true, 
+      username: user.username 
+    }), {
       headers: {
         "Content-Type": "application/json",
         "Set-Cookie": `pal_session=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`
@@ -62,6 +69,6 @@ export async function onRequestPost(context) {
 
   } catch (err) {
     console.error(err);
-    return new Response("Server Error", { status: 500 });
+    return new Response("An unexpected error occurred", { status: 500 });
   }
 }
