@@ -128,6 +128,13 @@ html, body {
   height: 100%;
 }
 
+.profile-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This ensures the face doesn't look stretched */
+}
+
 .dropdown-menu {
   display: none;
   position: absolute;
