@@ -1,6 +1,6 @@
 /* ===========================
    PAL Logo — Clean Hero Style
-   Box Removed & Upscaled
+   Bullet-Proof Stacking & Layout
    =========================== */
 
 *, *::before, *::after {
@@ -19,220 +19,18 @@
 
 html, body {
   width: 100%;
-  height: 100%;
-  overflow-x: hidden; /* Allow scrolling if page is long, but hide horizontal */
-  background: var(--off-white);
-  font-family: 'Varela Round', sans-serif;
-}
-
-/* ---- Background Scene ---- */
-.scene {
-  position: relative;
-  width: 100%;
-  min-height: 100vh; /* Set to 100 to fill the screen */
-  display: flex;
-  flex-direction: column; /* Stacks logo and circles correctly */
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
-  overflow: hidden;
-  padding-top: 80px; /* Pushes content down so the Navbar doesn't cover it */
-  pointer-events: none;
-}
-
-/* ---- Logo Wrapper (BOX REMOVED) ---- */
-.logo-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  opacity: 0;
-  animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.2s;
-  /* Removed the ::before selector that created the glass box */
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ---- Logo Container ---- */
-.logo-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  pointer-events: auto;
-}
-
-/* ---- PAL SVG text (MADE BIGGER) ---- */
-.pal-text {
-  width: 600px; /* Increased for high-impact website header */
-  max-width: 90vw; /* Responsive safety */
-  height: auto;
-  display: block;
-  transform-origin: 50% 95%; 
-  will-change: transform;
-  transform: skewX(-7deg);
-  stroke: none !important;
-  paint-order: fill; 
-}
-
-/* ---- Smile SVG (SCALED TO MATCH) ---- */
-.smile-svg {
-  width: 450px; /* Scaled proportionally to the 600px text */
-  max-width: 80vw;
-  height: auto;
-  display: block;
-  margin-top: -30px; /* Adjusted gap for larger size */
-  overflow: visible;
-}
-
-#smilePath {
-  stroke-width: 10; /* Slightly thicker for the larger scale */
-  stroke-linecap: round;
-}
-
-/* ---- Tagline (ENLARGED) ---- */
-.tagline {
-  margin-top: 40px;
-  font-family: 'Varela Round', sans-serif;
-  font-weight: 500;
-  font-size: 1.2rem; /* Bigger for readability on web */
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--blue-soft);
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.tagline.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---- Squeeze Animation (WITH TILT PRESERVED) ---- */
-@keyframes squeeze {
-  0%   { transform: skewX(-7deg) scale(1, 1); }
-  20%  { transform: skewX(-7deg) scale(1.15, 0.85); }
-  40%  { transform: skewX(-7deg) scale(0.95, 1.05); }
-  60%  { transform: skewX(-7deg) scale(1.05, 0.95); }
-  80%  { transform: skewX(-7deg) scale(0.98, 1.02); }
-  100% { transform: skewX(-7deg) scale(1, 1); }
-}
-
-.pal-text.squeezing {
-  animation: squeeze 1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
-}
-
-/* ---- Shine Overlay (WIDENED) ---- */
-.shine-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 180px; /* Wider for the 600px text */
-  height: 100%;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.5) 50%,
-    transparent 100%
-  );
-  pointer-events: none;
-  opacity: 0;
-  z-index: 5;
-}
-
-@keyframes shine {
-  0%   { opacity: 0; transform: translateX(-150%) skewX(-15deg); }
-  50%  { opacity: 1; }
-  100% { opacity: 0; transform: translateX(250%) skewX(-15deg); }
-}
-
-.shine-overlay.shining {
-  animation: shine 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* ---- Content Area Layout ---- */
-.content-area {
-  z-index: 10;
-  background: #ffffff;
-  padding: 80px 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.container {
-  max-width: 1000px;
-  width: 100%;
-  text-align: center;
-}
-
-.content-area h2 {
-  font-size: 2.5rem;
-  color: var(--blue-deep);
-  margin-bottom: 20px;
-}
-
-.intro-text {
-  font-size: 1.2rem;
-  line-height: 1.6;
-  color: var(--blue-soft);
-  max-width: 700px;
-  margin: 0 auto 60px;
-}
-
-/* ---- Features Grid ---- */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-}
-
-.feature-card {
-  padding: 40px;
-  background: var(--off-white);
-  border-radius: 24px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid rgba(37, 99, 235, 0.1);
-}
-
-.feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
-  background: #ffffff;
-}
-
-.feature-card h3 {
-  color: var(--blue-primary);
-  margin-bottom: 15px;
-  font-size: 1.4rem;
-}
-
-.feature-card p {
-  color: var(--blue-soft);
-  line-height: 1.5;
-  font-size: 1rem;
-}
-
-/* Remove overflow:hidden from body to allow scrolling to the text */
-html, body {
   height: auto;
   overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.scene {
-  height: 100vh; /* Keeps the logo centered on its own screen at start */
-  pointer-events: none;
-}
-
-/* ---- Smooth Scrolling ---- */
-html {
+  overflow-x: hidden; /* Hide horizontal scroll but allow vertical */
+  background: var(--off-white);
+  font-family: 'Varela Round', sans-serif;
   scroll-behavior: smooth;
 }
 
-/* ---- Navigation Bar Styles ---- */
+/* ===========================
+   1. NAVIGATION BAR
+   Z-Index: 1000 (Always on top)
+   =========================== */
 .navbar {
   position: fixed;
   top: 0;
@@ -242,9 +40,10 @@ html {
   justify-content: space-between;
   align-items: center;
   z-index: 1000;
-  background: rgba(248, 250, 255, 0.8); /* Semi-transparent */
-  backdrop-filter: blur(10px); /* Frosted glass effect */
+  background: rgba(248, 250, 255, 0.8);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(37, 99, 235, 0.05);
+  pointer-events: auto;
 }
 
 .nav-logo {
@@ -260,7 +59,6 @@ html {
   list-style: none;
   gap: 30px;
   align-items: center;
-  pointer-events: auto;
 }
 
 .nav-links a {
@@ -273,6 +71,12 @@ html {
 
 .nav-links a:hover {
   color: var(--blue-primary);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .nav-btn {
@@ -293,59 +97,21 @@ html {
   box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
-/* ---- Footer Styles ---- */
-.main-footer {
-  background: var(--white);
-  padding: 60px 20px;
-  text-align: center;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.main-footer p {
-  color: var(--blue-soft);
-  font-size: 0.9rem;
-}
-
-/* ---- Mobile Responsive Fixes ---- */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 15px 20px;
-  }
-  
-  .nav-links {
-    display: none; /* Usually, you'd add a hamburger menu here */
-  }
-
-  .pal-text {
-    width: 85vw; /* Shrinks logo so it doesn't clip on phones */
-  }
-
-  .smile-svg {
-    width: 65vw;
-  }
-}
-
-/* ---- Profile & Dropdown (Optimized & Non-Glitchy) ---- */
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
+/* ===========================
+   2. PROFILE DROPDOWN
+   =========================== */
 .profile-dropdown {
   position: relative;
   display: inline-block;
 }
 
-/* This is the secret "bridge" that fixes the glitching without padding */
 .profile-dropdown::after {
   content: "";
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
-  height: 20px; /* Invisible gap filler */
+  height: 20px;
   display: none;
 }
 
@@ -362,7 +128,7 @@ html {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
-  display: flex; /* Ensures image centers perfectly */
+  display: flex;
 }
 
 .profile-icon img {
@@ -375,13 +141,12 @@ html {
   display: none;
   position: absolute;
   right: 0;
-  top: calc(100% + 10px); /* Perfectly spaced below the icon */
+  top: calc(100% + 10px);
   width: 180px;
   z-index: 2000;
   animation: slideDown 0.2s ease-out forwards;
 }
 
-/* Keep menu open when hovering the dropdown or the bridge */
 .profile-dropdown:hover .dropdown-menu {
   display: block;
 }
@@ -426,39 +191,257 @@ html {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Mobile Adjustment - Ensure dropdown doesn't go off-screen */
-@media (max-width: 768px) {
-  .nav-links { display: none; }
-  .dropdown-menu { right: -10px; }
-}
-
-/* Remove default link styling from the card wrappers */
-.feature-card-link {
-  text-decoration: none;
-  color: inherit;
-  display: block; /* Makes the whole area clickable */
-  transition: transform 0.2s ease;
-  z-index: 5;
-}
-
-/* Optional: Slight lift effect when hovering over the link */
-.feature-card-link:hover {
-  transform: translateY(-5px);
-}
-
-.feature-card {
-  cursor: pointer; 
-}
-
-.content-area {
-  position: relative; 
-  z-index: 20;      
-  background: #ffffff;
-  pointer-events: auto;
+/* ===========================
+   3. HERO SCENE & DECORATIONS
+   Z-Index: 1 (Behind everything)
+   pointer-events: none (Ghost mode)
+   =========================== */
+.scene {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
+  overflow: hidden;
+  padding-top: 80px;
+  pointer-events: none; /* Let clicks pass through the background */
 }
 
 .bg-circle {
   position: absolute;
   z-index: -1; 
   pointer-events: none; 
+}
+
+/* ===========================
+   4. LOGO ANIMATION
+   =========================== */
+.logo-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.2s;
+}
+
+.logo-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  pointer-events: auto; /* Re-enable clicks specifically for the logo */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pal-text {
+  width: 600px;
+  max-width: 90vw;
+  height: auto;
+  display: block;
+  transform-origin: 50% 95%; 
+  will-change: transform;
+  transform: skewX(-7deg);
+  stroke: none !important;
+  paint-order: fill; 
+}
+
+.smile-svg {
+  width: 450px;
+  max-width: 80vw;
+  height: auto;
+  display: block;
+  margin-top: -30px;
+  overflow: visible;
+}
+
+#smilePath {
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.tagline {
+  margin-top: 40px;
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--blue-soft);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tagline.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes squeeze {
+  0%   { transform: skewX(-7deg) scale(1, 1); }
+  20%  { transform: skewX(-7deg) scale(1.15, 0.85); }
+  40%  { transform: skewX(-7deg) scale(0.95, 1.05); }
+  60%  { transform: skewX(-7deg) scale(1.05, 0.95); }
+  80%  { transform: skewX(-7deg) scale(0.98, 1.02); }
+  100% { transform: skewX(-7deg) scale(1, 1); }
+}
+
+.pal-text.squeezing {
+  animation: squeeze 1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+.shine-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 180px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5;
+}
+
+@keyframes shine {
+  0%   { opacity: 0; transform: translateX(-150%) skewX(-15deg); }
+  50%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(250%) skewX(-15deg); }
+}
+
+.shine-overlay.shining {
+  animation: shine 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ===========================
+   5. CONTENT AREA & CARDS
+   Z-Index: 20 (Above Hero Scene)
+   =========================== */
+.content-area {
+  position: relative;
+  z-index: 20;
+  background: #ffffff;
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+  pointer-events: auto; /* Forces everything inside to be clickable */
+}
+
+.container {
+  max-width: 1000px;
+  width: 100%;
+  text-align: center;
+}
+
+.content-area h2 {
+  font-size: 2.5rem;
+  color: var(--blue-deep);
+  margin-bottom: 20px;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--blue-soft);
+  max-width: 700px;
+  margin: 0 auto 60px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  position: relative;
+  z-index: 30; /* Extra security to keep cards on top */
+}
+
+.feature-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative; /* Required for z-index to work */
+  z-index: 40; /* Guarantees the link catches the mouse */
+  transition: transform 0.2s ease;
+}
+
+.feature-card-link:hover {
+  transform: translateY(-5px);
+}
+
+.feature-card {
+  box-sizing: border-box; /* Prevents padding from breaking the grid */
+  padding: 40px;
+  background: var(--off-white);
+  border-radius: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  cursor: pointer;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px); /* Adjusted to not double-stack with the link hover */
+  box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
+  background: #ffffff;
+}
+
+.feature-card h3 {
+  color: var(--blue-primary);
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+}
+
+.feature-card p {
+  color: var(--blue-soft);
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+/* ===========================
+   6. FOOTER
+   =========================== */
+.main-footer {
+  position: relative;
+  z-index: 20;
+  background: var(--white);
+  padding: 60px 20px;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.main-footer p {
+  color: var(--blue-soft);
+  font-size: 0.9rem;
+}
+
+/* ===========================
+   7. RESPONSIVE FIXES
+   =========================== */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 15px 20px;
+  }
+  
+  .nav-links {
+    display: none; 
+  }
+
+  .dropdown-menu { 
+    right: -10px; 
+  }
+
+  .pal-text {
+    width: 85vw;
+  }
+
+  .smile-svg {
+    width: 65vw;
+  }
 }
