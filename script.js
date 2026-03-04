@@ -74,8 +74,6 @@
 const navLogo = document.querySelector('.nav-logo');
 if (navLogo) {
   navLogo.addEventListener('click', (e) => {
-    // If it's a real link to index.html, let the browser handle it
-    // Only scroll if we are already at the top
     if (window.scrollY > 0) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
