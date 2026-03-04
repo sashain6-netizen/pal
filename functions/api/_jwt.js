@@ -64,13 +64,20 @@ export async function verifyAndDecodeToken(token, secret) {
     encoder.encode(data)
   );
 
-  if (!isValid) throw new Error("Invalid Token");
+  if (!isValid) throw new Error("Invalid Token Signature");
 
-  // 2. Check expiration
-  const payload = JSON.parse(base64UrlDecode(payloadB64));
-  if (Date.now() / 1000 > payload.exp) throw new Error("Token Expired");
-
-  return payload;
+  try {
+      const payload = JSON.parse(base64UrlDecode(payloadB64));
+      
+      // Check expiration
+      if (payload.exp && Date.now() / 1000 > payload.exp) {
+          throw new Error("Token Expired");
+      }
+      
+      return payload;
+  } catch (e) {
+      throw new Error("Malformed Token Payload");
+  }
 }
 
 // ALSO ADD THIS: Just in case you use the name parseToken elsewhere
