@@ -34,7 +34,7 @@ export async function onRequestGet(context) {
             displayName: user.displayName || "",
             bio: user.bio || "",
             themeColor: user.themeColor || "#2563eb",
-            avatarUrl: user.avatarUrl || "" // Added this!
+            avatarUrl: user.avatarUrl || "/default-avatar.png"
         };
 
         return new Response(JSON.stringify(profileData), {
