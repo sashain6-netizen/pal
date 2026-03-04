@@ -16,7 +16,7 @@ export async function onRequestPost(context) {
     // 1. Get old data
     const rawData = await env.USERS_KV.get(username);
     // FALLBACK: If rawData is null, start with a basic object
-    const user = rawData ? JSON.parse(rawData) : { username: username };
+    const user = rawData ? JSON.parse(rawData) : { username: username }; 
 
     // 2. Update fields with safety fallbacks (|| "") 
     // This prevents .substring() from crashing if the field is missing
