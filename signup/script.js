@@ -33,7 +33,7 @@ async function handleSignup(e) {
   showToast(msg, "error");
     }
   } catch (err) {
-    alert("Connection error. Try again.");
+    showToast("Connection error. Try again.");
     btn.disabled = false;
   }
 }
