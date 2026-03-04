@@ -102,33 +102,38 @@ if (navLogo) {
   const loggedOutLinks = document.getElementById('loggedOutLinks');
   const profileIconContainer = document.querySelector('.profile-icon');
 
-  if (isLoggedIn) {
+  // Force boolean check: handles true, "true", or 1
+  const authenticated = isLoggedIn === true || userData.loggedIn === true;
+
+  if (authenticated) {
     if (loggedInLinks) loggedInLinks.style.display = 'flex';
     if (loggedOutLinks) loggedOutLinks.style.display = 'none';
     
-    // Generate the SVG using the user's theme color
     const userColor = userData.themeColor || "#2563eb";
+    
+    // Injecting the SVG with fixed alignment
     profileIconContainer.innerHTML = `
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="background-color: #ffffff; width: 100%; height: 100%;">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:100%;">
           <circle cx="50" cy="35" r="18" fill="none" stroke="${userColor}" stroke-width="6" />
           <path d="M20 85 C20 60 80 60 80 85" fill="none" stroke="${userColor}" stroke-width="6" stroke-linecap="round" />
       </svg>
     `;
-    // Apply the color to the border of the circle too
     profileIconContainer.style.borderColor = userColor;
+    profileIconContainer.style.background = "#ffffff";
 
   } else {
+    // Guest State
     if (loggedInLinks) loggedInLinks.style.display = 'none';
     if (loggedOutLinks) loggedOutLinks.style.display = 'flex';
     
-    // Default Guest Icon (Gray)
     profileIconContainer.innerHTML = `
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="background-color: #f1f5f9; width: 100%; height: 100%;">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:100%;">
           <circle cx="50" cy="35" r="18" fill="none" stroke="#cbd5e1" stroke-width="6" />
           <path d="M20 85 C20 60 80 60 80 85" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round" />
       </svg>
     `;
     profileIconContainer.style.borderColor = "#cbd5e1";
+    profileIconContainer.style.background = "#f1f5f9";
   }
 }
 
@@ -160,4 +165,12 @@ async function handleLogout(e) {
 document.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById('logoutLink');
   if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+}); // Added ); here
+
+// Add this at the bottom of the script.js to trigger the check
+window.addEventListener('load', () => {
+  checkAuth();
+  if (hasHeroAnimation) window.playFullSequence();
 });
+
+})();
