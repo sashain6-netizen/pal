@@ -118,11 +118,12 @@ body {
 }
 
 /* ---- Staff Grid (Flexbox Version) ---- */
+/* ---- Staff Grid ---- */
 .staff-grid {
   display: flex;
-  flex-wrap: wrap;       /* Allows cards to move to the next row */
-  justify-content: center; /* Centers everyone horizontally */
-  gap: 30px;             /* Keeps the spacing even */
+  flex-wrap: wrap;         /* Allows the 4th person to drop down */
+  justify-content: center;   /* Centers the 4th person under the first 3 */
+  gap: 40px 30px;          /* First number is Vertical gap, second is Horizontal */
   width: 100%;
 }
 
@@ -134,9 +135,9 @@ body {
   border: 1px solid rgba(37, 99, 235, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   
-  /* Set a fixed base size so they don't stretch */
-  flex: 0 1 280px;       /* Don't grow, do shrink, base size 280px */
-  min-width: 220px;      /* Don't let them get too skinny on mobile */
+  /* THE FIX: Stop the 4th person from being massive */
+  flex: 0 0 280px;         /* 0 growth, 0 shrink, fixed 280px base */
+  max-width: 280px;        /* Strict limit so it never expands */
 }
 
 .staff-card:hover {
