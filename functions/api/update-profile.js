@@ -22,6 +22,7 @@ export async function onRequestPost(context) {
     // This prevents .substring() from crashing if the field is missing
     const updatedUser = {
         ...user,
+        avatarUrl: user.avatarUrl || "/default-avatar.png",
         displayName: (updates.displayName || "").substring(0, 50),
         bio: (updates.bio || "").substring(0, 160),
         themeColor: updates.themeColor || "#2563eb"
