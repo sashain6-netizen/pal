@@ -1,3 +1,34 @@
+// 1. The Toast Engine
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span>${message}</span>
+        <span class="toast-close">&times;</span>
+    `;
+
+    container.appendChild(toast);
+    toast.offsetHeight; // Force reflow for animation
+    toast.classList.add('show');
+
+    const dismiss = () => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    };
+
+    setTimeout(dismiss, 4000);
+    toast.querySelector('.toast-close').onclick = dismiss;
+}
+
+// 2. The Login Logic
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -16,15 +47,19 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         });
 
         if (response.ok) {
-            window.location.href = "/"; 
+            showToast("Welcome back! Redirecting...", "success");
+            setTimeout(() => { window.location.href = "/"; }, 1000);
         } else {
             const msg = await response.text();
-            alert(msg);
+            
+            // NO MORE CHROME POPUP:
+            showToast(msg, "error"); 
+            
             btn.innerText = "Log In";
             btn.disabled = false;
         }
     } catch (err) {
-        alert("Connection error.");
+        showToast("Connection error. Please try again.", "error");
         btn.disabled = false;
     }
 });
