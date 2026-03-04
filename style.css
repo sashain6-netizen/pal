@@ -433,6 +433,7 @@ html {
   color: inherit;
   display: block; /* Makes the whole area clickable */
   transition: transform 0.2s ease;
+  z-index: 5;
 }
 
 /* Optional: Slight lift effect when hovering over the link */
@@ -441,19 +442,17 @@ html {
 }
 
 .feature-card {
-  cursor: pointer; /* Shows the hand icon to let users know it's a link */
+  cursor: pointer; 
 }
 
-/* 1. Ensure the content area is on top of the background decorations */
 .content-area {
-  position: relative;
-    z-index: 10; 
-      background: #ffffff;
- }
+  position: relative; 
+  z-index: 20;      
+  background: #ffffff;
+}
 
-      /* 2. Force the background circles to stay in the background */
-      .bg-circle {
-        position: absolute;
-          z-index: -1; 
-            pointer-events: none; /* This makes clicks "pass through" the circles */
+.bg-circle {
+  position: absolute;
+  z-index: -1; 
+  pointer-events: none; 
 }
