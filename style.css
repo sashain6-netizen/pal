@@ -157,17 +157,18 @@ html, body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(37, 99, 235, 0.1);
   padding: 8px 0;
-  overflow: hidden;
+  
+  /* THE FIX: Force vertical layout */
+  display: flex;
+  flex-direction: column; 
+  min-width: 180px; /* Prevents the "squishing" that makes options disappear */
+  overflow: visible; /* Changed from hidden so we can see everything */
 }
 
 .menu-content a {
-  color: var(--blue-soft);
-  padding: 12px 18px;
-  text-decoration: none;
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  display: block; /* Ensures the link takes up the full width of the column */
+  width: 100%;
+  white-space: nowrap; /* Prevents text from wrapping and looking weird */
 }
 
 .menu-content a:hover {
