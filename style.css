@@ -366,7 +366,7 @@ html, body {
 .feature-card-link {
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: block !important;
   position: relative; /* Required for z-index to work */
   z-index: 40; /* Guarantees the link catches the mouse */
   transition: transform 0.2s ease;
@@ -421,9 +421,6 @@ html, body {
   font-size: 0.9rem;
 }
 
-/* ===========================
-   7. RESPONSIVE FIXES
-   =========================== */
 @media (max-width: 768px) {
   .navbar {
     padding: 15px 20px;

@@ -12,10 +12,19 @@
 
   let shineEl;
   if (hasHeroAnimation) {
-    shineEl = document.createElement('div');
-    shineEl.className = 'shine-overlay';
-    logoContainer.appendChild(shineEl);
-  }
+  // Use 'mousedown' or check the target to ensure we don't block links
+  logoContainer.addEventListener('click', (e) => {
+    // Only play if the user clicked the logo directly, not a child link
+    if (e.target.closest('a')) return; 
+    
+    playFullSequence();
+  });
+
+  logoContainer.style.cursor = 'pointer';
+  logoContainer.style.transition = 'transform 0.3s ease';
+  logoContainer.addEventListener('mouseenter', () => logoContainer.style.transform = 'translateY(-5px)');
+  logoContainer.addEventListener('mouseleave', () => logoContainer.style.transform = 'translateY(0)');
+}
 
   /* ── Master sequence ── */
   window.playFullSequence = function() {
@@ -62,13 +71,16 @@
     });
   }
 
-  const navLogo = document.querySelector('.nav-logo');
-  if (navLogo) {
-    navLogo.addEventListener('click', () => {
+const navLogo = document.querySelector('.nav-logo');
+if (navLogo) {
+  navLogo.addEventListener('click', (e) => {
+    // If it's a real link to index.html, let the browser handle it
+    // Only scroll if we are already at the top
+    if (window.scrollY > 0) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (typeof window.playFullSequence === 'function') window.playFullSequence();
-    });
-  }
+    }
+  });
+}
 
   /* ── Intersection Observer ── */
   const observer = new IntersectionObserver((entries) => {
