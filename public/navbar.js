@@ -17,7 +17,13 @@ function injectNavbar() {
             <a href="/" class="nav-btn-link"><button class="nav-btn">Home</button></a>
             <div class="profile-dropdown">
                 <div class="profile-icon">
-                    <img src="/default-avatar.png" alt="Profile">
+                   <img 
+                    src="/default-avatar.png" 
+                    alt="Profile" 
+                    id="nav-avatar"
+                    onload="console.log('Navbar avatar loaded successfully')"
+                    onerror="console.error('Navbar avatar FAILED to load at: ' + this.src); this.src='https://ui-avatars.com/api/?name=User&background=2563eb&color=fff';"
+                    >
                 </div>
                 <div class="dropdown-menu">
                     <div class="dropdown-arrow"></div>
