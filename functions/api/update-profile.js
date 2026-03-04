@@ -25,7 +25,6 @@ export async function onRequestPost(context) {
         displayName: (updates.displayName || "").substring(0, 50),
         bio: (updates.bio || "").substring(0, 160),
         themeColor: updates.themeColor || "#2563eb"
-        avatarUrl: updates.avatarUrl || user.avatarUrl || ""
     };
 
     // 3. Save back to KV
