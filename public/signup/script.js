@@ -24,19 +24,36 @@ function showToast(message, type = 'success') {
 
 // 2. Fetch current profile data
 async function loadProfile() {
+    // List of pages where we DON'T want to force a redirect
+    const publicPages = ['/login', '/signup', '/index.html', '/']; 
+    const isPublicPage = publicPages.some(path => window.location.pathname.endsWith(path));
+
     try {
         const res = await fetch('/api/get-profile');
-        if (!res.ok) throw new Error("Not logged in");
+        
+        if (!res.ok) {
+            // If the user isn't logged in, only redirect if they are on a "protected" page
+            if (!isPublicPage) {
+                window.location.href = "/login";
+            }
+            return; // Exit the function safely
+        }
 
         const user = await res.json();
         
-        document.getElementById('display-username').value = user.username;
-        document.getElementById('displayName').value = user.displayName || "";
-        document.getElementById('bio').value = user.bio || "";
-        document.getElementById('themeColor').value = user.themeColor || "#2563eb";
+        // Use optional chaining (?.) so it doesn't crash if these inputs don't exist on the page
+        if (document.getElementById('display-username')) {
+            document.getElementById('display-username').value = user.username;
+            document.getElementById('displayName').value = user.displayName || "";
+            document.getElementById('bio').value = user.bio || "";
+            document.getElementById('themeColor').value = user.themeColor || "#2563eb";
+        }
     } catch (err) {
         console.error("Auth error:", err);
-        window.location.href = "/login"; 
+        // Only redirect if it's a critical error on a private page
+        if (!isPublicPage) {
+            window.location.href = "/login"; 
+        }
     }
 }
 
