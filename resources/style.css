@@ -121,8 +121,9 @@ body {
 .staff-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* Centers the 4th person */
-  gap: 30px;               /* Space between cards */
+  justify-content: center; 
+  align-items: center;
+  gap: 30px;            
   width: 100%;
   padding: 20px 0;
 }
