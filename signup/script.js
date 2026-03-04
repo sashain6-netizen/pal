@@ -48,21 +48,30 @@ async function handleLogin(e) {
   btn.disabled = true;
 
   try {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: user, password: pass })
-    });
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identifier, password })
+        });
 
-    if (res.ok) {
-      showToast("Welcome back!", "success");
-      window.location.href = "/"; 
-    } else {
-      const msg = await res.text();
-      showToast(msg, "error");
+        if (response.ok) {
+            // Use success toast before redirecting
+            showToast("Success! Logging you in...", "success");
+            setTimeout(() => {
+                window.location.href = "/"; 
+            }, 1000);
+        } else {
+            const msg = await response.text();
+            
+            // REPLACE alert(msg) WITH THIS:
+            showToast(msg, "error"); 
+            
+            btn.innerText = "Log In";
+            btn.disabled = false;
+        }
+    } catch (err) {
+        // REPLACE alert("Connection error") WITH THIS:
+        showToast("Connection error. Check your internet.", "error");
+        btn.disabled = false;
     }
-  } catch (err) {
-    alert("Connection error.");
-    btn.disabled = false;
   }
-}
