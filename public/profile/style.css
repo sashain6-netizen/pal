@@ -130,7 +130,7 @@
 }
 
 /* Toast Notifications (for script.js feedback) */
-.toast-container {
+#toast-container {
   position: fixed;
   top: 20px;
   right: 20px;
