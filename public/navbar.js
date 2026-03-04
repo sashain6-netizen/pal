@@ -17,7 +17,7 @@ function injectNavbar() {
             <a href="/" class="nav-btn-link"><button class="nav-btn">Home</button></a>
             <div class="profile-dropdown">
                 <div class="profile-icon">
-                    <img src="default-avatar.png" alt="Profile">
+                    <img src="/default-avatar.png" alt="Profile">
                 </div>
                 <div class="dropdown-menu">
                     <div class="dropdown-arrow"></div>
