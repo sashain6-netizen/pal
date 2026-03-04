@@ -141,7 +141,6 @@ body {
   width: 300px;     /* Concrete width */
   max-width: 300px; /* Absolute limit - prevents the "massive" 4th card */
   
-  /* Vertical spacing fix */
   margin-bottom: 10px; 
 }
 
