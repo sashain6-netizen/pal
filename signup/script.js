@@ -26,13 +26,11 @@ async function handleSignup(e) {
     });
 
     if (res.ok) {
-      alert("Account created! Now please log in.");
-      window.location.href = "/login";
-    } else {
-      const msg = await res.text();
-      alert(msg);
-      btn.innerText = "Sign Up";
-      btn.disabled = false;
+  showToast("Account created! Redirecting...", "success");
+  setTimeout(() => window.location.href = "/login", 1500); // Small delay to see toast
+} else {
+  const msg = await res.text();
+  showToast(msg, "error");
     }
   } catch (err) {
     alert("Connection error. Try again.");
@@ -57,12 +55,11 @@ async function handleLogin(e) {
     });
 
     if (res.ok) {
-      // The browser automatically stores the 'pal_session' cookie sent by the server
+      showToast("Welcome back!", "success");
       window.location.href = "/"; 
     } else {
-      alert("Invalid username or password");
-      btn.innerText = "Log In";
-      btn.disabled = false;
+      const msg = await res.text();
+      showToast(msg, "error");
     }
   } catch (err) {
     alert("Connection error.");
