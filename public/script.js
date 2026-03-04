@@ -114,8 +114,8 @@ if (navLogo) {
     // Injecting the SVG with fixed alignment
     profileIconContainer.innerHTML = `
       <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:100%;">
-          <circle cx="50" cy="35" r="18" fill="none" stroke="${userColor}" stroke-width="6" />
-          <path d="M20 85 C20 60 80 60 80 85" fill="none" stroke="${userColor}" stroke-width="6" stroke-linecap="round" />
+          <circle cx="50" cy="35" r="18" fill="none" stroke="${userColor}" stroke-width="10" />
+          <path d="M20 85 C20 60 80 60 80 85" fill="none" stroke="${userColor}" stroke-width="10" stroke-linecap="round" />
       </svg>
     `;
     profileIconContainer.style.borderColor = userColor;
