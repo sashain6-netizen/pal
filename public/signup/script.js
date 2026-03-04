@@ -101,19 +101,19 @@ document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
     window.location.href = "/login";
 });
 
-loadProfile();
+async function handleSignup(event) {
+    event.preventDefault(); // Stops the page from refreshing
 
-// 5. Handle Signup
-document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = e.target.querySelector('button');
+    const form = event.target;
+    const btn = form.querySelector('button');
     const originalText = btn.innerText;
-    
-    // Get inputs
+
+    // 1. Get values using the IDs from your HTML
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
+    // 2. Simple UI state
     btn.innerText = "Creating Account...";
     btn.disabled = true;
 
@@ -127,11 +127,12 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
         const data = await res.json();
 
         if (res.ok) {
-            showToast("Success! Redirecting to login...", "success");
+            showToast("Account created! Redirecting...", "success");
             setTimeout(() => {
                 window.location.href = "/login";
             }, 2000);
         } else {
+            // This displays "Username taken" or "Email in use" from your Worker
             showToast(data.error || "Signup failed", "error");
         }
     } catch (err) {
@@ -140,4 +141,6 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
         btn.innerText = originalText;
         btn.disabled = false;
     }
-});
+}
+
+loadProfile();
