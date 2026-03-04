@@ -442,3 +442,22 @@ html, body {
     width: 65vw;
   }
 }
+
+/* 1. Ensure the grid is physically in front of the background */
+.features-grid {
+  position: relative;
+  z-index: 999; 
+  pointer-events: auto !important;
+}
+
+/* 2. Force the links to be "clickable areas" */
+.feature-card-link {
+  display: block !important;
+  cursor: pointer !important; /* Forces the hand icon */
+  text-decoration: none;
+}
+
+/* 3. Make sure the DIV inside doesn't steal the click from the Link */
+.feature-card {
+  pointer-events: none; 
+}
