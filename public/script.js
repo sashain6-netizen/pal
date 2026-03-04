@@ -97,49 +97,53 @@ if (navLogo) {
     observer.observe(card);
   });
 
-  /* ── Authentication Logic ── */
-  async function checkAuth() {
-    try {
-      // Use a timeout so the fetch doesn't hang the page if the server is down
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
+  function updateUI(isLoggedIn, userData = {}) {
+  const loggedInLinks = document.getElementById('loggedInLinks');
+  const loggedOutLinks = document.getElementById('loggedOutLinks');
+  const profileIconContainer = document.querySelector('.profile-icon');
 
-      const response = await fetch('/api/me', { signal: controller.signal });
-      clearTimeout(timeoutId);
+  if (isLoggedIn) {
+    if (loggedInLinks) loggedInLinks.style.display = 'flex';
+    if (loggedOutLinks) loggedOutLinks.style.display = 'none';
+    
+    // Generate the SVG using the user's theme color
+    const userColor = userData.themeColor || "#2563eb";
+    profileIconContainer.innerHTML = `
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="background-color: #ffffff; width: 100%; height: 100%;">
+          <circle cx="50" cy="35" r="18" fill="none" stroke="${userColor}" stroke-width="6" />
+          <path d="M20 85 C20 60 80 60 80 85" fill="none" stroke="${userColor}" stroke-width="6" stroke-linecap="round" />
+      </svg>
+    `;
+    // Apply the color to the border of the circle too
+    profileIconContainer.style.borderColor = userColor;
 
-      if (!response.ok) throw new Error('Not logged in');
-      const data = await response.json();
-
-      updateUI(data.loggedIn, data.username);
-    } catch (e) {
-      console.warn("Auth check skipped (Local mode or API offline)");
-      updateUI(false); // Default to logged out state
-    }
+  } else {
+    if (loggedInLinks) loggedInLinks.style.display = 'none';
+    if (loggedOutLinks) loggedOutLinks.style.display = 'flex';
+    
+    // Default Guest Icon (Gray)
+    profileIconContainer.innerHTML = `
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="background-color: #f1f5f9; width: 100%; height: 100%;">
+          <circle cx="50" cy="35" r="18" fill="none" stroke="#cbd5e1" stroke-width="6" />
+          <path d="M20 85 C20 60 80 60 80 85" fill="none" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round" />
+      </svg>
+    `;
+    profileIconContainer.style.borderColor = "#cbd5e1";
   }
+}
 
-  function updateUI(isLoggedIn, username = '') {
-    const loggedInLinks = document.getElementById('loggedInLinks');
-    const loggedOutLinks = document.getElementById('loggedOutLinks');
-    const profileImg = document.querySelector('.profile-icon img');
+// Update your checkAuth call to pass the whole user object
+async function checkAuth() {
+  try {
+    const response = await fetch('/api/me');
+    if (!response.ok) throw new Error('Not logged in');
+    const data = await response.json(); // Data should include { loggedIn: true, themeColor: "#..." }
 
-    if (isLoggedIn) {
-      if (loggedInLinks) loggedInLinks.style.display = 'flex';
-      if (loggedOutLinks) loggedOutLinks.style.display = 'none';
-      if (profileImg) {
-        profileImg.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
-      }
-    } else {
-      if (loggedInLinks) loggedInLinks.style.display = 'none';
-      if (loggedOutLinks) loggedOutLinks.style.display = 'flex';
-    }
+    updateUI(data.loggedIn, data); 
+  } catch (e) {
+    updateUI(false);
   }
-
-  window.addEventListener('load', () => {
-    checkAuth();
-    if (hasHeroAnimation) window.playFullSequence();
-  });
-
-})();
+}
 
 /* ── Logout Handler ── */
 async function handleLogout(e) {

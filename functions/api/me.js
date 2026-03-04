@@ -9,8 +9,9 @@ export async function onRequestGet(context) {
   const token = cookie.split("pal_session=")[1].split(";")[0];
   const payload = JSON.parse(atob(token.split(".")[1]));
 
-  return new Response(JSON.stringify({ 
-    loggedIn: true, 
-    username: payload.username 
-  }), { headers: { "Content-Type": "application/json" } });
+  return new Response(JSON.stringify({
+    loggedIn: true,
+    username: user.username,
+    themeColor: user.themeColor || "#2563eb"
+}), { headers: { "Content-Type": "application/json" } });
 }
