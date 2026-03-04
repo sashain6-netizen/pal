@@ -14,44 +14,7 @@
 </head>
 <body>
 
-  <nav class="navbar">
-  <div class="nav-logo"><a href="/" style="text-decoration: none; color: inherit;">PAL</a></div>
-  
-  <ul class="nav-links">
-    <li><a href="/forums">Forums</a></li>
-    <li><a href="/ai">AI</a></li>
-    <li><a href="/games">Games</a></li>
-    <li><a href="/proxy">Proxy</a></li>
-    <li><a href="/apps">Apps</a></li>
-    <li><a href="/resources">Contacts</a></li>
-  </ul>
-
-  <div class="nav-right">
-    <a href="/" class="nav-btn-link"><button class="nav-btn">Home</button></a>
-    
-    <div class="profile-dropdown">
-      <div class="profile-icon">
-        <img src="/profile.png" alt="User Profile">
-      </div>
-
-      <div class="dropdown-menu">
-        <div class="dropdown-arrow"></div>
-        <div class="menu-content">
-          <div id="loggedOutLinks">
-            <a href="/login">Login</a>
-            <a href="/signup">Sign Up</a>
-          </div>
-          <div id="loggedInLinks" style="display: none;">
-            <a href="/profile">My Profile</a>
-            <a href="/settings">Settings</a> <hr>
-            <a href="/notifications">Notifications</a>
-            <a href="#" class="logout-btn" id="logoutLink">Log Out</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
+  <div id="navbar-placeholder"></div>
 
   <main class="contacts-page">
     <header class="contacts-header">
@@ -116,6 +79,8 @@
     <p>&copy; 2026 Pal • Easy School Assistant</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="/navbar.js"></script>
+<script src="/global-auth.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
