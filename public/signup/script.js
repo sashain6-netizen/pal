@@ -1,77 +1,87 @@
-async function handleSignup(e) {
-  e.preventDefault();
-  
-  const userEl = document.getElementById('username');
-  const emailEl = document.getElementById('email');
-  const passEl = document.getElementById('password');
-  
-  // Safety check: Make sure elements actually exist before getting .value
-  if (!userEl || !emailEl || !passEl) {
-    console.error("Missing form fields in HTML");
-    return;
-  }
-
-  const user = userEl.value;
-  const email = emailEl.value;
-  const pass = passEl.value;
-  
-  const btn = e.target.querySelector('button');
-
-  try {
-    const res = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      // 3. Include email in the payload
-      body: JSON.stringify({ username: user, email: email, password: pass })
-    });
-
-    if (res.ok) {
-  showToast("Account created! Redirecting...", "success");
-  setTimeout(() => window.location.href = "/login", 1500); // Small delay to see toast
-} else {
-  const msg = await res.text();
-  showToast(msg, "error");
+// 1. Toast Engine - Now searches for the container correctly
+function showToast(message, type = 'success') {
+    // Looks for #toast-container OR .toast-container
+    let container = document.getElementById('toast-container') || document.querySelector('.toast-container');
+    
+    // Fallback: If no container exists at all, create it
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container'; // Sets ID to match your JS search
+        document.body.appendChild(container);
     }
-  } catch (err) {
-    showToast("Connection error. Try again.");
-    btn.disabled = false;
-  }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`; // Keeps .toast as a class for CSS
+    toast.innerText = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
 }
 
-async function handleLogin(e) {
-  e.preventDefault();
-  const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
-  const btn = e.target.querySelector('button');
+// 2. Fetch current profile data
+async function loadProfile() {
+    try {
+        const res = await fetch('/api/get-profile');
+        if (!res.ok) throw new Error("Not logged in");
 
-  btn.innerText = "Logging in...";
-  btn.disabled = true;
+        const user = await res.json();
+        
+        document.getElementById('display-username').value = user.username;
+        document.getElementById('displayName').value = user.displayName || "";
+        document.getElementById('bio').value = user.bio || "";
+        document.getElementById('themeColor').value = user.themeColor || "#2563eb";
+    } catch (err) {
+        console.error("Auth error:", err);
+        window.location.href = "/login"; 
+    }
+}
 
-  try {
-        const response = await fetch('/api/login', {
+// 3. Handle the Save
+document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    const originalText = btn.innerText;
+    btn.innerText = "Saving...";
+    btn.disabled = true;
+
+    const updates = {
+        displayName: document.getElementById('displayName').value,
+        bio: document.getElementById('bio').value,
+        themeColor: document.getElementById('themeColor').value
+    };
+
+    try {
+        const res = await fetch('/api/update-profile', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier, password })
+            body: JSON.stringify(updates)
         });
 
-        if (response.ok) {
-            // Use success toast before redirecting
-            showToast("Success! Logging you in...", "success");
-            setTimeout(() => {
-                window.location.href = "/"; 
-            }, 1000);
+        if (res.ok) {
+            showToast("Profile updated successfully!", "success");
         } else {
-            const msg = await response.text();
-            
-            // REPLACE alert(msg) WITH THIS:
-            showToast(msg, "error"); 
-            
-            btn.innerText = "Log In";
-            btn.disabled = false;
+            showToast("Failed to update profile", "error");
         }
     } catch (err) {
-        // REPLACE alert("Connection error") WITH THIS:
-        showToast("Connection error. Check your internet.", "error");
+        showToast("Connection error", "error");
+    } finally {
+        btn.innerText = originalText;
         btn.disabled = false;
     }
-  }
+});
+
+// 4. FIX: Logout logic
+document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+    e.preventDefault(); // This STOPS the "#" behavior
+    console.log("Logging out...");
+    // Clear cookie
+    document.cookie = "pal_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // Redirect
+    window.location.href = "/login";
+});
+
+loadProfile();
