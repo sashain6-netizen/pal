@@ -1,5 +1,4 @@
-// /functions/api/get-profile.js
-import { verifyAndDecodeToken } from "./_jwt.js"; // Ensure this matches your JWT helper name
+import { verifyAndDecodeToken } from "./_jwt.js";
 
 export async function onRequestGet(context) {
     const { request, env } = context;

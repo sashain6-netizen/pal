@@ -1,5 +1,4 @@
-// You'll need a way to parse the JWT you made earlier
-import { parseToken } from "./_jwt.js"; // You'll need to add a parse function to your _jwt.js
+import { verifyAndDecodeToken } from "./_jwt.js"; 
 
 export async function onRequestPost(context) {
     const { request, env } = context;
