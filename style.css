@@ -426,3 +426,20 @@ html {
   .nav-links { display: none; }
   .dropdown-menu { right: -10px; }
 }
+
+/* Remove default link styling from the card wrappers */
+.feature-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block; /* Makes the whole area clickable */
+  transition: transform 0.2s ease;
+}
+
+/* Optional: Slight lift effect when hovering over the link */
+.feature-card-link:hover {
+  transform: translateY(-5px);
+}
+
+.feature-card {
+  cursor: pointer; /* Shows the hand icon to let users know it's a link */
+}
