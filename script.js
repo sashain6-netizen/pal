@@ -1,16 +1,16 @@
 (function () {
   'use strict';
 
-  /* ── Element refs ── */
+ /* ── Element refs ── */
   const palText = document.getElementById('palText');
   const smilePath = document.getElementById('smilePath');
   const tagline = document.getElementById('tagline');
   const logoContainer = document.getElementById('logoContainer');
+  const shineEl = document.getElementById('shineEl'); // ADD THIS LINE
 
   // Check if we are on the home page with the hero
   const hasHeroAnimation = palText && smilePath && logoContainer;
 
-  let shineEl;
   if (hasHeroAnimation) {
   // Use 'mousedown' or check the target to ensure we don't block links
   logoContainer.addEventListener('click', (e) => {
