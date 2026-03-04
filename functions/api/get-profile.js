@@ -28,12 +28,13 @@ export async function onRequestGet(context) {
 
         const user = JSON.parse(rawData);
 
-        // Sanitize and include the new avatar field
         const profileData = {
             username: user.username,
             displayName: user.displayName || "",
             bio: user.bio || "",
             themeColor: user.themeColor || "#2563eb",
+            // ADD THIS LINE: Use the user's uploaded avatar OR fallback to the default
+            avatar: user.avatarUrl || "/default-avatar.png" 
         };
 
         return new Response(JSON.stringify(profileData), {
