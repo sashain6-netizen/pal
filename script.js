@@ -1,13 +1,13 @@
 (function () {
   'use strict';
 
-  /* ── Element refs (Wrapped in a check for safety) ── */
+  /* ── Element refs ── */
   const palText = document.getElementById('palText');
   const smilePath = document.getElementById('smilePath');
   const tagline = document.getElementById('tagline');
   const logoContainer = document.getElementById('logoContainer');
 
-  // Only setup animations if the elements actually exist (e.g., on the Home page)
+  // Check if we are on the home page with the hero
   const hasHeroAnimation = palText && smilePath && logoContainer;
 
   let shineEl;
@@ -17,13 +17,21 @@
     logoContainer.appendChild(shineEl);
   }
 
-  /* ── Master sequence (The "Reload") ── */
+  /* ── Master sequence ── */
   window.playFullSequence = function() {
-    if (!hasHeroAnimation) return; // Exit if not on home page
+    if (!hasHeroAnimation) return;
 
     tagline.classList.remove('visible');
+    
+    // Safety check: SVG must be rendered to get length
+    let length = 0;
+    try {
+      length = smilePath.getTotalLength();
+    } catch (e) {
+      length = 500; // Fallback if SVG isn't ready
+    }
+
     smilePath.style.transition = 'none';
-    const length = smilePath.getTotalLength();
     smilePath.style.strokeDasharray = length;
     smilePath.style.strokeDashoffset = length;
 
@@ -31,13 +39,11 @@
     void palText.offsetWidth; 
     palText.classList.add('squeezing');
 
-    // Run Shine
     shineEl.classList.remove('shining');
     void shineEl.offsetWidth;
     shineEl.classList.add('shining');
 
     setTimeout(() => {
-      // Run Smile
       smilePath.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
       smilePath.style.strokeDashoffset = '0';
       
@@ -49,11 +55,11 @@
 
   /* ── Listeners ── */
   if (hasHeroAnimation) {
-    logoContainer.addEventListener('click', playFullSequence);
-    logoContainer.style.cursor = 'pointer';
-    logoContainer.style.transition = 'transform 0.3s ease';
-    logoContainer.addEventListener('mouseenter', () => logoContainer.style.transform = 'translateY(-5px)');
-    logoContainer.addEventListener('mouseleave', () => logoContainer.style.transform = 'translateY(0)');
+    logoContainer.addEventListener('click', (e) => {
+      // Ensure clicking the logo doesn't accidentally trigger parent links
+      e.stopPropagation();
+      window.playFullSequence();
+    });
   }
 
   const navLogo = document.querySelector('.nav-logo');
@@ -64,7 +70,7 @@
     });
   }
 
-  /* ── Intersection Observer (For Team Cards) ── */
+  /* ── Intersection Observer ── */
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -84,62 +90,60 @@
   /* ── Authentication Logic ── */
   async function checkAuth() {
     try {
-      const response = await fetch('/api/me');
+      // Use a timeout so the fetch doesn't hang the page if the server is down
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+      const response = await fetch('/api/me', { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error('Not logged in');
       const data = await response.json();
 
-      const loggedInLinks = document.getElementById('loggedInLinks');
-      const loggedOutLinks = document.getElementById('loggedOutLinks');
-      const profileImg = document.querySelector('.profile-icon img');
-
-      if (data.loggedIn) {
-        if (loggedInLinks) loggedInLinks.style.display = 'block';
-        if (loggedOutLinks) loggedOutLinks.style.display = 'none';
-        if (profileImg) {
-          profileImg.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`;
-        }
-      } else {
-        if (loggedInLinks) loggedInLinks.style.display = 'none';
-        if (loggedOutLinks) loggedOutLinks.style.display = 'block';
-      }
+      updateUI(data.loggedIn, data.username);
     } catch (e) {
-      console.error("Auth check failed", e);
+      console.warn("Auth check skipped (Local mode or API offline)");
+      updateUI(false); // Default to logged out state
     }
   }
 
-  // Run on load
+  function updateUI(isLoggedIn, username = '') {
+    const loggedInLinks = document.getElementById('loggedInLinks');
+    const loggedOutLinks = document.getElementById('loggedOutLinks');
+    const profileImg = document.querySelector('.profile-icon img');
+
+    if (isLoggedIn) {
+      if (loggedInLinks) loggedInLinks.style.display = 'flex';
+      if (loggedOutLinks) loggedOutLinks.style.display = 'none';
+      if (profileImg) {
+        profileImg.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
+      }
+    } else {
+      if (loggedInLinks) loggedInLinks.style.display = 'none';
+      if (loggedOutLinks) loggedOutLinks.style.display = 'flex';
+    }
+  }
+
   window.addEventListener('load', () => {
     checkAuth();
-    if (hasHeroAnimation) playFullSequence();
+    if (hasHeroAnimation) window.playFullSequence();
   });
 
 })();
 
-// Function to handle the actual logout
+/* ── Logout Handler ── */
 async function handleLogout(e) {
-  if (e) e.preventDefault(); // Stop the page from jumping to the top (#)
-
+  if (e) e.preventDefault();
   try {
-    // 1. Tell the Cloudflare Function to clear the cookie
     const response = await fetch('/api/logout');
-    
-    if (response.ok) {
-      // 2. Clear any local data (optional)
-      localStorage.removeItem('pal_user');
-      
-      // 3. Refresh the page to reset the UI to "Logged Out" state
-      window.location.reload();
-    }
+    localStorage.removeItem('pal_user');
+    window.location.reload();
   } catch (err) {
-    console.error("Logout failed:", err);
-    // Fallback: just reload if the API fails
     window.location.reload();
   }
 }
 
-// Attach the listener to the button
 document.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById('logoutLink');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleLogout);
-  }
+  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 });
