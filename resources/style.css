@@ -120,8 +120,15 @@ body {
 /* ---- Staff Grid ---- */
 .staff-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  /* Change 1: Use 'auto-fill' instead of 'auto-fit'. 
+     'auto-fill' creates empty tracks even if there's no content to fill them.
+  */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 30px;
+  
+  /* Change 2: Center the grid itself within the container 
+  */
+  justify-content: center; 
 }
 
 .staff-card {
@@ -131,6 +138,12 @@ body {
   text-align: center;
   border: 1px solid rgba(37, 99, 235, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  /* Change 3: Ensure the card doesn't grow too huge on ultra-wide screens 
+  */
+  max-width: 320px; 
+  width: 100%;
+  margin: 0 auto; /* Keeps individual cards centered if they are smaller than the track */
 }
 
 .staff-card:hover {
