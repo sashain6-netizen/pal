@@ -132,7 +132,7 @@ html, body {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* This ensures the face doesn't look stretched */
+  object-fit: cover; 
 }
 
 .dropdown-menu {
