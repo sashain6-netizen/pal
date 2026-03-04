@@ -117,18 +117,13 @@ body {
   text-align: center;
 }
 
-/* ---- Staff Grid ---- */
+/* ---- Staff Grid (Flexbox Version) ---- */
 .staff-grid {
-  display: grid;
-  /* Change 1: Use 'auto-fill' instead of 'auto-fit'. 
-     'auto-fill' creates empty tracks even if there's no content to fill them.
-  */
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 30px;
-  
-  /* Change 2: Center the grid itself within the container 
-  */
-  justify-content: center; 
+  display: flex;
+  flex-wrap: wrap;       /* Allows cards to move to the next row */
+  justify-content: center; /* Centers everyone horizontally */
+  gap: 30px;             /* Keeps the spacing even */
+  width: 100%;
 }
 
 .staff-card {
@@ -139,11 +134,9 @@ body {
   border: 1px solid rgba(37, 99, 235, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   
-  /* Change 3: Ensure the card doesn't grow too huge on ultra-wide screens 
-  */
-  max-width: 320px; 
-  width: 100%;
-  margin: 0 auto; /* Keeps individual cards centered if they are smaller than the track */
+  /* Set a fixed base size so they don't stretch */
+  flex: 0 1 280px;       /* Don't grow, do shrink, base size 280px */
+  min-width: 220px;      /* Don't let them get too skinny on mobile */
 }
 
 .staff-card:hover {
