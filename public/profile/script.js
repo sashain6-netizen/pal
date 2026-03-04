@@ -1,5 +1,32 @@
-// Re-use your Toast Engine here
-function showToast(message, type = 'success') { /* ... (Same code as before) ... */ }
+// 1. The Toast Engine
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span>${message}</span>
+        <span class="toast-close">&times;</span>
+    `;
+
+    container.appendChild(toast);
+    toast.offsetHeight; // Force reflow for animation
+    toast.classList.add('show');
+
+    const dismiss = () => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    };
+
+    setTimeout(dismiss, 4000);
+    toast.querySelector('.toast-close').onclick = dismiss;
+}
 
 // 1. Fetch current profile data when the page opens
 async function loadProfile() {
