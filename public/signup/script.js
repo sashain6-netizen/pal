@@ -1,25 +1,34 @@
-// 1. Toast Engine - Now searches for the container correctly
 function showToast(message, type = 'success') {
-    // Looks for #toast-container OR .toast-container
     let container = document.getElementById('toast-container') || document.querySelector('.toast-container');
     
-    // Fallback: If no container exists at all, create it
     if (!container) {
         container = document.createElement('div');
-        container.id = 'toast-container'; // Sets ID to match your JS search
+        container.id = 'toast-container';
+        container.className = 'toast-container';
         document.body.appendChild(container);
     }
 
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`; // Keeps .toast as a class for CSS
-    toast.innerText = message;
+    toast.className = `toast ${type}`; 
+    
+    toast.innerHTML = `<span>${message}</span><span class="toast-close">&times;</span>`;
 
     container.appendChild(toast);
-
     setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 500);
+        toast.classList.add('show');
+    }, 10);
+
+    // 2. HIDE AND REMOVE
+    setTimeout(() => {
+        toast.classList.remove('show'); 
+        setTimeout(() => toast.remove(), 500); 
     }, 3000);
+
+    // 3. MANUAL CLOSE
+    toast.querySelector('.toast-close').onclick = () => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+    };
 }
 
 // 2. Fetch current profile data
