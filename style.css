@@ -224,6 +224,7 @@ html, body {
 
 .scene {
   height: 100vh; /* Keeps the logo centered on its own screen at start */
+  pointer-events: none;
 }
 
 /* ---- Smooth Scrolling ---- */
@@ -259,6 +260,7 @@ html {
   list-style: none;
   gap: 30px;
   align-items: center;
+  pointer-events: auto;
 }
 
 .nav-links a {
@@ -452,6 +454,7 @@ html {
   position: relative; 
   z-index: 20;      
   background: #ffffff;
+  pointer-events: auto;
 }
 
 .bg-circle {
