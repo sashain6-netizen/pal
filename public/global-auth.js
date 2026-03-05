@@ -54,7 +54,7 @@ async function handleLogout(e) {
     await fetch('/api/logout'); 
     // Clear the cookie manually just in case
     document.cookie = "pal_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "/login";
+    window.location.href = "/";
 }
 
 // Initialize
