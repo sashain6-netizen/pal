@@ -1,38 +1,41 @@
 async function loadPublicProfile() {
-    // 1. Get username from URL: /users/sashain
-    const pathParts = window.location.pathname.split('/');
-    const username = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+    // This gets the very last part of the URL (e.g., "pal" from /users/pal)
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    const username = pathSegments[pathSegments.length - 1];
 
+    // Safety check: if the path is just "/users/", redirect home
     if (!username || username === "users") {
         window.location.href = "/";
         return;
     }
 
     try {
+        // Use an absolute path for the API fetch too!
         const res = await fetch(`/api/get-user-public?username=${username}`);
-        if (!res.ok) throw new Error("User not found");
+        
+        if (!res.ok) {
+            throw new Error("User not found");
+        }
         
         const user = await res.json();
-
-        // 2. Fill the page
-        document.title = `${user.displayName} (@${user.username}) • Pal`;
+        
+        // ... (rest of your code to fill IDs) ...
         document.getElementById('display-name').innerText = user.displayName;
         document.getElementById('display-username').innerText = `@${user.username}`;
-        document.getElementById('display-bio').innerText = user.bio;
-        document.getElementById('display-avatar').src = user.avatar;
-        
-        // Apply theme color to the Follow button
-        document.getElementById('follow-btn').style.background = user.themeColor;
-
-        // Fill Stats
-        document.getElementById('stat-rank').innerText = user.rank;
-        document.getElementById('stat-currency').innerText = user.currency.toLocaleString();
-        document.getElementById('stat-followers').innerText = user.followersCount;
-        document.getElementById('stat-following').innerText = user.followingCount;
+        document.getElementById('display-bio').innerText = user.bio || "No bio yet.";
+        document.getElementById('display-avatar').src = user.avatar || "/default-avatar.png";
 
     } catch (err) {
-        document.body.innerHTML = "<h1>User Not Found</h1><a href='/'>Back Home</a>";
+        console.error(err);
+        // Show a nicer error on the page
+        document.querySelector('.auth-card').innerHTML = `
+            <h1>User Not Found</h1>
+            <p>The user "${username}" does not exist.</p>
+            <a href="/" class="secondary-link">Back to Home</a>
+        `;
     }
 }
+
+loadPublicProfile();
 
 loadPublicProfile();
