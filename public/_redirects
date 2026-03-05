@@ -1,11 +1,9 @@
-# 1. Direct paths for assets (No redirect)
+# 1. Physical Files - Do not redirect these
 /global-settings.js  /global-settings.js  200
+/global-auth.js      /global-auth.js      200
 /navbar.js           /navbar.js           200
-/style.css           /style.css           200
+/login               /login.html          200
+/signup              /signup.html         200
 
-# 2. Specific rule for the users folder scripts
-/users/script.js     /users/script.js     200
-/users/style.css     /users/style.css     200
-
-# 3. ONLY THEN redirect everything else to the profile page
-/users/:splat /users/index.html 200
+# 2. The User Profile - ONLY for sub-paths
+/users/:username     /users/index.html    200s
