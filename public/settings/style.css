@@ -1,0 +1,87 @@
+:root {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #3b82f6;
+    --text: #f8fafc;
+    --text-dim: #94a3b8;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.settings-card {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+header h1 { margin: 0.5rem 0 1.5rem 0; font-size: 1.5rem; }
+.back-link { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #334155;
+}
+
+.info { display: flex; flex-direction: column; gap: 4px; }
+.info label { font-weight: 600; }
+.info span { font-size: 0.8rem; color: var(--text-dim); }
+
+/* Key Recorder Button */
+.key-recorder {
+    background: #334155;
+    border: 2px solid transparent;
+    color: #38bdf8;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 80px;
+    transition: all 0.2s;
+}
+
+.key-recorder.active {
+    border-color: #ef4444;
+    background: #450a0a;
+}
+
+/* Switches and Inputs */
+input[type="text"] {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.primary-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1.5rem;
+}
+
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(20px); }

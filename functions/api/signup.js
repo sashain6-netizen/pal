@@ -53,7 +53,9 @@ export async function onRequestPost(context) {
       avatarUrl: "",
       xp: 0,
       rank: "Guest",
-      currency: 0
+      currency: 0,
+      followers: 0,
+      following: []
     };
 
     // 6. STORAGE

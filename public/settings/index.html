@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Pal Games</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="settings-card">
+        <header>
+            <a href="/" class="back-link">← Back to Games</a>
+            <h1>System Settings</h1>
+        </header>
+
+        <section class="setting-item">
+            <div class="info">
+                <label>Panic Key</label>
+                <span>Press this key to instantly hide the site.</span>
+            </div>
+            <button id="panicKeyBtn" class="key-recorder">None</button>
+        </section>
+
+        <section class="setting-item">
+            <div class="info">
+                <label>Redirect URL</label>
+                <span>Where to go when the panic key is pressed.</span>
+            </div>
+            <input type="text" id="panicUrl" placeholder="https://google.com">
+        </section>
+
+        <section class="setting-item">
+            <div class="info">
+                <label>Tab Cloaking</label>
+                <span>Disguise this tab as a boring document.</span>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="cloakingToggle">
+                <span class="slider"></span>
+            </label>
+        </section>
+
+        <section class="setting-item">
+            <div class="info">
+                <label>Leave Confirmation</label>
+                <span>Ask "Are you sure?" before closing or leaving the tab.</span>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="leaveConfirmToggle">
+                <span class="slider"></span>
+            </label>
+        </section>
+
+        <footer>
+            <button id="saveBtn" class="primary-btn">Save Preferences</button>
+            <p id="statusMsg"></p>
+        </footer>
+    </div>
+
+    <script src="global-settings.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
