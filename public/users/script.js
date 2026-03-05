@@ -79,6 +79,59 @@ async function loadProfile() {
             xpBar.style.width = `${percentage}%`;
         }
 
+        // --- Inside your loadProfile function ---
+
+// Get current user session info to see who "I" am
+const meRes = await fetch('/api/get-profile');
+const myData = await meRes.json();
+const myId = myData.username.toLowerCase();
+
+const followBtn = document.getElementById('follow-btn');
+const messageBtn = document.getElementById('message-btn');
+
+if (myId === userId) {
+    // Hide or disable buttons if I am looking at my own public profile
+    if (followBtn) followBtn.style.display = "none";
+    if (messageBtn) messageBtn.style.display = "none";
+} else {
+    // MESSAGE LOGIC
+    if (messageBtn) {
+        messageBtn.onclick = async () => {
+            const msg = prompt(`Send a message to ${data.displayName}:`);
+            if (!msg) return;
+
+            const res = await fetch('/api/send-notification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetId: userId, // The person being viewed
+                    from: myData.displayName,
+                    text: msg,
+                    type: "message"
+                })
+            });
+
+            if (res.ok) alert("Message sent!");
+        };
+    }
+
+    // FOLLOW LOGIC
+    if (followBtn) {
+        followBtn.onclick = async () => {
+            // Logic to add to your "following" list and their "notifications"
+            const res = await fetch('/api/follow-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ targetId: userId })
+            });
+            if (res.ok) {
+                followBtn.textContent = "Following";
+                followBtn.disabled = true;
+            }
+        };
+    }
+}
+
     } catch (err) {
         console.log("Silent failure: Check console if possible.");
     }
