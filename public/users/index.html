@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile • Pal</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+</head>
+<body class="auth-page">
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="auth-card profile-card public-view">
+        <div class="auth-logo"><a href="/">PAL</a></div>
+        
+        <div class="profile-header">
+            <div class="avatar-container">
+                <img id="display-avatar" src="/default-avatar.png" alt="Profile Picture">
+            </div>
+            <h1 id="display-name">Loading...</h1>
+            <p id="display-username">@username</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span class="stat-label">Rank</span>
+                <div class="rank-wrapper">
+                    <span id="stat-rank" class="stat-value">Member</span>
+                    <small id="stat-xp-rank" style="display: block; font-size: 0.7rem; color: var(--blue-soft);"></small>
+                </div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Currency</span>
+                <span id="stat-currency" class="stat-value">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Followers</span>
+                <span id="stat-followers" class="stat-value">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Following</span>
+                <span id="stat-following" class="stat-value">0</span>
+            </div>
+        </div>
+
+        <div class="bio-display-container">
+            <p id="display-bio" class="user-bio-text">No bio yet.</p>
+        </div>
+
+        <div class="xp-container">
+            <div class="xp-info">
+                <span id="xp-progress-label">XP Progress</span>
+                <span id="stat-xp">0 XP</span>
+            </div>
+            <div class="xp-bar-bg">
+                <div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <button id="follow-btn" class="auth-btn">Follow</button>
+            <button id="message-btn" class="auth-btn secondary-btn" style="background: #e2e8f0; color: #1e293b; margin-top: 10px;">Message</button>
+        </div>
+
+        <a href="/" class="secondary-link">Return to Dashboard</a>
+    </div>
+
+    <script src="../global-settings.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

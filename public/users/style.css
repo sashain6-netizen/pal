@@ -1,0 +1,353 @@
+/* ===========================
+   PAL Subfolder — Edit Profile
+   =========================== */
+
+/* Center the card on the page */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
+}
+
+/* Card Styling */
+.auth-card {
+  background: var(--white);
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(10, 45, 143, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  text-align: center;
+}
+
+.auth-logo a {
+  text-decoration: none;
+  font-weight: 900;
+  color: var(--blue-primary);
+  font-size: 1.8rem;
+  letter-spacing: -1px;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.auth-card h1 {
+  color: var(--blue-deep);
+  font-size: 1.75rem;
+  margin-bottom: 10px;
+}
+
+.auth-card p {
+  color: var(--blue-soft);
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+
+/* Form Elements */
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--blue-deep);
+  margin-bottom: 8px;
+  margin-left: 4px;
+}
+
+.input-group input[type="text"],
+.input-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  font-family: 'Varela Round', sans-serif;
+  font-size: 1rem;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+.input-group textarea {
+  height: 100px;
+  resize: none;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  outline: none;
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Color Picker Styling */
+.input-group input[type="color"] {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+}
+
+/* Action Buttons */
+.auth-btn {
+  width: 100%;
+  background: var(--blue-primary);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 50px;
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.auth-btn:hover {
+  background: var(--blue-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+.secondary-link {
+  display: block;
+  margin-top: 20px;
+  color: var(--blue-soft);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.secondary-link:hover {
+  color: var(--blue-primary);
+}
+
+/* Toast Notifications (for script.js feedback) */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  background: #1e293b;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.profile-upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.avatar-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--blue-primary);
+  margin-bottom: 10px;
+  background: #f1f5f9;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-label {
+  font-size: 0.85rem;
+  color: var(--blue-primary);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Stats Grid Layout */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-box {
+    background: var(--off-white);
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+    background: white;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.05);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--blue-soft);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--blue-primary);
+}
+
+.rank-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#stat-xp-rank {
+    font-size: 0.7rem;
+    color: var(--blue-soft);
+    font-weight: 500;
+}
+
+/* XP Progress Bar */
+.xp-container {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.xp-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--blue-soft);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.xp-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue-primary), #60a5fa);
+    border-radius: 10px;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 400px) {
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Fix for stats sticking out */
+.stats-grid {
+    display: grid;
+    /* auto-fit will wrap items to a new line if they can't maintain at least 80px */
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px; /* Reduced gap slightly for more breathing room */
+    margin: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.stat-box {
+    padding: 12px 5px; /* Reduced side padding to prevent overflow */
+    min-width: 0;      /* Crucial: allows grid items to shrink smaller than content */
+    overflow: hidden;  /* Safety net */
+    background: #f8fafc; /* Subtle distinction from card background */
+}
+
+.stat-label {
+    font-size: 0.65rem; /* Slightly smaller to fit "Followers" comfortably */
+    letter-spacing: 0.5px;
+    white-space: nowrap; /* Prevents label from breaking into two lines */
+}
+
+.stat-value {
+    font-size: 1rem; /* Slightly smaller to accommodate larger numbers */
+    word-break: break-all; /* If someone has 1,000,000, it won't break the box */
+}
+
+/* Adjust card padding for smaller screens so the grid has more room */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 30px 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2x2 grid is much cleaner on mobile */
+    }
+}
+
+.public-view h1 {
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+#display-username {
+    color: var(--blue-soft);
+    font-weight: 500;
+    margin-top: 4px;
+    margin-bottom: 20px;
+}
+
+.bio-display-container {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    text-align: left;
+    border-left: 4px solid var(--blue-primary);
+}
+
+.user-bio-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #334155;
+    margin: 0;
+}
+
+.avatar-container {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
