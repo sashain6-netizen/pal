@@ -1,0 +1,46 @@
+body {
+    background-color: #0f172a;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.notif-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+.back-link { color: #3b82f6; text-decoration: none; }
+
+.notif-card {
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease;
+}
+
+.notif-content p { margin: 0; font-size: 0.95rem; }
+.notif-content span { font-size: 0.75rem; color: #94a3b8; }
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover { color: #ef4444; }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
