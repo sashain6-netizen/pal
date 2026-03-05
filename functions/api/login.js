@@ -15,51 +15,55 @@ export async function onRequestPost(context) {
       return new Response("Please enter both fields", { status: 400 });
     }
 
-    // Normalizing the identifier
-    const cleanIdentifier = identifier.trim();
-    let targetUsername = cleanIdentifier;
+    // 1. NORMALIZE THE IDENTIFIER
+    const cleanIdentifier = identifier.trim().toLowerCase(); // Force lowercase here
+    let userKey = "";
 
-    // 1. EMAIL LOOKUP LOGIC
+    // 2. IDENTIFY THE KEY TYPE (Email vs Username)
     if (cleanIdentifier.includes('@')) {
-      const emailKey = `email:${cleanIdentifier.toLowerCase()}`;
+      // It's an email: Look up the associated username first
+      const emailKey = `email:${cleanIdentifier}`;
       const foundUsername = await env.USERS_KV.get(emailKey);
       
       if (!foundUsername) {
-        // Generic error to prevent email harvesting
         return new Response("Invalid credentials", { status: 401 });
       }
-      targetUsername = foundUsername;
+      // If foundUsername is "pal", the key is "user:pal"
+      userKey = `user:${foundUsername}`;
+    } else {
+      // It's a username: Prefix it for the KV lookup
+      userKey = `user:${cleanIdentifier}`;
     }
 
-    // 2. FETCH PROFILE
-    // We use the foundUsername (from email) OR the raw identifier (if they typed username)
-    const userData = await env.USERS_KV.get(targetUsername);
+    // 3. FETCH PROFILE
+    const userData = await env.USERS_KV.get(userKey);
     if (!userData) {
       return new Response("Invalid credentials", { status: 401 });
     }
 
-    // 3. SAFE PARSE
+    // 4. SAFE PARSE
     let user;
     try {
       user = JSON.parse(userData);
     } catch (e) {
-      console.error("KV Data Corruption for user:", targetUsername);
+      console.error("KV Data Corruption for user:", userKey);
       return new Response("Account error", { status: 500 });
     }
 
-    // 4. VERIFY PASSWORD
+    // 5. VERIFY PASSWORD
     const isValid = await verifyPassword(password, user.hash, user.salt);
     if (!isValid) {
       return new Response("Invalid credentials", { status: 401 });
     }
 
-    // 5. JWT GENERATION
+    // 6. JWT GENERATION
+    // Note: 'user.username' is the lowercase version from our signup script
     const token = await createToken(user.username, env.JWT_SECRET);
 
-    // 6. RESPONSE
+    // 7. RESPONSE
     return new Response(JSON.stringify({ 
       success: true, 
-      username: user.username 
+      username: user.displayName // Return the "Pretty" name (e.g., "Pal") to the UI
     }), {
       headers: {
         "Content-Type": "application/json",
