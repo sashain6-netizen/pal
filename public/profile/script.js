@@ -39,11 +39,31 @@ async function loadProfile() {
         const following = user.followingCount ?? (Array.isArray(user.following) ? user.following.length : 0);
         updateEl('stat-following', following.toLocaleString());
 
-        // 3. XP Bar
+        // --- XP BAR LADDER LOGIC ---
         const xpBar = document.getElementById('xp-bar-fill');
-        if (xpBar && user.xp) {
-            const progress = Math.min((user.xp % 10000) / 100, 100);
-            xpBar.style.width = `${progress}%`;
+        if (xpBar) {
+            const ladder = [
+                { name: "Legend", xp: 30000 },
+                { name: "Elite", xp: 15000 },
+                { name: "Veteran", xp: 7500 },
+                { name: "Contributor", xp: 3500 },
+                { name: "Supporter", xp: 1500 },
+                { name: "Active Member", xp: 500 },
+                { name: "Member", xp: 0 }
+            ].reverse();
+
+            const currentXP = data.xp || 0;
+            const nextRank = ladder.find(r => r.xp > currentXP);
+            const currentRank = [...ladder].reverse().find(r => currentXP >= r.xp);
+
+            if (!nextRank) {
+                xpBar.style.width = "100%";
+            } else {
+                const min = currentRank.xp;
+                const max = nextRank.xp;
+                const progress = ((currentXP - min) / (max - min)) * 100;
+                xpBar.style.width = `${Math.max(0, Math.min(progress, 100))}%`;
+            }
         }
 
     } catch (err) {

@@ -57,12 +57,33 @@ async function loadProfile() {
             bioText.textContent = data.bio || "No bio yet.";
         }
 
+        // 3. XP Bar Logic based on Ladder
+        const ladder = [
+            { name: "Legend", xp: 30000 },
+            { name: "Elite", xp: 15000 },
+            { name: "Veteran", xp: 7500 },
+            { name: "Contributor", xp: 3500 },
+            { name: "Supporter", xp: 1500 },
+            { name: "Active Member", xp: 500 },
+            { name: "Member", xp: 0 }
+        ].reverse(); // Reverse so we can find the "next" rank easily
+
         const xpBar = document.getElementById('xp-bar-fill');
         if (xpBar) {
-            const progress = Math.min(((data.xp || 0) % 1000) / 10, 100);
-            xpBar.style.width = `${progress}%`;
+            const currentXP = user.xp || 0;
+            // Find the next rank the user hasn't reached yet
+            const nextRank = ladder.find(r => r.xp > currentXP);
+            const currentRank = [...ladder].reverse().find(r => currentXP >= r.xp);
+
+            if (!nextRank) {
+                xpBar.style.width = "100%";
+            } else {
+                const min = currentRank ? currentRank.xp : 0;
+                const max = nextRank.xp;
+                const progress = ((currentXP - min) / (max - min)) * 100;
+                xpBar.style.width = `${Math.min(progress, 100)}%`;
+            }
         }
-        // --------------------------------------------------
 
         if (!myData) {
             if (followBtn) followBtn.style.display = 'none';
