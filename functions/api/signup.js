@@ -56,7 +56,12 @@ export async function onRequestPost(context) {
       currency: 0,
       followers: 0,
       following: [],
-      notifications: []
+      notifications: [{
+          id: Date.now(), 
+          text: `Welcome to PAL, ${displayName}! We're glad to have you here.`,
+          date: new Date().toISOString(),
+          read: false
+        }]
     };
 
     // 6. STORAGE
