@@ -49,9 +49,6 @@ async function loadPublicProfile() {
     }
 }
 
-// Only call it once when the window loads
 window.onload = loadPublicProfile;
-
-loadPublicProfile();
 
 loadPublicProfile();
