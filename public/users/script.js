@@ -62,14 +62,11 @@ async function loadProfile() {
         if (avatarEl && data.avatar) {
             avatarEl.src = data.avatar;
         }
-        
+
     } catch (err) {
         // This will show the EXACT error on your screen since you can't see the console
         if (nameEl) nameEl.textContent = "ERROR OCCURRED";
-        if (bioEl) bioEl.textContent = err.message; 
-        
-        // This will pop up a box on your Chromebook with the error
-        alert("Critical Error: " + err.message);
+        if (bioEl) bioEl.textContent = err.message;
     }
 }
 
