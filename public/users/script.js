@@ -14,7 +14,7 @@ async function loadProfile() {
         // Step 1: Tell us what we are fetching
         console.log("Fetching ID:", userId); 
         
-        const response = await fetch(`/api/profile?id=${userId}`);
+        const response = await fetch(`/api/get-user-public?id=${userId}`);
         
         // Step 2: If the API fails, tell us the Status Code (404, 500, etc)
         if (!response.ok) {

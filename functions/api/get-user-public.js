@@ -1,16 +1,17 @@
 export async function onRequestGet(context) {
     const { request, env } = context;
     const url = new URL(request.url);
-    const username = url.searchParams.get("username");
+    
+    // CHANGE THIS: from .get("username") to .get("id")
+    const username = url.searchParams.get("id"); 
 
-    if (!username) return new Response("Missing username", { status: 400 });
+    if (!username) return new Response("Missing ID", { status: 400 });
 
-    const rawData = await env.USERS_KV.get(`user:${username}`);
+    const rawData = await env.USERS_KV.get(`user:${username.toLowerCase()}`);
     if (!rawData) return new Response("User not found", { status: 404 });
 
     const user = JSON.parse(rawData);
 
-    // IMPORTANT: Only return public info. Never send email, hash, or salt!
     const publicData = {
         username: user.username,
         displayName: user.displayName || user.username,
