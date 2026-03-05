@@ -14,6 +14,20 @@ function showToast(message) {
     setTimeout(() => toast.remove(), 3500);
 }
 
+// --- SETTINGS COMPATIBILITY: THEME APPLICATOR ---
+function applyUserTheme(color) {
+    if (!color) return;
+    // Overrides CSS variables for this specific page view
+    document.documentElement.style.setProperty('--blue-primary', color);
+    document.documentElement.style.setProperty('--blue-deep', color); // Optional: make headers match
+    
+    // Specifically update the XP bar if it's already rendered
+    const xpFill = document.getElementById('xp-bar-fill');
+    if (xpFill) {
+        xpFill.style.background = `linear-gradient(90deg, ${color}, #60a5fa)`;
+    }
+}
+
 async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('id')?.toLowerCase();
@@ -34,6 +48,9 @@ async function loadProfile() {
         const data = await pubRes.json();
         const myData = meRes.ok ? await meRes.json() : null;
 
+        // --- APPLY THEME FROM SETTINGS ---
+        applyUserTheme(data.themeColor);
+
         // Populate User Data
         document.getElementById('display-name').textContent = data.displayName || data.username;
         document.getElementById('display-username').textContent = `@${data.username}`;
@@ -43,46 +60,35 @@ async function loadProfile() {
         document.getElementById('stat-rank').textContent = data.rank || "Member";
         document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
 
-        document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
-
-        // --- MOVE THESE HERE (Outside the myData check) ---
+        // Profile Avatar
         const avatarImg = document.getElementById('display-avatar');
-if (avatarImg) {
-    // We check data.avatar (from your backend) 
-    // If it's the default or missing, we ensure it shows correctly
-    avatarImg.src = data.avatar || "/default-avatar.png";
-    
-    // Safety: If the image URL is broken/404, snap back to default
-    avatarImg.onerror = () => {
-        avatarImg.src = "/default-avatar.png";
-    };
-}
-
-// 2. Update the Navbar Profile Icon (Using your injectNavbar template)
-if (myData) {
-    const navAvatarContainer = document.getElementById('avatar-container');
-    if (navAvatarContainer) {
-        // This injects the image into the navbar circle
-        navAvatarContainer.innerHTML = `
-            <img src="${myData.avatarUrl || myData.avatar || '/default-avatar.png'}" 
-                 alt="Profile" 
-                 style="width: 100%; height: 100%; object-fit: cover;">
-        `;
-    }
-
-    // Toggle the dropdown menu visibility
-    const loggedInLinks = document.getElementById('loggedInLinks');
-    const loggedOutLinks = document.getElementById('loggedOutLinks');
-    if (loggedInLinks) loggedInLinks.style.display = 'block';
-    if (loggedOutLinks) loggedOutLinks.style.display = 'none';
-}
-        
-        const bioText = document.getElementById('display-bio');
-        if (bioText) {
-            bioText.textContent = data.bio || "No bio yet.";
+        if (avatarImg) {
+            avatarImg.src = data.avatar || "/default-avatar.png";
+            avatarImg.onerror = () => { avatarImg.src = "/default-avatar.png"; };
         }
 
-        // 3. XP Bar Logic based on Ladder
+        // --- NAVBAR INJECTION (Compatible with your template) ---
+        if (myData) {
+            const updateNavbar = () => {
+                const navAvatar = document.getElementById('avatar-container');
+                if (navAvatar) {
+                    navAvatar.innerHTML = `<img src="${myData.avatar || '/default-avatar.png'}" style="width:100%;height:100%;object-fit:cover;">`;
+                    document.getElementById('loggedInLinks')?.style.setProperty('display', 'block');
+                    document.getElementById('loggedOutLinks')?.style.setProperty('display', 'none');
+                    return true;
+                }
+                return false;
+            };
+            if (!updateNavbar()) {
+                const navInt = setInterval(() => { if (updateNavbar()) clearInterval(navInt); }, 100);
+                setTimeout(() => clearInterval(navInt), 2000);
+            }
+        }
+
+        const bioText = document.getElementById('display-bio');
+        if (bioText) bioText.textContent = data.bio || "No bio yet.";
+
+        // XP Bar Logic
         const ladder = [
             { name: "Legend", xp: 30000 },
             { name: "Elite", xp: 15000 },
@@ -91,12 +97,11 @@ if (myData) {
             { name: "Supporter", xp: 1500 },
             { name: "Active Member", xp: 500 },
             { name: "Member", xp: 0 }
-        ].reverse(); // Reverse so we can find the "next" rank easily
+        ].reverse();
 
         const xpBar = document.getElementById('xp-bar-fill');
         if (xpBar) {
             const currentXP = data.xp || 0;
-            // Find the next rank the user hasn't reached yet
             const nextRank = ladder.find(r => r.xp > currentXP);
             const currentRank = [...ladder].reverse().find(r => currentXP >= r.xp);
 
@@ -117,7 +122,6 @@ if (myData) {
         }
 
         const myId = myData.username.toLowerCase();
-
         if (myId === userId) {
             if (followBtn) followBtn.style.display = "none";
             if (messageBtn) messageBtn.style.display = "none";
@@ -127,15 +131,9 @@ if (myData) {
             let currentlyFollowing = myFollowing.some(id => id.toLowerCase() === userId);
 
             const updateUI = (isFollowing) => {
-                if (isFollowing) {
-                    followBtn.textContent = "Unfollow";
-                    followBtn.style.setProperty('background-color', '#cbd5e1', 'important');
-                    followBtn.style.setProperty('color', '#64748b', 'important');
-                } else {
-                    followBtn.textContent = "Follow";
-                    followBtn.style.setProperty('background-color', '#2563eb', 'important');
-                    followBtn.style.setProperty('color', 'white', 'important');
-                }
+                followBtn.textContent = isFollowing ? "Unfollow" : "Follow";
+                followBtn.style.backgroundColor = isFollowing ? "#cbd5e1" : (data.themeColor || '#2563eb');
+                followBtn.style.color = isFollowing ? "#64748b" : "white";
             };
 
             updateUI(currentlyFollowing);
@@ -176,7 +174,6 @@ if (myData) {
                     showToast("Message cannot be empty!");
                     return;
                 }
-
                 const sendBtn = document.getElementById('modal-send');
                 sendBtn.disabled = true;
                 sendBtn.textContent = "Sending...";
