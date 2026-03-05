@@ -1,1 +1,4 @@
-/users/* /users/index.html  200
+/users/*.js /users/:splat.js 200
+/users/*.css /users/:splat.css 200
+
+/users/* /users/index.html 200
