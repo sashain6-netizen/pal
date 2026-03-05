@@ -1,60 +1,81 @@
-// Use textContent instead of innerHTML to prevent XSS
-function showToast(message, type = 'success') {
-    let container = document.getElementById('toast-container') || createToastContainer();
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    // Create text span safely
-    const text = document.createElement('span');
-    text.textContent = message;
-    
-    const close = document.createElement('span');
-    close.className = 'toast-close';
-    close.innerHTML = '&times;';
-    close.onclick = () => dismiss(toast);
-
-    toast.append(text, close);
-    container.appendChild(toast);
-
-    toast.offsetHeight; 
-    toast.classList.add('show');
-    setTimeout(() => dismiss(toast), 4000);
-}
-
-function dismiss(toast) {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 400);
-}
-
 async function loadProfile() {
     try {
         const res = await fetch('/api/get-profile');
-        if (!res.ok) throw new Error("Unauthorized");
+        if (!res.ok) {
+            if (res.status === 401) window.location.href = "/login";
+            return;
+        }
+
         const user = await res.json();
 
-        // Helper to safely set text or value based on element type
-        const updateEl = (id, val) => {
+        // Helper to update based on your specific HTML IDs
+        const updateEl = (id, val, isInput = false) => {
             const el = document.getElementById(id);
             if (!el) return;
-            // Check if it's an input/form field
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            if (isInput || el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 el.value = val ?? '';
             } else {
                 el.textContent = val ?? '';
             }
         };
 
-        updateEl('display-username', user.username);
-        updateEl('displayName', user.displayName);
-        updateEl('stat-currency', user.currency?.toLocaleString());
-        // ... and so on
+        // 1. Form Inputs (The ones you can edit)
+        updateEl('display-username', `@${user.username}`); // The disabled one
+        updateEl('displayName', user.displayName || user.username);
+        updateEl('bio', user.bio || "");
+        
+        const themeEl = document.getElementById('themeColor');
+        if (themeEl) themeEl.value = user.themeColor || "#2563eb";
+
+        // 2. Stats Display (The ones at the bottom)
+        updateEl('stat-rank', user.rank || "Member");
+        updateEl('stat-currency', (user.currency || 0).toLocaleString());
+        updateEl('stat-xp', `${(user.xp || 0).toLocaleString()} XP`);
+        
+        // Followers/Following
+        const followers = user.followersCount ?? (Array.isArray(user.followers) ? user.followers.length : 0);
+        updateEl('stat-followers', followers.toLocaleString());
+
+        const following = user.followingCount ?? (Array.isArray(user.following) ? user.following.length : 0);
+        updateEl('stat-following', following.toLocaleString());
+
+        // 3. XP Bar
+        const xpBar = document.getElementById('xp-bar-fill');
+        if (xpBar && user.xp) {
+            const progress = Math.min((user.xp % 10000) / 100, 100);
+            xpBar.style.width = `${progress}%`;
+        }
 
     } catch (err) {
-        console.error("Failed to load profile", err);
-        // Only redirect if specifically unauthorized
-        if (err.message === "Unauthorized") {
-            window.location.href = "/login";
-        }
+        console.log("Profile load failed.");
     }
 }
+
+// Save Changes Logic
+document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const updatedData = {
+        displayName: document.getElementById('displayName').value,
+        bio: document.getElementById('bio').value,
+        themeColor: document.getElementById('themeColor').value
+    };
+
+    try {
+        const res = await fetch('/api/update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        });
+
+        if (res.ok) {
+            alert("Profile updated successfully!");
+        } else {
+            alert("Failed to update profile.");
+        }
+    } catch (err) {
+        alert("Error saving changes.");
+    }
+});
+
+document.addEventListener('DOMContentLoaded', loadProfile);
