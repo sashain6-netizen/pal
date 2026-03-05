@@ -30,7 +30,7 @@ async function loadNotifications() {
                     <p><strong>${n.from || 'System'}</strong> ${n.text}</p>
                     <span>${new Date(n.date).toLocaleDateString()}</span>
                 </div>
-                <button class="close-btn" onclick="deleteNotif('${n.id}')">&times;</button>
+                <button class="close-btn" onclick="deleteNotif(${n.id})">&times;</button>
             </div>
         `).join('');
     } catch (e) {
