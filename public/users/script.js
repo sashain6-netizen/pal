@@ -68,16 +68,18 @@ async function loadProfile() {
             let isFollowing = myData.following && myData.following.includes(userId);
             
             const updateButtonUI = (following) => {
-                if (following) {
-                    followBtn.textContent = "Unfollow";
-                    followBtn.style.backgroundColor = "#cbd5e1"; // Grey
-                    followBtn.style.color = "#64748b";
-                } else {
-                    followBtn.textContent = "Follow";
-                    followBtn.style.backgroundColor = ""; // Resets to CSS Blue
-                    followBtn.style.color = "";
-                }
-            };
+    if (following) {
+        followBtn.textContent = "Unfollow";
+        // Using setProperty with !important overrides the CSS file completely
+        followBtn.style.setProperty('background-color', '#cbd5e1', 'important');
+        followBtn.style.setProperty('color', '#64748b', 'important');
+    } else {
+        followBtn.textContent = "Follow";
+        // Resetting back to your CSS variables
+        followBtn.style.setProperty('background-color', 'var(--blue-primary)', 'important');
+        followBtn.style.setProperty('color', 'white', 'important');
+    }
+};
 
             updateButtonUI(isFollowing);
 
