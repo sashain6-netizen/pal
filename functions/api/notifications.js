@@ -32,4 +32,28 @@ async function deleteNotif(id) {
     });
 }
 
+export async function onRequestGet(context) {
+    const { request, env } = context;
+    const cookie = request.headers.get("Cookie") || "";
+    const tokenPart = cookie.split("pal_session=")[1];
+    
+    if (!tokenPart) return new Response(JSON.stringify({ error: "No cookie" }), { status: 401 });
+    
+    const token = tokenPart.split(";")[0];
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    
+    // Check if the username is coming through correctly
+    console.log("Fetching for user:", payload.username); 
+
+    const userKey = `user:${payload.username.toLowerCase()}`;
+    const rawData = await env.USERS_KV.get(userKey);
+    
+    if (!rawData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+
+    const user = JSON.parse(rawData);
+    return new Response(JSON.stringify(user.notifications || []), {
+        headers: { "Content-Type": "application/json" }
+    });
+}
+
 loadNotifications();
