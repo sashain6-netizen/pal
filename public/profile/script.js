@@ -29,21 +29,29 @@ function showToast(message, type = 'success') {
 }
 
 // 1. Fetch current profile data when the page opens
+
 async function loadProfile() {
     try {
-        // We'll create this API next
         const res = await fetch('/api/get-profile');
+        
+        // If the API doesn't exist yet, don't redirect, just show a warning
+        if (res.status === 404) {
+            console.warn("API /api/get-profile not found. Create the function to fix this.");
+            return; 
+        }
+
         if (!res.ok) throw new Error("Not logged in");
 
         const user = await res.json();
         
-        // Fill the form
         document.getElementById('display-username').value = user.username;
         document.getElementById('displayName').value = user.displayName || "";
         document.getElementById('bio').value = user.bio || "";
         document.getElementById('themeColor').value = user.themeColor || "#2563eb";
     } catch (err) {
-        window.location.href = "/login"; // Redirect if not authenticated
+        console.error("Profile load failed:", err);
+        // Only redirect if it's a real authentication error
+        // window.location.href = "/login"; 
     }
 }
 
