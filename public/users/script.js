@@ -2,41 +2,23 @@ async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('id')?.toLowerCase();
     
+    // Get basic elements
     const nameEl = document.getElementById('displayName') || document.getElementById('display-name');
     const bioEl = document.getElementById('bio') || document.getElementById('display-bio');
 
-    if (!userId) {
-        if (nameEl) nameEl.textContent = "DEBUG: No ID in URL";
-        return;
-    }
+    if (!userId) return;
 
     try {
-        // Step 1: Tell us what we are fetching
-        console.log("Fetching ID:", userId); 
-        
         const response = await fetch(`/api/get-user-public?id=${userId}`);
         
-        // Step 2: If the API fails, tell us the Status Code (404, 500, etc)
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API Error ${response.status}: ${errorText}`);
-        }
+        if (!response.ok) return; // Fail silently if user not found
 
-        const data = await response.json();
+        const data = await response.json(); // Read JSON only ONCE
         
-        // Step 3: Verify the data structure
-        if (!data.username) {
-            throw new Error("API returned success, but data is empty or wrong format.");
-        }
-
-        // Standard Update Logic
-        if (nameEl) nameEl.textContent = data.displayName;
-        if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
-
-        const data = await response.json();
+        if (!data.username) return;
 
         // 1. Core Info
-        if (nameEl) nameEl.textContent = data.displayName;
+        if (nameEl) nameEl.textContent = data.displayName || data.username;
         if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
 
         // 2. Username
@@ -55,16 +37,19 @@ async function loadProfile() {
         if (currencyEl) currencyEl.textContent = (data.currency || 0).toLocaleString();
 
         const followersEl = document.getElementById('followers') || document.getElementById('display-followers');
-        if (followersEl) followersEl.textContent = (data.followersCount || 0).toLocaleString();
+        if (followersEl) followersEl.textContent = (data.followersCount || data.followers || 0).toLocaleString();
 
         // 5. Avatar
         const avatarEl = document.getElementById('avatar') || document.getElementById('display-avatar');
-        if (avatarEl && data.avatar) {
-            avatarEl.src = data.avatar;
+        if (avatarEl) {
+            avatarEl.src = data.avatar || data.avatarUrl || "/default-avatar.png";
         }
+
+    } catch (err) {
+        // No error messages will show on the screen
+        console.log("Profile load failed.");
+    }
 }
 
-loadProfile();
-
-// Ensure the DOM is fully loaded before running
+// Call it once when the script loads
 document.addEventListener('DOMContentLoaded', loadProfile);
