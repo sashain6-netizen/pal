@@ -11,17 +11,26 @@
         document.body.appendChild(toastContainer);
     }
 
-    function showToast(message) {
+    function showToast(message, url = null) {
         const toast = document.createElement('div');
         toast.className = 'game-toast';
+        if (url) toast.classList.add('clickable'); 
+        
         toast.textContent = message;
         toastContainer.appendChild(toast);
         
+        if (url) {
+            toast.onclick = () => {
+                window.location.href = url;
+            };
+        }
+
+        // Auto-remove logic
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transform = 'translateX(20px)';
             setTimeout(() => toast.remove(), 500);
-        }, 4000);
+        }, 5000);
     }
 
     // --- 2. NOTIFICATION POLLING ---
