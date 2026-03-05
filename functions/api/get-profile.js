@@ -28,54 +28,56 @@ export async function onRequestGet(context) {
 
         const user = JSON.parse(rawData);
 
-        // --- AUTOMATIC RANK PROGRESSION ---
+        // 1. Define the Rank Ladder
+        const ladder = [
+            { name: "Legend", xp: 30000 },
+            { name: "Elite", xp: 15000 },
+            { name: "Veteran", xp: 7500 },
+            { name: "Contributor", xp: 3500 },
+            { name: "Supporter", xp: 1500 },
+            { name: "Active Member", xp: 500 },
+            { name: "Member", xp: 0 }
+        ];
+
+        // 2. ALWAYS calculate the XP-based rank (for staff visibility)
+        const xpRank = ladder.find(r => (user.xp || 0) >= r.xp)?.name || "Member";
+
+        // 3. AUTOMATIC RANK PROGRESSION (Only for non-staff)
         const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot"];
         let updated = false;
 
-        // Only calculate rank if they aren't Staff
         if (!staffRanks.includes(user.rank)) {
-            const ladder = [
-                { name: "Legend", xp: 30000 },
-                { name: "Elite", xp: 15000 },
-                { name: "Veteran", xp: 7500 },
-                { name: "Contributor", xp: 3500 },
-                { name: "Supporter", xp: 1500 },
-                { name: "Active Member", xp: 500 },
-                { name: "Member", xp: 0 }
-            ];
-
-            // Find the highest rank they qualify for based on current XP
-            const correctRank = ladder.find(r => (user.xp || 0) >= r.xp)?.name || "Member";
-
-            // If their stored rank is different from their calculated rank, update it
-            if (user.rank !== correctRank) {
-                user.rank = correctRank;
+            if (user.rank !== xpRank) {
+                user.rank = xpRank;
                 updated = true;
                 
-                // Optional: Push a notification for the level up
                 if (!user.notifications) user.notifications = [];
                 user.notifications.push({
                     id: Date.now(),
-                    text: `Congratulations! Your rank has been updated to ${correctRank}!`,
+                    text: `Congratulations! Your rank has been updated to ${xpRank}!`,
                     date: new Date().toISOString(),
                     read: false
                 });
             }
         }
 
-        // If we changed the rank (or added a notification), save it back to KV
         if (updated) {
             await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
         }
 
+        // 4. PREPARE FULL DATA (including stats)
         const profileData = {
             username: user.username,
             displayName: user.displayName || user.username,
             bio: user.bio || "",
             themeColor: user.themeColor || "#2563eb",
             avatar: user.avatarUrl || "/default-avatar.png",
-            rank: user.rank || "Member",
-            xp: user.xp || 0
+            rank: user.rank || "Member",        // Official Rank (Admin, Mod, etc.)
+            xpRank: xpRank,                     // The XP title (Legend, Elite, etc.)
+            xp: user.xp || 0,
+            currency: user.currency || 0,
+            followersCount: user.followers || 0,
+            followingCount: user.following?.length || 0
         };
 
         return new Response(JSON.stringify(profileData), {
