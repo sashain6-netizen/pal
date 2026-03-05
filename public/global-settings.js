@@ -1,30 +1,29 @@
 (function() {
-    const settings = JSON.parse(localStorage.getItem('site_settings'));
-    if (!settings) return;
+    const saved = localStorage.getItem('site_settings');
+    if (!saved) return;
+    const settings = JSON.parse(saved);
 
-    // 1. Panic Listener
     window.addEventListener('keydown', (e) => {
-        if (e.key === settings.panicKey) {
-            window.location.href = settings.panicUrl;
-        }
-    });
+        const combo = settings.panicKey; // e.g., "Shift+K"
+        
+        // Check modifiers
+        const needsCtrl = combo.includes("Control+");
+        const needsShift = combo.includes("Shift+");
+        const needsAlt = combo.includes("Alt+");
+        
+        // Get the actual key (the last part after the +)
+        const parts = combo.split("+");
+        const targetKey = parts[parts.length - 1].toLowerCase();
 
-    // 2. Tab Cloaking logic
-    if (settings.cloaking) {
-        document.title = "Google Docs";
-        const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'shortcut icon';
-        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-        document.getElementsByTagName('head')[0].appendChild(link);
-    }
-
-    if (settings.leaveConfirm) {
-        window.addEventListener('beforeunload', (e) => {
-            // Cancel the event
+        // Compare everything
+        if (
+            e.key.toLowerCase() === targetKey &&
+            e.ctrlKey === needsCtrl &&
+            e.shiftKey === needsShift &&
+            e.altKey === needsAlt
+        ) {
             e.preventDefault();
-            // Chrome requires returnValue to be set
-            e.returnValue = '';
-        });
-    }
+            window.location.href = settings.panicUrl || "https://google.com";
+        }
+    }, true);
 })();
