@@ -74,26 +74,29 @@ function injectNavbar() {
 }
 
 async function checkNotifications() {
-    const res = await fetch('/api/notifications');
-    const data = await res.json();
-    const hasNotifications = Array.isArray(data) && data.length > 0;
+    // 1. Try to find the element
+    const profileDot = document.getElementById('profile-notif-dot');
+    
+    // 2. SAFETY: If it's not in the DOM yet, stop here so we don't crash
+    if (!profileDot) {
+        console.warn("Dot element not found yet. Retrying...");
+        return; 
+    }
 
-    // Use a function to apply the style whenever the element exists
-    const applyStatus = () => {
-        const profileDot = document.getElementById('profile-notif-dot');
-        if (profileDot) {
-            profileDot.style.display = hasNotifications ? 'block' : 'none';
+    try {
+        const res = await fetch('/api/notifications');
+        const data = await res.json();
+        
+        if (Array.isArray(data) && data.length > 0) {
+            profileDot.style.display = 'block';
+        } else {
+            profileDot.style.display = 'none';
         }
-    };
-
-    // 1. Try to apply immediately
-    applyStatus();
-
-    // 2. Set up an observer to watch if the navbar or icon gets "re-rendered" 
-    // This catches cases where another script does .innerHTML = ...
-    const observer = new MutationObserver(() => {
-        applyStatus();
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
+    } catch (err) {
+        console.error("Notif Check Failed:", err);
+    }
 }
+
+injectNavbar();
+
+setTimeout(checkNotifications, 100);
