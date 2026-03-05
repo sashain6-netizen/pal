@@ -267,3 +267,43 @@
 @media (min-width: 400px) {
     .stats-grid { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* Fix for stats sticking out */
+.stats-grid {
+    display: grid;
+    /* auto-fit will wrap items to a new line if they can't maintain at least 80px */
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px; /* Reduced gap slightly for more breathing room */
+    margin: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.stat-box {
+    padding: 12px 5px; /* Reduced side padding to prevent overflow */
+    min-width: 0;      /* Crucial: allows grid items to shrink smaller than content */
+    overflow: hidden;  /* Safety net */
+    background: #f8fafc; /* Subtle distinction from card background */
+}
+
+.stat-label {
+    font-size: 0.65rem; /* Slightly smaller to fit "Followers" comfortably */
+    letter-spacing: 0.5px;
+    white-space: nowrap; /* Prevents label from breaking into two lines */
+}
+
+.stat-value {
+    font-size: 1rem; /* Slightly smaller to accommodate larger numbers */
+    word-break: break-all; /* If someone has 1,000,000, it won't break the box */
+}
+
+/* Adjust card padding for smaller screens so the grid has more room */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 30px 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2x2 grid is much cleaner on mobile */
+    }
+}
