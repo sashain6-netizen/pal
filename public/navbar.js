@@ -1,5 +1,28 @@
-// navbar.js
 function injectNavbar() {
+    // 1. Inject Styles
+    const navStyles = `
+    <style>
+        .notif-link-container {
+            position: relative;
+            display: inline-block;
+        }
+        #notif-badge {
+            position: absolute;
+            top: -5px;
+            right: -15px;
+            background-color: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 10px;
+            text-align: center;
+            border: 2px solid #1e293b;
+            display: none; /* Hidden by default */
+        }
+    </style>`;
+
     const navbarHTML = `
     <nav class="navbar">
         <div class="nav-logo">
@@ -30,7 +53,10 @@ function injectNavbar() {
                             <a href="/profile">My Profile</a>
                             <a href="/settings">Settings</a> 
                             <hr>
-                            <a href="/notifications">Notifications</a>
+                            <a href="/notifications" class="notif-link-container">
+                                Notifications 
+                                <span id="notif-badge">0</span>
+                            </a>
                             <a href="#" class="logout-btn" id="logoutLink">Log Out</a>
                         </div>
                     </div>
@@ -39,9 +65,32 @@ function injectNavbar() {
         </div>
     </nav>`;
 
-    // Insert it at the very top of the body
+    // Insert styles and HTML
+    document.head.insertAdjacentHTML('beforeend', navStyles);
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
+    
+    // Check for notifications
+    updateNotificationBadge();
 }
 
-// Run injection immediately
+async function updateNotificationBadge() {
+    const badge = document.getElementById('notif-badge');
+    if (!badge) return;
+
+    try {
+        const res = await fetch('/api/notifications');
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.length > 0) {
+                badge.innerText = data.length;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (err) {
+        console.log("Not logged in or API unavailable");
+    }
+}
+
 injectNavbar();
