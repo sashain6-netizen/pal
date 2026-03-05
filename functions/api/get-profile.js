@@ -77,7 +77,7 @@ export async function onRequestGet(context) {
             xp: user.xp || 0,
             currency: user.currency || 0,
             followersCount: user.followers || 0,
-            followingCount: user.following?.length || 0
+            followingCount: (user.following && Array.isArray(user.following)) ? user.following.length : 0
         };
 
         return new Response(JSON.stringify(profileData), {

@@ -50,14 +50,17 @@ async function loadProfile() {
         document.getElementById('stat-following').innerText = user.followingCount;
         document.getElementById('stat-xp').innerText = `${user.xp.toLocaleString()} XP`;
 
-        // 3. Progress Bar Math
         const ladder = [30000, 15000, 7500, 3500, 1500, 500, 0];
+
         const nextRankXp = ladder.find(xp => xp > user.xp) || 30000;
         const currentRankXp = [...ladder].reverse().find(xp => xp <= user.xp) || 0;
-        
-        const percent = ((user.xp - currentRankXp) / (nextRankXp - currentRankXp)) * 100;
-        document.getElementById('xp-bar-fill').style.width = `${Math.min(percent, 100)}%`;
 
+        const range = nextRankXp - currentRankXp;
+        const progressSinceLastRank = user.xp - currentRankXp;
+
+        let percent = range > 0 ? (progressSinceLastRank / range) * 100 : 0;
+
+        document.getElementById('xp-bar-fill').style.width = `${Math.min(Math.max(percent, 0), 100)}%`;
     } catch (err) {
         window.location.href = "/login";
     }
