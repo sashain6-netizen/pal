@@ -8,4 +8,4 @@
 /users/style.css     /users/style.css     200
 
 # 3. ONLY THEN redirect everything else to the profile page
-/users/* /users/index.html    200
+/users/:splat /users/index.html 200
