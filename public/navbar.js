@@ -74,18 +74,21 @@ function injectNavbar() {
 }
 
 async function checkNotifications() {
+    // 1. Try to find the element
     const profileDot = document.getElementById('profile-notif-dot');
-    if (!profileDot) return;
+    
+    // 2. SAFETY: If it's not in the DOM yet, stop here so we don't crash
+    if (!profileDot) {
+        console.warn("Dot element not found yet. Retrying...");
+        return; 
+    }
 
     try {
         const res = await fetch('/api/notifications');
         const data = await res.json();
         
-        console.log("Notif Data:", data); // Check your browser console (F12)
-
         if (Array.isArray(data) && data.length > 0) {
-            console.log("Showing dot!");
-            profileDot.style.setProperty('display', 'block', 'important');
+            profileDot.style.display = 'block';
         } else {
             profileDot.style.display = 'none';
         }
@@ -95,3 +98,5 @@ async function checkNotifications() {
 }
 
 injectNavbar();
+
+setTimeout(checkNotifications, 100);
