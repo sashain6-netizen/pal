@@ -42,7 +42,7 @@ async function loadProfile() {
         
         if (!res.ok) {
             if (!isPublicPage) {
-                window.location.href = "/login";
+                window.location.href = "/";
             }
             return; 
         }
@@ -59,7 +59,7 @@ async function loadProfile() {
     } catch (err) {
         console.error("Auth error:", err);
         if (!isPublicPage) {
-            window.location.href = "/login"; 
+            window.location.href = "/"; 
         }
     }
 }
