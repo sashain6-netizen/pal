@@ -1,45 +1,51 @@
 async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('id')?.toLowerCase();
-
-    // MATCH THESE TO YOUR HTML IDs EXACTLY
-    const nameEl = document.getElementById('display-name');
-    const userEl = document.getElementById('display-username');
-    const bioEl = document.getElementById('display-bio');
-    const currencyEl = document.getElementById('stat-currency');
-    const xpEl = document.getElementById('stat-xp');
-
-    // If 'display-name' doesn't exist in HTML, nameEl is null. 
-    // This check prevents the "Cannot set properties of null" error.
-    if (!nameEl) {
-        console.error("Critical Error: Could not find 'display-name' element in HTML.");
-        return;
-    }
+    
+    const nameEl = document.getElementById('displayName') || document.getElementById('display-name');
+    const bioEl = document.getElementById('bio') || document.getElementById('display-bio');
 
     if (!userId) {
-        nameEl.textContent = "No user specified";
+        if (nameEl) nameEl.textContent = "DEBUG: No ID in URL";
         return;
     }
 
     try {
+        // Step 1: Tell us what we are fetching
+        console.log("Fetching ID:", userId); 
+        
         const response = await fetch(`/api/profile?id=${userId}`);
         
-        if (!response.ok) throw new Error("User not found");
+        // Step 2: If the API fails, tell us the Status Code (404, 500, etc)
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error ${response.status}: ${errorText}`);
+        }
 
         const data = await response.json();
         
-        // Update the UI
-        nameEl.textContent = data.displayName || "Unknown User";
-        if (userEl) userEl.textContent = `@${data.username}`;
+        // Step 3: Verify the data structure
+        if (!data.username) {
+            throw new Error("API returned success, but data is empty or wrong format.");
+        }
+
+        // Standard Update Logic
+        if (nameEl) nameEl.textContent = data.displayName;
         if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
-        if (currencyEl) currencyEl.textContent = data.currency || 0;
-        if (xpEl) xpEl.textContent = `${data.xp || 0} XP`;
+        
+        // (Add your other stat updates here...)
 
     } catch (err) {
-        console.error(err);
-        nameEl.textContent = "User Not Found";
+        // This will show the EXACT error on your screen since you can't see the console
+        if (nameEl) nameEl.textContent = "ERROR OCCURRED";
+        if (bioEl) bioEl.textContent = err.message; 
+        
+        // This will pop up a box on your Chromebook with the error
+        alert("Critical Error: " + err.message);
     }
 }
+
+loadProfile();
 
 // Ensure the DOM is fully loaded before running
 document.addEventListener('DOMContentLoaded', loadProfile);
