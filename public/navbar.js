@@ -1,25 +1,26 @@
 function injectNavbar() {
-    // 1. Inject Styles
     const navStyles = `
     <style>
-        .notif-link-container {
+        /* Container for the profile icon to allow absolute positioning of the dot */
+        #profile-icon {
             position: relative;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #notif-badge {
+
+        /* The Red Notification Dot */
+        #profile-notif-dot {
             position: absolute;
-            top: -5px;
-            right: -15px;
+            top: -2px;    /* Adjust these to move the dot up/down */
+            right: -2px;  /* Adjust these to move the dot left/right */
+            width: 12px;
+            height: 12px;
             background-color: #ef4444;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 5px;
-            border-radius: 10px;
-            min-width: 10px;
-            text-align: center;
-            border: 2px solid #1e293b;
-            display: none; /* Hidden by default */
+            border-radius: 50%;
+            border: 2px solid #0f172a; /* Creates a gap between the dot and avatar */
+            display: none; /* Hidden until JS finds notifications */
+            z-index: 99;
         }
     </style>`;
 
@@ -40,6 +41,7 @@ function injectNavbar() {
             <a href="/" class="nav-btn-link"><button class="nav-btn">Home</button></a>
             <div class="profile-dropdown">
                 <div class="profile-icon" id="profile-icon">
+                    <div id="profile-notif-dot"></div>
                     <div id="avatar-container"></div> 
                 </div>
                 <div class="dropdown-menu">
@@ -53,10 +55,7 @@ function injectNavbar() {
                             <a href="/profile">My Profile</a>
                             <a href="/settings">Settings</a> 
                             <hr>
-                            <a href="/notifications" class="notif-link-container">
-                                Notifications 
-                                <span id="notif-badge">0</span>
-                            </a>
+                            <a href="/notifications">Notifications</a>
                             <a href="#" class="logout-btn" id="logoutLink">Log Out</a>
                         </div>
                     </div>
@@ -65,31 +64,29 @@ function injectNavbar() {
         </div>
     </nav>`;
 
-    // Insert styles and HTML
     document.head.insertAdjacentHTML('beforeend', navStyles);
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     
-    // Check for notifications
-    updateNotificationBadge();
+    // Check API for notifications
+    checkNotifications();
 }
 
-async function updateNotificationBadge() {
-    const badge = document.getElementById('notif-badge');
-    if (!badge) return;
-
+async function checkNotifications() {
+    const profileDot = document.getElementById('profile-notif-dot');
+    
     try {
         const res = await fetch('/api/notifications');
         if (res.ok) {
             const data = await res.json();
+            // Show dot if array length is greater than 0
             if (data && data.length > 0) {
-                badge.innerText = data.length;
-                badge.style.display = 'block';
+                profileDot.style.display = 'block';
             } else {
-                badge.style.display = 'none';
+                profileDot.style.display = 'none';
             }
         }
     } catch (err) {
-        console.log("Not logged in or API unavailable");
+        // Silently catch errors (like being logged out)
     }
 }
 
