@@ -49,6 +49,16 @@ async function loadProfile() {
             return;
         }
 
+        const avatarImg = document.getElementById('display-avatar');
+        if (avatarImg) {
+            avatarImg.src = data.avatar || "/default-avatar.png";
+        }
+        
+        const bioText = document.getElementById('display-bio');
+        if (bioText) {
+            bioText.textContent = data.bio || "No bio yet.";
+        }
+
         const myId = myData.username.toLowerCase();
 
         if (myId === userId) {
