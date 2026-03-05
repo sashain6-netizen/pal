@@ -13,6 +13,30 @@
     <div class="auth-card profile-card">
     <div class="auth-logo"><a href="/">PAL</a></div>
     <h1>Edit Profile</h1>
+
+    <form id="profileForm">
+        <div class="input-group">
+            <label>Username (Fixed)</label>
+            <input type="text" id="display-username" disabled style="background: #f1f5f9; cursor: not-allowed;">
+        </div>
+
+        <div class="input-group">
+            <label for="displayName">Display Name</label>
+            <input type="text" id="displayName" placeholder="Your name">
+        </div>
+
+        <div class="input-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" placeholder="Tell us about yourself..." maxlength="160"></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="themeColor">Profile Theme Color</label>
+            <input type="color" id="themeColor" value="#2563eb" style="height: 50px; padding: 5px;">
+        </div>
+        <button type="submit" class="auth-btn">Save Changes</button>
+        <a href="/" class="secondary-link">Back to Dashboard</a>
+    </form>
     
     <div class="stats-grid">
         <div class="stat-box">
@@ -45,30 +69,6 @@
             <div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%"></div>
         </div>
     </div>
-
-    <form id="profileForm">
-        <div class="input-group">
-            <label>Username (Fixed)</label>
-            <input type="text" id="display-username" disabled style="background: #f1f5f9; cursor: not-allowed;">
-        </div>
-
-        <div class="input-group">
-            <label for="displayName">Display Name</label>
-            <input type="text" id="displayName" placeholder="Your name">
-        </div>
-
-        <div class="input-group">
-            <label for="bio">Bio</label>
-            <textarea id="bio" placeholder="Tell us about yourself..." maxlength="160"></textarea>
-        </div>
-
-        <div class="input-group">
-            <label for="themeColor">Profile Theme Color</label>
-            <input type="color" id="themeColor" value="#2563eb" style="height: 50px; padding: 5px;">
-        </div>
-        <button type="submit" class="auth-btn">Save Changes</button>
-        <a href="/" class="secondary-link">Back to Dashboard</a>
-    </form>
 </div>
     
     <script src="../global-settings.js"></script>
