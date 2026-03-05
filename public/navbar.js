@@ -9,12 +9,15 @@ function injectNavbar() {
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            /* CRITICAL: Allow the dot to stick out */
+            overflow: visible !important; 
         }
 
         #profile-notif-dot {
             position: absolute !important;
-            top: 0 !important;
-            right: 0 !important;
+            /* Move it slightly further out (negative values) */
+            top: -2px !important;
+            right: -2px !important;
             width: 12px !important;
             height: 12px !important;
             background-color: #ef4444 !important;
@@ -23,6 +26,23 @@ function injectNavbar() {
             z-index: 99999 !important;
             display: none; 
             pointer-events: none;
+        }
+
+        /* Ensure ONLY the avatar container is clipped, not the whole icon area */
+        #avatar-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden; /* This keeps the photo a circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     </style>`;
 
