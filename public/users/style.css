@@ -351,3 +351,37 @@
     height: 100%;
     object-fit: cover;
 }
+
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* Allows clicks to pass through to the game */
+}
+
+.game-toast {
+    background: rgba(30, 41, 59, 0.95); /* Dark blue-grey */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border-left: 4px solid #2563eb; /* Blue accent */
+    font-family: 'Varela Round', sans-serif;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: toastSlideIn 0.3s ease forwards, toastFadeOut 0.5s ease 3s forwards;
+    min-width: 200px;
+}
+
+@keyframes toastSlideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toastFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}

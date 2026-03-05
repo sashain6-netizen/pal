@@ -1,3 +1,21 @@
+const toastContainer = document.createElement('div');
+toastContainer.id = 'toast-container';
+document.body.appendChild(toastContainer);
+
+// 2. The function to show a notification
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'game-toast';
+    toast.textContent = message;
+
+    toastContainer.appendChild(toast);
+
+    // Remove the element from the code after it fades out
+    setTimeout(() => {
+        toast.remove();
+    }, 3500);
+}
+
 async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('id')?.toLowerCase();
