@@ -1,11 +1,10 @@
 function injectNavbar() {
     const navStyles = `
     <style>
-        /* Container for the profile icon to allow absolute positioning of the dot */
         #profile-icon {
-            position: relative;
-            width: 40px;  /* Match your actual avatar size */
-            height: 40px; /* Match your actual avatar size */
+            position: relative !important;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -13,16 +12,17 @@ function injectNavbar() {
         }
 
         #profile-notif-dot {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 12px;
-            height: 12px;
-            background-color: #ef4444;
-            border-radius: 50%;
-            border: 2px solid #0f172a;
-            z-index: 999; /* Ensure it's on top of everything */
+            position: absolute !important;
+            top: 0 !important;
+            right: 0 !important;
+            width: 12px !important;
+            height: 12px !important;
+            background-color: #ef4444 !important;
+            border-radius: 50% !important;
+            border: 2px solid #0f172a !important;
+            z-index: 99999 !important;
             display: none; 
+            pointer-events: none;
         }
     </style>`;
 
@@ -69,34 +69,50 @@ function injectNavbar() {
     document.head.insertAdjacentHTML('beforeend', navStyles);
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     
-    // Check API for notifications
+    // Start the notification check
     checkNotifications();
 }
 
 async function checkNotifications() {
-    // 1. Try to find the element
-    const profileDot = document.getElementById('profile-notif-dot');
-    
-    // 2. SAFETY: If it's not in the DOM yet, stop here so we don't crash
-    if (!profileDot) {
-        console.warn("Dot element not found yet. Retrying...");
-        return; 
-    }
+    let hasNotifs = false;
 
     try {
         const res = await fetch('/api/notifications');
         const data = await res.json();
-        
-        if (Array.isArray(data) && data.length > 0) {
-            profileDot.style.display = 'block';
-        } else {
-            profileDot.style.display = 'none';
-        }
+        hasNotifs = Array.isArray(data) && data.length > 0;
     } catch (err) {
-        console.error("Notif Check Failed:", err);
+        console.error("Notif Fetch Failed:", err);
+        return;
+    }
+
+    const applyDotState = () => {
+        const profileIcon = document.getElementById('profile-icon');
+        let profileDot = document.getElementById('profile-notif-dot');
+
+        // If another script deleted the icon container, we stop
+        if (!profileIcon) return;
+
+        // If another script deleted ONLY the dot, recreate it
+        if (!profileDot && hasNotifs) {
+            profileDot = document.createElement('div');
+            profileDot.id = 'profile-notif-dot';
+            profileIcon.insertBefore(profileDot, profileIcon.firstChild);
+        }
+
+        if (profileDot) {
+            profileDot.style.display = hasNotifs ? 'block' : 'none';
+        }
+    };
+
+    // Apply immediately
+    applyDotState();
+
+    // Setup an observer to watch for other scripts overwriting the #profile-icon HTML
+    const observer = new MutationObserver(applyDotState);
+    const target = document.getElementById('profile-icon');
+    if (target) {
+        observer.observe(target, { childList: true });
     }
 }
 
 injectNavbar();
-
-setTimeout(checkNotifications, 100);
