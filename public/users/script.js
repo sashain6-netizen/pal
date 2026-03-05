@@ -1,41 +1,45 @@
 async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
-    // .toLowerCase() helps match your KV keys if they are stored in lowercase
-    const userId = params.get('id')?.toLowerCase(); 
+    const userId = params.get('id')?.toLowerCase();
 
-    const nameEl = document.getElementById('profile-name');
-    const bioEl = document.getElementById('profile-bio');
+    // MATCH THESE TO YOUR HTML IDs EXACTLY
+    const nameEl = document.getElementById('display-name');
+    const userEl = document.getElementById('display-username');
+    const bioEl = document.getElementById('display-bio');
+    const currencyEl = document.getElementById('stat-currency');
+    const xpEl = document.getElementById('stat-xp');
 
-    if (!userId) {
-        showToast("No user specified", "error");
+    // If 'display-name' doesn't exist in HTML, nameEl is null. 
+    // This check prevents the "Cannot set properties of null" error.
+    if (!nameEl) {
+        console.error("Critical Error: Could not find 'display-name' element in HTML.");
         return;
     }
 
-    // Optional: Show a loading state
-    nameEl.textContent = "Loading...";
+    if (!userId) {
+        nameEl.textContent = "No user specified";
+        return;
+    }
 
     try {
         const response = await fetch(`/api/profile?id=${userId}`);
         
-        if (!response.ok) {
-            if (response.status === 404) throw new Error("User not found");
-            throw new Error("Server error");
-        }
+        if (!response.ok) throw new Error("User not found");
 
         const data = await response.json();
         
-        // Update elements
-        nameEl.textContent = data.displayName;
-        bioEl.textContent = data.bio || "No bio yet.";
-        
-        // Bonus: Update the Page Title to the user's name
-        document.title = `${data.displayName} • Pal`;
+        // Update the UI
+        nameEl.textContent = data.displayName || "Unknown User";
+        if (userEl) userEl.textContent = `@${data.username}`;
+        if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
+        if (currencyEl) currencyEl.textContent = data.currency || 0;
+        if (xpEl) xpEl.textContent = `${data.xp || 0} XP`;
 
     } catch (err) {
         console.error(err);
         nameEl.textContent = "User Not Found";
-        showToast(err.message, "error");
     }
 }
 
+// Ensure the DOM is fully loaded before running
 document.addEventListener('DOMContentLoaded', loadProfile);
