@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
         const username = payload.username;
 
-        const rawData = await env.USERS_KV.get(username);
+        const rawData = await env.USERS_KV.get(`user:${username}`);
         
         if (!rawData) {
             return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
