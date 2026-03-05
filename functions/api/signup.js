@@ -55,7 +55,8 @@ export async function onRequestPost(context) {
       rank: "Guest",
       currency: 0,
       followers: 0,
-      following: []
+      following: [],
+      notifications: []
     };
 
     // 6. STORAGE
