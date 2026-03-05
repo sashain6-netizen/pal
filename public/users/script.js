@@ -43,20 +43,31 @@ async function loadProfile() {
         document.getElementById('stat-rank').textContent = data.rank || "Member";
         document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
 
-        if (!myData) {
-            if (followBtn) followBtn.style.display = 'none';
-            if (messageBtn) messageBtn.style.display = 'none';
-            return;
-        }
+        document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
 
+        // --- MOVE THESE HERE (Outside the myData check) ---
         const avatarImg = document.getElementById('display-avatar');
         if (avatarImg) {
+            // Check if your backend uses 'avatar' or 'avatarUrl'
             avatarImg.src = data.avatar || "/default-avatar.png";
         }
         
         const bioText = document.getElementById('display-bio');
         if (bioText) {
             bioText.textContent = data.bio || "No bio yet.";
+        }
+
+        const xpBar = document.getElementById('xp-bar-fill');
+        if (xpBar) {
+            const progress = Math.min(((data.xp || 0) % 1000) / 10, 100);
+            xpBar.style.width = `${progress}%`;
+        }
+        // --------------------------------------------------
+
+        if (!myData) {
+            if (followBtn) followBtn.style.display = 'none';
+            if (messageBtn) messageBtn.style.display = 'none';
+            return;
         }
 
         const myId = myData.username.toLowerCase();
