@@ -1,52 +1,49 @@
-export async function onRequestGet(context) {
-  const { request, env } = context;
-  const { searchParams } = new URL(request.url);
-  
-  // 1. Get the 'id' from the URL (?id=pal)
-  const userId = searchParams.get('id')?.toLowerCase();
+async function loadProfile() {
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('id')?.toLowerCase();
 
-  if (!userId) {
-    return new Response(JSON.stringify({ error: "No user specified" }), { 
-      status: 400,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
+    // Map your HTML IDs to variables
+    const nameEl = document.getElementById('display-name');
+    const userEl = document.getElementById('display-username');
+    const bioEl = document.getElementById('display-bio');
+    const currencyEl = document.getElementById('stat-currency');
+    const xpEl = document.getElementById('stat-xp');
+    const xpBar = document.getElementById('xp-bar-fill');
 
-  try {
-    // 2. Look up the user in KV
-    // We use the same 'user:username' key format from your login script
-    const userData = await env.USERS_KV.get(`user:${userId}`);
-
-    if (!userData) {
-      return new Response(JSON.stringify({ error: "User not found" }), { 
-        status: 404, 
-        headers: { "Content-Type": "application/json" }
-      });
+    if (!userId) {
+        if (nameEl) nameEl.textContent = "User Not Found";
+        return;
     }
 
-    // 3. Parse and filter sensitive data
-    const user = JSON.parse(userData);
+    try {
+        const response = await fetch(`/api/profile?id=${userId}`);
+        
+        if (!response.ok) throw new Error("User not found");
 
-    // IMPORTANT: Only send back data you want the public to see.
-    // NEVER send user.hash or user.salt!
-    const publicProfile = {
-      username: user.username,
-      displayName: user.displayName,
-      bio: user.bio || "This user hasn't written a bio yet.",
-      joined: user.joinedDate || "Unknown"
-    };
+        const data = await response.json();
+        
+        // Update the UI with data from KV
+        if (nameEl) nameEl.textContent = data.displayName;
+        if (userEl) userEl.textContent = `@${data.username}`;
+        if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
+        
+        // Update stats if they exist in your KV data
+        if (currencyEl) currencyEl.textContent = data.currency || 0;
+        if (xpEl) xpEl.textContent = `${data.xp || 0} XP`;
+        
+        // Simple XP bar logic (example: 1000 XP per level)
+        if (xpBar) {
+            const progress = ((data.xp || 0) % 1000) / 10; 
+            xpBar.style.width = `${progress}%`;
+        }
 
-    return new Response(JSON.stringify(publicProfile), {
-      headers: { 
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*" // Allows your frontend to talk to it
-      }
-    });
+        document.title = `${data.displayName} • Pal`;
 
-  } catch (err) {
-    return new Response(JSON.stringify({ error: "Database error" }), { 
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
+    } catch (err) {
+        console.error(err);
+        if (nameEl) nameEl.textContent = "User Not Found";
+        if (bioEl) bioEl.textContent = "The user you are looking for does not exist.";
+    }
 }
+
+loadProfile();
