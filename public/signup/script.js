@@ -100,14 +100,13 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
     }
 });
 
-// 4. FIX: Logout logic
-document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
-    e.preventDefault(); // This STOPS the "#" behavior
-    console.log("Logging out...");
-    // Clear cookie
-    document.cookie = "pal_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    // Redirect
-    window.location.href = "/login";
+document.addEventListener('click', (e) => {
+    const logoutBtn = e.target.closest('#logoutBtn');
+    if (logoutBtn) {
+        e.preventDefault();
+        console.log("Logging out...");
+        document.cookie = "pal_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
 });
 
 async function handleSignup(event) {
