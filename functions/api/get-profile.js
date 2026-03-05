@@ -29,7 +29,7 @@ export async function onRequestGet(context) {
         const user = JSON.parse(rawData);
 
         // --- AUTOMATIC RANK PROGRESSION ---
-        const staffRanks = ["Admin", "Moderator", "Staff", "Owner"];
+        const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot"];
         let updated = false;
 
         // Only calculate rank if they aren't Staff
