@@ -32,8 +32,28 @@ async function loadProfile() {
         // Standard Update Logic
         if (nameEl) nameEl.textContent = data.displayName;
         if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
+
+        // --- NEW STAT UPDATES START HERE ---
         
-        // (Add your other stat updates here...)
+        // Update Username (usually shown with an @)
+        const usernameEl = document.getElementById('username') || document.getElementById('display-username');
+        if (usernameEl) usernameEl.textContent = `@${data.username}`;
+
+        // Update Rank
+        const rankEl = document.getElementById('rank') || document.getElementById('display-rank');
+        if (rankEl) rankEl.textContent = data.rank;
+
+        // Update XP
+        const xpEl = document.getElementById('xp') || document.getElementById('display-xp');
+        if (xpEl) xpEl.textContent = data.xp.toLocaleString(); // adds commas like 8,800
+
+        // Update Currency
+        const currencyEl = document.getElementById('currency') || document.getElementById('display-currency');
+        if (currencyEl) currencyEl.textContent = data.currency.toLocaleString();
+
+        // Update Avatar
+        const avatarEl = document.getElementById('avatar') || document.getElementById('display-avatar');
+        if (avatarEl && data.avatar) avatarEl.src = data.avatar;
 
     } catch (err) {
         // This will show the EXACT error on your screen since you can't see the console
