@@ -129,24 +129,6 @@
   color: var(--blue-primary);
 }
 
-/* Toast Notifications (for script.js feedback) */
-#toast-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-}
-
-.toast {
-  background: #1e293b;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  animation: slideIn 0.3s ease forwards;
-}
-
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -306,4 +288,54 @@
     .stats-grid {
         grid-template-columns: repeat(2, 1fr); /* 2x2 grid is much cleaner on mobile */
     }
+}
+
+/* --- TOAST NOTIFICATIONS --- */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* Allows clicking through the container itself */
+}
+
+.game-toast {
+    background: #1e293b; /* Dark slate background */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-left: 4px solid var(--blue-primary, #2563eb);
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 200px;
+    max-width: 300px;
+    pointer-events: auto; /* Re-enable clicking for the actual toast */
+    
+    /* Animation */
+    animation: toast-in 0.3s ease forwards;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+@keyframes toast-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Optional: Success/Error variations if you want to expand later */
+.game-toast.error {
+    border-left-color: #ef4444;
+}
+
+.game-toast.success {
+    border-left-color: #10b981;
 }
