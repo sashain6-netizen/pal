@@ -3,8 +3,11 @@ async function loadProfile() {
     const userId = params.get('id')?.toLowerCase();
     if (!userId) return;
 
+    const followBtn = document.getElementById('follow-btn');
+    const messageBtn = document.getElementById('message-btn');
+
     try {
-        // 1. Fetch Public Data & My Data simultaneously for speed
+        // 1. Fetch BOTH at once (Fastest way)
         const [pubRes, meRes] = await Promise.all([
             fetch(`/api/get-user-public?id=${userId}`),
             fetch('/api/get-profile')
@@ -13,96 +16,88 @@ async function loadProfile() {
         if (!pubRes.ok) return;
         const data = await pubRes.json();
         
-        // 2. Display Public Info
+        // 2. Display Public Info immediately
         document.getElementById('display-name').textContent = data.displayName || data.username;
         document.getElementById('display-bio').textContent = data.bio || "No bio yet.";
         document.getElementById('display-username').textContent = `@${data.username}`;
         document.getElementById('stat-rank').textContent = data.rank || "Member";
         document.getElementById('stat-currency').textContent = (data.currency || 0).toLocaleString();
         document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
-        document.getElementById('stat-followers').textContent = (data.followersCount || 0).toLocaleString();
+        document.getElementById('stat-followers').textContent = (data.followers || 0).toLocaleString();
+        document.getElementById('stat-following').textContent = (data.following?.length || 0).toLocaleString();
 
-        // 3. Avatar & Theme (FIX FOR DEFAULT PROFILE)
+        // 3. Avatar/Theme Fix (Ensure this isn't default)
         const avatarEl = document.getElementById('display-avatar');
         const avatarWrapper = document.getElementById('avatar-wrapper');
+        
         if (data.avatar && data.avatar !== "/default-avatar.png") {
-            if (avatarEl) avatarEl.src = data.avatar;
-        } else if (data.themeColor) {
+            avatarEl.src = data.avatar;
+            avatarEl.style.filter = "none";
+            if (avatarWrapper) avatarWrapper.style.backgroundColor = "transparent";
+        } else {
+            // Apply theme color to the silhouette
             if (avatarWrapper) {
-                avatarWrapper.style.backgroundColor = data.themeColor;
+                avatarWrapper.style.backgroundColor = data.themeColor || "#2563eb";
                 avatarWrapper.style.borderRadius = "50%";
             }
             if (avatarEl) {
-                avatarEl.style.filter = "brightness(0) invert(1)"; 
                 avatarEl.src = "/default-avatar.png";
+                avatarEl.style.filter = "brightness(0) invert(1)"; // White icon
             }
         }
 
-        // 4. Action Button Logic
-        if (!meRes.ok) return;
-        const myData = await meRes.json();
-        const myId = myData.username.toLowerCase();
-        const followBtn = document.getElementById('follow-btn');
-        const messageBtn = document.getElementById('message-btn');
-
-        if (myId === userId) {
+        // 4. Handle Login-Dependent Buttons
+        if (!meRes.ok) {
             if (followBtn) followBtn.style.display = "none";
             if (messageBtn) messageBtn.style.display = "none";
             return;
         }
 
-        // Function to update button UI
-        const setFollowState = (isFollowing) => {
-            if (isFollowing) {
-                followBtn.textContent = "Unfollow";
-                followBtn.style.backgroundColor = "#cbd5e1"; // Grey
-                followBtn.style.color = "#64748b";
-            } else {
-                followBtn.textContent = "Follow";
-                followBtn.style.backgroundColor = ""; // Back to default CSS blue
-                followBtn.style.color = "";
-            }
-        };
+        const myData = await meRes.json();
+        const myId = myData.username.toLowerCase();
 
-        let isFollowing = myData.following && myData.following.includes(userId);
-        setFollowState(isFollowing);
+        if (myId === userId) {
+            if (followBtn) followBtn.style.display = "none";
+            if (messageBtn) messageBtn.style.display = "none";
+        } else {
+            // Check if already following
+            let isFollowing = myData.following && myData.following.includes(userId);
+            
+            const updateButtonUI = (following) => {
+                if (following) {
+                    followBtn.textContent = "Unfollow";
+                    followBtn.style.backgroundColor = "#cbd5e1"; // Grey
+                    followBtn.style.color = "#64748b";
+                } else {
+                    followBtn.textContent = "Follow";
+                    followBtn.style.backgroundColor = ""; // Default Blue from CSS
+                    followBtn.style.color = "";
+                }
+            };
 
-        followBtn.onclick = async () => {
-            followBtn.disabled = true;
-            // This API should handle both Follow and Unfollow based on current state
-            const res = await fetch('/api/follow-user', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ targetId: userId })
-            });
+            updateButtonUI(isFollowing);
 
-            if (res.ok) {
-                isFollowing = !isFollowing;
-                setFollowState(isFollowing);
-                
-                // Update follower count on UI
-                const countEl = document.getElementById('stat-followers');
-                let count = parseInt(countEl.textContent.replace(/,/g, ''));
-                countEl.textContent = (isFollowing ? count + 1 : count - 1).toLocaleString();
-            }
-            followBtn.disabled = false;
-        };
-
-        if (messageBtn) {
-            messageBtn.onclick = async () => {
-                const msg = prompt(`Send a message to ${data.displayName}:`);
-                if (!msg) return;
-                await fetch('/api/send-notification', {
+            followBtn.onclick = async () => {
+                followBtn.disabled = true;
+                const res = await fetch('/api/follow-user', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetId: userId, from: myData.displayName, text: msg, type: "message" })
+                    body: JSON.stringify({ targetId: userId })
                 });
-                alert("Message sent!");
+
+                if (res.ok) {
+                    const result = await res.json();
+                    isFollowing = result.following; // Get truth from server
+                    updateButtonUI(isFollowing);
+                    
+                    // Update the number on screen
+                    document.getElementById('stat-followers').textContent = result.newCount.toLocaleString();
+                }
+                followBtn.disabled = false;
             };
         }
-
     } catch (err) {
-        console.log("Profile load failed.");
+        console.log("Load failed");
     }
 }
 
