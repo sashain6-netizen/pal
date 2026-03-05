@@ -50,5 +50,3 @@ async function loadPublicProfile() {
 }
 
 window.onload = loadPublicProfile;
-
-loadPublicProfile();
