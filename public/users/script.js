@@ -47,10 +47,28 @@ async function loadProfile() {
         const xpEl = document.getElementById('stat-xp');
         if (xpEl) xpEl.textContent = `${(data.xp || 0).toLocaleString()} XP`;
 
-        // 7. Avatar
+       // 7. Avatar & Theme Logic
         const avatarEl = document.getElementById('display-avatar');
-        if (avatarEl) {
-            avatarEl.src = data.avatar || "/default-avatar.png";
+        const avatarWrapper = document.getElementById('avatar-wrapper');
+
+        if (data.avatar && data.avatar !== "/default-avatar.png") {
+            // If they uploaded a real photo, show it
+            if (avatarEl) avatarEl.src = data.avatar;
+        } else if (data.themeColor) {
+            // If using the default "man" icon, apply the theme color
+            // We can use a CSS filter to color the default gray icon, 
+            // or set the background color of the wrapper.
+            if (avatarWrapper) {
+                avatarWrapper.style.backgroundColor = data.themeColor;
+                avatarWrapper.style.borderRadius = "50%"; // Make it a circle
+                avatarWrapper.style.padding = "5px";
+            }
+            
+            // If your default-avatar.png is a transparent 'man' silhouette:
+            if (avatarEl) {
+                avatarEl.style.filter = "brightness(0) invert(1)"; // Makes the man white
+                avatarEl.src = "/default-avatar.png";
+            }
         }
 
         // 8. XP Bar Logic (Bonus)
