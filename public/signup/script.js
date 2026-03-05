@@ -110,13 +110,11 @@ document.addEventListener('click', async (e) => {
             if (res.ok) {
                 localStorage.clear(); 
                 
-                updateGlobalUI(false); 
-                
-                showToast("Logged out successfully", "success");
+                window.location.href = "/";
             }
         } catch (err) {
             console.error("Logout failed:", err);
-            showToast("Error during logout", "error");
+            window.location.href = "/";
         }
     }
 });
