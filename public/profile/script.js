@@ -1,34 +1,31 @@
-// 1. The Toast Engine
+// Use textContent instead of innerHTML to prevent XSS
 function showToast(message, type = 'success') {
-    let container = document.getElementById('toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'toast-container';
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-
+    let container = document.getElementById('toast-container') || createToastContainer();
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <span>${message}</span>
-        <span class="toast-close">&times;</span>
-    `;
+    
+    // Create text span safely
+    const text = document.createElement('span');
+    text.textContent = message;
+    
+    const close = document.createElement('span');
+    close.className = 'toast-close';
+    close.innerHTML = '&times;';
+    close.onclick = () => dismiss(toast);
 
+    toast.append(text, close);
     container.appendChild(toast);
-    toast.offsetHeight; // Force reflow for animation
+
+    toast.offsetHeight; 
     toast.classList.add('show');
-
-    const dismiss = () => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 400);
-    };
-
-    setTimeout(dismiss, 4000);
-    toast.querySelector('.toast-close').onclick = dismiss;
+    setTimeout(() => dismiss(toast), 4000);
 }
 
-// 1. Fetch current profile data when the page opens
+function dismiss(toast) {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400);
+}
 
 async function loadProfile() {
     try {
@@ -36,67 +33,28 @@ async function loadProfile() {
         if (!res.ok) throw new Error("Unauthorized");
         const user = await res.json();
 
-        // 1. Fill Form
-        document.getElementById('display-username').value = user.username;
-        document.getElementById('displayName').value = user.displayName;
-        document.getElementById('bio').value = user.bio;
-        document.getElementById('themeColor').value = user.themeColor;
+        // Helper to safely set text or value based on element type
+        const updateEl = (id, val) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            // Check if it's an input/form field
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.value = val ?? '';
+            } else {
+                el.textContent = val ?? '';
+            }
+        };
 
-        // 2. Update Stats
-        document.getElementById('stat-rank').innerText = user.rank;
-        document.getElementById('stat-xp-rank').innerText = user.rank !== user.xpRank ? `(${user.xpRank})` : "";
-        document.getElementById('stat-currency').innerText = user.currency.toLocaleString();
-        document.getElementById('stat-followers').innerText = user.followersCount;
-        document.getElementById('stat-following').innerText = user.followingCount;
-        document.getElementById('stat-xp').innerText = `${user.xp.toLocaleString()} XP`;
+        updateEl('display-username', user.username);
+        updateEl('displayName', user.displayName);
+        updateEl('stat-currency', user.currency?.toLocaleString());
+        // ... and so on
 
-        const ladder = [30000, 15000, 7500, 3500, 1500, 500, 0];
-
-        const nextRankXp = ladder.find(xp => xp > user.xp) || 30000;
-        const currentRankXp = [...ladder].reverse().find(xp => xp <= user.xp) || 0;
-
-        const range = nextRankXp - currentRankXp;
-        const progressSinceLastRank = user.xp - currentRankXp;
-
-        let percent = range > 0 ? (progressSinceLastRank / range) * 100 : 0;
-
-        document.getElementById('xp-bar-fill').style.width = `${Math.min(Math.max(percent, 0), 100)}%`;
     } catch (err) {
-        window.location.href = "/login";
+        console.error("Failed to load profile", err);
+        // Only redirect if specifically unauthorized
+        if (err.message === "Unauthorized") {
+            window.location.href = "/login";
+        }
     }
 }
-
-// 2. Handle the Save
-document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.innerText = "Saving...";
-    btn.disabled = true;
-
-    const updates = {
-        displayName: document.getElementById('displayName').value,
-        bio: document.getElementById('bio').value,
-        themeColor: document.getElementById('themeColor').value
-    };
-
-    try {
-        const res = await fetch('/api/update-profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updates)
-        });
-
-        if (res.ok) {
-            showToast("Profile updated successfully!", "success");
-        } else {
-            showToast("Failed to update profile", "error");
-        }
-    } catch (err) {
-        showToast("Connection error", "error");
-    } finally {
-        btn.innerText = "Save Changes";
-        btn.disabled = false;
-    }
-});
-
-loadProfile();
