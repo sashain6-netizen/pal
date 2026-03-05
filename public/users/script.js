@@ -1,4 +1,3 @@
-// --- TOAST SYSTEM ---
 const toastContainer = document.getElementById('toast-container') || (() => {
     const tc = document.createElement('div');
     tc.id = 'toast-container';
@@ -12,6 +11,14 @@ function showToast(message) {
     toast.textContent = message;
     toastContainer.appendChild(toast);
     setTimeout(() => toast.remove(), 3500);
+}
+
+// Helper to create the colored SVG icon
+function getColoredSvg(color) {
+    return `
+        <svg viewBox="0 0 24 24" fill="${color}" style="width: 80%; height: 80%;">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>`;
 }
 
 async function loadProfile() {
@@ -34,7 +41,7 @@ async function loadProfile() {
         const data = await pubRes.json();
         const myData = meRes.ok ? await meRes.json() : null;
 
-        // Populate User Data
+        // 1. Populate Text Data
         document.getElementById('display-name').textContent = data.displayName || data.username;
         document.getElementById('display-username').textContent = `@${data.username}`;
         document.getElementById('stat-followers').textContent = (data.followers || 0).toLocaleString();
@@ -42,47 +49,60 @@ async function loadProfile() {
         document.getElementById('stat-currency').textContent = (data.currency || 0).toLocaleString();
         document.getElementById('stat-rank').textContent = data.rank || "Member";
         document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
-
-        document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
-
-        // --- MOVE THESE HERE (Outside the myData check) ---
-        const avatarImg = document.getElementById('display-avatar');
-if (avatarImg) {
-    // We check data.avatar (from your backend) 
-    // If it's the default or missing, we ensure it shows correctly
-    avatarImg.src = data.avatar || "/default-avatar.png";
-    
-    // Safety: If the image URL is broken/404, snap back to default
-    avatarImg.onerror = () => {
-        avatarImg.src = "/default-avatar.png";
-    };
-}
-
-// 2. Update the Navbar Profile Icon (Using your injectNavbar template)
-if (myData) {
-    const navAvatarContainer = document.getElementById('avatar-container');
-    if (navAvatarContainer) {
-        // This injects the image into the navbar circle
-        navAvatarContainer.innerHTML = `
-            <img src="${myData.avatarUrl || myData.avatar || '/default-avatar.png'}" 
-                 alt="Profile" 
-                 style="width: 100%; height: 100%; object-fit: cover;">
-        `;
-    }
-
-    // Toggle the dropdown menu visibility
-    const loggedInLinks = document.getElementById('loggedInLinks');
-    const loggedOutLinks = document.getElementById('loggedOutLinks');
-    if (loggedInLinks) loggedInLinks.style.display = 'block';
-    if (loggedOutLinks) loggedOutLinks.style.display = 'none';
-}
         
-        const bioText = document.getElementById('display-bio');
-        if (bioText) {
-            bioText.textContent = data.bio || "No bio yet.";
+        if (document.getElementById('display-bio')) {
+            document.getElementById('display-bio').textContent = data.bio || "No bio yet.";
         }
 
-        // 3. XP Bar Logic based on Ladder
+        // 2. Handle Profile Avatar (SVG or Image)
+        const avatarWrapper = document.getElementById('avatar-wrapper'); 
+        const avatarImg = document.getElementById('display-avatar');
+
+        if (avatarWrapper) {
+            if (data.avatar && data.avatar !== "/default-avatar.png") {
+                if (avatarImg) {
+                    avatarImg.style.display = 'block';
+                    avatarImg.src = data.avatar;
+                }
+            } else {
+                if (avatarImg) avatarImg.style.display = 'none';
+                avatarWrapper.style.display = 'flex';
+                avatarWrapper.style.alignItems = 'center';
+                avatarWrapper.style.justifyContent = 'center';
+                avatarWrapper.innerHTML = getColoredSvg(data.themeColor || "#2563eb");
+            }
+        }
+
+        // 3. Update Navbar (Your Icon) with retry loop
+        if (myData) {
+            const updateNavbarIcon = () => {
+                const navAvatar = document.getElementById('avatar-container');
+                if (navAvatar) {
+                    if (myData.avatar && myData.avatar !== "/default-avatar.png") {
+                        navAvatar.innerHTML = `<img src="${myData.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                    } else {
+                        navAvatar.style.display = 'flex';
+                        navAvatar.style.alignItems = 'center';
+                        navAvatar.style.justifyContent = 'center';
+                        navAvatar.innerHTML = getColoredSvg(myData.themeColor || "#2563eb");
+                    }
+                    document.getElementById('loggedInLinks')?.style.setProperty('display', 'block');
+                    document.getElementById('loggedOutLinks')?.style.setProperty('display', 'none');
+                    return true;
+                }
+                return false;
+            };
+
+            // Attempt to update navbar immediately, then poll if not found
+            if (!updateNavbarIcon()) {
+                const navInterval = setInterval(() => {
+                    if (updateNavbarIcon()) clearInterval(navInterval);
+                }, 100);
+                setTimeout(() => clearInterval(navInterval), 3000); // Stop trying after 3s
+            }
+        }
+
+        // 4. XP Bar Logic
         const ladder = [
             { name: "Legend", xp: 30000 },
             { name: "Elite", xp: 15000 },
@@ -91,36 +111,26 @@ if (myData) {
             { name: "Supporter", xp: 1500 },
             { name: "Active Member", xp: 500 },
             { name: "Member", xp: 0 }
-        ].reverse(); // Reverse so we can find the "next" rank easily
+        ].reverse();
 
         const xpBar = document.getElementById('xp-bar-fill');
         if (xpBar) {
             const currentXP = data.xp || 0;
-            // Find the next rank the user hasn't reached yet
             const nextRank = ladder.find(r => r.xp > currentXP);
             const currentRank = [...ladder].reverse().find(r => currentXP >= r.xp);
 
-            if (!nextRank) {
-                xpBar.style.width = "100%";
-            } else {
-                const min = currentRank ? currentRank.xp : 0;
-                const max = nextRank.xp;
-                const progress = ((currentXP - min) / (max - min)) * 100;
-                xpBar.style.width = `${Math.min(progress, 100)}%`;
-            }
+            const progress = nextRank 
+                ? ((currentXP - currentRank.xp) / (nextRank.xp - currentRank.xp)) * 100 
+                : 100;
+            
+            xpBar.style.width = `${Math.min(progress, 100)}%`;
+            xpBar.style.backgroundColor = data.themeColor || "#2563eb"; // Color the bar too!
         }
 
-        if (!myData) {
+        // 5. Follow/Message Button Logic
+        if (!myData || myData.username.toLowerCase() === userId) {
             if (followBtn) followBtn.style.display = 'none';
             if (messageBtn) messageBtn.style.display = 'none';
-            return;
-        }
-
-        const myId = myData.username.toLowerCase();
-
-        if (myId === userId) {
-            if (followBtn) followBtn.style.display = "none";
-            if (messageBtn) messageBtn.style.display = "none";
         } else {
             // --- FOLLOW LOGIC ---
             const myFollowing = Array.isArray(myData.following) ? myData.following : [];
