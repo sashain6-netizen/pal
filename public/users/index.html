@@ -67,5 +67,17 @@
 
         <a href="/" class="secondary-link">Return to Dashboard</a>
     </div>
+
+    <div id="message-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
+        <div class="modal-box" style="background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <h3 style="color: var(--blue-deep); margin-bottom: 10px;">Send Message</h3>
+            <p id="message-recipient" style="color: var(--blue-soft); font-size: 0.9rem; margin-bottom: 20px;">@username</p>
+            <textarea id="modal-text" placeholder="Type your message here..." style="width: 100%; height: 120px; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit; margin-bottom: 20px; resize: none;"></textarea>
+            <div class="modal-buttons" style="display: flex; gap: 10px;">
+                <button id="modal-send" class="auth-btn" style="margin-top: 0;">Send Message</button>
+                <button id="modal-close" class="auth-btn secondary-btn" style="margin-top: 0; background: #e2e8f0; color: #1e293b;">Cancel</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

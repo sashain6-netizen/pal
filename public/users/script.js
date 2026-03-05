@@ -1,19 +1,17 @@
-const toastContainer = document.createElement('div');
-toastContainer.id = 'toast-container';
-document.body.appendChild(toastContainer);
+// --- TOAST SYSTEM ---
+const toastContainer = document.getElementById('toast-container') || (() => {
+    const tc = document.createElement('div');
+    tc.id = 'toast-container';
+    document.body.appendChild(tc);
+    return tc;
+})();
 
-// 2. The function to show a notification
 function showToast(message) {
     const toast = document.createElement('div');
     toast.className = 'game-toast';
     toast.textContent = message;
-
     toastContainer.appendChild(toast);
-
-    // Remove the element from the code after it fades out
-    setTimeout(() => {
-        toast.remove();
-    }, 3500);
+    setTimeout(() => toast.remove(), 3500);
 }
 
 async function loadProfile() {
@@ -23,9 +21,10 @@ async function loadProfile() {
 
     const followBtn = document.getElementById('follow-btn');
     const messageBtn = document.getElementById('message-btn');
+    const msgModal = document.getElementById('message-modal');
+    const modalText = document.getElementById('modal-text');
 
     try {
-        // 1. Fetch both at once
         const [pubRes, meRes] = await Promise.all([
             fetch(`/api/get-user-public?id=${userId}`),
             fetch('/api/get-profile')
@@ -35,23 +34,29 @@ async function loadProfile() {
         const data = await pubRes.json();
         const myData = meRes.ok ? await meRes.json() : null;
 
-        // 2. Update Stats
+        // Populate User Data
+        document.getElementById('display-name').textContent = data.displayName || data.username;
+        document.getElementById('display-username').textContent = `@${data.username}`;
         document.getElementById('stat-followers').textContent = (data.followers || 0).toLocaleString();
         document.getElementById('stat-following').textContent = (Array.isArray(data.following) ? data.following.length : 0).toLocaleString();
+        document.getElementById('stat-currency').textContent = (data.currency || 0).toLocaleString();
+        document.getElementById('stat-rank').textContent = data.rank || "Member";
+        document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
 
         if (!myData) {
             if (followBtn) followBtn.style.display = 'none';
+            if (messageBtn) messageBtn.style.display = 'none';
             return;
         }
 
         const myId = myData.username.toLowerCase();
 
-        // 3. Setup Follow Button State
         if (myId === userId) {
             if (followBtn) followBtn.style.display = "none";
+            if (messageBtn) messageBtn.style.display = "none";
         } else {
+            // --- FOLLOW LOGIC ---
             const myFollowing = Array.isArray(myData.following) ? myData.following : [];
-            // IMPORTANT: Case-insensitive check
             let currentlyFollowing = myFollowing.some(id => id.toLowerCase() === userId);
 
             const updateUI = (isFollowing) => {
@@ -66,10 +71,8 @@ async function loadProfile() {
                 }
             };
 
-            // Set the initial look correctly on refresh
             updateUI(currentlyFollowing);
 
-            // 4. Single-Click Toggle
             followBtn.onclick = async () => {
                 followBtn.disabled = true;
                 const res = await fetch('/api/follow-user', {
@@ -80,21 +83,38 @@ async function loadProfile() {
 
                 if (res.ok) {
                     const result = await res.json();
-                    // Sync the state with what the SERVER says
                     currentlyFollowing = result.following;
                     updateUI(currentlyFollowing);
                     document.getElementById('stat-followers').textContent = result.newCount.toLocaleString();
+                    showToast(currentlyFollowing ? `Followed @${data.username}` : `Unfollowed @${data.username}`);
                 }
                 followBtn.disabled = false;
             };
-        }
 
-        // 5. Message Logic
-        if (messageBtn && myId !== userId) {
-            messageBtn.onclick = async () => {
-                const msg = prompt("Send a message:");
-                if (!msg) return;
-                await fetch('/api/send-notification', {
+            // --- MESSAGE MODAL LOGIC ---
+            messageBtn.onclick = () => {
+                document.getElementById('message-recipient').textContent = `To: ${data.displayName || data.username}`;
+                msgModal.style.display = 'flex';
+                modalText.focus();
+            };
+
+            document.getElementById('modal-close').onclick = () => {
+                msgModal.style.display = 'none';
+                modalText.value = '';
+            };
+
+            document.getElementById('modal-send').onclick = async () => {
+                const msg = modalText.value.trim();
+                if (!msg) {
+                    showToast("Message cannot be empty!");
+                    return;
+                }
+
+                const sendBtn = document.getElementById('modal-send');
+                sendBtn.disabled = true;
+                sendBtn.textContent = "Sending...";
+
+                const res = await fetch('/api/send-notification', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -104,10 +124,18 @@ async function loadProfile() {
                         type: "message"
                     })
                 });
-                alert("Sent!");
+
+                if (res.ok) {
+                    showToast("Message sent successfully!");
+                    msgModal.style.display = 'none';
+                    modalText.value = '';
+                } else {
+                    showToast("Failed to send message.");
+                }
+                sendBtn.disabled = false;
+                sendBtn.textContent = "Send Message";
             };
         }
-
     } catch (err) {
         console.error("Load error:", err);
     }
