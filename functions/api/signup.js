@@ -52,7 +52,7 @@ export async function onRequestPost(context) {
       themeColor: "#2563eb",
       avatarUrl: "",
       xp: 0,
-      rank: "Guest",
+      rank: "Member",
       currency: 0,
       followers: 0,
       following: [],
