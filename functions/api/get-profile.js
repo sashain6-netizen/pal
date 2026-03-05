@@ -28,7 +28,6 @@ export async function onRequestGet(context) {
 
         const user = JSON.parse(rawData);
 
-        // 1. Define the Rank Ladder
         const ladder = [
             { name: "Legend", xp: 30000 },
             { name: "Elite", xp: 15000 },
@@ -39,10 +38,8 @@ export async function onRequestGet(context) {
             { name: "Member", xp: 0 }
         ];
 
-        // 2. ALWAYS calculate the XP-based rank (for staff visibility)
         const xpRank = ladder.find(r => (user.xp || 0) >= r.xp)?.name || "Member";
 
-        // 3. AUTOMATIC RANK PROGRESSION (Only for non-staff)
         const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot"];
         let updated = false;
 
