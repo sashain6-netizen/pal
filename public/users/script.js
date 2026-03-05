@@ -7,7 +7,7 @@ async function loadProfile() {
     const messageBtn = document.getElementById('message-btn');
 
     try {
-        // Fetch both datasets simultaneously
+        // 1. Fetch BOTH Public Data and My Data at the same time
         const [pubRes, meRes] = await Promise.all([
             fetch(`/api/get-user-public?id=${userId}`),
             fetch('/api/get-profile')
@@ -16,46 +16,44 @@ async function loadProfile() {
         if (!pubRes.ok) return;
         const data = await pubRes.json();
         
-        // --- STATS FIX ---
-        // Handles both raw numbers and arrays
-        const getCount = (val) => Array.isArray(val) ? val.length : (val || 0);
-        
+        // 2. STATS FIX: Check both "followersCount" and "followers" array length
+        const fers = data.followersCount ?? (Array.isArray(data.followers) ? data.followers.length : (data.followers || 0));
+        const fing = data.followingCount ?? (Array.isArray(data.following) ? data.following.length : (data.following || 0));
+
         document.getElementById('display-name').textContent = data.displayName || data.username;
         document.getElementById('display-bio').textContent = data.bio || "No bio yet.";
         document.getElementById('display-username').textContent = `@${data.username}`;
         document.getElementById('stat-rank').textContent = data.rank || "Member";
         document.getElementById('stat-currency').textContent = (data.currency || 0).toLocaleString();
-        document.getElementById('stat-followers').textContent = getCount(data.followers).toLocaleString();
-        document.getElementById('stat-following').textContent = getCount(data.following).toLocaleString();
+        document.getElementById('stat-followers').textContent = fers.toLocaleString();
+        document.getElementById('stat-following').textContent = fing.toLocaleString();
         document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
 
-        // --- XP BAR FIX ---
+        // 3. XP BAR FIX: Ensure math doesn't result in NaN
         const xpBar = document.getElementById('xp-bar-fill');
         if (xpBar) {
-            // Logic: XP % 1000 determines progress to the next 'thousand'
-            const progress = Math.min(((data.xp || 0) % 1000) / 10, 100);
+            const currentXp = data.xp || 0;
+            const progress = Math.min((currentXp % 1000) / 10, 100); // Assumes 1000 XP per level
             xpBar.style.width = `${progress}%`;
         }
 
-        // --- AVATAR & THEME FIX ---
+        // 4. AVATAR FIX
         const avatarEl = document.getElementById('display-avatar');
         const avatarWrapper = document.getElementById('avatar-wrapper');
         if (data.avatar && data.avatar !== "/default-avatar.png") {
-            if (avatarEl) {
-                avatarEl.src = data.avatar;
-                avatarEl.style.filter = "none";
-            }
+            if (avatarEl) avatarEl.src = data.avatar;
+            if (avatarEl) avatarEl.style.filter = "none";
         } else if (data.themeColor) {
             if (avatarWrapper) avatarWrapper.style.backgroundColor = data.themeColor;
             if (avatarEl) {
                 avatarEl.src = "/default-avatar.png";
-                avatarEl.style.filter = "brightness(0) invert(1)"; // Makes silhouette white
+                avatarEl.style.filter = "brightness(0) invert(1)"; 
             }
         }
 
-        // --- THE BLUE BUTTON FIX ---
+        // 5. BLUE BUTTON FIX: Handle the My Data results
         if (!meRes.ok) {
-            if (followBtn) followBtn.style.display = "none";
+            if (followBtn) followBtn.style.display = 'none';
             return;
         }
 
@@ -66,20 +64,18 @@ async function loadProfile() {
             if (followBtn) followBtn.style.display = "none";
             if (messageBtn) messageBtn.style.display = "none";
         } else {
-            // Check if I'm already in the following list
-            const myFollowing = Array.isArray(myData.following) ? myData.following : [];
-            let isFollowing = myFollowing.includes(userId);
+            // Check if already following to prevent the blue flicker
+            let isFollowing = myData.following && myData.following.includes(userId);
             
             const updateButtonUI = (following) => {
                 if (following) {
                     followBtn.textContent = "Unfollow";
-                    // Using !important to override the CSS file
-                    followBtn.style.setProperty('background-color', '#cbd5e1', 'important');
-                    followBtn.style.setProperty('color', '#64748b', 'important');
+                    followBtn.style.backgroundColor = "#cbd5e1"; // Grey
+                    followBtn.style.color = "#64748b";
                 } else {
                     followBtn.textContent = "Follow";
-                    followBtn.style.setProperty('background-color', '#2563eb', 'important');
-                    followBtn.style.setProperty('color', 'white', 'important');
+                    followBtn.style.backgroundColor = ""; // Resets to CSS Blue
+                    followBtn.style.color = "";
                 }
             };
 
@@ -102,8 +98,7 @@ async function loadProfile() {
             };
         }
     } catch (err) {
-        console.error("Profile load error:", err);
+        console.error("Load error:", err);
     }
 }
-
 document.addEventListener('DOMContentLoaded', loadProfile);
