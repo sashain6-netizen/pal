@@ -52,7 +52,7 @@ async function loadProfile() {
                 { name: "Member", xp: 0 }
             ].reverse();
 
-            const currentXP = data.xp || 0;
+            const currentXP = user.xp || 0;
             const nextRank = ladder.find(r => r.xp > currentXP);
             const currentRank = [...ladder].reverse().find(r => currentXP >= r.xp);
 

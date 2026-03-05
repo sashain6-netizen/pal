@@ -70,7 +70,7 @@ async function loadProfile() {
 
         const xpBar = document.getElementById('xp-bar-fill');
         if (xpBar) {
-            const currentXP = user.xp || 0;
+            const currentXP = data.xp || 0;
             // Find the next rank the user hasn't reached yet
             const nextRank = ladder.find(r => r.xp > currentXP);
             const currentRank = [...ladder].reverse().find(r => currentXP >= r.xp);
