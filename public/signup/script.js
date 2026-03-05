@@ -99,22 +99,26 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 });
 
 document.addEventListener('click', async (e) => {
-    const logoutBtn = e.target.closest('#logoutBtn');
+    const logoutBtn = e.target.closest('#logoutLink');
     
     if (logoutBtn) {
-        e.preventDefault();
+        e.preventDefault(); 
         
         try {
             const res = await fetch('/api/logout');
             
             if (res.ok) {
                 localStorage.clear(); 
-                
-                window.location.href = "/";
+
+                if (typeof updateGlobalUI === 'function') {
+                    updateGlobalUI(false); 
+                }
+
+                showToast("Logged out successfully", "success");
+
             }
         } catch (err) {
             console.error("Logout failed:", err);
-            window.location.href = "/";
         }
     }
 });
