@@ -32,29 +32,6 @@ async function loadProfile() {
 
         if (!pubRes.ok) return;
         const data = await pubRes.json();
-        if (myData) {
-        // 1. Update Navbar Avatar
-        const navAvatarContainer = document.getElementById('avatar-container');
-        if (navAvatarContainer) {
-            navAvatarContainer.innerHTML = `<img src="${myData.avatar || '/default-avatar.png'}" alt="Profile">`;
-        }
-
-        // 2. Toggle Dropdown Links
-        const loggedInLinks = document.getElementById('loggedInLinks');
-        const loggedOutLinks = document.getElementById('loggedOutLinks');
-        if (loggedInLinks) loggedInLinks.style.display = 'block';
-        if (loggedOutLinks) loggedOutLinks.style.display = 'none';
-
-        // 3. Setup Logout Logic (if not already handled elsewhere)
-        const logoutBtn = document.getElementById('logoutLink');
-        if (logoutBtn) {
-            logoutBtn.onclick = async (e) => {
-                e.preventDefault();
-                await fetch('/api/logout', { method: 'POST' });
-                window.location.href = '/login';
-            };
-        }
-    }
         
 
         // Populate User Data
