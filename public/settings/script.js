@@ -3,7 +3,7 @@ const DEFAULTS = {
     panicKey: "]",
     panicUrl: "https://classroom.google.com",
     cloaking: false,
-    leaveConfirm: false // New default
+    leaveConfirm: false
 };
 
 document.getElementById('leaveConfirmToggle').checked = settings.leaveConfirm;
