@@ -41,11 +41,10 @@ async function loadProfile() {
         const res = await fetch('/api/get-profile');
         
         if (!res.ok) {
-            // If the user isn't logged in, only redirect if they are on a "protected" page
             if (!isPublicPage) {
                 window.location.href = "/login";
             }
-            return; // Exit the function safely
+            return; 
         }
 
         const user = await res.json();
@@ -59,7 +58,6 @@ async function loadProfile() {
         }
     } catch (err) {
         console.error("Auth error:", err);
-        // Only redirect if it's a critical error on a private page
         if (!isPublicPage) {
             window.location.href = "/login"; 
         }
@@ -100,12 +98,23 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
     }
 });
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
     const logoutBtn = e.target.closest('#logoutBtn');
+    
     if (logoutBtn) {
         e.preventDefault();
-        console.log("Logging out...");
-        document.cookie = "pal_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        
+        try {
+            // 1. Tell the server to clear the cookie
+            const res = await fetch('/api/logout');
+            
+            if (res.ok) {
+                localStorage.clear(); 
+            }
+        } catch (err) {
+            console.error("Logout failed:", err);
+            window.location.href = "/login";
+        }
     }
 });
 
