@@ -12,20 +12,26 @@ export async function onRequestGet(context) {
     // 1. Extract and Decode the token
     const token = cookie.split("pal_session=")[1].split(";")[0];
     const payload = JSON.parse(atob(token.split(".")[1]));
-    const username = payload.username;
+    
+    // Normalize the username from the token
+    const username = payload.username?.toLowerCase();
 
-    // 2. Fetch the user from KV to get the themeColor
-    const rawData = await env.USERS_KV.get(username);
+    // 2. Fetch using the NEW KEY FORMAT: user:name
+    const userKey = `user:${username}`;
+    const rawData = await env.USERS_KV.get(userKey);
     const user = rawData ? JSON.parse(rawData) : null;
 
     if (!user) {
-      return new Response(JSON.stringify({ loggedIn: false }), { status: 200 });
+      // If we can't find the userKey, we return loggedIn: false
+      return new Response(JSON.stringify({ loggedIn: false }), { 
+        headers: { "Content-Type": "application/json" } 
+      });
     }
 
-    // 3. Return the data the frontend is looking for
+    // 3. Return data to frontend
     return new Response(JSON.stringify({
       loggedIn: true,
-      username: user.username,
+      username: user.displayName || user.username, // Send the "Pretty" name to the UI
       themeColor: user.themeColor || "#2563eb"
     }), { 
       headers: { "Content-Type": "application/json" } 
@@ -33,7 +39,7 @@ export async function onRequestGet(context) {
 
   } catch (err) {
     return new Response(JSON.stringify({ loggedIn: false, error: err.message }), { 
-      status: 200, // Return 200 so the frontend handles it as "Logged Out"
+      status: 200, 
       headers: { "Content-Type": "application/json" }
     });
   }
