@@ -1,8 +1,6 @@
 export async function onRequestGet(context) {
     const { request, env } = context;
     const url = new URL(request.url);
-    
-    // CHANGE THIS: from .get("username") to .get("id")
     const username = url.searchParams.get("id"); 
 
     if (!username) return new Response("Missing ID", { status: 400 });
@@ -21,8 +19,9 @@ export async function onRequestGet(context) {
         rank: user.rank || "Member",
         xp: user.xp || 0,
         currency: user.currency || 0,
-        followersCount: user.followers || 0,
-        followingCount: Array.isArray(user.following) ? user.following.length : 0
+        // CHANGED THESE TO MATCH SCRIPT.JS
+        followers: user.followers || 0, 
+        following: user.following || [] 
     };
 
     return new Response(JSON.stringify(publicData), {
