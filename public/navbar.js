@@ -4,23 +4,25 @@ function injectNavbar() {
         /* Container for the profile icon to allow absolute positioning of the dot */
         #profile-icon {
             position: relative;
+            width: 40px;  /* Match your actual avatar size */
+            height: 40px; /* Match your actual avatar size */
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
 
-        /* The Red Notification Dot */
         #profile-notif-dot {
             position: absolute;
-            top: -2px;    /* Adjust these to move the dot up/down */
-            right: -2px;  /* Adjust these to move the dot left/right */
+            top: 0;
+            right: 0;
             width: 12px;
             height: 12px;
             background-color: #ef4444;
             border-radius: 50%;
-            border: 2px solid #0f172a; /* Creates a gap between the dot and avatar */
-            display: none; /* Hidden until JS finds notifications */
-            z-index: 99;
+            border: 2px solid #0f172a;
+            z-index: 999; /* Ensure it's on top of everything */
+            display: none; 
         }
     </style>`;
 
