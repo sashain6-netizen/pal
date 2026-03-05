@@ -15,27 +15,31 @@ export async function onRequest(context) {
 
         let user = JSON.parse(rawData);
 
+        // Handle POST (Delete or Clear All)
         if (request.method === "POST") {
             const { notifId, clearAll } = await request.json();
 
             if (clearAll === true) {
                 user.notifications = [];
             } else if (notifId !== undefined) {
-                // Keep the String() conversion to be safe!
                 user.notifications = (user.notifications || []).filter(n => 
                     String(n.id) !== String(notifId)
                 );
             }
 
-            // This MUST be inside the POST block
             await env.USERS_KV.put(userKey, JSON.stringify(user));
-            r
+            return new Response(JSON.stringify({ success: true }), {
+                headers: { "Content-Type": "application/json" }
+            });
+        }
 
         // Handle GET (Fetch)
         return new Response(JSON.stringify(user.notifications || []), {
             headers: { "Content-Type": "application/json" }
         });
+        
     } catch (e) {
-        return new Response(JSON.stringify([]), { status: 500 });
+        // Return the error message so you can see what went wrong in the toast
+        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
 }
