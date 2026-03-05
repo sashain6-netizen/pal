@@ -33,25 +33,33 @@ function showToast(message, type = 'success') {
 async function loadProfile() {
     try {
         const res = await fetch('/api/get-profile');
-        
-        // If the API doesn't exist yet, don't redirect, just show a warning
-        if (res.status === 404) {
-            console.warn("API /api/get-profile not found. Create the function to fix this.");
-            return; 
-        }
-
-        if (!res.ok) throw new Error("Not logged in");
-
+        if (!res.ok) throw new Error("Unauthorized");
         const user = await res.json();
-        
+
+        // 1. Fill Form
         document.getElementById('display-username').value = user.username;
-        document.getElementById('displayName').value = user.displayName || "";
-        document.getElementById('bio').value = user.bio || "";
-        document.getElementById('themeColor').value = user.themeColor || "#2563eb";
+        document.getElementById('displayName').value = user.displayName;
+        document.getElementById('bio').value = user.bio;
+        document.getElementById('themeColor').value = user.themeColor;
+
+        // 2. Update Stats
+        document.getElementById('stat-rank').innerText = user.rank;
+        document.getElementById('stat-xp-rank').innerText = user.rank !== user.xpRank ? `(${user.xpRank})` : "";
+        document.getElementById('stat-currency').innerText = user.currency.toLocaleString();
+        document.getElementById('stat-followers').innerText = user.followersCount;
+        document.getElementById('stat-following').innerText = user.followingCount;
+        document.getElementById('stat-xp').innerText = `${user.xp.toLocaleString()} XP`;
+
+        // 3. Progress Bar Math
+        const ladder = [30000, 15000, 7500, 3500, 1500, 500, 0];
+        const nextRankXp = ladder.find(xp => xp > user.xp) || 30000;
+        const currentRankXp = [...ladder].reverse().find(xp => xp <= user.xp) || 0;
+        
+        const percent = ((user.xp - currentRankXp) / (nextRankXp - currentRankXp)) * 100;
+        document.getElementById('xp-bar-fill').style.width = `${Math.min(percent, 100)}%`;
+
     } catch (err) {
-        console.error("Profile load failed:", err);
-        // Only redirect if it's a real authentication error
-        // window.location.href = "/login"; 
+        window.location.href = "/login";
     }
 }
 

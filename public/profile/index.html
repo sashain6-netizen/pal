@@ -11,35 +11,46 @@
     <div id="toast-container" class="toast-container"></div>
 
     <div class="auth-card profile-card">
-        <div class="auth-logo"><a href="/">PAL</a></div>
-        <h1>Edit Profile</h1>
-        <p>Customize how others see you on Pal.</p>
-
-        <form id="profileForm">
-            <div class="input-group">
-                <label>Username (Fixed)</label>
-                <input type="text" id="display-username" disabled style="background: #f1f5f9; cursor: not-allowed;">
+    <div class="auth-logo"><a href="/">PAL</a></div>
+    <h1>Edit Profile</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-box">
+            <span class="stat-label">Rank</span>
+            <div class="rank-wrapper">
+                <span id="stat-rank" class="stat-value">Member</span>
+                <small id="stat-xp-rank"></small>
             </div>
-
-            <div class="input-group">
-                <label for="displayName">Display Name</label>
-                <input type="text" id="displayName" placeholder="Your name">
-            </div>
-
-            <div class="input-group">
-                <label for="bio">Bio</label>
-                <textarea id="bio" placeholder="Tell us about yourself..." maxlength="160"></textarea>
-            </div>
-
-            <div class="input-group">
-                <label for="themeColor">Profile Theme Color</label>
-                <input type="color" id="themeColor" value="#2563eb" style="height: 50px; padding: 5px;">
-            </div>
-
-            <button type="submit" class="auth-btn">Save Changes</button>
-            <a href="/" class="secondary-link">Back to Dashboard</a>
-        </form>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Currency</span>
+            <span id="stat-currency" class="stat-value">0</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Followers</span>
+            <span id="stat-followers" class="stat-value">0</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Following</span>
+            <span id="stat-following" class="stat-value">0</span>
+        </div>
     </div>
+
+    <div class="xp-container">
+        <div class="xp-info">
+            <span>Progress to next rank</span>
+            <span id="stat-xp">0 XP</span>
+        </div>
+        <div class="xp-bar-bg">
+            <div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <form id="profileForm">
+        <button type="submit" class="auth-btn">Save Changes</button>
+        <a href="/" class="secondary-link">Back to Dashboard</a>
+    </form>
+</div>
     
     <script src="global-settings.js"></script>
     <script src="script.js"></script>
