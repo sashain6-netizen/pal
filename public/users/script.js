@@ -33,28 +33,36 @@ async function loadProfile() {
         if (nameEl) nameEl.textContent = data.displayName;
         if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
 
-        // --- NEW STAT UPDATES START HERE ---
-        
-        // Update Username (usually shown with an @)
-        const usernameEl = document.getElementById('username') || document.getElementById('display-username');
-        if (usernameEl) usernameEl.textContent = `@${data.username}`;
+        const data = await response.json();
 
-        // Update Rank
+        // 1. Core Info
+        if (nameEl) nameEl.textContent = data.displayName;
+        if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
+
+        // 2. Username
+        const userEl = document.getElementById('username') || document.getElementById('display-username');
+        if (userEl) userEl.textContent = `@${data.username}`;
+
+        // 3. Rank
         const rankEl = document.getElementById('rank') || document.getElementById('display-rank');
-        if (rankEl) rankEl.textContent = data.rank;
+        if (rankEl) rankEl.textContent = data.rank || "Member";
 
-        // Update XP
+        // 4. Stats (Numbers)
         const xpEl = document.getElementById('xp') || document.getElementById('display-xp');
-        if (xpEl) xpEl.textContent = data.xp.toLocaleString(); // adds commas like 8,800
+        if (xpEl) xpEl.textContent = (data.xp || 0).toLocaleString();
 
-        // Update Currency
         const currencyEl = document.getElementById('currency') || document.getElementById('display-currency');
-        if (currencyEl) currencyEl.textContent = data.currency.toLocaleString();
+        if (currencyEl) currencyEl.textContent = (data.currency || 0).toLocaleString();
 
-        // Update Avatar
+        const followersEl = document.getElementById('followers') || document.getElementById('display-followers');
+        if (followersEl) followersEl.textContent = (data.followersCount || 0).toLocaleString();
+
+        // 5. Avatar
         const avatarEl = document.getElementById('avatar') || document.getElementById('display-avatar');
-        if (avatarEl && data.avatar) avatarEl.src = data.avatar;
-
+        if (avatarEl && data.avatar) {
+            avatarEl.src = data.avatar;
+        }
+        
     } catch (err) {
         // This will show the EXACT error on your screen since you can't see the console
         if (nameEl) nameEl.textContent = "ERROR OCCURRED";
