@@ -47,10 +47,35 @@ async function loadProfile() {
 
         // --- MOVE THESE HERE (Outside the myData check) ---
         const avatarImg = document.getElementById('display-avatar');
-        if (avatarImg) {
-            // Check if your backend uses 'avatar' or 'avatarUrl'
-            avatarImg.src = data.avatar || "/default-avatar.png";
-        }
+if (avatarImg) {
+    // We check data.avatar (from your backend) 
+    // If it's the default or missing, we ensure it shows correctly
+    avatarImg.src = data.avatar || "/default-avatar.png";
+    
+    // Safety: If the image URL is broken/404, snap back to default
+    avatarImg.onerror = () => {
+        avatarImg.src = "/default-avatar.png";
+    };
+}
+
+// 2. Update the Navbar Profile Icon (Using your injectNavbar template)
+if (myData) {
+    const navAvatarContainer = document.getElementById('avatar-container');
+    if (navAvatarContainer) {
+        // This injects the image into the navbar circle
+        navAvatarContainer.innerHTML = `
+            <img src="${myData.avatarUrl || myData.avatar || '/default-avatar.png'}" 
+                 alt="Profile" 
+                 style="width: 100%; height: 100%; object-fit: cover;">
+        `;
+    }
+
+    // Toggle the dropdown menu visibility
+    const loggedInLinks = document.getElementById('loggedInLinks');
+    const loggedOutLinks = document.getElementById('loggedOutLinks');
+    if (loggedInLinks) loggedInLinks.style.display = 'block';
+    if (loggedOutLinks) loggedOutLinks.style.display = 'none';
+}
         
         const bioText = document.getElementById('display-bio');
         if (bioText) {
