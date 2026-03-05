@@ -62,7 +62,7 @@ async function loadProfile() {
 
         document.getElementById('xp-bar-fill').style.width = `${Math.min(Math.max(percent, 0), 100)}%`;
     } catch (err) {
-        console.error("DEBUG: The error that caused the redirect is:", err);
+        window.location.href = "/login";
     }
 }
 

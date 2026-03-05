@@ -47,6 +47,25 @@
     </div>
 
     <form id="profileForm">
+        <div class="input-group">
+            <label>Username (Fixed)</label>
+            <input type="text" id="display-username" disabled style="background: #f1f5f9; cursor: not-allowed;">
+        </div>
+
+        <div class="input-group">
+            <label for="displayName">Display Name</label>
+            <input type="text" id="displayName" placeholder="Your name">
+        </div>
+
+        <div class="input-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" placeholder="Tell us about yourself..." maxlength="160"></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="themeColor">Profile Theme Color</label>
+            <input type="color" id="themeColor" value="#2563eb" style="height: 50px; padding: 5px;">
+        </div>
         <button type="submit" class="auth-btn">Save Changes</button>
         <a href="/" class="secondary-link">Back to Dashboard</a>
     </form>
