@@ -15,15 +15,23 @@ export async function onRequest(context) {
 
         let user = JSON.parse(rawData);
 
-        // Handle Deleting (POST)
+        // Handle POST (Delete or Clear All)
         if (request.method === "POST") {
-            const { notifId } = await request.json();
-            user.notifications = (user.notifications || []).filter(n => n.id !== notifId);
+            const { notifId, clearAll } = await request.json();
+
+            if (clearAll === true) {
+                // Wipe all notifications
+                user.notifications = [];
+            } else if (notifId) {
+                // Delete just one
+                user.notifications = (user.notifications || []).filter(n => n.id !== notifId);
+            }
+
             await env.USERS_KV.put(userKey, JSON.stringify(user));
             return new Response(JSON.stringify({ success: true }));
         }
 
-        // Handle Fetching (GET)
+        // Handle GET (Fetch)
         return new Response(JSON.stringify(user.notifications || []), {
             headers: { "Content-Type": "application/json" }
         });
