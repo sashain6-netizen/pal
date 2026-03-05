@@ -105,15 +105,18 @@ document.addEventListener('click', async (e) => {
         e.preventDefault();
         
         try {
-            // 1. Tell the server to clear the cookie
             const res = await fetch('/api/logout');
             
             if (res.ok) {
                 localStorage.clear(); 
+                
+                updateGlobalUI(false); 
+                
+                showToast("Logged out successfully", "success");
             }
         } catch (err) {
             console.error("Logout failed:", err);
-            window.location.href = "/login";
+            showToast("Error during logout", "error");
         }
     }
 });
