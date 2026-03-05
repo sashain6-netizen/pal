@@ -1,35 +1,33 @@
-const list = document.getElementById('notif-list');
+export async function onRequest(context) {
+    const { request, env } = context;
+    const cookie = request.headers.get("Cookie") || "";
+    const tokenPart = cookie.split("pal_session=")[1];
 
-async function loadNotifications() {
-    const res = await fetch('/api/notifications');
-    const data = await res.json();
+    if (!tokenPart) return new Response(JSON.stringify([]), { status: 401 });
 
-    if (data.length === 0) {
-        list.innerHTML = '<p class="empty">No new notifications.</p>';
-        return;
+    try {
+        const token = tokenPart.split(";")[0];
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const userKey = `user:${payload.username.toLowerCase()}`;
+        
+        const rawData = await env.USERS_KV.get(userKey);
+        if (!rawData) return new Response(JSON.stringify([]), { status: 404 });
+
+        let user = JSON.parse(rawData);
+
+        // Handle Deleting (POST)
+        if (request.method === "POST") {
+            const { notifId } = await request.json();
+            user.notifications = (user.notifications || []).filter(n => n.id !== notifId);
+            await env.USERS_KV.put(userKey, JSON.stringify(user));
+            return new Response(JSON.stringify({ success: true }));
+        }
+
+        // Handle Fetching (GET)
+        return new Response(JSON.stringify(user.notifications || []), {
+            headers: { "Content-Type": "application/json" }
+        });
+    } catch (e) {
+        return new Response(JSON.stringify([]), { status: 500 });
     }
-
-    list.innerHTML = data.map(n => `
-        <div class="notif-card" id="notif-${n.id}">
-            <div class="notif-content">
-                <p>${n.text}</p>
-                <span>${new Date(n.date).toLocaleDateString()}</span>
-            </div>
-            <button class="close-btn" onclick="deleteNotif(${n.id})">&times;</button>
-        </div>
-    `).join('');
 }
-
-async function deleteNotif(id) {
-    // Remove from UI immediately for speed
-    document.getElementById(`notif-${id}`).style.display = 'none';
-
-    // Update the Database
-    await fetch('/api/notifications', {
-        method: 'POST',
-        body: JSON.stringify({ notifId: id }),
-        headers: { 'Content-Type': 'application/json' }
-    });
-}
-
-loadNotifications();
