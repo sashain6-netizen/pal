@@ -2,54 +2,68 @@ async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('id')?.toLowerCase();
     
-    // Get basic elements
-    const nameEl = document.getElementById('displayName') || document.getElementById('display-name');
-    const bioEl = document.getElementById('bio') || document.getElementById('display-bio');
-
     if (!userId) return;
 
     try {
         const response = await fetch(`/api/get-user-public?id=${userId}`);
-        
-        if (!response.ok) return; // Fail silently if user not found
+        if (!response.ok) return;
 
-        const data = await response.json(); // Read JSON only ONCE
-        
+        const data = await response.json();
         if (!data.username) return;
 
-        // 1. Core Info
+        // 1. Name & Bio
+        const nameEl = document.getElementById('display-name');
         if (nameEl) nameEl.textContent = data.displayName || data.username;
+
+        const bioEl = document.getElementById('display-bio');
         if (bioEl) bioEl.textContent = data.bio || "No bio yet.";
 
         // 2. Username
-        const userEl = document.getElementById('username') || document.getElementById('display-username');
+        const userEl = document.getElementById('display-username');
         if (userEl) userEl.textContent = `@${data.username}`;
 
         // 3. Rank
-        const rankEl = document.getElementById('rank') || document.getElementById('display-rank');
+        const rankEl = document.getElementById('stat-rank');
         if (rankEl) rankEl.textContent = data.rank || "Member";
 
-        // 4. Stats (Numbers)
-        const xpEl = document.getElementById('xp') || document.getElementById('display-xp');
-        if (xpEl) xpEl.textContent = (data.xp || 0).toLocaleString();
-
-        const currencyEl = document.getElementById('currency') || document.getElementById('display-currency');
+        // 4. Currency
+        const currencyEl = document.getElementById('stat-currency');
         if (currencyEl) currencyEl.textContent = (data.currency || 0).toLocaleString();
 
-        const followersEl = document.getElementById('followers') || document.getElementById('display-followers');
-        if (followersEl) followersEl.textContent = (data.followersCount || data.followers || 0).toLocaleString();
+        // 5. Followers & Following
+        const followersEl = document.getElementById('stat-followers');
+        if (followersEl) {
+            const count = data.followersCount !== undefined ? data.followersCount : (data.followers || 0);
+            followersEl.textContent = count.toLocaleString();
+        }
 
-        // 5. Avatar
-        const avatarEl = document.getElementById('avatar') || document.getElementById('display-avatar');
+        const followingEl = document.getElementById('stat-following');
+        if (followingEl) {
+            const fCount = data.followingCount !== undefined ? data.followingCount : (data.following?.length || 0);
+            followingEl.textContent = fCount.toLocaleString();
+        }
+
+        // 6. XP
+        const xpEl = document.getElementById('stat-xp');
+        if (xpEl) xpEl.textContent = `${(data.xp || 0).toLocaleString()} XP`;
+
+        // 7. Avatar
+        const avatarEl = document.getElementById('display-avatar');
         if (avatarEl) {
-            avatarEl.src = data.avatar || data.avatarUrl || "/default-avatar.png";
+            avatarEl.src = data.avatar || "/default-avatar.png";
+        }
+
+        // 8. XP Bar Logic (Bonus)
+        const xpBar = document.getElementById('xp-bar-fill');
+        if (xpBar && data.xp) {
+            // Logic: Assume 10,000 XP is a level up for visual progress
+            const percentage = Math.min((data.xp % 10000) / 100, 100); 
+            xpBar.style.width = `${percentage}%`;
         }
 
     } catch (err) {
-        // No error messages will show on the screen
-        console.log("Profile load failed.");
+        console.log("Silent failure: Check console if possible.");
     }
 }
 
-// Call it once when the script loads
 document.addEventListener('DOMContentLoaded', loadProfile);
