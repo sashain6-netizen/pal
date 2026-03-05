@@ -75,20 +75,22 @@ function injectNavbar() {
 
 async function checkNotifications() {
     const profileDot = document.getElementById('profile-notif-dot');
-    
+    if (!profileDot) return;
+
     try {
         const res = await fetch('/api/notifications');
-        if (res.ok) {
-            const data = await res.json();
-            // Show dot if array length is greater than 0
-            if (data && data.length > 0) {
-                profileDot.style.display = 'block';
-            } else {
-                profileDot.style.display = 'none';
-            }
+        const data = await res.json();
+        
+        console.log("Notif Data:", data); // Check your browser console (F12)
+
+        if (Array.isArray(data) && data.length > 0) {
+            console.log("Showing dot!");
+            profileDot.style.setProperty('display', 'block', 'important');
+        } else {
+            profileDot.style.display = 'none';
         }
     } catch (err) {
-        // Silently catch errors (like being logged out)
+        console.error("Notif Check Failed:", err);
     }
 }
 
