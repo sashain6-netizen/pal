@@ -32,7 +32,7 @@ async function loadProfile() {
 
         if (!pubRes.ok) return;
         const data = await pubRes.json();
-        
+        const myData = meRes.ok ? await meRes.json() : null;
 
         // Populate User Data
         document.getElementById('display-name').textContent = data.displayName || data.username;
