@@ -6,8 +6,9 @@ export async function onRequestPost(context) {
   try {
     const { username, email, password } = await request.json();
 
-    // 1. Clean up inputs (Remove accidental spaces)
-    const cleanUsername = username?.trim();
+    // 1. Clean up inputs
+    const displayName = username?.trim(); // Keeps original casing for display
+    const canonicalUsername = displayName?.toLowerCase(); // Used for uniqueness check
     const cleanEmail = email?.trim().toLowerCase();
 
     // 2. Validations
@@ -15,15 +16,17 @@ export async function onRequestPost(context) {
     if (!cleanEmail || !emailRegex.test(cleanEmail)) {
       return new Response(JSON.stringify({ error: "Please provide a valid email" }), { status: 400 });
     }
-    if (!cleanUsername || cleanUsername.length < 3) {
+    if (!displayName || displayName.length < 3) {
       return new Response(JSON.stringify({ error: "Username must be at least 3 characters" }), { status: 400 });
     }
     if (!password || password.length < 8) {
       return new Response(JSON.stringify({ error: "Password must be at least 8 characters" }), { status: 400 });
     }
 
-    // 3. CHECK USERNAME
-    const existingUser = await env.USERS_KV.get(cleanUsername);
+    // 3. CHECK USERNAME (Using the lowercase canonical version)
+    // If "pal" is in KV, "Pal" will now correctly trigger this error.
+    const usernameKey = `user:${canonicalUsername}`; 
+    const existingUser = await env.USERS_KV.get(usernameKey);
     if (existingUser) {
       return new Response(JSON.stringify({ error: "Username already taken" }), { status: 409 });
     }
@@ -39,12 +42,12 @@ export async function onRequestPost(context) {
     const { hash, salt } = await hashPassword(password);
 
     const userData = {
-      username: cleanUsername,
+      username: canonicalUsername, // Logical ID
+      displayName: displayName,    // Pretty version (e.g., "Pal")
       email: cleanEmail,
       hash,
       salt,
       joined: new Date().toISOString(),
-      displayName: cleanUsername, 
       bio: "",
       themeColor: "#2563eb",
       avatarUrl: "",
@@ -54,8 +57,9 @@ export async function onRequestPost(context) {
     };
 
     // 6. STORAGE
-    await env.USERS_KV.put(cleanUsername, JSON.stringify(userData));
-    await env.USERS_KV.put(emailKey, cleanUsername);
+    // We store the user object under the lowercase key to ensure uniqueness
+    await env.USERS_KV.put(usernameKey, JSON.stringify(userData));
+    await env.USERS_KV.put(emailKey, canonicalUsername);
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json" }
