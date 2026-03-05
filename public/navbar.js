@@ -129,7 +129,7 @@ async function checkNotifications() {
 
     // Setup an observer to watch for other scripts overwriting the #profile-icon HTML
     const observer = new MutationObserver(applyDotState);
-    const target = document.getElementById('profile-icon');
+    const target = document.getElementById('profile-icon');   
     if (target) {
         observer.observe(target, { childList: true });
     }
