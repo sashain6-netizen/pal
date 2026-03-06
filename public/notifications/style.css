@@ -67,16 +67,19 @@ header h1 {
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.1);
 }
 
-.notif-content p { 
+.notif-fcontent p { 
     margin: 0 0 5px 0; 
     font-size: 1rem; 
     font-weight: 500;
-    color: var(--blue-deep);
+    color: #000000; 
 }
 
-.notif-content span { 
+.notif-fcontent span { 
     font-size: 0.8rem; 
-    color: var(--blue-soft); 
+    color: #000000 !important;
+    opacity: 0.7; 
+    display: block;
+    margin-top: 4px;
 }
 
 .close-btn {
