@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search • Pal</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/search/style.css">
+</head>
+<body>
+    <nav class="navbar" id="main-nav"></nav>
+
+    <main class="search-container">
+        <div class="search-box">
+            <h1>Find a Pal</h1>
+            <p>Search for a username to view their profile</p>
+            
+            <div class="input-group">
+                <input type="text" id="search-input" placeholder="Enter username..." autocomplete="off">
+                <button id="search-btn" class="nav-btn">Search</button>
+            </div>
+
+            <div id="search-results" class="results-area">
+                </div>
+        </div>
+    </main>
+
+    <script src="/global-settings.js"></script>
+    <script src="/global-auth.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="/search/script.js"></script>
+</body>
+</html>
