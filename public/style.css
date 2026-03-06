@@ -499,3 +499,9 @@ html, body {
     }
 }
 
+.game-toast {
+    /* ... existing styles ... */
+    word-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.4;
+}

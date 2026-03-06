@@ -11,23 +11,33 @@
     }
 
     window.showToast = function(message, url = null) {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+
         const toast = document.createElement('div');
         toast.className = 'game-toast';
         
-        // Use innerHTML so we can style the "Click to view" hint
         if (url) {
-            toast.style.cursor = 'pointer';
             toast.onclick = () => { window.location.href = url; };
-            toast.innerHTML = `<div>${message}</div><div style="font-size:0.7rem; opacity:0.6; margin-top:4px;">Click to view →</div>`;
+            // The "Advanced" version with the hint
+            toast.innerHTML = `
+                <div style="margin-bottom: 4px;">${message}</div>
+                <div style="font-size: 0.75rem; color: var(--blue-primary); font-weight: 700; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px; margin-top: 4px;">Click to view →</div>
+            `;
         } else {
+            // The "Simple" version for basic alerts
             toast.textContent = message;
         }
-        
-        toastContainer.appendChild(toast);
-        
+
+        container.appendChild(toast);
+
         setTimeout(() => {
             toast.style.opacity = '0';
-            toast.style.transform = 'translateX(20px)';
+            toast.style.transform = 'translateX(50px)';
             setTimeout(() => toast.remove(), 500);
         }, 5000);
     };
