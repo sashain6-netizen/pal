@@ -1,20 +1,37 @@
+// --- 1. SINGLETON PROTECTION ---
+// This prevents the "Double Message" bug by checking if the navbar already exists
+if (window.navbarHasLoaded) {
+    console.warn("Navbar already injected. Skipping...");
+} else {
+    window.navbarHasLoaded = true;
+    injectNavbar();
+}
+
 function injectNavbar() {
     const navStyles = `
     <style>
         #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; }
-        #profile-notif-dot { position: absolute !important; top: -2px !important; right: -2px !important; width: 12px !important; height: 12px !important; background-color: #ef4444 !important; border-radius: 50% !important; border: 2px solid #0f172a !important; z-index: 99999 !important; display: none; pointer-events: none; }
+        
+        /* INCREASED Z-INDEX and added !important to display to ensure it shows */
+        #profile-notif-dot { 
+            position: absolute !important; 
+            top: -2px !important; 
+            right: -2px !important; 
+            width: 12px !important; 
+            height: 12px !important; 
+            background-color: #ef4444 !important; 
+            border-radius: 50% !important; 
+            border: 2px solid #0f172a !important; 
+            z-index: 2147483647 !important; /* Highest possible z-index */
+            pointer-events: none;
+            display: none; 
+        }
+
         #avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         #avatar-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- TOAST STYLES --- */
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .game-toast { 
-            background: #1e293b; color: white; padding: 12px 20px; border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4); border-left: 4px solid #10b981; 
-            font-size: 0.9rem; font-weight: 500; min-width: 220px; pointer-events: auto; 
-            animation: toast-in 0.3s ease forwards; transition: all 0.5s ease; cursor: pointer;
-        }
-        .game-toast:hover { background: #334155; transform: scale(1.02); }
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2147483647; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .game-toast { background: #1e293b; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border-left: 4px solid #10b981; font-size: 0.9rem; font-weight: 500; min-width: 220px; pointer-events: auto; animation: toast-in 0.3s ease forwards; cursor: pointer; }
         @keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>`;
 
@@ -57,77 +74,54 @@ function injectNavbar() {
     document.head.insertAdjacentHTML('beforeend', navStyles);
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
 
-    // --- TOAST FUNCTION ---
     window.showToast = function(message, notifId = null) {
         const container = document.getElementById('toast-container');
         if (!container) return;
-
         const toast = document.createElement('div');
         toast.className = 'game-toast';
         toast.innerHTML = `<div>${message}</div><div style="font-size:0.7rem; opacity:0.6; margin-top:4px;">Click to view →</div>`;
-        
-        toast.onclick = async () => {
-            toast.remove();
-            if (notifId) {
-                await fetch('/api/notifications', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ notifId })
-                });
-            }
-            window.location.href = '/notifications';
-        };
-
+        toast.onclick = () => { window.location.href = '/notifications'; };
         container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateX(20px)';
-            setTimeout(() => toast.remove(), 500);
-        }, 6000);
+        setTimeout(() => toast.remove(), 6000);
     };
 
-    // Start the looping check
     startNotificationLoop();
 }
 
-// Track seen notifications so we don't spam toasts
-let seenIds = new Set();
-let isFirstRun = true;
+// Global trackers attached to window to survive re-injections
+window.seenIds = window.seenIds || new Set();
+window.isFirstRun = true;
 
 async function startNotificationLoop() {
     try {
         const res = await fetch('/api/notifications');
-        if (!res.ok) throw new Error("Fetch failed");
-        
         const data = await res.json();
         const hasNotifs = Array.isArray(data) && data.length > 0;
 
-        // Update the Red Dot
+        // Force the dot update by targeting the style directly
         const dot = document.getElementById('profile-notif-dot');
-        if (dot) dot.style.display = hasNotifs ? 'block' : 'none';
+        if (dot) {
+            dot.style.setProperty('display', hasNotifs ? 'block' : 'none', 'important');
+        }
 
         if (hasNotifs) {
             data.forEach(n => {
                 const id = String(n.id);
-                if (!seenIds.has(id)) {
-                    // Only show toast if it's NOT the first time we load the page
-                    // (prevents 10 toasts popping up at once on login)
-                    if (!isFirstRun) {
+                if (!window.seenIds.has(id)) {
+                    if (!window.isFirstRun) {
                         const msg = n.from ? `New from ${n.from}: ${n.text}` : n.text;
                         window.showToast(msg, id);
                     }
-                    seenIds.add(id);
+                    window.seenIds.add(id);
                 }
             });
         }
-        isFirstRun = false;
-
+        window.isFirstRun = false;
     } catch (err) {
         console.error("Polling Error:", err);
     }
 
-    // Run again in 10 seconds
-    setTimeout(startNotificationLoop, 10000);
+    // Protect against overlapping loops
+    if (window.notifTimeout) clearTimeout(window.notifTimeout);
+    window.notifTimeout = setTimeout(startNotificationLoop, 10000);
 }
-
-injectNavbar();
