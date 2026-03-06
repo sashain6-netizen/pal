@@ -131,3 +131,42 @@
     justify-content: center;
     height: 80px;
 }
+
+/* Rarity Tags */
+.rarity-tag {
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+/* Tier Specifics */
+.tier-common .rarity-tag { background: #e2e8f0; color: #475569; }
+.tier-elite .rarity-tag { background: #dbeafe; color: #1e40af; }
+.tier-legendary .rarity-tag { background: #fef3c7; color: #92400e; }
+.tier-mythic .rarity-tag { background: #fae8ff; color: #701a75; }
+
+/* The Mythic Glow */
+.tier-mythic {
+    border: 2px solid #d946ef !important;
+    background: linear-gradient(145deg, #ffffff, #fdf4ff) !important;
+    box-shadow: 0 0 20px rgba(217, 70, 239, 0.2) !important;
+}
+
+.tier-mythic .prefix-preview {
+    text-shadow: 0 0 10px rgba(217, 70, 239, 0.5);
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); text-shadow: 0 0 20px rgba(217, 70, 239, 0.8); }
+    100% { transform: scale(1); }
+}
+
+/* Button Colors */
+.active-btn { background: #10b981 !important; }
+.equip-btn { background: #6366f1 !important; }

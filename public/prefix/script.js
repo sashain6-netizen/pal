@@ -20,31 +20,35 @@ async function loadShop() {
     let html = '';
 
     for (const [id, item] of Object.entries(shopItems)) {
-        const isOwned = user.ownedPrefixes?.includes(id);
-        const isActive = user.currentPrefix === id;
-        
-        // Button Logic: Active vs Equip vs Buy
-        let buttonState = '';
-        if (isActive) {
-            buttonState = `<button class="nav-btn buy-btn" disabled style="background: #10b981; border: none;">Active</button>`;
-        } else if (isOwned) {
-            buttonState = `<button onclick="handleAction('${id}', 'equip')" class="nav-btn buy-btn" style="background: #6366f1;">Equip</button>`;
-        } else {
-            buttonState = `<button onclick="handleAction('${id}', 'buy')" class="nav-btn buy-btn">Buy for ${item.price} 💰</button>`;
-        }
+    const isOwned = user.ownedPrefixes?.includes(id);
+    const isActive = user.currentPrefix === id;
+    
+    // Determine the "Rarity" class for styling
+    let rarityClass = 'tier-common';
+    if (item.price >= 40000) rarityClass = 'tier-mythic';
+    else if (item.price >= 10000) rarityClass = 'tier-legendary';
+    else if (item.price >= 2500) rarityClass = 'tier-elite';
 
-        html += `
-            <div class="feature-card ${isActive ? 'equipped-card' : ''}">
-                <div class="prefix-preview">${item.label}</div>
-                
-                <h3 style="margin-bottom: 5px; color: var(--blue-deep);">
-                    ${item.name || id}
-                </h3>
-                
-                ${buttonState}
-            </div>
-        `;
+    let buttonState = '';
+    if (isActive) {
+        buttonState = `<button class="nav-btn buy-btn active-btn" disabled>Active</button>`;
+    } else if (isOwned) {
+        buttonState = `<button onclick="handleAction('${id}', 'equip')" class="nav-btn buy-btn equip-btn">Equip</button>`;
+    } else {
+        buttonState = `<button onclick="handleAction('${id}', 'buy')" class="nav-btn buy-btn">Buy ${item.price} 💰</button>`;
     }
+
+    html += `
+        <div class="feature-card ${rarityClass} ${isActive ? 'equipped-card' : ''}">
+            <div class="prefix-preview">${item.label}</div>
+            <div class="card-info">
+                <h3>${item.name}</h3>
+                <span class="rarity-tag">${rarityClass.replace('tier-', '').toUpperCase()}</span>
+            </div>
+            ${buttonState}
+        </div>
+    `;
+}
     grid.innerHTML = html;
 }
 

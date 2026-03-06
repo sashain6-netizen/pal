@@ -13,10 +13,28 @@ export async function onRequest(context) {
     let user = JSON.parse(await env.USERS_KV.get(userKey));
 
     const shopItems = {
-        "VIP": { price: 500, label: "👑", name: "VIP Status" },
-        "OG": { price: 1000, label: "💀", name: "OG Status" },
-        "PRO": { price: 2500, label: "⚡", name: "Pro Skill" },
-        "FIRE": { price: 5000, label: "🔥", name: "On Fire" }
+    // --- COMMON (500 - 1,500) ---
+        "VIP":    { price: 500,   label: "👑", name: "VIP" },
+        "STAR":   { price: 800,   label: "⭐", name: "Rising Star" },
+        "COOL":   { price: 1200,  label: "😎", name: "Cool Cat" },
+        "GHOST":  { price: 1500,  label: "👻", name: "Specter" },
+
+        // --- ELITE (2,500 - 8,000) ---
+        "PRO":    { price: 2500,  label: "⚡", name: "Pro Skill" },
+        "OG":     { price: 4000,  label: "💀", name: "Original" },
+        "ICE":    { price: 6000,  label: "🧊", name: "Cold Blooded" },
+        "NINJA":  { price: 8000,  label: "🥷", name: "Shadow Walker" },
+
+        // --- LEGENDARY (10,000 - 25,000) ---
+        "DEMON":  { price: 12000, label: "👹", name: "Demon Mode" },
+        "GALAXY": { price: 18000, label: "🌌", name: "Space Traveler" },
+        "DRAGON": { price: 25000, label: "🐉", name: "Dragon Lord" },
+
+        // --- MYTHIC / SUPER RARE (40,000 - 100,000+) ---
+        "PHOENIX":{ price: 45000, label: "🔥🐦🔥", name: "Eternal Phoenix" },
+        "VOID":   { price: 60000, label: "🌑🌀", name: "The Void" },
+        "AURA":   { price: 85000, label: "✨💎✨", name: "Diamond Aura" },
+        "GOD":    { price: 150000,label: "🌌🔱🌌", name: "God Emperor" }
     };
 
     if (request.method === "POST") {
