@@ -177,15 +177,16 @@ async function loadProfile() {
                 sendBtn.textContent = "Sending...";
 
                 const res = await fetch('/api/send-notification', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        targetId: userId,
-                        from: myData.displayName || myData.username,
-                        text: msg,
-                        type: "message"
-                    })
-                });
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetId: userId, // The person getting the message
+                    from: myData.displayName || myData.username, // Display name
+                    fromId: myData.username, // <--- ADD THIS: Your unique ID for the link!
+                    text: msg,
+                    type: "message"
+                })
+            });
 
                 if (res.ok) {
                     showToast("Message sent successfully!");
