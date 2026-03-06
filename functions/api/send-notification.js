@@ -11,7 +11,7 @@ export async function onRequestPost(context) {
 
     // Add the new notification with a unique ID
     user.notifications.unshift({
-        id: Date.now().toString(), // Unique ID for deleting
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         from: from,
         text: text,
         type: type || "message",
