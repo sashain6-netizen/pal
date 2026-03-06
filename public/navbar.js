@@ -31,16 +31,20 @@ function injectNavbar() {
             align-items: center; 
             gap: 18px; 
             margin-left: 20px; 
-            margin-right: auto; /* Pushes the main links to the right */
+            margin-right: auto; 
         }
-        .nav-icons a { 
-            color: #64748b; 
+        /* Target normal, visited, and active states together */
+        .nav-icons a, 
+        .nav-icons a:visited { 
+            color: #64748b; /* Your default soft blue-gray */
             transition: color 0.2s, transform 0.2s; 
             display: flex; 
             align-items: center; 
+            text-decoration: none; /* Removes underlines if any */
         }
+        /* Make them stay blue when hovered */
         .nav-icons a:hover { 
-            color: #2563eb; 
+            color: #2563eb !important; 
             transform: translateY(-2px); 
         }`;
 
