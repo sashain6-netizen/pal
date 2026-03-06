@@ -24,7 +24,7 @@ async function loadNotifications() {
         return `
             <div class="notif-card" id="notif-${n.id}">
                 <div class="notif-fcontent">
-                    <p>${senderHTML} ${n.text}</p>
+                    <p>${senderHTML} <span style="color: #000;">${n.text}</span></p>
                     <span>${new Date(n.date).toLocaleDateString()}</span>
                 </div>
                 <button class="close-btn" onclick="deleteNotif('${n.id}')">&times;</button>
