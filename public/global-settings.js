@@ -23,13 +23,12 @@
         
         if (url) {
             toast.onclick = () => { window.location.href = url; };
-            // The "Advanced" version with the hint
+            toast.style.cursor = 'pointer'; // Make it look clickable
             toast.innerHTML = `
                 <div style="margin-bottom: 4px;">${message}</div>
-                <div style="font-size: 0.75rem; color: var(--blue-primary); font-weight: 700; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px; margin-top: 4px;">Click to view →</div>
+                <div class="toast-hint">Click to view →</div>
             `;
         } else {
-            // The "Simple" version for basic alerts
             toast.textContent = message;
         }
 
