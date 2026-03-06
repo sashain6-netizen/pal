@@ -113,4 +113,14 @@
             e.returnValue = ''; 
         });
     }
+
+    const panicUrl = settings.panicUrl || "https://classroom.google.com";
+    const panicKey = settings.panicKey || "`"; // Default to backtick
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === panicKey) {
+            // Immediate redirect
+            window.location.replace(panicUrl);
+        }
+    });
 })();
