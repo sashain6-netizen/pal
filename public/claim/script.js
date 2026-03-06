@@ -35,12 +35,16 @@ document.getElementById('claim-btn').onclick = async () => {
         const data = await res.json();
 
         if (data.success) {
-            showToast(`Success! +${data.amount} Currency`, "success");
+            showToast(`Success! +${data.amount} 💰`, "success");
             updateUI(Date.now(), data.streak); 
         } else {
-            // IF TOO EARLY: Re-run status check to show the timer
             showToast(data.error || "Too early!", "error");
-            checkRewardStatus(); 
+            if (data.lastClaim) {
+                updateUI(data.lastClaim, data.streak);
+            } else {
+                btn.disabled = false;
+                btn.innerText = "Claim Reward!";
+            }
         }
     } catch (err) {
         showToast("Connection error", "error");
