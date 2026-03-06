@@ -1,0 +1,58 @@
+.claim-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.reward-card {
+    background: #1e293b;
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    max-width: 400px;
+    width: 90%;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.star-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.claim-button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: 0.3s;
+    width: 100%;
+}
+
+.claim-button:disabled {
+    background: #475569;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.claim-button:not(:disabled):hover {
+    background: #3b82f6;
+    transform: scale(1.02);
+}
+
+.next-claim-hint {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
