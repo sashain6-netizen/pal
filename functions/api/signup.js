@@ -80,6 +80,15 @@ export async function onRequestPost(context) {
       currentPrefix: ""
     };
 
+    // --- SEARCH INDEX UPDATE ---
+    // We use canonicalUsername here to match your variable above
+    const indexRaw = await env.USERS_KV.get("all_users_index") || "[]";
+    let index = JSON.parse(indexRaw);
+    if (!index.includes(canonicalUsername)) {
+        index.push(canonicalUsername);
+        await env.USERS_KV.put("all_users_index", JSON.stringify(index));
+    }
+
     // 8. STORAGE
     await env.USERS_KV.put(usernameKey, JSON.stringify(userData));
     await env.USERS_KV.put(emailKey, canonicalUsername);

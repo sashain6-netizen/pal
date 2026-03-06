@@ -9,22 +9,16 @@
     <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body>
-    <nav class="navbar" id="main-nav"></nav>
-
-    <main class="search-container">
+    <div class="container" style="margin-top: 120px;">
+        <h1>Find a Pal</h1>
         <div class="search-box">
-            <h1>Find a Pal</h1>
-            <p>Search for a username to view their profile</p>
-            
-            <div class="input-group">
-                <input type="text" id="search-input" placeholder="Enter username..." autocomplete="off">
-                <button id="search-btn" class="nav-btn">Search</button>
-            </div>
-
-            <div id="search-results" class="results-area">
-                </div>
+            <input type="text" id="userQuery" placeholder="Enter username..." autocomplete="off">
+            <button onclick="performSearch()" class="nav-btn">Search</button>
         </div>
-    </main>
+
+        <div id="results-area" class="features-grid" style="margin-top: 40px;">
+            </div>
+    </div>
 
     <script src="/global-settings.js"></script>
     <script src="/global-auth.js"></script>

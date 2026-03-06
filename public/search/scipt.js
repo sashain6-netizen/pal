@@ -1,56 +1,45 @@
 async function performSearch() {
-    const input = document.getElementById('search-input');
-    const query = input.value.trim();
-    const resultsDiv = document.getElementById('search-results');
+    const query = document.getElementById('userQuery').value;
+    const resultsArea = document.getElementById('results-area');
     
     if (!query) return;
 
-    resultsDiv.innerHTML = '<div class="searching">Searching for user...</div>';
+    resultsArea.innerHTML = "<p>Searching...</p>";
 
     try {
-        const res = await fetch(`/api/search?username=${encodeURIComponent(query)}`);
-        const data = await res.json();
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const users = await res.json();
 
-        if (data.exists) {
-            resultsDiv.innerHTML = `
-                <div class="result-card found">
-                    <div class="user-info">
-                        <div class="user-icon">👤</div>
-                        <div class="user-details">
-                            <span class="user-avatar">${data.prefixLabel || '👤'}</span>
-                            <span class="user-status">View full profile</span>
-                        </div>
+        if (users.length === 0) {
+            showToast("User not found. Redirecting to home...", "error");
+            setTimeout(() => window.location.href = "/", 2000);
+            return;
+        }
+
+        // If there is exactly one perfect match, we could redirect immediately, 
+        // but it's safer to show the option as requested.
+        resultsArea.innerHTML = "";
+        users.forEach(user => {
+            resultsArea.innerHTML += `
+                <div class="feature-card">
+                    <div class="profile-icon" style="margin: 0 auto 15px; width: 60px; height: 60px;">
+                        <img src="${user.avatarUrl}">
                     </div>
-                    <a href="/users?id=${data.username}" class="nav-btn view-btn">Visit</a>
+                    <h3>${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}</h3>
+                    <p>@${user.username}</p>
+                    <a href="/profile/${user.username}" class="nav-btn" style="display:inline-block; text-decoration:none; margin-top:10px;">
+                        View Profile
+                    </a>
                 </div>
             `;
-        } else {
-            resultsDiv.innerHTML = `<div class="result-card error">Username "${query}" not found</div>`;
-        }
+        });
+
     } catch (e) {
-        resultsDiv.innerHTML = `<div class="result-card error">Search failed. Try again.</div>`;
+        showToast("Search error", "error");
     }
 }
 
-// Robust Initialization
-function initSearch() {
-    const btn = document.getElementById('search-btn');
-    const input = document.getElementById('search-input');
-    
-    if (btn) {
-        btn.onclick = performSearch;
-    }
-    
-    if (input) {
-        input.onkeydown = (e) => {
-            if (e.key === 'Enter') performSearch();
-        };
-    }
-}
-
-// Run immediately if DOM is ready, otherwise wait
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSearch);
-} else {
-    initSearch();
-}
+// Allow pressing "Enter" to search
+document.getElementById('userQuery').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performSearch();
+});
