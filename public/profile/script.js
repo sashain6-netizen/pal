@@ -1,25 +1,3 @@
-// --- TOAST SYSTEM ---
-const toastContainer = document.getElementById('toast-container') || (() => {
-    const tc = document.createElement('div');
-    tc.id = 'toast-container';
-    // Ensure the container has the correct styling via your CSS
-    document.body.appendChild(tc);
-    return tc;
-})();
-
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'game-toast';
-    toast.textContent = message;
-    toastContainer.appendChild(toast);
-    
-    // Auto-remove after 3.5 seconds
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 500);
-    }, 3000);
-}
-
 async function loadProfile() {
     try {
         const res = await fetch('/api/get-profile');

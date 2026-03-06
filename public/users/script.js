@@ -1,18 +1,3 @@
-const toastContainer = document.getElementById('toast-container') || (() => {
-    const tc = document.createElement('div');
-    tc.id = 'toast-container';
-    document.body.appendChild(tc);
-    return tc;
-})();
-
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'game-toast';
-    toast.textContent = message;
-    toastContainer.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
-}
-
 // Helper to create the colored SVG icon
 function getColoredSvg(color) {
     return `
