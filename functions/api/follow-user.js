@@ -45,6 +45,7 @@ export async function onRequestPost(context) {
             id: Date.now().toString(),
             type: "follow",
             from: me.displayName || me.username,
+            fromId: myId, // <--- ADD THIS LINE: It tells the UI to link to YOUR profile
             text: "started following you!",
             date: new Date().toISOString()
         });
