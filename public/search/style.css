@@ -69,3 +69,58 @@
     font-weight: 700;
     color: var(--blue-deep);
 }
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.user-status {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.user-avatar {
+    font-size: 1.8rem;
+    background: #fff;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.result-card.found {
+    background: white;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-card.found:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+    border-color: var(--blue-primary);
+}
+
+.view-btn {
+    background: var(--blue-primary);
+    padding: 8px 16px !important;
+    font-size: 0.9rem !important;
+}
+
+.search-container {
+    margin-top: 120px !important; /* Push it down more to clear the nav shadow */
+    position: relative;
+    z-index: 1;
+}
+
+/* Kill any default body margins that might cause "ghost" lines */
+body, html {
+    margin: 0;
+    padding: 0;
+    background-color: #f1f5f9 !important; /* Different color than nav to stop the line */
+}
