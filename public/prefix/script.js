@@ -48,20 +48,21 @@ async function loadShop() {
     grid.innerHTML = html;
 }
 
-async function buyPrefix(itemId) {
+async function handleAction(itemId, action) {
     try {
         const res = await fetch('/api/shop', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId })
+            body: JSON.stringify({ itemId, action }) // Sends 'buy' or 'equip'
         });
         const data = await res.json();
 
         if (data.success) {
-            showToast(`Equipped ${itemId}!`, "success");
-            loadShop(); 
+            const msg = action === 'buy' ? `Purchased ${itemId}!` : `Equipped ${itemId}!`;
+            showToast(msg, "success");
+            loadShop(); // Refresh the grid to update button states
         } else {
-            showToast(data.error || "Purchase failed", "error");
+            showToast(data.error || "Action failed", "error");
         }
     } catch (e) {
         showToast("Server error", "error");
