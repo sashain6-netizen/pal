@@ -73,12 +73,8 @@
     margin: 100px auto 60px !important; /* Forces it below the fixed nav */
     padding: 0 20px;
     position: relative;
-    z-index: 10; /* Keeps it clear of any background elements */
+    z-index: 10; 
 }
-
-/* 2. Reset the Logo Wrapper for the Shop */
-/* The main CSS makes .logo-wrapper invisible (opacity 0), 
-   we need to force it visible for the shop */
 .shop-header .logo-wrapper {
     opacity: 1 !important;
     transform: none !important;
@@ -87,7 +83,6 @@
     margin-bottom: 20px;
 }
 
-/* 3. Ensure the Navbar is solid on this page */
 .navbar {
     background: #ffffff !important;
     backdrop-filter: none !important;
