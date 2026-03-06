@@ -1,4 +1,11 @@
+// 1. Prevent double injection
+if (typeof window.navbarHasLoaded === 'undefined') {
+    window.navbarHasLoaded = false;
+}
+
 function injectNavbar() {
+    if (window.navbarHasLoaded) return;
+
     const navStyles = `
     <style>
         #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; }
@@ -18,7 +25,6 @@ function injectNavbar() {
         #avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         #avatar-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* NEW ICON STYLES - Now inside the style tag */
         .nav-icons { 
             display: flex; 
             align-items: center; 
@@ -88,27 +94,25 @@ function injectNavbar() {
         </div>
     </nav>`;
 
+    // Add Styles
+    document.head.insertAdjacentHTML('beforeend', navStyles);
+    // Add HTML
+    document.body.insertAdjacentHTML('afterbegin', navbarHTML);
+    
+    window.navbarHasLoaded = true;
+
+    // Notification Listener
     window.addEventListener('notifsUpdated', (e) => {
         const dot = document.getElementById('profile-notif-dot');
         if (dot) {
             dot.style.display = e.detail.hasNotifs ? 'block' : 'none';
         }
     });
-
-    document.head.insertAdjacentHTML('beforeend', navStyles);
-    document.body.insertAdjacentHTML('afterbegin', navbarHTML);
 }
 
+// 2. Run the function
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!window.navbarHasLoaded) {
-            window.navbarHasLoaded = true;
-            injectNavbar();
-        }
-    });
+    document.addEventListener('DOMContentLoaded', injectNavbar);
 } else {
-    if (!window.navbarHasLoaded) {
-        window.navbarHasLoaded = true;
-        injectNavbar();
-    }
+    injectNavbar();
 }
