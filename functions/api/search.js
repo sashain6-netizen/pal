@@ -3,6 +3,9 @@ export async function onRequestGet(context) {
     const url = new URL(request.url);
     const query = url.searchParams.get("q")?.toLowerCase().trim();
 
+    const matches = allUsers.filter(username => 
+        username.toLowerCase() === query
+    );
     if (!query) return new Response(JSON.stringify([]), { status: 400 });
 
     try {
