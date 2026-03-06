@@ -10,7 +10,7 @@
         document.body.appendChild(toastContainer);
     }
 
-    window.showToast = function(message, url = null) {
+    window.showToast = function(message, typeOrUrl = null) {
         let container = document.getElementById('toast-container');
         if (!container) {
             container = document.createElement('div');
@@ -21,24 +21,36 @@
         const toast = document.createElement('div');
         toast.className = 'game-toast';
         
-        if (url) {
-            toast.onclick = () => { window.location.href = url; };
-            toast.style.cursor = 'pointer'; // Make it look clickable
+        // Check if the second argument is a URL (starts with /) or a style type
+        const isUrl = typeOrUrl && (typeOrUrl.startsWith('/') || typeOrUrl.startsWith('http'));
+        const isError = typeOrUrl === 'error';
+        const isSuccess = typeOrUrl === 'success';
+
+        if (isError) toast.style.borderLeft = "4px solid #ef4444"; // Red for error
+        if (isSuccess) toast.style.borderLeft = "4px solid #10b981"; // Green for success
+
+        if (isUrl) {
+            toast.style.cursor = 'pointer';
+            toast.onclick = () => { window.location.href = typeOrUrl; };
             toast.innerHTML = `
                 <div style="margin-bottom: 4px;">${message}</div>
-                <div class="toast-hint">Click to view →</div>
+                <div style="font-size: 0.7rem; opacity: 0.8; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px;">
+                    Click to view →
+                </div>
             `;
         } else {
+            // No "Click to view" for errors or simple messages
             toast.textContent = message;
         }
 
         container.appendChild(toast);
 
+        // Fade out and remove
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transform = 'translateX(50px)';
             setTimeout(() => toast.remove(), 500);
-        }, 5000);
+        }, 4000);
     };
 
     // --- 2. NOTIFICATION POLLING (The Master) ---
