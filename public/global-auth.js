@@ -1,9 +1,14 @@
+// Single Source of Truth for Auth
 async function checkAuth() {
     try {
         const response = await fetch('/api/me'); 
         if (!response.ok) throw new Error();
         const data = await response.json();
+        
         updateGlobalUI(data.loggedIn, data);
+        
+        // Notify other scripts (like search or shop) that user data is ready
+        window.dispatchEvent(new CustomEvent('authReady', { detail: data }));
     } catch (e) {
         updateGlobalUI(false);
     }
@@ -12,7 +17,7 @@ async function checkAuth() {
 function updateGlobalUI(isLoggedIn, userData = {}) {
     const loggedInLinks = document.getElementById('loggedInLinks');
     const loggedOutLinks = document.getElementById('loggedOutLinks');
-    const avatarContainer = document.getElementById('avatar-container'); // TARGET THE INNER CONTAINER
+    const avatarContainer = document.getElementById('avatar-container');
     const profileIcon = document.getElementById('profile-icon');
     
     if (!profileIcon || !avatarContainer) return;
@@ -25,7 +30,6 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
         profileIcon.style.borderColor = userColor;
 
         if (userData.avatarUrl && userData.avatarUrl !== "" && userData.avatarUrl !== "/default-avatar.png") {
-            // Update ONLY the avatar container, not the whole icon
             avatarContainer.innerHTML = `<img src="${userData.avatarUrl}" id="nav-avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         } else {
             avatarContainer.innerHTML = `
@@ -34,44 +38,38 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
                           fill="${userColor}" />
                 </svg>`;
         }
+        
+        // Setup Logout Button immediately if it exists
+        const logoutBtn = document.getElementById('logoutLink');
+        if (logoutBtn) logoutBtn.onclick = handleLogout;
+
     } else {
-        // Logged Out State
         if (loggedInLinks) loggedInLinks.style.display = 'none';
         if (loggedOutLinks) loggedOutLinks.style.display = 'flex';
-        profileIcon.style.borderColor = "var(--blue-primary)";
-        avatarContainer.innerHTML = `<img src="/default-avatar.png" id="nav-avatar">`;
+        profileIcon.style.borderColor = "#2563eb";
+        avatarContainer.innerHTML = `<img src="/default-avatar.png" id="nav-avatar" style="width:100%; height:100%; border-radius:50%;">`;
     }
 }
 
 async function handleLogout(e) {
     if (e) e.preventDefault();
-    // Ensure this matches your actual logout route
     await fetch('/api/logout'); 
-    // Clear the cookie manually just in case
     document.cookie = "pal_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     window.location.href = "/";
 }
 
-// Initialize
+// Robust Init: Check auth immediately, and also watch for navbar injection
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
-    // Added a small delay check because navbar.js injects the HTML dynamically
-    setTimeout(() => {
+    
+    // Watch for the navbar being added to the DOM to attach the logout listener
+    const observer = new MutationObserver(() => {
         const logoutBtn = document.getElementById('logoutLink');
-        if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-    }, 100); 
-});
+        if (logoutBtn) {
+            logoutBtn.onclick = handleLogout;
+            observer.disconnect(); // Stop watching once found
+        }
+    });
 
-async function checkAuth() {
-    try {
-        const response = await fetch('/api/me'); 
-        if (!response.ok) throw new Error();
-        const data = await response.json();
-        updateGlobalUI(data.loggedIn, data);
-        
-        // ADD THIS: Tell the rest of the site we are logged in
-        window.dispatchEvent(new CustomEvent('authReady', { detail: data }));
-    } catch (e) {
-        updateGlobalUI(false);
-    }
-}
+    observer.observe(document.body, { childList: true, subtree: true });
+});
