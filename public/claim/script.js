@@ -27,18 +27,29 @@ async function checkRewardStatus() {
 
 document.getElementById('claim-btn').onclick = async () => {
     const btn = document.getElementById('claim-btn');
+    const originalText = "Claim Reward!";
+    
     btn.disabled = true;
     btn.innerText = "Processing...";
 
-    const res = await fetch('/api/claim-reward', { method: 'POST' });
-    const data = await res.json();
+    try {
+        const res = await fetch('/api/claim-reward', { method: 'POST' });
+        const data = await res.json();
 
-    if (data.success) {
-        showToast(`Success! Received ${data.amount} currency.`, "success");
-        checkRewardStatus(); // Refresh UI
-    } else {
-        showToast(data.error || "Failed to claim.", "error");
-        btn.disabled = false;
+        if (data.success) {
+            showToast(`Success! +${data.amount} 💰`, "success");
+            updateUI(Date.now(), data.streak); 
+        } else {
+            showToast(data.error || "Failed to claim.", "error");
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    } catch (err) {
+        console.error("Claim Error:", err);
+        showToast("Connection error. Try again.", "error");
+        
+        btn.disabled = false; 
+        btn.innerText = originalText;
     }
 };
 
