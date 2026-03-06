@@ -69,7 +69,7 @@ export async function onRequestPost(context) {
             newTotal: user.currency
         }), { headers: { "Content-Type": "application/json" } });
 
-    } catch (err) {
+    } catch (err) { 
         return new Response(JSON.stringify({ success: false, error: "Session expired or invalid" }), { 
             status: 401,
             headers: { "Content-Type": "application/json" }
