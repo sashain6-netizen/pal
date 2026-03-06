@@ -15,7 +15,7 @@ async function loadNotifications() {
 
         clearBtn.style.display = 'block';
         list.innerHTML = data.map(n => {
-        const profileLink = n.fromId ? `/user?id=${n.fromId.toLowerCase()}` : null;
+        const profileLink = n.fromId ? `/users?id=${n.fromId.toLowerCase()}` : null;
         
         const senderHTML = profileLink
             ? `<a href="${profileLink}" class="notif-user-link">${n.from || 'System'}</a>`
