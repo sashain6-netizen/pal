@@ -13,29 +13,63 @@ export async function onRequest(context) {
     let user = JSON.parse(await env.USERS_KV.get(userKey));
 
     const shopItems = {
-    // --- COMMON (500 - 1,500) ---
-        "VIP":    { price: 500,   label: "👑", name: "VIP" },
-        "STAR":   { price: 800,   label: "⭐", name: "Rising Star" },
-        "COOL":   { price: 1200,  label: "😎", name: "Cool Cat" },
-        "GHOST":  { price: 1500,  label: "👻", name: "Specter" },
+    // --- COMMON (500 - 2,000) ---
+    "VIP":      { price: 500,   label: "👑", name: "VIP" },
+    "STAR":     { price: 600,   label: "⭐", name: "Rising Star" },
+    "CHERRY":   { price: 700,   label: "🍒", name: "Sweet" },
+    "LEAF":     { price: 800,   label: "🍃", name: "Nature Child" },
+    "CLOVER":   { price: 900,   label: "🍀", name: "Lucky" },
+    "COOL":     { price: 1000,  label: "😎", name: "Cool Cat" },
+    "PIZZA":    { price: 1100,  label: "🍕", name: "Party Time" },
+    "HEART":    { price: 1200,  label: "💖", name: "Lovely" },
+    "GHOST":    { price: 1500,  label: "👻", name: "Specter" },
+    "ALIEN":    { price: 1800,  label: "👽", name: "Visitor" },
+    "MOON":     { price: 2000,  label: "🌙", name: "Night Owl" },
 
-        // --- ELITE (2,500 - 8,000) ---
-        "PRO":    { price: 2500,  label: "⚡", name: "Pro Skill" },
-        "OG":     { price: 4000,  label: "💀", name: "Original" },
-        "ICE":    { price: 6000,  label: "🧊", name: "Cold Blooded" },
-        "NINJA":  { price: 8000,  label: "🥷", name: "Shadow Walker" },
+    // --- ELITE (2,500 - 9,500) ---
+    "PRO":      { price: 2500,  label: "⚡", name: "Pro Skill" },
+    "ROCKET":   { price: 3000,  label: "🚀", name: "Fast Lane" },
+    "MONEY":    { price: 3500,  label: "💸", name: "Big Spender" },
+    "OG":       { price: 4000,  label: "💀", name: "Original" },
+    "WIZARD":   { price: 4500,  label: "🧙", name: "Arcane" },
+    "SHIELD":   { price: 5000,  label: "🛡️", name: "Guardian" },
+    "ICE":      { price: 6000,  label: "🧊", name: "Cold Blooded" },
+    "SNAKE":    { price: 7000,  label: "🐍", name: "Serpent" },
+    "NINJA":    { price: 8000,  label: "🥷", name: "Shadow Walker" },
+    "TIGER":    { price: 9500,  label: "🐅", name: "Predator" },
 
-        // --- LEGENDARY (10,000 - 25,000) ---
-        "DEMON":  { price: 12000, label: "👹", name: "Demon Mode" },
-        "GALAXY": { price: 18000, label: "🌌", name: "Space Traveler" },
-        "DRAGON": { price: 25000, label: "🐉", name: "Dragon Lord" },
+    // --- LEGENDARY (10,000 - 35,000) ---
+    "DEMON":    { price: 12000, label: "👹", name: "Demon Mode" },
+    "CRYSTAL":  { price: 14000, label: "🔮", name: "Oracle" },
+    "ROBOT":    { price: 16000, label: "🤖", name: "Automaton" },
+    "GALAXY":   { price: 18000, label: "🌌", name: "Space Traveler" },
+    "PEARL":    { price: 20000, label: "🐚", name: "Abyssal" },
+    "WOLF":     { price: 22000, label: "🐺", name: "Lone Wolf" },
+    "DRAGON":   { price: 25000, label: "🐉", name: "Dragon Lord" },
+    "CROWN_V":  { price: 30000, label: "💎👑", name: "Royal Blood" },
+    "KNIGHT":   { price: 35000, label: "⚔️🛡️", name: "Champion" },
 
-        // --- MYTHIC / SUPER RARE (40,000 - 100,000+) ---
-        "PHOENIX":{ price: 45000, label: "🔥🐦🔥", name: "Eternal Phoenix" },
-        "VOID":   { price: 60000, label: "🌑🌀", name: "The Void" },
-        "AURA":   { price: 85000, label: "✨💎✨", name: "Diamond Aura" },
-        "GOD":    { price: 150000,label: "🌌🔱🌌", name: "God Emperor" }
-    };
+    // --- MYTHIC (40,000 - 95,000) ---
+    "PHOENIX":  { price: 45000, label: "🔥🐦🔥", name: "Eternal Phoenix" },
+    "STORM":    { price: 50000, label: "⛈️⚡⛈️", name: "Tempest" },
+    "VOID":     { price: 60000, label: "🌑🌀", name: "The Void" },
+    "SAMURAI":  { price: 70000, label: "👺🗡️", name: "Ronin" },
+    "AURORA":   { price: 80000, label: "🌈✨", name: "Northern Light" },
+    "AURA":     { price: 85000, label: "✨💎✨", name: "Diamond Aura" },
+    "REAPER":   { price: 95000, label: "⚖️💀⌛", name: "Soul Taker" },
+
+    // --- EXOTIC (100,000 - 250,000) ---
+    "GOD":      { price: 150000,label: "🌌🔱🌌", name: "God Emperor" },
+    "SOLAR":    { price: 175000,label: "☀️🔥☀️", name: "Solar Deity" },
+    "NEBULA":   { price: 200000,label: "🔮💫🌌", name: "Nebula Walker" },
+    "CHRONO":   { price: 250000,label: "⏳🕰️🌀", name: "Time Master" },
+
+    // --- THE DIVINE TIER (300,000 - 500,000) ---
+    "UNIVERSE": { price: 300000,label: "⭐🪐☄️", name: "Universalist" },
+    "ANGELIC":  { price: 350000,label: "🪽🔱🪽", name: "Seraphim" },
+    "ETERNAL":  { price: 400000,label: "♾️💎♾️", name: "Absolute" },
+    "PAL_GOD":  { price: 500000,label: "💠👑💠", name: "Pal Creator" }
+};
 
     if (request.method === "POST") {
         const { itemId, action } = await request.json(); // Added 'action'

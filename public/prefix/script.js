@@ -25,9 +25,11 @@ async function loadShop() {
     
     // Determine the "Rarity" class for styling
     let rarityClass = 'tier-common';
-    if (item.price >= 40000) rarityClass = 'tier-mythic';
-    else if (item.price >= 10000) rarityClass = 'tier-legendary';
-    else if (item.price >= 2500) rarityClass = 'tier-elite';
+if (item.price >= 300000) rarityClass = 'tier-divine';
+else if (item.price >= 100000) rarityClass = 'tier-exotic';
+else if (item.price >= 40000) rarityClass = 'tier-mythic';
+else if (item.price >= 10000) rarityClass = 'tier-legendary';
+else if (item.price >= 2500) rarityClass = 'tier-elite';
 
     let buttonState = '';
     if (isActive) {
