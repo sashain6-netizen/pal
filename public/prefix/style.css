@@ -1,7 +1,10 @@
+/* --- Shop Layout & Spacing --- */
 .shop-container {
     max-width: 1100px;
-    margin: 60px auto 60px;
+    margin: 100px auto 60px !important; /* Forces content below the 70px Navbar */
     padding: 0 20px;
+    position: relative;
+    z-index: 10;
 }
 
 .shop-header {
@@ -9,15 +12,32 @@
     text-align: center;
 }
 
+/* --- The Header/Logo Fix --- */
+.shop-header .logo-wrapper {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+    visibility: visible !important;
+}
+
+/* --- The Navbar "Anti-Coating" Force --- */
+.navbar {
+    background: #ffffff !important; /* Solid white kills the "coating" */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+    height: 70px !important;
+}
+
+/* --- User Stats Bar --- */
 .user-stats-bar {
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     gap: 40px;
     margin-top: 30px;
     background: white;
     padding: 15px 30px;
     border-radius: 50px;
-    display: inline-flex;
     border: 1px solid rgba(37, 99, 235, 0.1);
     box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
@@ -27,17 +47,10 @@
     font-weight: 500;
 }
 
-.stat-label {
-    color: var(--blue-soft);
-    margin-right: 8px;
-}
+.stat-label { color: var(--blue-soft); margin-right: 8px; }
+.stat-value { color: var(--blue-primary); font-weight: 700; }
 
-.stat-value {
-    color: var(--blue-primary);
-    font-weight: 700;
-}
-
-/* Item Card Specifics */
+/* --- Item Cards --- */
 .feature-card {
     display: flex;
     flex-direction: column;
@@ -67,53 +80,8 @@
     transform: none;
 }
 
-.shop-container {
-    max-width: 1100px;
-    margin: 100px auto 60px !important; 
-    padding: 0 20px;
-    position: relative;
-    z-index: 1;
-}
-
-.shop-header .logo-wrapper {
-    opacity: 1 !important;
-    animation: none !important;
-    transform: none !important;
-}
-
-.navbar {
-    background: #ffffff !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-}
-
-/* 1. Kill the glass/coating effect on this specific page */
-.navbar {
-    background: #ffffff !important; /* Solid White */
-    backdrop-filter: none !important; /* Disables the blur causing the coating */
-    -webkit-backdrop-filter: none !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-    height: 70px !important;
-}
-
-/* 2. Fix the Toast Container interference */
+/* --- System Fixes --- */
 #toast-container {
-    z-index: 99999 !important; /* Ensure toasts are WAY above the nav */
+    z-index: 99999 !important;
     pointer-events: none;
-}
-
-/* 3. The "Coating" is often caused by the Shop Container sliding UNDER the nav */
-.shop-container {
-    margin-top: 100px !important; /* Give the nav space to breath */
-    position: relative;
-    z-index: 10;
-}
-
-/* 4. Reset the Logo Wrapper animation that is likely glitching the top half */
-.shop-header .logo-wrapper {
-    opacity: 1 !important;
-    animation: none !important;
-    transform: none !important;
-    visibility: visible !important;
 }
