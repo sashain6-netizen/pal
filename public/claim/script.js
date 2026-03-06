@@ -56,6 +56,6 @@ function startTimer(ms) {
     };
     update();
     setInterval(update, 60000);
-}
+} 
 
 document.addEventListener('DOMContentLoaded', checkRewardStatus);
