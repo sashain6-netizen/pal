@@ -24,11 +24,42 @@ function injectNavbar() {
         }
         #avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         #avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-    </style>`;
+    </style>
+    
+    .nav-icons { 
+            display: flex; 
+            align-items: center; 
+            gap: 18px; 
+            margin-left: 20px; 
+            margin-right: auto; /* Pushes the main links to the right */
+        }
+        .nav-icons a { 
+            color: #64748b; 
+            transition: color 0.2s, transform 0.2s; 
+            display: flex; 
+            align-items: center; 
+        }
+        .nav-icons a:hover { 
+            color: #2563eb; 
+            transform: translateY(-2px); 
+        }`;
 
     const navbarHTML = `
     <nav class="navbar">
         <div class="nav-logo"><a href="/" style="text-decoration: none; color: inherit;">PAL</a></div>
+        
+        <div class="nav-icons">
+            <a href="/search" title="Search Players">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </a>
+            <a href="/shop" title="Market">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </a>
+            <a href="/claim" title="Daily Reward">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </a>
+        </div>
+
         <ul class="nav-links">
             <li><a href="/forums">Forums</a></li>
             <li><a href="/ai">AI</a></li>
