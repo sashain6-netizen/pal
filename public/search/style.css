@@ -60,14 +60,15 @@ h1 {
 
 /* Profile Icon in Search Results */
 .profile-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Adjust to match your nav height */
+    height: 40px;
     border-radius: 50%;
-    border: 3px solid var(--blue-primary);
-    padding: 3px;
-    background: white;
     overflow: hidden;
+    /* This ensures it sits perfectly in the middle of the nav bar */
+    align-self: center; 
 }
 
 .profile-icon img {
@@ -81,4 +82,23 @@ h1 {
 #results-area p {
     font-weight: 500;
     margin-top: 20px;
+}
+
+.profile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Adjust to match your nav height */
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    /* This ensures it sits perfectly in the middle of the nav bar */
+    align-self: center; 
+}
+
+#nav-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block; /* Removes the bottom whitespace gap */
 }
