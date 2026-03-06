@@ -1,5 +1,3 @@
-// --- 1. SINGLETON PROTECTION ---
-// This prevents the "Double Message" bug by checking if the navbar already exists
 if (window.navbarHasLoaded) {
     console.warn("Navbar already injected. Skipping...");
 } else {
@@ -85,7 +83,15 @@ function injectNavbar() {
         setTimeout(() => toast.remove(), 6000);
     };
 
-    startNotificationLoop();
+    window.addEventListener('authReady', (e) => {
+    if (e.detail.loggedIn) {
+        // Only start polling if we haven't already started
+        if (!window.notifLoopStarted) {
+            window.notifLoopStarted = true;
+            startNotificationLoop();
+        }
+    }
+});
 }
 
 // Global trackers attached to window to survive re-injections

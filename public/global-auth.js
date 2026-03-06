@@ -61,3 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     }, 100); 
 });
+
+async function checkAuth() {
+    try {
+        const response = await fetch('/api/me'); 
+        if (!response.ok) throw new Error();
+        const data = await response.json();
+        updateGlobalUI(data.loggedIn, data);
+        
+        // ADD THIS: Tell the rest of the site we are logged in
+        window.dispatchEvent(new CustomEvent('authReady', { detail: data }));
+    } catch (e) {
+        updateGlobalUI(false);
+    }
+}
