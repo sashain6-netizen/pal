@@ -1,5 +1,6 @@
 async function performSearch() {
-    const query = document.getElementById('search-input').value.trim();
+    const input = document.getElementById('search-input');
+    const query = input.value.trim();
     const resultsDiv = document.getElementById('search-results');
     
     if (!query) return;
@@ -24,17 +25,32 @@ async function performSearch() {
                 </div>
             `;
         } else {
-            resultsDiv.innerHTML = `<div class="result-card error">Username not found</div>`;
+            resultsDiv.innerHTML = `<div class="result-card error">Username "${query}" not found</div>`;
         }
     } catch (e) {
         resultsDiv.innerHTML = `<div class="result-card error">Search failed. Try again.</div>`;
     }
 }
 
-// Ensure the button works immediately
-document.addEventListener('DOMContentLoaded', () => {
+// Robust Initialization
+function initSearch() {
     const btn = document.getElementById('search-btn');
     const input = document.getElementById('search-input');
-    if (btn) btn.onclick = performSearch;
-    if (input) input.onkeypress = (e) => { if (e.key === 'Enter') performSearch(); };
-});
+    
+    if (btn) {
+        btn.onclick = performSearch;
+    }
+    
+    if (input) {
+        input.onkeydown = (e) => {
+            if (e.key === 'Enter') performSearch();
+        };
+    }
+}
+
+// Run immediately if DOM is ready, otherwise wait
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearch);
+} else {
+    initSearch();
+}

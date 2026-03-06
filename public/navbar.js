@@ -8,22 +8,22 @@ function injectNavbar() {
 
     const navStyles = `
     <style>
-    navbar {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            background: #ffffff !important; /* Force solid white */
-            backdrop-filter: none !important; /* Remove the "coating" blur */
-            -webkit-backdrop-filter: none !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-            z-index: 1000 !important;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 50px; /* Standardize padding */
-            height: 70px; /* Force a consistent height */
-        }
+    /* Change 'navbar' to '.navbar' */
+.navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+    z-index: 1000 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    height: 70px;
+    box-sizing: border-box; /* Ensures padding doesn't push width past 100% */
+}
         #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; }
         #profile-notif-dot { 
             position: absolute !important; 

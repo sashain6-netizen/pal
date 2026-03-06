@@ -118,9 +118,39 @@
     z-index: 1;
 }
 
-/* Kill any default body margins that might cause "ghost" lines */
-body, html {
+body {
+    background-color: #f1f5f9 !important; /* Soft grey */
     margin: 0;
     padding: 0;
-    background-color: #f1f5f9 !important; /* Different color than nav to stop the line */
+}
+
+.search-container {
+    /* Set exactly 100px-120px to ensure clearance */
+    margin-top: 100px !important; 
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.search-box {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid rgba(0,0,0,0.02); /* Crisp edge */
+}
+
+/* Fix the user icon display */
+.user-icon {
+    font-size: 1.5rem;
+    background: #f1f5f9;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
