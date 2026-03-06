@@ -19,7 +19,7 @@
         }
 
         const toast = document.createElement('div');
-        toast.className = 'game-toast';
+        toast.className = 'game-toast'; 
         
         // Check if the second argument is a URL (starts with /) or a style type
         const isUrl = typeOrUrl && (typeOrUrl.startsWith('/') || typeOrUrl.startsWith('http'));
