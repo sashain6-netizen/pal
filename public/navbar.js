@@ -1,10 +1,3 @@
-if (window.navbarHasLoaded) {
-    console.warn("Navbar already injected. Skipping...");
-} else {
-    window.navbarHasLoaded = true;
-    injectNavbar();
-}
-
 function injectNavbar() {
     const navStyles = `
     <style>
@@ -24,29 +17,28 @@ function injectNavbar() {
         }
         #avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         #avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-    </style>
-    
-    .nav-icons { 
+
+        /* NEW ICON STYLES - Now inside the style tag */
+        .nav-icons { 
             display: flex; 
             align-items: center; 
             gap: 18px; 
             margin-left: 20px; 
             margin-right: auto; 
         }
-        /* Target normal, visited, and active states together */
         .nav-icons a, 
         .nav-icons a:visited { 
-            color: #64748b; /* Your default soft blue-gray */
+            color: #64748b; 
             transition: color 0.2s, transform 0.2s; 
             display: flex; 
             align-items: center; 
-            text-decoration: none; /* Removes underlines if any */
+            text-decoration: none;
         }
-        /* Make them stay blue when hovered */
         .nav-icons a:hover { 
             color: #2563eb !important; 
             transform: translateY(-2px); 
-        }`;
+        }
+    </style>`;
 
     const navbarHTML = `
     <nav class="navbar">
@@ -96,7 +88,6 @@ function injectNavbar() {
         </div>
     </nav>`;
 
-    // Update the Dot when the Global Settings script broadcasts an update
     window.addEventListener('notifsUpdated', (e) => {
         const dot = document.getElementById('profile-notif-dot');
         if (dot) {
