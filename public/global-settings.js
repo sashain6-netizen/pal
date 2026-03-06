@@ -118,8 +118,17 @@
     const panicKey = settings.panicKey || "`"; // Default to backtick
 
     window.addEventListener('keydown', (e) => {
-        if (e.key === panicKey) {
-            // Immediate redirect
+        // 1. Build the same combination string as the recorder
+        let modifiers = "";
+        if (e.ctrlKey) modifiers += "Control+";
+        if (e.shiftKey) modifiers += "Shift+";
+        if (e.altKey) modifiers += "Alt+";
+        if (e.metaKey) modifiers += "Command+";
+
+        const pressedKey = modifiers + e.key.toUpperCase();
+
+        // 2. Compare against the saved panicKey
+        if (pressedKey === panicKey) {
             window.location.replace(panicUrl);
         }
     });
