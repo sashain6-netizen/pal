@@ -1,9 +1,68 @@
 .shop-container {
-    max-width: 1000px;
-    margin: 120px auto 50px;
+    max-width: 1100px;
+    margin: 140px auto 60px;
     padding: 0 20px;
+}
+
+.shop-header {
+    margin-bottom: 60px;
     text-align: center;
 }
-.shop-header { margin-bottom: 50px; }
-.shop-header h1 { font-size: 2.5rem; color: var(--blue-deep); }
-#balance { color: #10b981; font-weight: 900; }
+
+.user-stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+    background: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    display: inline-flex;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+.stat-item {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.stat-label {
+    color: var(--blue-soft);
+    margin-right: 8px;
+}
+
+.stat-value {
+    color: var(--blue-primary);
+    font-weight: 700;
+}
+
+/* Item Card Specifics */
+.feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.prefix-preview {
+    font-size: 1.4rem;
+    font-weight: 900;
+    padding: 8px 16px;
+    background: var(--off-white);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    color: var(--blue-deep);
+}
+
+.buy-btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.buy-btn:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: default;
+    transform: none;
+}
