@@ -75,7 +75,9 @@ export async function onRequestPost(context) {
           text: `Welcome to PAL, ${displayName}! We're glad to have you here.`,
           date: new Date().toISOString(),
           read: false
-        }]
+        }],
+      ownedPrefixes: [],
+      currentPrefix: ""
     };
 
     // 8. STORAGE
