@@ -27,7 +27,7 @@ async function performSearch() {
                     </div>
                     <h3>${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}</h3>
                     <p>@${user.username}</p>
-                    <a href="/profile/${user.username}" class="nav-btn" style="display:inline-block; text-decoration:none; margin-top:10px;">
+                    <a href="/users?id=${user.username}" class="nav-btn" style="display:inline-block; text-decoration:none; margin-top:10px;">
                         View Profile
                     </a>
                 </div>
