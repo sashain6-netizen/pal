@@ -98,3 +98,17 @@ function injectNavbar() {
     document.head.insertAdjacentHTML('beforeend', navStyles);
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
 }
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!window.navbarHasLoaded) {
+            window.navbarHasLoaded = true;
+            injectNavbar();
+        }
+    });
+} else {
+    if (!window.navbarHasLoaded) {
+        window.navbarHasLoaded = true;
+        injectNavbar();
+    }
+}
