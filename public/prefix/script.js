@@ -1,5 +1,4 @@
 async function loadShop() {
-    // 1. Force visibility of the shop logo wrapper
     const shopHeader = document.querySelector('.shop-logo-wrapper');
     if (shopHeader) {
         shopHeader.style.opacity = "1";
@@ -10,33 +9,39 @@ async function loadShop() {
     const data = await res.json();
     const { user, shopItems } = data;
 
+    // Update Top Stats
     document.getElementById('balance').innerText = user.currency || 0;
-    document.getElementById('active-prefix').innerText = user.currentPrefix || "None";
+    
+    // Display the EMOJI for the active prefix instead of the ID string
+    const activeLabel = shopItems[user.currentPrefix]?.label || "None";
+    document.getElementById('active-prefix').innerText = activeLabel;
 
     const grid = document.getElementById('shop-grid');
     let html = '';
 
     for (const [id, item] of Object.entries(shopItems)) {
         const isOwned = user.ownedPrefixes?.includes(id);
+        const isActive = user.currentPrefix === id;
         
+        // Button Logic: Active vs Equip vs Buy
+        let buttonState = '';
+        if (isActive) {
+            buttonState = `<button class="nav-btn buy-btn" disabled style="background: #10b981; border: none;">Active</button>`;
+        } else if (isOwned) {
+            buttonState = `<button onclick="handleAction('${id}', 'equip')" class="nav-btn buy-btn" style="background: #6366f1;">Equip</button>`;
+        } else {
+            buttonState = `<button onclick="handleAction('${id}', 'buy')" class="nav-btn buy-btn">Buy for ${item.price} 💰</button>`;
+        }
+
         html += `
-            <div class="feature-card">
+            <div class="feature-card ${isActive ? 'equipped-card' : ''}">
                 <div class="prefix-preview">${item.label}</div>
                 
                 <h3 style="margin-bottom: 5px; color: var(--blue-deep);">
-                    ${id.charAt(0).toUpperCase() + id.slice(1)} Prefix
+                    ${item.name || id}
                 </h3>
                 
-                <p style="color: var(--blue-soft); font-weight: 600;">
-                    ${item.price} 💰
-                </p>
-
-                <button 
-                    onclick="buyPrefix('${id}')" 
-                    class="nav-btn buy-btn" 
-                    ${isOwned ? 'disabled' : ''}>
-                    ${isOwned ? 'Owned' : 'Buy Now'}
-                </button>
+                ${buttonState}
             </div>
         `;
     }
