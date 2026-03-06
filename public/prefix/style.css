@@ -1,10 +1,7 @@
-/* --- Shop Layout & Spacing --- */
 .shop-container {
     max-width: 1100px;
-    margin: 100px auto 60px !important; /* Forces content below the 70px Navbar */
+    margin: 140px auto 60px;
     padding: 0 20px;
-    position: relative;
-    z-index: 10;
 }
 
 .shop-header {
@@ -12,32 +9,15 @@
     text-align: center;
 }
 
-/* --- The Header/Logo Fix --- */
-.shop-header .logo-wrapper {
-    opacity: 1 !important;
-    animation: none !important;
-    transform: none !important;
-    visibility: visible !important;
-}
-
-/* --- The Navbar "Anti-Coating" Force --- */
-.navbar {
-    background: #ffffff !important; /* Solid white kills the "coating" */
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-    height: 70px !important;
-}
-
-/* --- User Stats Bar --- */
 .user-stats-bar {
-    display: inline-flex;
+    display: flex;
     justify-content: center;
     gap: 40px;
     margin-top: 30px;
     background: white;
     padding: 15px 30px;
     border-radius: 50px;
+    display: inline-flex;
     border: 1px solid rgba(37, 99, 235, 0.1);
     box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
@@ -47,10 +27,17 @@
     font-weight: 500;
 }
 
-.stat-label { color: var(--blue-soft); margin-right: 8px; }
-.stat-value { color: var(--blue-primary); font-weight: 700; }
+.stat-label {
+    color: var(--blue-soft);
+    margin-right: 8px;
+}
 
-/* --- Item Cards --- */
+.stat-value {
+    color: var(--blue-primary);
+    font-weight: 700;
+}
+
+/* Item Card Specifics */
 .feature-card {
     display: flex;
     flex-direction: column;
@@ -78,10 +65,4 @@
     color: #94a3b8;
     cursor: default;
     transform: none;
-}
-
-/* --- System Fixes --- */
-#toast-container {
-    z-index: 99999 !important;
-    pointer-events: none;
 }
