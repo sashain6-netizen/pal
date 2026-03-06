@@ -72,14 +72,13 @@
     margin: 100px auto 60px !important; 
     padding: 0 20px;
     position: relative;
-    z-index: 10; 
+    z-index: 1;
 }
+
 .shop-header .logo-wrapper {
     opacity: 1 !important;
-    transform: none !important;
     animation: none !important;
-    pointer-events: auto !important;
-    margin-bottom: 20px;
+    transform: none !important;
 }
 
 .navbar {
