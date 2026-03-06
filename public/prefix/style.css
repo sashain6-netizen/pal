@@ -205,3 +205,54 @@
 }
 
 .tier-divine .rarity-tag { background: #06b6d4; color: white; }
+
+/* --- The "Active" Card Highlight --- */
+.equipped-card {
+    border: 3px solid #10b981 !important; /* Bold Green Border */
+    background: linear-gradient(145deg, #ffffff, #f0fdf4) !important; /* Soft Green Tint */
+    transform: scale(1.03); /* Slightly larger */
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2) !important;
+    position: relative;
+    z-index: 2;
+}
+
+/* Add a "CURRENTLY EQUIPPED" ribbon or badge */
+.equipped-card::before {
+    content: 'EQUIPPED';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Make the Active button look unique */
+.active-btn {
+    background: #10b981 !important;
+    color: white !important;
+    cursor: default;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: none !important;
+    opacity: 1 !important; /* Ensure it's not faded like standard disabled buttons */
+}
+
+/* Add a subtle pulse to the active preview icon */
+.equipped-card .prefix-preview {
+    border-color: #10b981 !important;
+    background: white !important;
+    animation: activePulse 2s infinite ease-in-out;
+}
+
+@keyframes activePulse {
+    0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.2); }
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0); }
+}
