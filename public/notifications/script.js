@@ -14,15 +14,23 @@ async function loadNotifications() {
         }
 
         clearBtn.style.display = 'block';
-        list.innerHTML = data.map(n => `
+        list.innerHTML = data.map(n => {
+        const profileLink = n.fromId ? `/profile?id=${n.fromId.toLowerCase()}` : null;
+        
+        const senderHTML = profileLink
+            ? `<a href="${profileLink}" class="notif-user-link">${n.from || 'System'}</a>`
+            : `<strong>${n.from || 'System'}</strong>`;
+
+        return `
             <div class="notif-card" id="notif-${n.id}">
                 <div class="notif-fcontent">
-                    <p><strong>${n.from || 'System'}</strong> ${n.text}</p>
+                    <p>${senderHTML} ${n.text}</p>
                     <span>${new Date(n.date).toLocaleDateString()}</span>
                 </div>
                 <button class="close-btn" onclick="deleteNotif('${n.id}')">&times;</button>
             </div>
-        `).join('');
+        `;
+    }).join('');
     } catch (e) {
         showToast("Error loading notifications.");
     }

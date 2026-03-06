@@ -10,15 +10,16 @@ export async function onRequestPost(context) {
     if (!user.notifications) user.notifications = [];
 
     // Add the new notification with a unique ID
+    // Add senderId to the unshift block in your Cloudflare Worker
     user.notifications.unshift({
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         from: from,
+        fromId: targetId,
         text: text,
         type: type || "message",
         date: new Date().toISOString()
     });
 
-    // Keep only the last 20 notifications so KV doesn't get too huge
     user.notifications = user.notifications.slice(0, 20);
 
     await env.USERS_KV.put(userKey, JSON.stringify(user));
