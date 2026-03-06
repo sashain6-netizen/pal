@@ -34,7 +34,7 @@ async function performSearch() {
                     </div>
                     <h3>${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}</h3>
                     <p style="color: var(--blue-soft);">@${user.username}</p>
-                    <a href="/profile?id=${user.username}" class="nav-btn" style="display:inline-block; text-decoration:none; margin-top:15px; font-size: 0.85rem;">
+                    <a href="/users?id=${user.username}" class="nav-btn" style="display:inline-block; text-decoration:none; margin-top:15px; font-size: 0.85rem;">
                         View Profile
                     </a>
                 </div>
