@@ -26,7 +26,7 @@ async function loadNotifications() {
         clearBtn.style.display = 'block';
         list.innerHTML = data.map(n => `
             <div class="notif-card" id="notif-${n.id}">
-                <div class="notif-content">
+                <div class="notif-fcontent">
                     <p><strong>${n.from || 'System'}</strong> ${n.text}</p>
                     <span>${new Date(n.date).toLocaleDateString()}</span>
                 </div>
