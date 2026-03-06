@@ -45,7 +45,15 @@ export async function onRequestPost(context) {
         const lastClaim = user.lastClaim || 0;
 
         if (now - lastClaim < oneDay) {
-            return new Response(JSON.stringify({ success: false, error: "Too early!" }), { status: 400 });
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: "Too early!",
+                lastClaim: lastClaim,
+                streak: user.streak
+            }), { 
+                status: 400,
+                headers: { "Content-Type": "application/json" } 
+            });
         }
 
         // Streak check (Reset if > 48 hours)
