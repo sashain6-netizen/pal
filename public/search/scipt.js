@@ -17,7 +17,7 @@ async function performSearch() {
                     <div class="user-info">
                         <div class="user-icon">👤</div>
                         <div class="user-details">
-                            <span class="user-name">${data.username}</span>
+                            <span class="user-avatar">${data.prefixLabel || '👤'}</span>
                             <span class="user-status">View full profile</span>
                         </div>
                     </div>
