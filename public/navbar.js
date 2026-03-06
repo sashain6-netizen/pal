@@ -130,4 +130,4 @@ async function startNotificationLoop() {
     // Protect against overlapping loops
     if (window.notifTimeout) clearTimeout(window.notifTimeout);
     window.notifTimeout = setTimeout(startNotificationLoop, 10000);
-}
+}  
