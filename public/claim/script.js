@@ -27,31 +27,53 @@ async function checkRewardStatus() {
 
 document.getElementById('claim-btn').onclick = async () => {
     const btn = document.getElementById('claim-btn');
-    const originalText = "Claim Reward!";
-    
     btn.disabled = true;
-    btn.innerText = "Processing...";
+    btn.innerText = "Checking...";
 
     try {
         const res = await fetch('/api/claim-reward', { method: 'POST' });
         const data = await res.json();
 
         if (data.success) {
-            showToast(`Success! +${data.amount} 💰`, "success");
+            showToast(`Success! +${data.amount} Currency`, "success");
             updateUI(Date.now(), data.streak); 
         } else {
-            showToast(data.error || "Failed to claim.", "error");
-            btn.disabled = false;
-            btn.innerText = originalText;
+            // IF TOO EARLY: Re-run status check to show the timer
+            showToast(data.error || "Too early!", "error");
+            checkRewardStatus(); 
         }
     } catch (err) {
-        console.error("Claim Error:", err);
-        showToast("Connection error. Try again.", "error");
-        
-        btn.disabled = false; 
-        btn.innerText = originalText;
+        showToast("Connection error", "error");
+        btn.disabled = false;
+        btn.innerText = "Claim Reward!";
     }
 };
+
+function updateUI(lastClaim, streak) {
+    const btn = document.getElementById('claim-btn');
+    const statusText = document.getElementById('reward-status');
+    const timerText = document.getElementById('timer-text');
+    
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const timeLeft = oneDay - (now - lastClaim);
+
+    if (lastClaim && timeLeft > 0) {
+        btn.disabled = true;
+        btn.innerText = "Already Claimed";
+        statusText.innerText = `Daily Streak: ${streak || 0} Days`;
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        timerText.innerText = `Claim again in ${hours}h ${mins}m`;
+    
+        startTimer(timeLeft);
+    } else {
+        btn.disabled = false;
+        btn.innerText = "Claim Reward!";
+        statusText.innerText = "Your daily gift is ready!";
+        timerText.innerText = "";
+    }
+}
 
 function startTimer(ms) {
     const timerElement = document.getElementById('timer-text');

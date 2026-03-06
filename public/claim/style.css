@@ -1,96 +1,93 @@
+/* MATCHING THE MAIN SITE THEME */
 :root {
-    --primary-blue: #2563eb;
-    --bg-dark: #0f172a;
-    --card-bg: rgba(30, 41, 59, 0.7);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    --blue-primary: #2563eb;
+    --blue-deep:    #1e40af;
+    --blue-soft:    #64748b;
+    --white:        #ffffff;
+    --off-white:    #f8faff;
 }
 
 body {
-    background-color: var(--bg-dark);
-    font-family: 'Inter', system-ui, sans-serif;
-    color: var(--text-main);
-    margin: 0;
+    background: var(--off-white);
+    font-family: 'Varela Round', sans-serif;
+    color: var(--blue-soft);
 }
 
 .claim-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 80px); /* Adjust based on navbar height */
-    background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.1), transparent);
+    min-height: 100vh;
+    padding-top: 80px; /* Offset for the fixed navbar */
+    background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
 }
 
 .reward-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 3rem;
-    border-radius: 24px;
+    background: var(--white);
+    padding: 50px 40px;
+    border-radius: 30px;
     text-align: center;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    max-width: 450px;
     width: 90%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .star-icon {
-    font-size: 5rem;
-    margin-bottom: 1.5rem;
+    font-size: 4.5rem;
+    margin-bottom: 20px;
     display: inline-block;
-    filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.4));
-    animation: floating 3s ease-in-out infinite;
+    animation: squeeze 1.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-@keyframes floating {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-15px) scale(1.05); }
+/* Reusing your logo animation style for the star */
+@keyframes squeeze {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.1, 0.9); }
 }
 
 h1 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(to bottom right, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--blue-deep);
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
 }
 
 #reward-status {
-    color: var(--text-muted);
-    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: var(--blue-soft);
+    margin-bottom: 30px;
 }
 
 .claim-button {
-    background: var(--primary-blue);
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    background: var(--blue-primary);
     color: white;
     border: none;
-    padding: 16px;
-    border-radius: 14px;
-    font-weight: 700;
-    cursor: pointer;
+    padding: 16px 40px;
+    border-radius: 50px;
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 600;
     font-size: 1.1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
     width: 100%;
+    transition: all 0.3s ease;
+}
+
+.claim-button:hover:not(:disabled) {
+    background: var(--blue-deep);
+    transform: scale(1.03);
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .claim-button:disabled {
-    background: #334155;
-    background: linear-gradient(135deg, #334155, #1e293b);
+    background: #cbd5e1;
     cursor: not-allowed;
-    opacity: 0.6;
-    box-shadow: none;
-    transform: none !important;
-}
-
-.claim-button:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
 }
 
 .next-claim-hint {
-    margin-top: 1.5rem;
-    font-family: monospace;
-    color: #60a5fa;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--blue-primary);
 }
