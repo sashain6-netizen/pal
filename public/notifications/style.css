@@ -199,3 +199,26 @@ header {
     color: var(--blue-deep);
     text-decoration: underline;
 }
+
+/* The message text (e.g., "Hey there" or "Started following") */
+.notif-text {
+    color: #000000;
+    font-weight: 500; /* Slightly bolded for visibility */
+    margin-left: 4px;
+}
+
+/* The date at the bottom */
+.notif-date {
+    color: #000000 !important;
+    opacity: 0.6; /* Keeps it black but looks softer/subtle */
+    font-size: 0.8rem;
+    font-weight: 400; /* Normal weight so it looks thinner than the text above */
+    display: block;
+    margin-top: 5px;
+}
+
+/* System name fallback if there is no profile link */
+.notif-system-name {
+    color: #000000;
+    font-weight: 700;
+}

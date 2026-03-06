@@ -19,13 +19,16 @@ async function loadNotifications() {
         
         const senderHTML = profileLink
             ? `<a href="${profileLink}" class="notif-user-link">${n.from || 'System'}</a>`
-            : `<strong>${n.from || 'System'}</strong>`;
+            : `<strong class="notif-system-name">${n.from || 'System'}</strong>`;
 
         return `
             <div class="notif-card" id="notif-${n.id}">
                 <div class="notif-fcontent">
-                    <p>${senderHTML} <span style="color: #000;">${n.text}</span></p>
-                    <span>${new Date(n.date).toLocaleDateString()}</span>
+                    <p>
+                        ${senderHTML} 
+                        <span class="notif-text">${n.text}</span>
+                    </p>
+                    <span class="notif-date">${new Date(n.date).toLocaleDateString()}</span>
                 </div>
                 <button class="close-btn" onclick="deleteNotif('${n.id}')">&times;</button>
             </div>
