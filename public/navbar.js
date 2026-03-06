@@ -28,9 +28,18 @@ function injectNavbar() {
         .nav-icons { 
             display: flex; 
             align-items: center; 
-            gap: 18px; 
-            margin-left: 20px; 
-            margin-right: auto; 
+            gap: 20px; 
+            margin-left: 25px; 
+            /* CHANGE: Removed margin-right: auto */
+            margin-right: 35px; 
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
         .nav-icons a, 
         .nav-icons a:visited { 
