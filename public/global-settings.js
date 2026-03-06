@@ -10,19 +10,19 @@
         document.body.appendChild(toastContainer);
     }
 
-    // Attach to window so profile.js can see it!
     window.showToast = function(message, url = null) {
         const toast = document.createElement('div');
         toast.className = 'game-toast';
         
+        // Use innerHTML so we can style the "Click to view" hint
         if (url) {
-            toast.classList.add('clickable');
+            toast.style.cursor = 'pointer';
             toast.onclick = () => { window.location.href = url; };
-            // Optional: add a hint so users know to click
-            message += " [View]"; 
+            toast.innerHTML = `<div>${message}</div><div style="font-size:0.7rem; opacity:0.6; margin-top:4px;">Click to view →</div>`;
+        } else {
+            toast.textContent = message;
         }
         
-        toast.textContent = message;
         toastContainer.appendChild(toast);
         
         setTimeout(() => {
@@ -32,7 +32,7 @@
         }, 5000);
     };
 
-    // --- 2. NOTIFICATION POLLING ---
+    // --- 2. NOTIFICATION POLLING (The Master) ---
     let seenNotifIds = new Set();
     let isFirstCheck = true;
 
@@ -42,6 +42,12 @@
             if (!res.ok) return;
 
             const notifications = await res.json();
+            const hasNotifs = notifications.length > 0;
+
+            // Update the Navbar dot via Broadcast
+            window.dispatchEvent(new CustomEvent('notifsUpdated', { 
+                detail: { hasNotifs, count: notifications.length } 
+            }));
 
             if (isFirstCheck) {
                 notifications.forEach(n => seenNotifIds.add(String(n.id)));
@@ -52,12 +58,9 @@
             notifications.forEach(n => {
                 const id = String(n.id);
                 if (!seenNotifIds.has(id)) {
-                    const msg = n.from ? `New from ${n.from}: ${n.text}` : n.text;
-                    
-                    // FIXED: Pass the URL here so the toast is clickable
-                    window.showToast(msg, '/notifications'); 
-                    
                     seenNotifIds.add(id);
+                    const msg = n.from ? `New from ${n.from}: ${n.text}` : n.text;
+                    window.showToast(msg, '/notifications'); 
                 }
             });
         } catch (e) {
@@ -67,6 +70,7 @@
 
     setInterval(checkNewNotifications, 10000);
     checkNewNotifications();
+
 
     // --- 4. TAB CLOAKING LOGIC ---
     if (settings.cloaking) {
