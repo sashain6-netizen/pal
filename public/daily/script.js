@@ -35,7 +35,9 @@ document.getElementById('claim-btn').onclick = async () => {
         const data = await res.json();
 
         if (data.success) {
-            showToast(`Success! +${data.amount} 💰`, "success");
+            // Updated toast to show both Currency and XP
+            showToast(`Success! +${data.amount} 💰 & +${data.xpGained} XP ⭐`, "success");
+            
             updateUI(Date.now(), data.streak); 
         } else {
             showToast(data.error || "Too early!", "error");

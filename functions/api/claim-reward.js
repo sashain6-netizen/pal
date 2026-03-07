@@ -63,20 +63,30 @@ export async function onRequestPost(context) {
             user.streak = (user.streak || 0) + 1;
         }
 
-        const reward = 100 + (user.streak * 25);
-        user.currency = (user.currency || 0) + reward;
-        user.lastClaim = now;
+        // 1. Calculate Reward Currency (Existing)
+const reward = 100 + (user.streak * 25);
+user.currency = (user.currency || 0) + reward;
 
-        // 5. SAVE UPDATED USER
-        await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
+// 2. NEW: Calculate XP based on Followers
+// Logic: 10 XP base + 2 XP per follower
+const followerCount = user.followers || 0;
+const xpReward = 10 + (followerCount * 2); 
 
-        return new Response(JSON.stringify({
-            success: true,
-            amount: reward,
-            streak: user.streak,
-            newTotal: user.currency
-        }), { headers: { "Content-Type": "application/json" } });
+user.xp = (user.xp || 0) + xpReward;
+user.lastClaim = now;
 
+// 3. SAVE UPDATED USER
+await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
+
+// 4. Update Response to show the new XP
+return new Response(JSON.stringify({
+    success: true,
+    amount: reward,
+    xpGained: xpReward, // Let the frontend know how much XP they got
+    streak: user.streak,
+    newTotal: user.currency,
+    newXP: user.xp
+}), { headers: { "Content-Type": "application/json" } });
     } catch (err) { 
         return new Response(JSON.stringify({ success: false, error: "Session expired or invalid" }), { 
             status: 401,
