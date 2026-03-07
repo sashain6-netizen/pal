@@ -2,9 +2,12 @@ const params = new URLSearchParams(window.location.search);
 const chatId = params.get('id');
 const display = document.getElementById('messageDisplay');
 
+// This will store our user data once fetched
+let currentUser = null;
+
 async function loadMessages() {
-    // Only run if we know who the user is
-    if (!chatId || !window.currentUser) return;
+    // Stop if we don't have a chat ID or user data yet
+    if (!chatId || !currentUser) return;
 
     try {
         const res = await fetch(`/api/chat-messages?id=${chatId}`, { credentials: 'include' });
@@ -12,10 +15,12 @@ async function loadMessages() {
         if (data.error) return;
 
         document.getElementById('chatName').innerText = data.roomName || "Private Chat";
+        
+        // Auto-scroll logic
         const isAtBottom = display.scrollHeight - display.scrollTop <= display.clientHeight + 100;
 
-        // Clean names for comparison (lowercase + no spaces)
-        const myName = window.currentUser.username.toLowerCase().trim();
+        // Use the same lowercase comparison as your profile/me.js
+        const myName = currentUser.username.toLowerCase().trim();
 
         display.innerHTML = data.messages.map(m => {
             const senderName = m.username.toLowerCase().trim();
@@ -30,40 +35,50 @@ async function loadMessages() {
         }).join('');
         
         if (isAtBottom) display.scrollTop = display.scrollHeight;
-    } catch (e) { console.error("Load failed", e); }
+    } catch (e) { 
+        console.error("Load failed", e); 
+    }
 }
 
 async function sendMessage(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const input = document.getElementById('msgInput');
     const content = input.value.trim();
     if (!content || !chatId) return;
 
     input.value = '';
     try {
-        const res = await fetch('/api/chat-messages', {
+        await fetch('/api/chat-messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId, content }),
             credentials: 'include'
         });
-        if (res.ok) {
-            await loadMessages();
-            display.scrollTop = display.scrollHeight;
-        }
+        loadMessages();
     } catch (e) { console.error("Send failed", e); }
 }
 
-// --- THE FIX: WAIT FOR AUTH PROPERLY ---
-function startChat() {
-    if (window.currentUser && window.currentUser.loggedIn) {
-        console.log("Chat started for:", window.currentUser.username);
+// THE INITIALIZER: Works just like your profile page
+async function initChat() {
+    try {
+        // Fetch your own profile directly to ensure we have the data
+        const meRes = await fetch('/api/get-profile');
+        if (!meRes.ok) {
+            console.error("User not logged in.");
+            return;
+        }
+        
+        currentUser = await meRes.json();
+        console.log("Chat authorized for:", currentUser.username);
+
+        // Now that user is loaded, start the chat cycles
         loadMessages();
         setInterval(loadMessages, 3000);
-    } else {
-        // Check again in 100ms
-        setTimeout(startChat, 100);
+
+    } catch (err) {
+        console.error("Init failed:", err);
     }
 }
 
-startChat();
+// Start the script
+initChat();
