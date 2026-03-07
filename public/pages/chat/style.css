@@ -157,3 +157,11 @@ body {
     background: #2563eb;
     transform: scale(1.05);
 }
+
+.action-btn.danger {
+    background-color: #ef4444;
+    color: white;
+}
+.action-btn.danger:hover {
+    background-color: #dc2626;
+}
