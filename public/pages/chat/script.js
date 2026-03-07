@@ -40,6 +40,38 @@ async function loadMessages() {
     }
 }
 
+const leaveBtn = document.getElementById('leaveBtn');
+const deleteBtn = document.getElementById('deleteBtn');
+
+// Determine if we show the Delete button
+// Note: You'll need to update your GET /api/chat-messages to return 'createdBy'
+const res = await fetch(`/api/chat-messages?id=${chatId}`);
+const chatData = await res.json();
+
+if (chatData.createdBy === currentUser.username) {
+    deleteBtn.style.display = "block";
+}
+
+// LEAVE LOGIC
+leaveBtn.onclick = async () => {
+    if (!confirm("Are you sure you want to leave this chat?")) return;
+    const r = await fetch('/api/manage-chat', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'leave', chatId })
+    });
+    if (r.ok) location.href = '/pages';
+};
+
+// DELETE LOGIC
+deleteBtn.onclick = async () => {
+    if (!confirm("PERMANENTLY DELETE CHAT? This wipes all messages for everyone.")) return;
+    const r = await fetch('/api/manage-chat', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'delete', chatId })
+    });
+    if (r.ok) location.href = '/pages';
+};
+
 async function sendMessage(e) {
     if (e) e.preventDefault();
     const input = document.getElementById('msgInput');
