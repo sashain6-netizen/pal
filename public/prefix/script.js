@@ -13,15 +13,15 @@ async function loadShop() {
     document.getElementById('balance').innerText = user.currency || 0;
     
     // Display the EMOJI for the active prefix instead of the ID string
-    const activeLabel = shopItems[user.currentPrefix]?.label || "None";
+    const activeLabel = user.currentPrefix || "None";
     document.getElementById('active-prefix').innerText = activeLabel;
 
     const grid = document.getElementById('shop-grid');
     let html = '';
 
     for (const [id, item] of Object.entries(shopItems)) {
-    const isOwned = user.ownedPrefixes?.includes(id);
-    const isActive = user.currentPrefix === id;
+    const isOwned = user.ownedPrefixes?.includes(item.label);
+    const isActive = user.currentPrefix === item.label;
     
     // Determine the "Rarity" class for styling
     let rarityClass = 'tier-common';
