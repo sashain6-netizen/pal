@@ -47,6 +47,44 @@ export async function onRequestPost(context) {
             });
         }
 
+        if (action === "invite") {
+            const { targetUsername } = await request.json(); // The person you want to add
+
+            // 1. Check if YOU are the owner
+            const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
+                .bind(chatId).first();
+            if (!room || room.creator_username !== username) return new Response("Forbidden", { status: 403 });
+
+            // 2. Check if the target user exists in your USERS table
+            const userExists = await env.DB.prepare("SELECT 1 FROM users WHERE username = ?")
+                .bind(targetUsername).first();
+            if (!userExists) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+
+            // 3. Add them to the chat
+            await env.DB.prepare("INSERT OR IGNORE INTO chat_members (room_id, username) VALUES (?, ?)")
+                .bind(chatId, targetUsername).run();
+
+            return new Response(JSON.stringify({ success: true }));
+        }
+
+        if (action === "kick") {
+            const { targetUsername } = await request.json();
+
+            // 1. Check ownership
+            const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
+                .bind(chatId).first();
+            if (!room || room.creator_username !== username) return new Response("Forbidden", { status: 403 });
+
+            // 2. You can't kick yourself!
+            if (targetUsername === username) return new Response("Cannot kick owner", { status: 400 });
+
+            // 3. Remove them
+            await env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
+                .bind(chatId, targetUsername).run();
+
+            return new Response(JSON.stringify({ success: true }));
+        }
+
         // 2. Delete in the correct order (Messages/Members FIRST, Room LAST)
         await env.DB.batch([
             env.DB.prepare("DELETE FROM chat_messages WHERE room_id = ?").bind(chatId),

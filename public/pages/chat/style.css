@@ -229,3 +229,29 @@ body {
 .system-msg .msg-user {
     display: none;
 }
+
+/* The Kick Button inside message bubbles */
+.kick-btn {
+    background: rgba(239, 68, 68, 0.1); /* Subtle red tint */
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    margin-left: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.kick-btn:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Ensure the username and button sit nicely together */
+.msg-user {
+    display: flex;
+    align-items: center;
+}

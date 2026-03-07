@@ -15,27 +15,37 @@ async function loadMessages() {
         document.getElementById('chatName').innerText = data.roomName || "Private Chat";
         
         const deleteBtn = document.getElementById('deleteBtn');
+        const inviteBtn = document.getElementById('inviteBtn'); // New Invite Button
         const roomOwner = (data.createdBy || "").toLowerCase().trim();
         const me = (currentUser.username || "").toLowerCase().trim();
+        const isOwner = (roomOwner === me);
 
-        if (deleteBtn && roomOwner === me) {
-            deleteBtn.style.display = "block";
-        }
+        // Toggle Admin Buttons
+        if (deleteBtn) deleteBtn.style.display = isOwner ? "block" : "none";
+        if (inviteBtn) inviteBtn.style.display = isOwner ? "block" : "none";
 
         const isAtBottom = display.scrollHeight - display.scrollTop <= display.clientHeight + 100;
-        const myName = currentUser.username.toLowerCase().trim();
+        const myName = me;
 
         display.innerHTML = data.messages.map(m => {
             const senderName = m.username.toLowerCase().trim();
+            const isMe = (senderName === myName);
             
+            // Kick button logic for owner
+            const kickBtn = (isOwner && !isMe && senderName !== 'system') 
+                ? `<button onclick="kickUser('${m.username}')" class="kick-btn">Kick</button>` 
+                : '';
+
             if (senderName === 'system') {
                 return `<div class="msg-bubble system-msg">${m.content}</div>`;
             }
 
-            const isMe = (senderName === myName);
             return `
                 <div class="msg-bubble ${isMe ? 'my-msg' : 'their-msg'}">
-                    <span class="msg-user">${isMe ? 'You' : '@' + m.username}</span>
+                    <span class="msg-user">
+                        ${isMe ? 'You' : '@' + m.username} 
+                        ${kickBtn}
+                    </span>
                     <p class="msg-text">${m.content}</p>
                 </div>
             `;
@@ -51,16 +61,19 @@ async function initChat() {
         if (!meRes.ok) return;
         currentUser = await meRes.json();
 
-        // --- DEFINING THE BUTTONS (The Missing Piece) ---
         const leaveBtn = document.getElementById('leaveBtn');
         const deleteBtn = document.getElementById('deleteBtn');
         const confirmModal = document.getElementById('confirmModal');
         const confirmBtn = document.getElementById('confirmBtn');
         const cancelBtn = document.getElementById('cancelBtn');
 
-        function askConfirmation(title, message, onConfirm) {
+        // Reuse this for all actions
+        window.askConfirmation = function(title, message, isDanger, onConfirm) {
             document.getElementById('confirmTitle').innerText = title;
             document.getElementById('confirmMessage').innerText = message;
+            
+            // Style the button based on severity
+            confirmBtn.className = isDanger ? 'modal-btn danger' : 'modal-btn primary';
             confirmModal.style.display = 'flex';
             
             confirmBtn.onclick = async () => {
@@ -69,43 +82,34 @@ async function initChat() {
                 confirmModal.style.display = 'none';
                 confirmBtn.disabled = false;
             };
-        }
+        };
 
-        // Close modal if user clicks cancel or the dark overlay
         cancelBtn.onclick = () => confirmModal.style.display = 'none';
         confirmModal.onclick = (e) => { if(e.target === confirmModal) confirmModal.style.display = 'none'; };
 
         if (leaveBtn) {
             leaveBtn.onclick = () => {
-                askConfirmation(
-                    "Leave Chat?", 
-                    "You will need an invite to join back.", 
-                    async () => {
-                        const r = await fetch('/api/manage-chat', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'leave', chatId })
-                        });
-                        if (r.ok) location.href = '/pages';
-                    }
-                );
+                askConfirmation("Leave Chat?", "You will need an invite to join back.", true, async () => {
+                    const r = await fetch('/api/manage-chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'leave', chatId })
+                    });
+                    if (r.ok) location.href = '/pages';
+                });
             };
         }
 
         if (deleteBtn) {
             deleteBtn.onclick = () => {
-                askConfirmation(
-                    "Delete Everything?", 
-                    "This will wipe all messages and remove all members permanently.", 
-                    async () => {
-                        const r = await fetch('/api/manage-chat', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'delete', chatId })
-                        });
-                        if (r.ok) location.href = '/pages';
-                    }
-                );
+                askConfirmation("Delete Everything?", "This is permanent. All messages will be wiped.", true, async () => {
+                    const r = await fetch('/api/manage-chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'delete', chatId })
+                    });
+                    if (r.ok) location.href = '/pages';
+                });
             };
         }
 
@@ -129,6 +133,42 @@ async function sendMessage(e) {
         });
         loadMessages();
     } catch (e) { console.error("Send failed", e); }
+}
+
+// --- ADMIN FUNCTIONS ---
+
+async function kickUser(targetUsername) {
+    askConfirmation(
+        "Kick User?", 
+        `Remove @${targetUsername} from this chat?`, 
+        true, 
+        async () => {
+            const r = await fetch('/api/manage-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'kick', chatId, targetUsername })
+            });
+            if (r.ok) loadMessages();
+        }
+    );
+}
+
+async function inviteUser() {
+    const targetUsername = prompt("Enter username to invite:"); // We can upgrade this to a modal later!
+    if (!targetUsername) return;
+
+    const r = await fetch('/api/manage-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'invite', chatId, targetUsername })
+    });
+    
+    const data = await r.json();
+    if (r.ok) {
+        alert("Invite sent!"); // Or a custom toast notification
+    } else {
+        alert(data.error || "User not found");
+    }
 }
 
 initChat();
