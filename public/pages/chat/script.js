@@ -24,6 +24,11 @@ async function loadMessages() {
 
         display.innerHTML = data.messages.map(m => {
             const senderName = m.username.toLowerCase().trim();
+            
+            if (senderName === 'system') {
+                return `<div class="msg-bubble system-msg">${m.content}</div>`;
+            }
+
             const isMe = (senderName === myName);
             return `
                 <div class="msg-bubble ${isMe ? 'my-msg' : 'their-msg'}">

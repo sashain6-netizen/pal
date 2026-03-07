@@ -216,3 +216,16 @@ body {
 
 .modal-btn.secondary { background: #e2e8f0; color: #475569; }
 .modal-btn.danger { background: #ef4444; color: white; }
+
+.system-msg {
+    align-self: center;
+    background: transparent;
+    color: #94a3b8; /* Light grey */
+    font-size: 0.85rem;
+    font-style: italic;
+    margin: 8px 0;
+}
+
+.system-msg .msg-user {
+    display: none;
+}

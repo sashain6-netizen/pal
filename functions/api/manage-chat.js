@@ -15,12 +15,14 @@ export async function onRequestPost(context) {
 
         if (action === "leave") {
             await env.DB.prepare(
+                "INSERT INTO chat_messages (room_id, username, content) VALUES (?, ?, ?)"
+            ).bind(chatId, 'System', `${username} left the chat`).run();
+
+            await env.DB.prepare(
                 "DELETE FROM chat_members WHERE room_id = ? AND username = ?"
             ).bind(chatId, username).run();
             
-            return new Response(JSON.stringify({ success: true }), {
-                headers: { "Content-Type": "application/json" }
-            });
+            return new Response(JSON.stringify({ success: true }));
         }
 
         if (action === "delete") {
