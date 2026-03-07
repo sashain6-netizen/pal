@@ -157,3 +157,27 @@ iframe {
 iframe.active {
     display: block;
 }
+
+.tab .close-btn {
+    margin-left: 12px;
+    font-size: 14px; /* Slightly smaller looks cleaner */
+    color: #999;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    
+    /* Perfect Centering */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Fine-tuning the 'X' position */
+    line-height: 1;
+    padding-bottom: 2px; 
+    transition: all 0.2s ease;
+}
+
+.tab .close-btn:hover {
+    background: #ff4d4d;
+    color: white;
+}
