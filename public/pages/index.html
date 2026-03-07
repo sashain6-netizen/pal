@@ -3,37 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Reward • Pal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
-    <link rel="icon" href="/favicon.png" type="image/png">
+    <title>Forums • Pal</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/pages/style.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body>
-    <div class="container" style="margin-top: 100px;">
-    <div class="forum-header">
-        <h1>Community Forums</h1>
-        <button onclick="openModal()" class="nav-btn">New Thread</button>
+    <div class="container">
+        <div class="forum-header">
+            <h1>Community Board</h1>
+            <div class="tab-controls">
+                <button class="tab-btn active" onclick="switchTab('public')">Public Threads</button>
+                <button class="tab-btn" onclick="switchTab('private')">Private Chats</button>
+            </div>
+            <button class="nav-btn create-btn" onclick="openModal()">+ New Post</button>
+        </div>
+
+        <div id="public-section" class="forum-section">
+            <div id="thread-list" class="features-grid">
+                </div>
+        </div>
+
+        <div id="private-section" class="forum-section" style="display: none;">
+            <div id="chat-list" class="features-grid">
+                </div>
+        </div>
     </div>
 
-    <div id="thread-list" class="thread-container">
-        </div>
-</div>
-
-<div id="threadModal" class="modal" style="display:none;">
-    <div class="modal-content feature-card">
-        <h3>Create Thread</h3>
-        <input type="text" id="threadTitle" placeholder="Thread Title">
-        <textarea id="threadContent" placeholder="What's on your mind?"></textarea>
-        <div class="modal-btns">
-            <button onclick="closeModal()">Cancel</button>
-            <button onclick="submitThread()" class="nav-btn">Post</button>
+    <div id="postModal" class="modal">
+        <div class="modal-content feature-card">
+            <h3 id="modalTitle">Create New Thread</h3>
+            <div id="publicFields">
+                <input type="text" id="newTitle" placeholder="Thread Title...">
+                <textarea id="newContent" placeholder="What's on your mind?"></textarea>
+            </div>
+            <div id="privateFields" style="display: none;">
+                <input type="text" id="roomName" placeholder="Group Name (Optional)">
+                <input type="text" id="inviteUser" placeholder="Invite Username (Exact name)">
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                <button class="nav-btn" onclick="submitPost()">Post</button>
+            </div>
         </div>
     </div>
-</div>
-    
+
     <script src="/global-settings.js"></script>
-    <script src="/global-auth.js"></script>
     <script src="/navbar.js"></script>
     <script src="/pages/script.js"></script>
 </body>
