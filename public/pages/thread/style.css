@@ -132,3 +132,97 @@
     transform: none;
     box-shadow: none;
 }
+
+/* Container adjustment for the sticky bottom */
+#posts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Tight gap for compactness */
+    margin-bottom: 140px; /* Space so the last post isn't hidden by the reply box */
+}
+
+/* Compact Post Row */
+.compact-post {
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    position: relative;
+}
+
+.user-rank {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 800;
+}
+
+.author-link {
+    text-decoration: none;
+    font-weight: 700;
+    color: var(--blue-deep);
+    font-size: 0.95rem;
+}
+
+.author-link:hover {
+    text-decoration: underline;
+}
+
+.user-prefix {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-right: 4px;
+}
+
+.post-time {
+    margin-left: auto; /* Pushes to the far right corner */
+    font-size: 0.7rem;
+    color: #94a3b8;
+}
+
+.post-content-compact {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #334155;
+    padding-left: 5px;
+}
+
+/* THE STICKY REPLY BOX */
+.reply-box {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1000px; /* Match your container width */
+    background: white;
+    padding: 15px 25px;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.05);
+    z-index: 100;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.reply-box textarea {
+    flex: 1;
+    min-height: 45px !important; /* Small by default */
+    height: 45px;
+    margin-bottom: 0;
+    padding: 10px 15px;
+}
+
+.reply-btn {
+    white-space: nowrap;
+    padding: 10px 20px;
+}

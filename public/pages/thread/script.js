@@ -11,15 +11,20 @@ async function loadThread() {
     const container = document.getElementById('posts-container');
 
     container.innerHTML = data.posts.map(post => `
-        <div class="post-card feature-card" style="border-left: 5px solid ${post.themeColor}">
-            <div class="post-sidebar">
-                <img src="${post.avatarUrl}" class="post-avatar">
-                <span class="post-author">${post.displayName}</span>
+        <div class="compact-post">
+            <div class="post-header">
+                <span class="user-rank" style="background: ${post.themeColor || '#2563eb'}">
+                    ${post.rank || 'Member'}
+                </span>
+                <span class="author-info">
+                    ${post.prefix ? `<span class="user-prefix">${post.prefix}</span>` : ''}
+                    <a href="/users?id=${post.username}" class="author-link">
+                        ${post.displayName || post.username}
+                    </a>
+                </span>
+                <span class="post-time">${new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             </div>
-            <div class="post-main">
-                <div class="post-date">${new Date(post.created_at).toLocaleString()}</div>
-                <div class="post-content">${escapeHTML(post.content)}</div>
-            </div>
+            <div class="post-content-compact">${escapeHTML(post.content)}</div>
         </div>
     `).join('');
 }
