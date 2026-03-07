@@ -45,20 +45,22 @@ function switchTab(id) {
 }
 
 function loadUrl() {
-    const input = document.getElementById('urlInput').value;
+    const input = document.getElementById('urlInput').value.trim();
     if (!input || !activeTabId) return;
 
-    let targetUrl = input;
-    if (!input.startsWith('http')) targetUrl = 'https://' + input;
-
-    // Use the Proxy Worker you created earlier
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(targetUrl)}`;
+    let targetUrl;
     
+    // If it's a URL (contains a dot and no spaces), treat it as a site
+    if (input.includes('.') && !input.includes(' ')) {
+        targetUrl = input.startsWith('http') ? input : 'https://' + input;
+    } else {
+        targetUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(input)}`;
+    }
+
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(targetUrl)}`;
     const frame = document.getElementById(`frame-${activeTabId}`);
-    const btn = document.getElementById(`btn-${activeTabId}`).querySelector('span');
     
     frame.src = proxyUrl;
-    btn.innerText = targetUrl.split('//')[1].split('/')[0]; // Set tab title to domain
 }
 
 function closeTab(id, event) {
