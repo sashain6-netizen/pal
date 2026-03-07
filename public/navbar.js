@@ -89,7 +89,7 @@ function injectNavbar() {
 
         <ul class="nav-links">
             <li><a href="/pages">Forums</a></li>
-            <li><a href="/ai">AI</a></li>
+            <li><a href="/intel">AI</a></li>
             <li><a href="/games">Games</a></li>
             <li><a href="/proxy">Proxy</a></li>
             <li><a href="/apps">Apps</a></li>
