@@ -17,17 +17,18 @@ export async function onRequestPost(context) {
         const { threadId } = await request.json();
         if (!threadId) return new Response("Thread ID required", { status: 400 });
 
-        // 3. Fetch Thread & User Rank simultaneously
-        const thread = await env.DB.prepare("SELECT author_username FROM threads WHERE id = ?")
+        // 3. Fetch Thread (FIXED COLUMN NAME)
+        const thread = await env.DB.prepare("SELECT creator_username FROM threads WHERE id = ?")
             .bind(threadId).first();
-        
+
+        if (!thread) return new Response(JSON.stringify({ error: "Thread not found" }), { status: 404 });
+
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
 
-        if (!thread) return new Response("Thread not found", { status: 404 });
-
-        // 4. THE SECURITY CHECK
-        const isOP = thread.author_username.toLowerCase() === username;
+        // 4. THE SECURITY CHECK (FIXED REFERENCE)
+        // We check against thread.creator_username now
+        const isOP = thread.creator_username.toLowerCase() === username;
         const isOwner = user.rank === "Owner";
 
         if (!isOP && !isOwner) {
