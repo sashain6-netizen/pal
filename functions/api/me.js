@@ -38,9 +38,14 @@ export async function onRequestGet(context) {
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ loggedIn: false, error: err.message }), { 
-      status: 200, 
-      headers: { "Content-Type": "application/json" }
+    return new Response(JSON.stringify({
+      loggedIn: true,
+      username: user.username,       // The raw ID (e.g., "simon") for logic checks
+      displayName: user.displayName, // The "Pretty" name for UI display
+      rank: user.rank || "Member",   // THIS WAS MISSING
+      themeColor: user.themeColor || "#2563eb"
+    }), { 
+      headers: { "Content-Type": "application/json" } 
     });
   }
 }
