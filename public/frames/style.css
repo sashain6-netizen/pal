@@ -1,0 +1,94 @@
+/* Games Page Styling */
+.games-page {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 80px auto 0; /* Adjust for your navbar */
+}
+
+.games-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+#gameSearch {
+    padding: 12px 20px;
+    width: 300px;
+    border-radius: 25px;
+    border: 1px solid #ced4da;
+    outline: none;
+}
+
+#gameSearch:focus { border-color: #007bff; box-shadow: 0 0 5px rgba(0,123,255,0.2); }
+
+/* The Grid */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* Individual Game Card */
+.game-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eef2f6;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,123,255,0.15);
+}
+
+.game-thumb {
+    width: 100%;
+    height: 150px;
+    background: #e7f3ff;
+    object-fit: cover;
+}
+
+.game-info { padding: 15px; text-align: center; }
+.game-info h3 { margin: 0; font-size: 16px; color: #333; }
+
+/* The Overlay Player */
+.game-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+}
+
+.overlay-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.overlay-nav {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+}
+
+.overlay-nav button {
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.accent-btn { background: #007bff; color: white; }
+
+#gameFrame {
+    flex: 1;
+    border: none;
+    background: white;
+}

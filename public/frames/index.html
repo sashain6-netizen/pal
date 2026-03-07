@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market • Pal</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/frames/style.css">
+</head>
+<body>
+    <div class="games-page">
+        <div class="games-header">
+            <h1>Pal Games</h1>
+            <div class="search-container">
+                <input type="text" id="gameSearch" placeholder="Search for a game..." oninput="filterGames()">
+            </div>
+        </div>
+
+        <div class="games-grid" id="gamesGrid"></div>
+
+        <div id="gameOverlay" class="game-overlay">
+            <div class="overlay-content">
+                <div class="overlay-nav">
+                    <button onclick="closeGame()">← Back to Pal</button>
+                    <button onclick="toggleFullScreen()" class="accent-btn">Full Screen</button>
+                </div>
+                <iframe id="gameFrame" src=""></iframe>
+            </div>
+        </div>
+    </div>
+    <script src="/global-settings.js"></script>
+    <script src="/global-auth.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="/frames/script.js"></script>
+</body>
+</html>
