@@ -56,20 +56,38 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: true }));
         }
 
-        // --- ACTION: INVITE ---
-        if (action === "invite") {
-            if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
+        // --- ACTION: INVITE (Checking inside a JSON list in KV) ---
+if (action === "invite") {
+    if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
 
-            const userExists = await env.DB.prepare("SELECT 1 FROM users WHERE username = ?")
-                .bind(targetUsername).first();
-            
-            if (!userExists) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+    if (!env.USERS_KV) {
+        return new Response(JSON.stringify({ error: "KV Binding (USERS_KV) not found" }), { status: 500 });
+    }
 
-            await env.DB.prepare("INSERT OR IGNORE INTO chat_members (room_id, username) VALUES (?, ?)")
-                .bind(chatId, targetUsername).run();
-
-            return new Response(JSON.stringify({ success: true }));
+    // 1. Get the master list from the 'all_users_index' key
+        const allUsersJson = await env.USERS_KV.get("all_users_index");
+        
+        if (!allUsersJson) {
+            return new Response(JSON.stringify({ error: "Master user list not found in KV" }), { status: 500 });
         }
+
+        // 2. Parse the list (assuming it's an array) and check for the user
+        const userList = JSON.parse(allUsersJson);
+        const userExists = userList.some(u => u.toLowerCase() === targetUsername.toLowerCase());
+
+        if (!userExists) {
+            return new Response(JSON.stringify({ error: "User does not exist in Pal" }), { 
+                status: 404,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
+        // 3. Add to the D1 chat_members table
+        await env.DB.prepare("INSERT OR IGNORE INTO chat_members (room_id, username) VALUES (?, ?)")
+            .bind(chatId, targetUsername).run();
+
+        return new Response(JSON.stringify({ success: true }));
+    }
 
         // --- ACTION: KICK ---
         if (action === "kick") {
