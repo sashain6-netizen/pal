@@ -2,7 +2,7 @@ const params = new URLSearchParams(window.location.search);
 const threadId = params.get('id');
 
 async function loadThread() {
-    if (!threadId) return window.location.href = '/forums';
+    if (!threadId) return window.location.href = '/pages';
 
     const res = await fetch(`/api/thread?id=${threadId}`);
     const data = await res.json();

@@ -1,31 +1,44 @@
+import { verifyAndDecodeToken } from "./_jwt.js";
+
 export async function onRequestPost(context) {
     const { request, env } = context;
 
-    // --- AUTH CHECK ---
+    // --- 1. AUTH CHECK ---
     const cookie = request.headers.get("Cookie") || "";
-    const session = cookie.split('pal_session=')[1]?.split(';')[0];
+    const token = cookie.split('pal_session=')[1]?.split(';')[0];
     
-    if (!session) return new Response("Unauthorized", { status: 401 });
+    if (!token) {
+        return new Response(JSON.stringify({ error: "You must be logged in to reply." }), { status: 401 });
+    }
 
     try {
-        const userData = await env.USERS_KV.get(`session:${session}`);
-        if (!userData) return new Response("Session expired", { status: 401 });
-        const user = JSON.parse(userData);
-
+        const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const { threadId, content } = await request.json();
 
-        if (!content || content.trim().length === 0) {
-            return new Response("Post cannot be empty", { status: 400 });
+        // --- 2. VALIDATION ---
+        if (!threadId || !content || content.trim() === "") {
+            return new Response(JSON.stringify({ error: "Reply cannot be empty." }), { status: 400 });
         }
 
-        // Insert the reply into D1
+        // Optional: Check if the thread actually exists
+        const threadCheck = await env.DB.prepare("SELECT id FROM threads WHERE id = ?")
+            .bind(threadId).first();
+            
+        if (!threadCheck) {
+            return new Response(JSON.stringify({ error: "Thread not found." }), { status: 404 });
+        }
+
+        // --- 3. INSERT REPLY ---
         await env.DB.prepare(
             "INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)"
         ).bind(threadId, user.username, content).run();
 
-        return new Response(JSON.stringify({ success: true }));
+        return new Response(JSON.stringify({ success: true }), {
+            headers: { "Content-Type": "application/json" }
+        });
 
     } catch (e) {
-        return new Response(e.message, { status: 500 });
+        console.error("Reply Error:", e);
+        return new Response(JSON.stringify({ error: "Server error while posting reply." }), { status: 500 });
     }
 }
