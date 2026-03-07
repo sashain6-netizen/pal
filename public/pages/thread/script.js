@@ -11,20 +11,17 @@ async function loadThread() {
     const container = document.getElementById('posts-container');
 
     container.innerHTML = data.posts.map(post => `
-        <div class="compact-post">
-            <div class="post-header">
-                <span class="user-rank" style="background: ${post.themeColor || '#2563eb'}">
-                    ${post.rank || 'Member'}
+        <div class="compact-post-row">
+            <span class="rank-tag" style="background: ${post.themeColor}">${post.rank}</span>
+            <div class="post-body-inline">
+                <span class="author-area">
+                    ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
+                    <a href="/users?id=${post.username}" class="author-name">${post.displayName}</a>
                 </span>
-                <span class="author-info">
-                    ${post.prefix ? `<span class="user-prefix">${post.prefix}</span>` : ''}
-                    <a href="/users?id=${post.username}" class="author-link">
-                        ${post.displayName || post.username}
-                    </a>
-                </span>
-                <span class="post-time">${new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                <span class="separator">:</span>
+                <span class="content">${escapeHTML(post.content)}</span>
             </div>
-            <div class="post-content-compact">${escapeHTML(post.content)}</div>
+            <span class="timestamp">${new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
         </div>
     `).join('');
 }

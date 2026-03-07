@@ -15,15 +15,18 @@ export async function onRequestGet(context) {
             "SELECT * FROM thread_posts WHERE thread_id = ? ORDER BY created_at ASC"
         ).bind(threadId).all();
 
-        // 3. Attach User Decor (Avatars/Colors) from KV
         const decoratedPosts = await Promise.all(posts.map(async (post) => {
             const userData = await env.USERS_KV.get(`user:${post.username}`);
             const user = userData ? JSON.parse(userData) : {};
+            
             return {
                 ...post,
+                // Pulling from KV, defaulting if not set
                 displayName: user.displayName || post.username,
                 avatarUrl: user.avatarUrl || "/default-avatar.png",
-                themeColor: user.themeColor || "#2563eb"
+                themeColor: user.themeColor || "#2563eb",
+                rank: user.rank || "Member",
+                prefix: user.prefix || ""     
             };
         }));
 
