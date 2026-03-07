@@ -15,7 +15,6 @@ export async function onRequest(context) {
     if (method === "GET") {
         const chatId = url.searchParams.get("id");
         
-        // Check membership
         const member = await env.DB.prepare(
             "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
         ).bind(chatId, user.username).first();
@@ -26,14 +25,14 @@ export async function onRequest(context) {
             "SELECT username, content, created_at FROM chat_messages WHERE room_id = ? ORDER BY created_at ASC LIMIT 50"
         ).bind(chatId).all();
 
-        // UPDATE THIS LINE to include created_by
-        const room = await env.DB.prepare("SELECT room_name, created_by FROM chat_rooms WHERE id = ?")
+        // 1. Change created_by to creator_username here
+        const room = await env.DB.prepare("SELECT room_name, creator_username FROM chat_rooms WHERE id = ?")
             .bind(chatId)
             .first();
 
         return new Response(JSON.stringify({ 
             roomName: room?.room_name, 
-            createdBy: room?.created_by, // <--- ADD THIS LINE
+            createdBy: room?.creator_username, // 2. Keep the JSON key as createdBy for your script.js
             messages: messages.results 
         }));
     }
