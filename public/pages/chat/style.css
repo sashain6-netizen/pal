@@ -277,3 +277,18 @@ body {
     background-color: #3b82f6;
     color: white;
 }
+
+/* --- System Messages --- */
+.msg-bubble.system-msg {
+    align-self: center;
+    max-width: 90%; /* Give it more room than regular bubbles */
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-style: italic;
+    text-align: center;
+    box-shadow: none; /* Remove the bubble shadow */
+    border: none;
+    margin: 10px 0;
+    padding: 4px;
+}
