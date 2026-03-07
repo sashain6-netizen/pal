@@ -17,6 +17,7 @@
             
             <div class="header-actions">
                 <button id="inviteBtn" class="action-btn" style="display:none;" onclick="inviteUser()">Invite</button> 
+                <button id="kickBtn" class="action-btn" style="display:none;" onclick="openKickModal()">Kick</button>
                 
                 <button id="leaveBtn" class="action-btn">Leave</button>
                 <button id="deleteBtn" class="action-btn danger" style="display:none;">Delete</button>
@@ -54,6 +55,18 @@
             <div class="modal-actions">
                 <button id="closeInviteBtn" class="modal-btn secondary">Cancel</button>
                 <button id="sendInviteBtn" class="modal-btn primary">Add to Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="kickModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <h3>Kick a User</h3>
+            <p>Enter the username of the person to remove:</p>
+            <input type="text" id="kickInput" class="modal-input" placeholder="Username..." autocomplete="off">
+            <div class="modal-actions">
+                <button id="closeKickBtn" class="modal-btn secondary">Cancel</button>
+                <button id="confirmKickBtn" class="modal-btn danger">Kick User</button>
             </div>
         </div>
     </div>

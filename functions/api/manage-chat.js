@@ -76,20 +76,34 @@ export async function onRequestPost(context) {
         }
 
         // --- ACTION: KICK ---
-        if (action === "kick") {
-            if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
+        // --- ACTION: KICK ---
+if (action === "kick") {
+    if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
+    
+    // 1. Prevent self-kick
+    if (targetUsername.toLowerCase() === username.toLowerCase()) {
+        return new Response(JSON.stringify({ error: "You cannot kick yourself" }), { status: 400 });
+    }
 
-            // 1. Add System Message
-            await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
-            ).bind(chatId, `@${targetUsername} was kicked from the chat`).run();
+    // 2. Verify target is actually in this specific room
+        const member = await env.DB.prepare("SELECT username FROM chat_members WHERE room_id = ? AND username = ?")
+            .bind(chatId, targetUsername).first();
 
-            // 2. Remove Member
-            await env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
-                .bind(chatId, targetUsername).run();
-
-            return new Response(JSON.stringify({ success: true }));
+        if (!member) {
+            return new Response(JSON.stringify({ error: "User is not in this chat" }), { status: 404 });
         }
+
+        // 3. Add System Message
+        await env.DB.prepare(
+            "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
+        ).bind(chatId, `@${targetUsername} was kicked from the chat`).run();
+
+        // 4. Remove Member
+        await env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
+            .bind(chatId, targetUsername).run();
+
+        return new Response(JSON.stringify({ success: true }));
+    }
 
         return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400 });
 
