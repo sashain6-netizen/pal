@@ -28,10 +28,14 @@ export async function onRequestPost(context) {
         }; 
 
         // 2. Update fields
+        // 2. Update fields
         const updatedUser = {
             ...user, // This preserves your XP, Currency, and Followers!
             avatarUrl: user.avatarUrl || "/default-avatar.png",
-            displayName: (updates.displayName || "").substring(0, 50),
+            
+            // Limits displayName to 16 characters
+            displayName: (updates.displayName || "").trim().substring(0, 16),
+            
             bio: (updates.bio || "").substring(0, 160),
             themeColor: updates.themeColor || "#2563eb"
         };
