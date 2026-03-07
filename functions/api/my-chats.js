@@ -29,6 +29,7 @@ export async function onRequestGet(context) {
         });
 
     } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 401 });
+        console.error("My-Chats Error:", e.message);
+        return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
     }
 }

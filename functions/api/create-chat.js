@@ -10,31 +10,36 @@ export async function onRequestPost(context) {
 
     try {
         const creatorData = await verifyAndDecodeToken(token, env.JWT_SECRET);
-        const { roomName, invitedUser } = await request.json();
+        const myUsername = creatorData.username.toLowerCase();
+        
+        // Use 'invitedUsers' (the array from your new frontend)
+        const { roomName, invitedUsers } = await request.json();
 
         // 1. Create the Room
-        const info = await env.DB.prepare(
+        const roomResult = await env.DB.prepare(
             "INSERT INTO chat_rooms (room_name, creator_username) VALUES (?, ?)"
-        ).bind(roomName || "New Chat", creatorData.username).run();
+        ).bind(roomName || "New Chat", myUsername).run();
 
-        const roomId = info.meta.last_row_id;
+        const roomId = roomResult.meta.last_row_id;
 
-        // 2. Add the Creator to the room
-        await env.DB.prepare(
-            "INSERT INTO chat_members (room_id, username) VALUES (?, ?)"
-        ).bind(roomId, creatorData.username).run();
-
-        // 3. Add the Invited User (if provided)
-        if (invitedUser) {
-            const cleanInvited = invitedUser.toLowerCase().trim();
-            await env.DB.prepare(
-                "INSERT INTO chat_members (room_id, username) VALUES (?, ?)"
-            ).bind(roomId, cleanInvited).run();
+        // 2. Prepare the batch of participants
+        // We use a Set to make sure we don't accidentally add the same person twice
+        const participants = new Set([myUsername]);
+        if (Array.isArray(invitedUsers)) {
+            invitedUsers.forEach(u => participants.add(u.toLowerCase().trim()));
         }
+
+        // 3. Create a Batch of inserts for chat_members
+        const stmt = env.DB.prepare("INSERT INTO chat_members (room_id, username) VALUES (?, ?)");
+        const batch = Array.from(participants).map(user => stmt.bind(roomId, user));
+
+        // Execute all inserts at once for better performance
+        await env.DB.batch(batch);
 
         return new Response(JSON.stringify({ success: true, roomId }));
 
     } catch (e) {
+        console.error(e);
         return new Response(JSON.stringify({ error: "Failed to create chat" }), { status: 500 });
     }
 }
