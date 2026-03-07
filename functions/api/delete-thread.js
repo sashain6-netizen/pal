@@ -35,11 +35,11 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "You do not have permission to delete this." }), { status: 403 });
         }
 
-        // 5. Execute Delete (Delete Thread + All associated posts)
         await env.DB.batch([
-            env.DB.prepare("DELETE FROM threads WHERE id = ?").bind(threadId),
-            env.DB.prepare("DELETE FROM thread_posts WHERE thread_id = ?").bind(threadId)
-        ]);
+        // Order is important!!!!! Don't delete
+        env.DB.prepare("DELETE FROM thread_posts WHERE thread_id = ?").bind(threadId),
+        env.DB.prepare("DELETE FROM threads WHERE id = ?").bind(threadId)
+    ]);
 
         return new Response(JSON.stringify({ success: true }));
 
