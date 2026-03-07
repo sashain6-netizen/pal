@@ -14,7 +14,6 @@ async function loadMessages() {
 
         document.getElementById('chatName').innerText = data.roomName || "Private Chat";
         
-        // Show/Hide delete button based on ownership
         const deleteBtn = document.getElementById('deleteBtn');
         if (deleteBtn && data.createdBy === currentUser.username) {
             deleteBtn.style.display = "block";
@@ -44,31 +43,61 @@ async function initChat() {
         if (!meRes.ok) return;
         currentUser = await meRes.json();
 
-        // --- Management Logic must be inside here ---
+        // --- DEFINING THE BUTTONS (The Missing Piece) ---
         const leaveBtn = document.getElementById('leaveBtn');
         const deleteBtn = document.getElementById('deleteBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        function askConfirmation(title, message, onConfirm) {
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmMessage').innerText = message;
+            confirmModal.style.display = 'flex';
+            
+            confirmBtn.onclick = async () => {
+                confirmBtn.disabled = true;
+                await onConfirm();
+                confirmModal.style.display = 'none';
+                confirmBtn.disabled = false;
+            };
+        }
+
+        // Close modal if user clicks cancel or the dark overlay
+        cancelBtn.onclick = () => confirmModal.style.display = 'none';
+        confirmModal.onclick = (e) => { if(e.target === confirmModal) confirmModal.style.display = 'none'; };
 
         if (leaveBtn) {
-            leaveBtn.onclick = async () => {
-                if (!confirm("Are you sure you want to leave?")) return;
-                const r = await fetch('/api/manage-chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'leave', chatId })
-                });
-                if (r.ok) location.href = '/pages';
+            leaveBtn.onclick = () => {
+                askConfirmation(
+                    "Leave Chat?", 
+                    "You will need an invite to join back.", 
+                    async () => {
+                        const r = await fetch('/api/manage-chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'leave', chatId })
+                        });
+                        if (r.ok) location.href = '/pages';
+                    }
+                );
             };
         }
 
         if (deleteBtn) {
-            deleteBtn.onclick = async () => {
-                if (!confirm("DELETE CHAT PERMANENTLY?")) return;
-                const r = await fetch('/api/manage-chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'delete', chatId })
-                });
-                if (r.ok) location.href = '/pages';
+            deleteBtn.onclick = () => {
+                askConfirmation(
+                    "Delete Everything?", 
+                    "This will wipe all messages and remove all members permanently.", 
+                    async () => {
+                        const r = await fetch('/api/manage-chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'delete', chatId })
+                        });
+                        if (r.ok) location.href = '/pages';
+                    }
+                );
             };
         }
 
