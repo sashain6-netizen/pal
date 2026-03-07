@@ -1,4 +1,4 @@
-// Single Source of Truth for Auth
+window.currentUser = null;
 async function checkAuth() {
     try {
         const response = await fetch('/api/me'); 
