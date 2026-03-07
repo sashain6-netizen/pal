@@ -24,13 +24,16 @@ function switchTab(tab, e) {
 async function loadPublicThreads() {
     const container = document.getElementById('thread-list');
     try {
-        const res = await fetch('/api/forum');
-        const threads = await res.json();
+        const res = await fetch('/api/forum', { credentials: 'include' });
         
+        if (res.status === 401) {
+            container.innerHTML = '<p class="empty-msg">Please <a href="/login">log in</a> to view or create threads.</p>';
+            return;
+        }
+
+        const threads = await res.json();
         if (!threads || threads.length === 0) {
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">
-                No threads yet. Click "+ New Post" to start the conversation!
-            </p>`;
+            container.innerHTML = '<p class="empty-msg">No threads yet. Be the first to start a conversation!</p>';
             return;
         }
 
@@ -43,25 +46,35 @@ async function loadPublicThreads() {
             </div>
         `).join('');
     } catch (e) {
-        container.innerHTML = `<p>Error loading threads. Make sure D1 is bound!</p>`;
-        console.error(e);
+        container.innerHTML = '<p class="empty-msg">Unable to load threads right now.</p>';
     }
 }
 
-async function loadPrivateChats() { 
-    const res = await fetch('/api/my-chats');
-    if (!res.ok) return; // User likely not logged in
-    const chats = await res.json();
+async function loadPrivateChats() {
     const container = document.getElementById('chat-list');
-    
-    container.innerHTML = chats.map(c => `
-        <div class="feature-card thread-card" onclick="location.href='/forums/chat?id=${c.id}'">
-            <h3>🔒 ${c.room_name}</h3>
-            <div class="meta-info">
-                Owner: @${c.creator_username}
+    try {
+        const res = await fetch('/api/my-chats', { credentials: 'include' });
+        
+        if (res.status === 401) {
+            container.innerHTML = '<p class="empty-msg">Log in to access your private chats.</p>';
+            return;
+        }
+
+        const chats = await res.json();
+        if (!chats || chats.length === 0) {
+            container.innerHTML = '<p class="empty-msg">You are not in any private chats yet.</p>';
+            return;
+        }
+
+        container.innerHTML = chats.map(c => `
+            <div class="feature-card thread-card" onclick="location.href='/forums/chat?id=${c.id}'">
+                <h3>🔒 ${c.room_name || 'Private Group'}</h3>
+                <div class="meta-info">Owner: @${c.creator_username}</div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch (e) {
+        container.innerHTML = '<p class="empty-msg">Error loading chats.</p>';
+    }
 }
 
 function openModal() {
