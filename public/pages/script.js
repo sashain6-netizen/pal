@@ -98,7 +98,7 @@ async function submitPost() {
 
     // Basic validation
     if (currentTab === 'public' && (!title || !content)) {
-        return alert("Please fill in both the title and content!");
+        return showToast("Please fill in both the title and content!");
     }
 
     const payload = currentTab === 'public' 
@@ -125,11 +125,11 @@ async function submitPost() {
             currentTab === 'public' ? loadPublicThreads() : loadPrivateChats();
         } else {
             const errData = await res.json();
-            alert(`Error: ${errData.error || "Are you logged in?"}`);
+            showToast(`Error: ${errData.error || "Are you logged in?"}`);
         }
     } catch (e) {
         console.error("Submission error:", e);
-        alert("Server connection failed.");
+        showToast("Server connection failed.");
     }
 }
 
