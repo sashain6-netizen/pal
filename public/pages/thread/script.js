@@ -1,5 +1,5 @@
-const urlParams = new URLSearchParams(window.location.search);
-const threadId = urlParams.get('id');
+const params = new URLSearchParams(window.location.search);
+const threadId = params.get('id');
 
 async function loadThread() {
     if (!threadId) return window.location.href = '/forums';
@@ -11,17 +11,14 @@ async function loadThread() {
     const container = document.getElementById('posts-container');
 
     container.innerHTML = data.posts.map(post => `
-        <div class="post-container" style="--user-theme: ${post.themeColor || '#2563eb'}">
-            <div class="post-author">
-                <img src="${post.avatarUrl || '/default-avatar.png'}" class="author-avatar">
-                <span class="author-rank">${post.rank || 'Member'}</span>
+        <div class="post-card feature-card" style="border-left: 5px solid ${post.themeColor}">
+            <div class="post-sidebar">
+                <img src="${post.avatarUrl}" class="post-avatar">
+                <span class="post-author">${post.displayName}</span>
             </div>
-            <div class="post-content-area">
-                <div class="post-meta">
-                    <span class="author-prefix">${post.prefix || ''}</span>
-                    <a href="/profile/${post.username}" class="author-name">${post.displayName || post.username}</a>
-                </div>
-                <div class="post-body">${escapeHTML(post.content)}</div>
+            <div class="post-main">
+                <div class="post-date">${new Date(post.created_at).toLocaleString()}</div>
+                <div class="post-content">${escapeHTML(post.content)}</div>
             </div>
         </div>
     `).join('');
@@ -40,14 +37,15 @@ async function postReply() {
     const res = await fetch('/api/reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ threadId, content })
+        body: JSON.stringify({ threadId, content }),
+        credentials: 'include'
     });
 
     if (res.ok) {
         document.getElementById('replyText').value = '';
-        loadThread(); // Refresh posts
+        loadThread(); // Refresh
     } else {
-        alert("Log in to reply!");
+        alert("Failed to post reply. Are you logged in?");
     }
 }
 

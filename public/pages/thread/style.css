@@ -1,64 +1,55 @@
-.forum-view { margin-top: 120px; max-width: 1000px; }
-
-.thread-header { margin-bottom: 30px; text-align: left; }
-.back-btn { text-decoration: none; color: #64748b; font-weight: 600; font-size: 0.9rem; }
-
-/* The Post Card */
-.post-container {
+.post-card {
     display: flex;
     gap: 20px;
-    background: white;
-    padding: 25px;
-    border-radius: 18px;
     margin-bottom: 20px;
-    border-left: 6px solid var(--user-theme, #2563eb);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    padding: 20px;
+    text-align: left;
 }
 
-/* Sidebar with Rank/Avatar */
-.post-author {
+.post-sidebar {
     width: 120px;
-    flex-shrink: 0;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     border-right: 1px solid #f1f5f9;
     padding-right: 20px;
 }
 
-.author-avatar {
+.post-avatar {
     width: 60px;
     height: 60px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.post-author {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--blue-primary);
+    word-break: break-word;
+    text-align: center;
+}
+
+.post-main {
+    flex: 1;
+}
+
+.post-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
     margin-bottom: 10px;
 }
 
-.author-rank {
-    display: block;
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #94a3b8;
-    letter-spacing: 0.5px;
+.post-content {
+    line-height: 1.6;
+    color: #334155;
 }
 
-/* Main Content */
-.post-content-area { flex-grow: 1; }
-
-.post-meta { margin-bottom: 12px; font-size: 0.9rem; }
-.author-prefix { font-weight: 800; color: var(--user-theme); margin-right: 5px; }
-.author-name { font-weight: 700; color: var(--blue-deep); text-decoration: none; }
-
-.post-body { line-height: 1.6; color: #334155; white-space: pre-wrap; }
-
-/* Reply Box */
-.reply-box { margin-top: 40px; padding: 30px; }
-.reply-box textarea {
-    width: 100%;
-    height: 120px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 15px;
-    margin: 15px 0;
-    font-family: inherit;
-    resize: vertical;
+.back-link {
+    text-decoration: none;
+    color: var(--blue-soft);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: block;
 }
