@@ -14,6 +14,17 @@ function switchTab(tab, e) {
     if (e) e.target.classList.add('active');
 
     const isPublic = tab === 'public';
+    const searchInput = document.getElementById('forumSearch');
+    
+    // UI Feedback
+    searchInput.placeholder = isPublic ? "Search public threads..." : "Filter my private chats...";
+    searchInput.value = ""; // Clear search when switching tabs
+    
+    // Reset private list visibility
+    if (!isPublic) {
+        document.querySelectorAll('#chat-list .thread-card').forEach(c => c.style.display = 'block');
+    }
+
     document.getElementById('public-section').style.display = isPublic ? 'block' : 'none';
     document.getElementById('private-section').style.display = !isPublic ? 'block' : 'none';
     document.getElementById('modalTitle').innerText = isPublic ? 'Create New Thread' : 'Start Private Chat';
@@ -113,29 +124,55 @@ async function submitPost() {
     } catch (e) { showToast("Server connection failed."); }
 }
 
-// --- SEARCH: FORUMS ---
 async function handleSearch() {
-    const query = document.getElementById('forumSearch').value.trim();
-    const resultsDiv = document.getElementById('searchResults');
+    const query = document.getElementById('forumSearch').value.toLowerCase().trim();
+    const forumResultsDiv = document.getElementById('searchResults');
+    
+    // TAB: PRIVATE CHATS (Client-side filtering for speed)
+    if (currentTab === 'private') {
+        const chats = document.querySelectorAll('#chat-list .thread-card');
+        let foundAny = false;
+
+        chats.forEach(chat => {
+            const chatName = chat.querySelector('h3').innerText.toLowerCase();
+            const ownerName = chat.querySelector('.meta-info').innerText.toLowerCase();
+            
+            if (chatName.includes(query) || ownerName.includes(query)) {
+                chat.style.display = 'block';
+                foundAny = true;
+            } else {
+                chat.style.display = 'none';
+            }
+        });
+
+        // Optional: Hide the dropdown results div since we are filtering the list directly
+        forumResultsDiv.classList.remove('active');
+        return; 
+    }
+
+    // TAB: PUBLIC FORUMS (Server-side search with debounce)
     clearTimeout(searchTimeout);
     if (query.length < 2) {
-        resultsDiv.classList.remove('active');
+        forumResultsDiv.classList.remove('active');
         return;
     }
+
     searchTimeout = setTimeout(async () => {
-        const res = await fetch(`/api/forums-search?q=${encodeURIComponent(query)}`);
-        const results = await res.json();
-        if (results.length > 0) {
-            resultsDiv.innerHTML = results.map(t => `
-                <a href="/pages/thread?id=${t.id}" class="search-item">
-                    <span class="search-title">${t.title}</span>
-                    <span class="search-meta">By ${t.creator_username}</span>
-                </a>`).join('');
-            resultsDiv.classList.add('active');
-        } else {
-            resultsDiv.innerHTML = '<div class="search-item">No results</div>';
-            resultsDiv.classList.add('active');
-        }
+        try {
+            const res = await fetch(`/api/forums-search?q=${encodeURIComponent(query)}`);
+            const results = await res.json();
+            if (results.length > 0) {
+                forumResultsDiv.innerHTML = results.map(t => `
+                    <a href="/pages/thread?id=${t.id}" class="search-item">
+                        <span class="search-title">${t.title}</span>
+                        <span class="search-meta">By ${t.creator_username}</span>
+                    </a>`).join('');
+                forumResultsDiv.classList.add('active');
+            } else {
+                forumResultsDiv.innerHTML = '<div class="search-item">No results</div>';
+                forumResultsDiv.classList.add('active');
+            }
+        } catch (e) { console.error("Search failed", e); }
     }, 300);
 }
 
