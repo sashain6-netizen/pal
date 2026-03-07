@@ -1,36 +1,25 @@
-import { verifyAndDecodeToken } from './_jwt.js';
-
 export async function onRequestGet(context) {
     const { request, env } = context;
     const url = new URL(request.url);
     const query = url.searchParams.get("q")?.toLowerCase().trim();
 
-    if (!query || query.length < 2) return new Response("[]");
+    if (!query || query.length < 1) return new Response("[]");
 
     try {
-        // 1. Get current user from JWT to exclude them
-        const cookieHeader = request.headers.get("Cookie") || "";
-        const token = cookieHeader.split('pal_session=')[1]?.split(';')[0];
-        let currentUser = "";
-        if (token) {
-            const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
-            currentUser = payload.username.toLowerCase();
+        // 1. Fetch your index key
+        const allUsers = await env.USERS_KV.get("all_users_index", { type: "json" });
+
+        if (!allUsers || !Array.isArray(allUsers)) {
+            return new Response("[]");
         }
 
-        // 2. List keys from KV starting with the query
-        // This assumes your keys are named like "user_index:username"
-        const userList = await env.USERS_KV.list({ 
-            prefix: `user_index:${query}`, 
-            limit: 5 
-        });
+        // 2. Filter the array for names starting with the query
+        const matches = allUsers
+            .filter(username => username.toLowerCase().startsWith(query))
+            .slice(0, 5) // Limit to top 5 results
+            .map(username => ({ username: username })); // Format for your frontend
 
-        // 3. Clean the names (remove the 'user_index:' prefix)
-        const results = userList.keys
-            .map(k => k.name.split(':')[1])
-            .filter(name => name !== currentUser)
-            .map(name => ({ username: name }));
-
-        return new Response(JSON.stringify(results), {
+        return new Response(JSON.stringify(matches), {
             headers: { "Content-Type": "application/json" }
         });
     } catch (e) {
