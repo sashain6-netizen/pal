@@ -119,4 +119,35 @@ async function postReply() {
     }
 }
 
+let searchTimeout;
+
+function handleSearch() {
+    const query = document.getElementById('forumSearch').value;
+    const resultsDiv = document.getElementById('searchResults');
+
+    clearTimeout(searchTimeout);
+    if (query.length < 2) {
+        resultsDiv.style.display = 'none';
+        return;
+    }
+
+    searchTimeout = setTimeout(async () => {
+        const res = await fetch(`/api/forums-search?q=${encodeURIComponent(query)}`);
+        const results = await res.json();
+
+        if (results.length > 0) {
+            resultsDiv.innerHTML = results.map(thread => `
+                <a href="/pages/thread?id=${thread.id}" class="search-item">
+                    <span class="search-title">${thread.title}</span>
+                    <span class="search-meta">by ${thread.creator_username}</span>
+                </a>
+            `).join('');
+            resultsDiv.style.display = 'block';
+        } else {
+            resultsDiv.innerHTML = '<div class="search-item">No results found</div>';
+            resultsDiv.style.display = 'block';
+        }
+    }, 300); // Wait 300ms after user stops typing
+}
+
 loadThread();
