@@ -151,3 +151,43 @@
     text-decoration: none;
 }
 
+/* Style for the Cancel Button */
+.cancel-btn {
+    background: #f1f5f9 !important; /* Soft grey */
+    color: #64748b !important;      /* Muted slate */
+    border: none;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background: #e2e8f0 !important;
+    color: #475569 !important;
+    transform: scale(1.02);
+}
+
+/* Ensure the Post button (nav-btn) looks primary in the modal */
+.modal-actions .nav-btn {
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+/* Input styling inside modal */
+.modal-content input, 
+.modal-content textarea {
+    border: 1px solid #e2e8f0;
+    background: #f8faff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-content input:focus, 
+.modal-content textarea:focus {
+    outline: none;
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: white;
+}
+
