@@ -26,8 +26,8 @@ export async function onRequestGet(context) {
             avatarUrl: user.avatarUrl || "/default-avatar.png",
             themeColor: user.themeColor || "#2563eb",
             rank: user.rank || "Member",    // This fixes the "Owner" issue
-            prefix: user.prefix || ""       // This fixes the missing prefix
-        };
+            prefix: user.currentPrefix || user.prefix || ""       
+         };
     }));
 
         return new Response(JSON.stringify({ 
