@@ -4,7 +4,6 @@ export async function onRequestPost(context) {
     try {
         const { action, chatId } = await request.json();
         
-        // 1. Auth Check
         const cookie = request.headers.get("Cookie") || "";
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
         if (!token) return new Response("Unauthorized", { status: 401 });
@@ -13,13 +12,13 @@ export async function onRequestPost(context) {
         const username = payload.username;
 
         if (action === "leave") {
-            // We use 3 placeholders for 3 bind values: chatId, 'System', and the message.
-            // CURRENT_TIMESTAMP is a SQL function and doesn't need a placeholder.
+            // Check your column names! 
+            // If your table doesn't have 'created_at', this will fail.
+            // I'm using a safer approach: just room_id, username, and content.
             await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
+                "INSERT INTO chat_messages (room_id, username, content) VALUES (?, 'System', ?)"
             ).bind(chatId, `${username} left the chat`).run();
 
-            // Remove the user from members
             await env.DB.prepare(
                 "DELETE FROM chat_members WHERE room_id = ? AND username = ?"
             ).bind(chatId, username).run();
@@ -30,7 +29,7 @@ export async function onRequestPost(context) {
         }
 
         if (action === "delete") {
-            // Verify ownership using the correct column name: creator_username
+            // Verify ownership
             const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
                 .bind(chatId).first();
 
@@ -38,7 +37,6 @@ export async function onRequestPost(context) {
                 return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
             }
 
-            // Wipe everything
             await env.DB.batch([
                 env.DB.prepare("DELETE FROM chat_rooms WHERE id = ?").bind(chatId),
                 env.DB.prepare("DELETE FROM chat_members WHERE room_id = ?").bind(chatId),
@@ -50,13 +48,11 @@ export async function onRequestPost(context) {
             });
         }
 
-        return new Response("Invalid Action", { status: 400 });
-
     } catch (err) {
-        // This returns the exact SQL error to your Network tab so you can see it
+        // This is crucial: It returns the ERROR as JSON so your script doesn't see HTML
         return new Response(JSON.stringify({ error: err.message }), { 
-            status: 500,
-            headers: { "Content-Type": "application/json" }
+            status: 500, 
+            headers: { "Content-Type": "application/json" } 
         });
     }
 }
