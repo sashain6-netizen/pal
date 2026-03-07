@@ -15,7 +15,7 @@ export async function onRequestPost(context) {
 
         if (action === "leave") {
             await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content) VALUES (?, ?, ?)"
+                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
             ).bind(chatId, 'System', `${username} left the chat`).run();
 
             await env.DB.prepare(

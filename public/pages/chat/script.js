@@ -15,7 +15,10 @@ async function loadMessages() {
         document.getElementById('chatName').innerText = data.roomName || "Private Chat";
         
         const deleteBtn = document.getElementById('deleteBtn');
-        if (deleteBtn && data.createdBy === currentUser.username) {
+        const roomOwner = (data.createdBy || "").toLowerCase().trim();
+        const me = (currentUser.username || "").toLowerCase().trim();
+
+        if (deleteBtn && roomOwner === me) {
             deleteBtn.style.display = "block";
         }
 
