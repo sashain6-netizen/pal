@@ -57,7 +57,13 @@ async function sendMessage(e) {
     } catch (e) { console.error("Send failed", e); }
 }
 
-// Initial load
-loadMessages();
-// Poll for new messages
-setInterval(loadMessages, 3000);
+function initChat() {
+    if (window.currentUser && window.currentUser.username) {
+        console.log("Auth ready! Starting chat for:", window.currentUser.username);
+        loadMessages(); // Load immediately
+        setInterval(loadMessages, 3000); // Start polling
+    } else {
+        console.log("Auth not ready yet, retrying...");
+        setTimeout(initChat, 100);
+    }
+}
