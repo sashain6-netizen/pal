@@ -72,7 +72,7 @@ export async function onRequest(context) {
 };
 
     if (request.method === "POST") {
-        const { itemId, action } = await request.json(); // Added 'action'
+        const { itemId, action } = await request.json();
         const item = shopItems[itemId];
 
         if (!item) return new Response(JSON.stringify({ error: "Invalid Item" }), { status: 400 });
@@ -82,7 +82,10 @@ export async function onRequest(context) {
             if (!user.ownedPrefixes.includes(itemId)) {
                 return new Response(JSON.stringify({ error: "You don't own this!" }), { status: 400 });
             }
-            user.currentPrefix = itemId;
+            
+            // SAVE THE EMOJI LABEL, NOT THE ID
+            user.currentPrefix = item.label; 
+            
             await env.USERS_KV.put(userKey, JSON.stringify(user));
             return new Response(JSON.stringify({ success: true, user }));
         }
@@ -93,7 +96,9 @@ export async function onRequest(context) {
 
         user.currency -= item.price;
         user.ownedPrefixes.push(itemId);
-        user.currentPrefix = itemId; 
+        
+        // SAVE THE EMOJI LABEL HERE TOO
+        user.currentPrefix = item.label; 
         
         await env.USERS_KV.put(userKey, JSON.stringify(user));
         return new Response(JSON.stringify({ success: true, user }));
