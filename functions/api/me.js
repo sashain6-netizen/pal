@@ -1,51 +1,43 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
-  const cookie = request.headers.get("Cookie") || "";
+  const cookieHeader = request.headers.get("Cookie") || "";
   
-  if (!cookie.includes("pal_session=")) {
+  if (!cookieHeader.includes("pal_session=")) {
     return new Response(JSON.stringify({ loggedIn: false }), { 
       headers: { "Content-Type": "application/json" } 
     });
   }
 
   try {
-    // 1. Extract and Decode the token
-    const token = cookie.split("pal_session=")[1].split(";")[0];
+    const token = cookieHeader.split("pal_session=")[1].split(";")[0];
     const payload = JSON.parse(atob(token.split(".")[1]));
-    
-    // Normalize the username from the token
     const username = payload.username?.toLowerCase();
 
-    // 2. Fetch using the NEW KEY FORMAT: user:name
     const userKey = `user:${username}`;
     const rawData = await env.USERS_KV.get(userKey);
     const user = rawData ? JSON.parse(rawData) : null;
 
     if (!user) {
-      // If we can't find the userKey, we return loggedIn: false
       return new Response(JSON.stringify({ loggedIn: false }), { 
         headers: { "Content-Type": "application/json" } 
       });
     }
 
-    // 3. Return data to frontend
+    // --- STEP 3: THE FIX IS HERE ---
     return new Response(JSON.stringify({
       loggedIn: true,
-      username: user.displayName || user.username, // Send the "Pretty" name to the UI
+      username: user.username,       // Raw ID for logical checks
+      displayName: user.displayName, // Pretty name for display
+      rank: user.rank || "Member",   // CRITICAL: This is now in the success path!
       themeColor: user.themeColor || "#2563eb"
     }), { 
       headers: { "Content-Type": "application/json" } 
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({
-      loggedIn: true,
-      username: user.username,     
-      displayName: user.displayName,
-      rank: user.rank || "Member", 
-      themeColor: user.themeColor || "#2563eb"
-    }), { 
-      headers: { "Content-Type": "application/json" } 
+    // If something breaks, we return loggedIn: false so the UI doesn't crash
+    return new Response(JSON.stringify({ loggedIn: false, error: err.message }), { 
+      headers: { "Content-Type": "application/json" }
     });
   }
 }
