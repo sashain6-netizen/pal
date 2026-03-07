@@ -44,23 +44,21 @@ function switchTab(id) {
     }
 }
 
-function loadUrl() {
+async function loadUrl() {
     const input = document.getElementById('urlInput').value.trim();
-    if (!input || !activeTabId) return;
-
-    let targetUrl;
-    
-    // If it's a URL (contains a dot and no spaces), treat it as a site
-    if (input.includes('.') && !input.includes(' ')) {
-        targetUrl = input.startsWith('http') ? input : 'https://' + input;
-    } else {
-        targetUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(input)}`;
-    }
-
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(targetUrl)}`;
     const frame = document.getElementById(`frame-${activeTabId}`);
     
-    frame.src = proxyUrl;
+    let url = input;
+    // Search logic: If it's not a URL, search DuckDuckGo
+    if (!input.includes('.') || input.includes(' ')) {
+        url = 'https://duckduckgo.com/?q=' + encodeURIComponent(input);
+    } else if (!input.startsWith('http')) {
+        url = 'https://' + input;
+    }
+
+    const proxiedUrl = "/service/" + __uv$config.encodeUrl(url);
+    
+    frame.src = proxiedUrl;
 }
 
 function closeTab(id, event) {
