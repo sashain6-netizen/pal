@@ -133,3 +133,21 @@
     width: 100%;
 }
 
+.empty-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px dashed #e2e8f0;
+    border-radius: 20px;
+    color: #64748b;
+    font-size: 1.1rem;
+    margin: 20px 0;
+}
+
+.empty-msg a {
+    color: var(--blue-primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
