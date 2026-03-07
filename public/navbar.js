@@ -92,7 +92,7 @@ function injectNavbar() {
             <li><a href="/intel">AI</a></li>
             <li><a href="/frames">Games</a></li>
             <li><a href="/find">Proxy</a></li>
-            <li><a href="/apps">Apps</a></li>
+            <li><a href="/applicable">Apps</a></li>
             <li><a href="/resources">Contacts</a></li>
         </ul>
         <div class="nav-right">

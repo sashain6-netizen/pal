@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market • Pal</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/applicable/style.css">
+</head>
+<body>
+    <div class="apps-page">
+    <div class="apps-header">
+        <div class="header-text">
+            <h1>Pal Apps</h1>
+            <p>Tools and utilities to help you thrive.</p>
+        </div>
+        <div class="search-container">
+            <input type="text" id="appSearch" placeholder="Search apps..." oninput="filterApps()">
+        </div>
+    </div>
+
+    <div class="app-categories">
+        <button class="cat-btn active" onclick="filterCategory('All')">All</button>
+        <button class="cat-btn" onclick="filterCategory('Utility')">Utility</button>
+        <button class="cat-btn" onclick="filterCategory('Study')">Study</button>
+        <button class="cat-btn" onclick="filterCategory('Fun')">Fun</button>
+    </div>
+
+    <div class="apps-list" id="appsGrid"></div>
+
+    <div id="appOverlay" class="app-overlay">
+        <div class="app-window">
+            <div class="app-header-bar">
+                <span id="activeAppName">App Name</span>
+                <div class="window-controls">
+                    <button class="min-btn" onclick="closeApp()">×</button>
+                </div>
+            </div>
+            <iframe id="appFrame" src=""></iframe>
+        </div>
+    </div>
+</div>
+    <script src="/global-settings.js"></script>
+    <script src="/global-auth.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="/applicable/script.js"></script>
+</body>
+</html>
