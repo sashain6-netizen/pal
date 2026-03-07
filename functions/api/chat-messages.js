@@ -42,8 +42,8 @@ export async function onRequest(context) {
             const { chatId, content } = await request.json();
             
             await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, ?)"
-            ).bind(chatId, user.username, content, new Date().toISOString()).run();
+                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
+            ).bind(chatId, user.username, content).run();
 
             return new Response(JSON.stringify({ success: true }), {
                 headers: { "Content-Type": "application/json" }
