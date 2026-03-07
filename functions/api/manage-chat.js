@@ -2,9 +2,11 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
-        const { action, chatId } = await request.json();
+        // 1. Parse data ONCE at the very top
+        const body = await request.json();
+        const { action, chatId, targetUsername } = body;
         
-        // 1. Auth Check
+        // 2. Auth Check
         const cookie = request.headers.get("Cookie") || "";
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
         
@@ -18,14 +20,12 @@ export async function onRequestPost(context) {
         const payload = JSON.parse(atob(token.split(".")[1]));
         const username = payload.username;
 
-        // 2. Action: LEAVE
+        // --- ACTION: LEAVE (Doesn't require ownership) ---
         if (action === "leave") {
-            // Insert system message
             await env.DB.prepare(
                 "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
             ).bind(chatId, `${username} left the chat`).run();
 
-            // Delete membership
             await env.DB.prepare(
                 "DELETE FROM chat_members WHERE room_id = ? AND username = ?"
             ).bind(chatId, username).run();
@@ -35,75 +35,57 @@ export async function onRequestPost(context) {
             });
         }
 
-        if (action === "delete") {
-        // 1. Verify ownership
+        // --- OWNER VERIFICATION (Required for Delete, Invite, Kick) ---
         const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
             .bind(chatId).first();
 
         if (!room || room.creator_username !== username) {
-            return new Response(JSON.stringify({ error: "Forbidden" }), { 
+            return new Response(JSON.stringify({ error: "Forbidden: You are not the owner" }), { 
                 status: 403,
                 headers: { "Content-Type": "application/json" }
             });
         }
 
+        // --- ACTION: DELETE ---
+        if (action === "delete") {
+            await env.DB.batch([
+                env.DB.prepare("DELETE FROM chat_messages WHERE room_id = ?").bind(chatId),
+                env.DB.prepare("DELETE FROM chat_members WHERE room_id = ?").bind(chatId),
+                env.DB.prepare("DELETE FROM chat_rooms WHERE id = ?").bind(chatId)
+            ]);
+            return new Response(JSON.stringify({ success: true }));
+        }
+
+        // --- ACTION: INVITE ---
         if (action === "invite") {
-            const { targetUsername } = await request.json(); // The person you want to add
+            if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
 
-            // 1. Check if YOU are the owner
-            const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
-                .bind(chatId).first();
-            if (!room || room.creator_username !== username) return new Response("Forbidden", { status: 403 });
-
-            // 2. Check if the target user exists in your USERS table
             const userExists = await env.DB.prepare("SELECT 1 FROM users WHERE username = ?")
                 .bind(targetUsername).first();
+            
             if (!userExists) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
 
-            // 3. Add them to the chat
             await env.DB.prepare("INSERT OR IGNORE INTO chat_members (room_id, username) VALUES (?, ?)")
                 .bind(chatId, targetUsername).run();
 
             return new Response(JSON.stringify({ success: true }));
         }
 
+        // --- ACTION: KICK ---
         if (action === "kick") {
-            const { targetUsername } = await request.json();
+            if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
+            if (targetUsername === username) return new Response(JSON.stringify({ error: "Cannot kick yourself" }), { status: 400 });
 
-            // 1. Check ownership
-            const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
-                .bind(chatId).first();
-            if (!room || room.creator_username !== username) return new Response("Forbidden", { status: 403 });
-
-            // 2. You can't kick yourself!
-            if (targetUsername === username) return new Response("Cannot kick owner", { status: 400 });
-
-            // 3. Remove them
             await env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
                 .bind(chatId, targetUsername).run();
 
             return new Response(JSON.stringify({ success: true }));
         }
 
-        // 2. Delete in the correct order (Messages/Members FIRST, Room LAST)
-        await env.DB.batch([
-            env.DB.prepare("DELETE FROM chat_messages WHERE room_id = ?").bind(chatId),
-            env.DB.prepare("DELETE FROM chat_members WHERE room_id = ?").bind(chatId),
-            env.DB.prepare("DELETE FROM chat_rooms WHERE id = ?").bind(chatId)
-        ]);
-
-        return new Response(JSON.stringify({ success: true }), {
-            headers: { "Content-Type": "application/json" }
-        });
-    }
-
-        return new Response(JSON.stringify({ error: "Invalid action" }), { 
-            status: 400,
-            headers: { "Content-Type": "application/json" }
-        });
+        // Default if no action matched
+        return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400 });
 
     } catch (err) {
-        // This ensures the frontend gets a JSON error string, not an HTML page
         return new Response(JSON.stringify({ error: err.message }), { 
             status: 500,
             headers: { "Content-Type": "application/json" }
