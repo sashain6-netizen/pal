@@ -1,6 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const chatId = params.get('id');
-let lastMsgId = 0;
+const display = document.getElementById('messageDisplay');
 
 async function loadMessages() {
     if (!chatId) return;
@@ -12,16 +12,26 @@ async function loadMessages() {
         
         document.getElementById('chatName').innerText = data.roomName || "Private Chat";
         
-        const display = document.getElementById('messageDisplay');
-        display.innerHTML = data.messages.map(m => `
-            <div class="msg-bubble ${m.username === window.currentUser?.username ? 'my-msg' : 'their-msg'}">
-                <span class="msg-user">@${m.username}</span>
-                <p class="msg-text">${m.content}</p>
-            </div>
-        `).join('');
+        // Check if we are at the bottom BEFORE adding new messages
+        const isAtBottom = display.scrollHeight - display.scrollTop <= display.clientHeight + 100;
+
+        // Use a fallback to ensure we compare against a real string
+        const myUsername = window.currentUser?.username || "";
+
+        display.innerHTML = data.messages.map(m => {
+            const isMe = m.username === myUsername;
+            return `
+                <div class="msg-bubble ${isMe ? 'my-msg' : 'their-msg'}">
+                    <span class="msg-user">${isMe ? 'You' : '@' + m.username}</span>
+                    <p class="msg-text">${m.content}</p>
+                </div>
+            `;
+        }).join('');
         
-        // Auto-scroll to bottom
-        display.scrollTop = display.scrollHeight;
+        // Only auto-scroll if the user was already near the bottom
+        if (isAtBottom) {
+            display.scrollTop = display.scrollHeight;
+        }
     } catch (e) { console.error("Load failed", e); }
 }
 
@@ -29,20 +39,25 @@ async function sendMessage(e) {
     e.preventDefault();
     const input = document.getElementById('msgInput');
     const content = input.value.trim();
-    if (!content) return;
+    if (!content || !chatId) return;
 
     input.value = '';
     try {
-        await fetch('/api/chat-messages', {
+        const res = await fetch('/api/chat-messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId, content }),
             credentials: 'include'
         });
-        loadMessages(); // Refresh after sending
+        
+        if (res.ok) {
+            await loadMessages();
+            display.scrollTop = display.scrollHeight; // Force scroll on own message
+        }
     } catch (e) { console.error("Send failed", e); }
 }
 
-// Initial load and poll every 3 seconds
+// Initial load
 loadMessages();
+// Poll for new messages
 setInterval(loadMessages, 3000);
