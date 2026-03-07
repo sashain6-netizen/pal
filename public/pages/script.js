@@ -22,18 +22,30 @@ function switchTab(tab) {
 }
 
 async function loadPublicThreads() {
-    const res = await fetch('/api/forum');
-    const threads = await res.json();
     const container = document.getElementById('thread-list');
-    
-    container.innerHTML = threads.map(t => `
-        <div class="feature-card thread-card" onclick="location.href='/forums/thread?id=${t.id}'">
-            <h3>${t.title}</h3>
-            <div class="meta-info">
-                By <span class="user-mention">@${t.creator_username}</span> • ${new Date(t.created_at).toLocaleDateString()}
+    try {
+        const res = await fetch('/api/forum');
+        const threads = await res.json();
+        
+        if (!threads || threads.length === 0) {
+            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">
+                No threads yet. Click "+ New Post" to start the conversation!
+            </p>`;
+            return;
+        }
+
+        container.innerHTML = threads.map(t => `
+            <div class="feature-card thread-card" onclick="location.href='/forums/thread?id=${t.id}'">
+                <h3>${t.title}</h3>
+                <div class="meta-info">
+                    By <span class="user-mention">@${t.creator_username}</span> • ${new Date(t.created_at).toLocaleDateString()}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch (e) {
+        container.innerHTML = `<p>Error loading threads. Make sure D1 is bound!</p>`;
+        console.error(e);
+    }
 }
 
 async function loadPrivateChats() { 
