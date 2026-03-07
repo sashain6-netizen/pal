@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat • Pal</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/pages/chat/style.css">
+</head>
+<body class="chat-body">
+    <div class="chat-container">
+        <header class="chat-header">
+            <button onclick="location.href='/pages/forum'" class="back-btn">← Back</button>
+            <h2 id="chatName">Loading Chat...</h2>
+        </header>
+
+        <div id="messageDisplay" class="message-area">
+            </div>
+
+        <form id="chatForm" class="chat-input-wrapper" onsubmit="sendMessage(event)">
+            <input type="text" id="msgInput" placeholder="Type a message..." autocomplete="off">
+            <button type="submit" class="send-btn">Send</button>
+        </form>
+    </div>
+
+    <script src="/global-auth.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="/global-settings.js"></script>
+    <script src="/pages/chat/script.js"></script>
+</body>
+</html>
