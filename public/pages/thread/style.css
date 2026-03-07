@@ -46,12 +46,31 @@
     overflow: hidden;
 }
 
-.author-area { display: flex; gap: 4px; white-space: nowrap; }
+.author-area { 
+    display: flex; 
+    align-items: center;
+    gap: 4px; 
+    white-space: nowrap; 
+}
+
 .author-name { font-weight: 700; color: var(--blue-deep); text-decoration: none; }
 .author-name:hover { text-decoration: underline; }
-.prefix { color: #64748b; font-weight: 500; }
+
+.prefix { 
+    color: #64748b; 
+    font-weight: 500; 
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
+
 .separator { color: #cbd5e1; font-weight: bold; }
-.content { color: #334155; word-break: break-word; }
+
+.content { 
+    color: #334155; 
+    word-break: break-word; 
+    line-height: 1.4;  
+}
 
 .timestamp {
     font-size: 0.7rem;
