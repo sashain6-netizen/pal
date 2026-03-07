@@ -19,16 +19,19 @@ async function loadMessages() {
         const myUsername = window.currentUser?.username || "";
 
         display.innerHTML = data.messages.map(m => {
-            const isMe = m.username === myUsername;
+            const myName = (window.currentUser?.username || "").toLowerCase().trim();
+            const senderName = (m.username || "").toLowerCase().trim();
+
+            const isMe = (senderName === myName) && myName !== "";
+
             return `
                 <div class="msg-bubble ${isMe ? 'my-msg' : 'their-msg'}">
                     <span class="msg-user">${isMe ? 'You' : '@' + m.username}</span>
                     <p class="msg-text">${m.content}</p>
                 </div>
             `;
-        }).join('');
+            }).join('');
         
-        // Only auto-scroll if the user was already near the bottom
         if (isAtBottom) {
             display.scrollTop = display.scrollHeight;
         }
