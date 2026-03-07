@@ -170,4 +170,13 @@ async function handleSearch() {
     }, 300);
 }
 
+document.addEventListener('click', (e) => {
+    const searchContainer = document.querySelector('.search-container');
+    const resultsDiv = document.getElementById('searchResults');
+    
+    if (!searchContainer.contains(e.target)) {
+        resultsDiv.classList.remove('active');
+    }
+});
+
 init();

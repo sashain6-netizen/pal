@@ -191,84 +191,79 @@
     background: white;
 }
 
-/* Container for the search */
+/* Container: Inline-block stops it from hogging the whole row */
 .search-container {
     position: relative;
-    width: 100%;
-    max-width: 450px;
-    margin: 10px 0;
+    display: inline-block; 
+    width: 220px; /* Shorter width to fit in the header row */
+    margin: 0 10px;
+    vertical-align: middle;
     z-index: 1000;
 }
 
-/* The Input Field - Matching the "Pal" look */
+/* The Input: Bright Blue & Compact */
 #forumSearch {
     width: 100%;
-    padding: 12px 20px;
-    border-radius: 15px; /* Matches your post buttons */
-    border: 2px solid #334155;
-    background: #0f172a; /* Deeper navy/slate */
-    color: #f8fafc;
+    padding: 8px 15px; /* Smaller padding */
+    border-radius: 12px;
+    border: 2px solid #60a5fa; /* Light blue border */
+    background: #eff6ff; /* Very light blue background */
+    color: #1e40af; /* Dark blue text for readability */
     font-family: 'Varela Round', sans-serif;
-    font-size: 1rem;
+    font-size: 0.85rem; /* Smaller text */
     transition: all 0.2s ease;
     outline: none;
     box-sizing: border-box;
 }
 
-#forumSearch:focus {
-    border-color: #3b82f6; /* Blue highlight from your buttons */
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+#forumSearch::placeholder {
+    color: #93c5fd; /* Soft blue placeholder */
 }
 
-/* The Dropdown - This fix removes the ghost line */
+#forumSearch:focus {
+    background: #ffffff;
+    border-color: #2563eb; /* Primary Pal Blue */
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* The Dropdown: Matching Blue Theme */
 .search-dropdown {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 5px);
     left: 0;
     right: 0;
-    background: #1e293b; /* Matches feature-card */
-    border: none; /* Removed by default to hide the black line */
-    border-radius: 15px;
-    max-height: 300px;
+    background: #ffffff;
+    border: none;
+    border-radius: 12px;
+    max-height: 250px;
     overflow-y: auto;
     z-index: 9999;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    display: none; /* Hidden until search starts */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    display: none;
 }
 
-/* When active, we add the border back via this class */
 .search-dropdown.active {
     display: block;
-    border: 2px solid #334155;
+    border: 2px solid #bfdbfe;
 }
 
-/* Search Result Items */
+/* Items in the dropdown */
 .search-item {
     display: block;
-    padding: 14px 20px;
+    padding: 10px 15px;
     text-decoration: none;
-    color: #e2e8f0;
-    border-bottom: 1px solid #334155;
-    font-family: 'Varela Round', sans-serif;
-    transition: background 0.2s;
-}
-
-.search-item:last-child {
-    border-bottom: none;
+    color: #1e3a8a;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.8rem;
+    transition: background 0.1s;
 }
 
 .search-item:hover {
-    background: #334155;
+    background: #dbeafe; /* Light blue highlight on hover */
 }
 
 .search-title {
     display: block;
     font-weight: bold;
-    color: #3b82f6; /* Matching the blue theme */
-    margin-bottom: 2px;
-}
-
-.search-meta {
-    font-size: 0.8rem;
-    color: #94a3b8;
+    color: #2563eb;
 }
