@@ -26,26 +26,24 @@
         </div>
 
         <div id="public-section" class="forum-section">
-            <div id="thread-list" class="features-grid">
-                </div>
+            <div id="thread-list" class="features-grid"></div>
         </div>
 
         <div id="private-section" class="forum-section" style="display: none;">
-            <div id="chat-list" class="features-grid">
-                </div>
+            <div id="chat-list" class="features-grid"></div>
         </div>
     </div>
 
     <div id="postModal" class="modal">
         <div class="modal-content feature-card">
             <h3 id="modalTitle">Create New Thread</h3>
+            
             <div id="publicFields">
                 <input type="text" id="newTitle" placeholder="Thread Title...">
                 <textarea id="newContent" placeholder="What's on your mind?"></textarea>
             </div>
+            
             <div id="privateFields" style="display: none;">
-                <input type="text" id="roomName" placeholder="Group Name (Optional)">
-                <div id="privateFields" style="display: none;">
                 <input type="text" id="roomName" placeholder="Group Name (Optional)">
                 
                 <div class="user-search-wrapper">
@@ -54,7 +52,7 @@
                     <div id="userSearchResults" class="user-dropdown"></div>
                 </div>
             </div>
-            </div>
+
             <div class="modal-actions">
                 <button class="cancel-btn" onclick="closeModal()">Cancel</button>
                 <button class="nav-btn" onclick="submitPost()">Post</button>
