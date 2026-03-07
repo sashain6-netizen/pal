@@ -54,48 +54,47 @@
     display: block;
 }
 
-/* Container for the button to align it nicely */
+/* Container for the whole reply section */
+.reply-box {
+    margin-top: 30px;
+    padding: 30px;
+    background: var(--white);
+    border-radius: 24px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+/* The actual Textarea */
+.reply-box textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 18px;
+    border-radius: 16px;
+    border: 2px solid #f1f5f9;
+    background: #f8faff;
+    font-family: 'Varela Round', sans-serif;
+    font-size: 1rem;
+    color: #334155;
+    resize: vertical; /* Allows users to pull it down, but not sideways */
+    transition: all 0.3s ease;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+/* When the user clicks into the box */
+.reply-box textarea:focus {
+    background: #ffffff;
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Placeholder text color */
+.reply-box textarea::placeholder {
+    color: #94a3b8;
+}
+
+/* The Actions area (where the button sits) */
 .reply-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 15px;
-}
-
-/* The Enhanced Reply Button */
-.reply-btn {
-    background: var(--blue-primary);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 14px;
-    font-family: 'Varela Round', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.reply-btn:hover {
-    background: var(--blue-deep);
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-}
-
-.reply-btn:active {
-    transform: translateY(-1px) scale(0.98);
-}
-
-/* Optional: Add a small send icon effect using CSS */
-.reply-btn::after {
-    content: '→';
-    font-size: 1.1rem;
-    transition: transform 0.3s ease;
-}
-
-.reply-btn:hover::after {
-    transform: translateX(4px);
 }
