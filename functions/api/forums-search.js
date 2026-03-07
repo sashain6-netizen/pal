@@ -8,15 +8,23 @@ export async function onRequestGet(context) {
     }
 
     try {
-        // SQL using 'creator_username' to match your verified schema
+        const searchTerm = `%${query}%`;
+
+        // We use a subquery to calculate a 'match_score'
+        // Title match = 2, Content match = 1
         const { results } = await env.DB.prepare(`
-            SELECT DISTINCT t.id, t.title, t.creator_username, t.created_at 
+            SELECT DISTINCT 
+                t.id, 
+                t.title, 
+                t.creator_username, 
+                t.created_at,
+                (CASE WHEN t.title LIKE ? THEN 2 ELSE 1 END) as match_score
             FROM threads t
             LEFT JOIN thread_posts p ON t.id = p.thread_id
             WHERE t.title LIKE ? OR p.content LIKE ?
-            ORDER BY t.created_at DESC
+            ORDER BY match_score DESC, t.created_at DESC
             LIMIT 15
-        `).bind(`%${query}%`, `%${query}%`).all();
+        `).bind(searchTerm, searchTerm, searchTerm).all();
 
         return new Response(JSON.stringify(results), {
             headers: { "Content-Type": "application/json" }
