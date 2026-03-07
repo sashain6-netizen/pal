@@ -89,21 +89,47 @@ function closeModal() {
 
 async function submitPost() {
     const endpoint = currentTab === 'public' ? '/api/forum' : '/api/create-chat';
+    
+    // Get values
+    const title = document.getElementById('newTitle').value;
+    const content = document.getElementById('newContent').value;
+    const roomName = document.getElementById('roomName').value;
+    const invitedUser = document.getElementById('inviteUser').value;
+
+    // Basic validation
+    if (currentTab === 'public' && (!title || !content)) {
+        return alert("Please fill in both the title and content!");
+    }
+
     const payload = currentTab === 'public' 
-        ? { title: document.getElementById('newTitle').value, content: document.getElementById('newContent').value }
-        : { roomName: document.getElementById('roomName').value, invitedUser: document.getElementById('inviteUser').value };
+        ? { title, content }
+        : { roomName, invitedUser };
 
-    const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+    try {
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            credentials: 'include' // <--- THIS IS THE FIX
+        });
 
-    if (res.ok) {
-        closeModal();
-        currentTab === 'public' ? loadPublicThreads() : loadPrivateChats();
-    } else {
-        alert("Error creating post. Are you logged in?");
+        if (res.ok) {
+            // Clear inputs
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newContent').value = '';
+            document.getElementById('roomName').value = '';
+            document.getElementById('inviteUser').value = '';
+            
+            closeModal();
+            // Refresh the active tab
+            currentTab === 'public' ? loadPublicThreads() : loadPrivateChats();
+        } else {
+            const errData = await res.json();
+            alert(`Error: ${errData.error || "Are you logged in?"}`);
+        }
+    } catch (e) {
+        console.error("Submission error:", e);
+        alert("Server connection failed.");
     }
 }
 
