@@ -70,7 +70,7 @@ user.currency = (user.currency || 0) + reward;
 // 2. NEW: Calculate XP based on Followers
 // Logic: 10 XP base + 2 XP per follower
 const followerCount = user.followers || 0;
-const xpReward = 10 + (followerCount * 2); 
+const xpReward = 10 + Math.floor(Math.log10(followerCount + 1) * 20);
 
 user.xp = (user.xp || 0) + xpReward;
 user.lastClaim = now;
