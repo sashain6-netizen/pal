@@ -97,4 +97,38 @@
 .reply-actions {
     display: flex;
     justify-content: flex-end;
+}/* The Post Reply Button */
+.reply-btn {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reply-btn:hover {
+    background: var(--blue-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+}
+
+.reply-btn:active {
+    transform: translateY(0);
+}
+
+/* If you want the button to look "disabled" while posting */
+.reply-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
