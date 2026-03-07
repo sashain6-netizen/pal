@@ -67,3 +67,5 @@ function initChat() {
         setTimeout(initChat, 100);
     }
 }
+
+initChat();
