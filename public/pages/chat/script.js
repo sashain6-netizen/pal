@@ -152,7 +152,7 @@ async function inviteUser() {
             if (r.ok) inviteModal.style.display = 'none';
             else {
                 const data = await r.json();
-                alert(data.error || "User not found");
+                showToast(data.error || "User not found");
             }
         } finally { sendInviteBtn.disabled = false; }
     };
@@ -179,7 +179,7 @@ confirmKickBtn.onclick = async () => {
 
     // Prevent kicking yourself
     if (targetUsername.toLowerCase() === me) {
-        alert("You cannot kick yourself!");
+        showToast("You cannot kick yourself!");
         return;
     }
 
@@ -196,7 +196,7 @@ confirmKickBtn.onclick = async () => {
             kickModal.style.display = 'none';
             loadMessages();
         } else {
-            alert(data.error || "Could not kick user.");
+            showToast(data.error || "Could not kick user.");
         }
     } catch (e) { console.error("Kick failed", e); }
     finally { confirmKickBtn.disabled = false; }
