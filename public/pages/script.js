@@ -38,7 +38,7 @@ async function loadPublicThreads() {
         }
 
         container.innerHTML = threads.map(t => `
-            <div class="feature-card thread-card" onclick="location.href='/forums/thread?id=${t.id}'">
+            <div class="feature-card thread-card" onclick="location.href='/pages/thread?id=${t.id}'">
                 <h3>${t.title}</h3>
                 <div class="meta-info">
                     By <span class="user-mention">@${t.creator_username}</span> • ${new Date(t.created_at).toLocaleDateString()}
@@ -67,7 +67,7 @@ async function loadPrivateChats() {
         }
 
         container.innerHTML = chats.map(c => `
-            <div class="feature-card thread-card" onclick="location.href='/forums/chat?id=${c.id}'">
+            <div class="feature-card thread-card" onclick="location.href='/pages/chat?id=${c.id}'">
                 <h3>🔒 ${c.room_name || 'Private Group'}</h3>
                 <div class="meta-info">Owner: @${c.creator_username}</div>
             </div>
