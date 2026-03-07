@@ -53,7 +53,7 @@ async function loadUrl() {
     if (!input.includes('.') || input.includes(' ')) {
         url = 'https://duckduckgo.com/?q=' + encodeURIComponent(input);
     } else if (!input.startsWith('http')) {
-        url = 'https://' + input;
+        url = 'https://' + input; 
     }
 
     const proxiedUrl = "/service/" + __uv$config.encodeUrl(url);
