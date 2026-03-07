@@ -69,6 +69,23 @@ function injectNavbar() {
             color: #2563eb !important; 
             transform: translateY(-2px); 
         }
+
+        .nav-logo a {
+        font-family: 'Varela Round', sans-serif !important;
+        font-weight: 900 !important;
+        font-size: 1.8rem !important;
+        letter-spacing: -1px !important;
+        color: #2563eb !important; /* Adjust to your brand blue */
+    }
+
+    .nav-links li a {
+        font-family: 'Varela Round', sans-serif !important;
+        font-weight: 500 !important;
+    }
+
+    .menu-content a {
+        font-family: 'Varela Round', sans-serif !important;
+    }
     </style>`;
 
     const navbarHTML = `
