@@ -53,3 +53,49 @@
     margin-bottom: 10px;
     display: block;
 }
+
+/* Container for the button to align it nicely */
+.reply-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+/* The Enhanced Reply Button */
+.reply-btn {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 14px;
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reply-btn:hover {
+    background: var(--blue-deep);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.reply-btn:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+/* Optional: Add a small send icon effect using CSS */
+.reply-btn::after {
+    content: '→';
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.reply-btn:hover::after {
+    transform: translateX(4px);
+}
