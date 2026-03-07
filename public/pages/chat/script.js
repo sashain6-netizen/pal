@@ -184,7 +184,7 @@ async function inviteUser() {
                 inviteModal.style.display = 'none';
                 // The system message will show up on the next 3s refresh!
             } else {
-                alert(data.error || "User not found");
+                showToast(data.error || "User not found");
             }
         } catch (e) {
             console.error("Invite failed", e);
