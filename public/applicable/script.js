@@ -1,6 +1,6 @@
 const apps = [
     { name: "Calculator", desc: "Advanced math tool", cat: "Utility", icon: "±", url: "https://www.desmos.com/scientific" },
-    { name: "Pal Chat", desc: "Private community messaging", cat: "Fun", icon: "P", url: "/forums" },
+    { name: "Pal Chat", desc: "Private community messaging", cat: "Fun", icon: "P", url: "/pages" },
     { name: "Whiteboard", desc: "Sketch out your ideas", cat: "Study", icon: "✎", url: "https://excalidraw.com" },
     { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" }
 ];
