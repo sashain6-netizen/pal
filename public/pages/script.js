@@ -36,7 +36,7 @@ async function loadPublicThreads() {
     `).join('');
 }
 
-async function loadPrivateChats() {
+async function loadPrivateChats() { 
     const res = await fetch('/api/my-chats');
     if (!res.ok) return; // User likely not logged in
     const chats = await res.json();
