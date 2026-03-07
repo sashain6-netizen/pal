@@ -65,34 +65,43 @@ export async function onRequest(context) {
         };
 
         if (request.method === "POST") {
-            const { itemId, action } = await request.json();
-            const item = shopItems[itemId];
+    const { itemId, action } = await request.json();
+    const item = shopItems[itemId];
 
-            if (!item) return new Response(JSON.stringify({ error: "Invalid Item" }), { status: 400 });
+    if (!item) return new Response(JSON.stringify({ error: "Invalid Item" }), { status: 400 });
 
-            if (action === "equip") {
-                if (!user.ownedPrefixes.includes(itemId)) {
-                    return new Response(JSON.stringify({ error: "You don't own this!" }), { status: 400 });
-                }
-                user.currentPrefix = item.label; 
-                await env.USERS_KV.put(userKey, JSON.stringify(user));
-                return new Response(JSON.stringify({ success: true, user }));
-            }
+    // --- EQUIP LOGIC ---
+    if (action === "equip") {
+        // We now check if the EMOJI is in the owned list
+        if (!user.ownedPrefixes.includes(item.label)) {
+            return new Response(JSON.stringify({ error: "You don't own this!" }), { status: 400 });
+        }
+        
+        user.currentPrefix = item.label; 
+        
+        await env.USERS_KV.put(userKey, JSON.stringify(user));
+        return new Response(JSON.stringify({ success: true, user }));
+    }
 
-            if (user.ownedPrefixes.includes(itemId)) {
-                return new Response(JSON.stringify({ error: "Already owned" }), { status: 400 });
-            }
-            if ((user.currency || 0) < item.price) {
-                return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
-            }
+    // --- PURCHASE LOGIC ---
+    // Check ownership using the emoji label
+    if (user.ownedPrefixes.includes(item.label)) {
+        return new Response(JSON.stringify({ error: "Already owned" }), { status: 400 });
+    }
+    
+    if ((user.currency || 0) < item.price) {
+        return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
+    }
 
-            user.currency -= item.price;
-            user.ownedPrefixes.push(itemId);
-            user.currentPrefix = item.label; 
-            
-            await env.USERS_KV.put(userKey, JSON.stringify(user));
-            return new Response(JSON.stringify({ success: true, user }));
-        } // <--- FIXED: ADDED MISSING BRACE TO CLOSE POST BLOCK
+    user.currency -= item.price;
+    
+    // Save the EMOJI to the list and the current slot
+    user.ownedPrefixes.push(item.label);
+    user.currentPrefix = item.label; 
+    
+    await env.USERS_KV.put(userKey, JSON.stringify(user));
+    return new Response(JSON.stringify({ success: true, user }));
+}
 
         return new Response(JSON.stringify({ user, shopItems }), {
             headers: { "Content-Type": "application/json" }
