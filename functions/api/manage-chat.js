@@ -4,19 +4,20 @@ export async function onRequestPost(context) {
     try {
         const { action, chatId } = await request.json();
         
-        // 1. Auth Check (Same as your other files)
         const cookie = request.headers.get("Cookie") || "";
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        // Get username from JWT
         const payload = JSON.parse(atob(token.split(".")[1]));
         const username = payload.username;
 
         if (action === "leave") {
+            // FIX: Match placeholders (?) to bind values
+            // We provide chatId, 'System', and the message. 
+            // CURRENT_TIMESTAMP is handled by the DB, so it doesn't need a '?'
             await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
-            ).bind(chatId, 'System', `${username} left the chat`).run();
+                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
+            ).bind(chatId, `${username} left the chat`).run();
 
             await env.DB.prepare(
                 "DELETE FROM chat_members WHERE room_id = ? AND username = ?"
@@ -26,15 +27,14 @@ export async function onRequestPost(context) {
         }
 
         if (action === "delete") {
-            // Verify ownership before deleting
-            const room = await env.DB.prepare("SELECT created_by FROM chat_rooms WHERE id = ?")
+            // FIX: Use 'creator_username' to match your DB
+            const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
                 .bind(chatId).first();
 
-            if (!room || room.created_by !== username) {
+            if (!room || room.creator_username !== username) {
                 return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
             }
 
-            // Batch delete everything related to this chat
             await env.DB.batch([
                 env.DB.prepare("DELETE FROM chat_rooms WHERE id = ?").bind(chatId),
                 env.DB.prepare("DELETE FROM chat_members WHERE room_id = ?").bind(chatId),
@@ -47,6 +47,7 @@ export async function onRequestPost(context) {
         }
 
     } catch (err) {
+        // This will return the actual error message to your console
         return new Response(JSON.stringify({ error: err.message }), { status: 500 });
     }
 }
