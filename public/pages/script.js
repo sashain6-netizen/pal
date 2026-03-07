@@ -161,7 +161,6 @@ async function searchUsersForInvite() {
 }
 
 function selectUser(username) {
-    if (username === window.currentUser.username) return;
 
     if (!invitedUsers.includes(username)) {
         invitedUsers.push(username);
