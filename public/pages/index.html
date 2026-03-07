@@ -18,6 +18,11 @@
                 <button class="tab-btn" onclick="switchTab('private', event)">Private Chats</button>
             </div>
             <button class="nav-btn create-btn" onclick="openModal()">+ New Post</button>
+
+            <div class="search-container">
+                <input type="text" id="forumSearch" placeholder="Search titles or posts..." oninput="handleSearch()">
+                <div id="searchResults" class="search-dropdown"></div>
+            </div>
         </div>
 
         <div id="public-section" class="forum-section">
@@ -47,11 +52,6 @@
                 <button class="nav-btn" onclick="submitPost()">Post</button>
             </div>
         </div>
-    </div>
-
-    <div class="search-container">
-        <input type="text" id="forumSearch" placeholder="Search titles or posts..." oninput="handleSearch()">
-        <div id="searchResults" class="search-dropdown"></div>
     </div>
 
     <script src="/global-settings.js"></script>
