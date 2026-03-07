@@ -35,28 +35,29 @@ export async function onRequestPost(context) {
             });
         }
 
-        // 3. Action: DELETE
         if (action === "delete") {
-            const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
-                .bind(chatId).first();
+        // 1. Verify ownership
+        const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
+            .bind(chatId).first();
 
-            if (!room || room.creator_username !== username) {
-                return new Response(JSON.stringify({ error: "Forbidden" }), { 
-                    status: 403,
-                    headers: { "Content-Type": "application/json" }
-                });
-            }
-
-            await env.DB.batch([
-                env.DB.prepare("DELETE FROM chat_rooms WHERE id = ?").bind(chatId),
-                env.DB.prepare("DELETE FROM chat_members WHERE room_id = ?").bind(chatId),
-                env.DB.prepare("DELETE FROM chat_messages WHERE room_id = ?").bind(chatId)
-            ]);
-
-            return new Response(JSON.stringify({ success: true }), {
+        if (!room || room.creator_username !== username) {
+            return new Response(JSON.stringify({ error: "Forbidden" }), { 
+                status: 403,
                 headers: { "Content-Type": "application/json" }
             });
         }
+
+        // 2. Delete in the correct order (Messages/Members FIRST, Room LAST)
+        await env.DB.batch([
+            env.DB.prepare("DELETE FROM chat_messages WHERE room_id = ?").bind(chatId),
+            env.DB.prepare("DELETE FROM chat_members WHERE room_id = ?").bind(chatId),
+            env.DB.prepare("DELETE FROM chat_rooms WHERE id = ?").bind(chatId)
+        ]);
+
+        return new Response(JSON.stringify({ success: true }), {
+            headers: { "Content-Type": "application/json" }
+        });
+    }
 
         return new Response(JSON.stringify({ error: "Invalid action" }), { 
             status: 400,
