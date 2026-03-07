@@ -45,7 +45,15 @@
             </div>
             <div id="privateFields" style="display: none;">
                 <input type="text" id="roomName" placeholder="Group Name (Optional)">
-                <input type="text" id="inviteUser" placeholder="Invite Username (Exact name)">
+                <div id="privateFields" style="display: none;">
+                <input type="text" id="roomName" placeholder="Group Name (Optional)">
+                
+                <div class="user-search-wrapper">
+                    <div id="selectedUsers" class="tag-container"></div>
+                    <input type="text" id="userSearchInput" placeholder="Type a username to invite..." oninput="searchUsersForInvite()">
+                    <div id="userSearchResults" class="user-dropdown"></div>
+                </div>
+            </div>
             </div>
             <div class="modal-actions">
                 <button class="cancel-btn" onclick="closeModal()">Cancel</button>
