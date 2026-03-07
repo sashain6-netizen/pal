@@ -71,9 +71,10 @@ function openModal() {
 
 function closeModal() {
     document.getElementById('postModal').style.display = 'none';
-    // Clean up
     invitedUsers = [];
     renderUserTags();
+    document.querySelectorAll('#postModal input, #postModal textarea').forEach(i => i.value = '');
+    document.getElementById('userSearchResults').style.display = 'none';
 }
 
 async function submitPost() {
@@ -160,9 +161,12 @@ async function searchUsersForInvite() {
 }
 
 function selectUser(username) {
+    if (username === window.currentUser.username) return;
+
     if (!invitedUsers.includes(username)) {
         invitedUsers.push(username);
         renderUserTags();
+        document.getElementById('userSearchInput').focus();
     }
     document.getElementById('userSearchInput').value = '';
     document.getElementById('userSearchResults').style.display = 'none';
