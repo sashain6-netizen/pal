@@ -26,10 +26,14 @@ export async function onRequest(context) {
             "SELECT username, content, created_at FROM chat_messages WHERE room_id = ? ORDER BY created_at ASC LIMIT 50"
         ).bind(chatId).all();
 
-        const room = await env.DB.prepare("SELECT room_name FROM chat_rooms WHERE id = ?").bind(chatId).first();
+        // UPDATE THIS LINE to include created_by
+        const room = await env.DB.prepare("SELECT room_name, created_by FROM chat_rooms WHERE id = ?")
+            .bind(chatId)
+            .first();
 
         return new Response(JSON.stringify({ 
             roomName: room?.room_name, 
+            createdBy: room?.created_by, // <--- ADD THIS LINE
             messages: messages.results 
         }));
     }
@@ -38,9 +42,10 @@ export async function onRequest(context) {
     if (method === "POST") {
         const { chatId, content } = await request.json();
         
+        // Use new Date().toISOString() or CURRENT_TIMESTAMP for better sorting
         await env.DB.prepare(
             "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, ?)"
-        ).bind(chatId, user.username, content, Date.now()).run();
+        ).bind(chatId, user.username, content, new Date().toISOString()).run();
 
         return new Response(JSON.stringify({ success: true }));
     }
