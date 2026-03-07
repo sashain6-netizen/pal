@@ -4,12 +4,9 @@ const threadId = params.get('id');
 async function loadThread() {
     if (!threadId) return window.location.href = '/pages';
 
-    // 1. Fetch thread data AND user session (you might need a /api/me endpoint)
-    // For now, let's assume your /api/thread also returns 'currentUser' info 
-    // or you fetch it separately.
     const [threadRes, userRes] = await Promise.all([
         fetch(`/api/thread?id=${threadId}`),
-        fetch('/api/me') // Create a small worker that returns { username, rank }
+        fetch('/api/me') 
     ]);
 
     const data = await threadRes.json();
@@ -33,12 +30,10 @@ async function loadThread() {
         </div>
     `).join('');
 
-    // 2. Fix the "Can Delete" check
-    // We check if current user is the thread author OR an Owner
+    // --- PERMISSION CHECK ---
     const isAuthor = currentUser.username === data.author_username;
     const isOwner = currentUser.rank === "Owner";
 
-    // Remove old button if refreshing
     const oldBtn = document.querySelector('.delete-thread-btn');
     if (oldBtn) oldBtn.remove();
 
@@ -46,30 +41,59 @@ async function loadThread() {
         const deleteBtn = document.createElement('button');
         deleteBtn.innerText = "Delete Thread";
         deleteBtn.className = "delete-thread-btn";
-        deleteBtn.onclick = () => deleteThread(threadId);
+        
+        // FIX: Change this to call the MODAL function, not the old delete function
+        deleteBtn.onclick = () => openDeleteModal(threadId);
+        
         document.querySelector('.thread-header').appendChild(deleteBtn);
     }
 }
 
-// 3. Move deleteThread OUTSIDE loadThread so it's globally accessible
-async function deleteThread(id) {
-    if (!confirm("Are you sure? This will delete all posts in this thread forever!")) return;
+// --- MODAL FUNCTIONS ---
+function openDeleteModal(id) {
+    const modal = document.getElementById('deleteModal');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    
+    modal.classList.add('active');
 
-    const res = await fetch('/api/delete-thread', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ threadId: id })
-    });
-    const data = await res.json();
+    confirmBtn.onclick = async () => {
+        confirmBtn.innerText = "Deleting...";
+        confirmBtn.disabled = true;
+        await executeDelete(id);
+    };
+}
 
-    if (data.success) {
-        alert("Thread Deleted.");
-        window.location.href = "/pages";
-    } else {
-        alert(data.error || "Failed to delete");
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+}
+
+async function executeDelete(id) {
+    try {
+        const res = await fetch('/api/delete-thread', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ threadId: id })
+        });
+        
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = "/pages";
+        } else {
+            alert(data.error);
+            // Reset button if it fails
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            confirmBtn.innerText = "Yes, Delete It";
+            confirmBtn.disabled = false;
+            closeDeleteModal();
+        }
+    } catch (err) {
+        console.error(err);
+        closeDeleteModal();
     }
 }
 
+// --- HELPERS ---
 function escapeHTML(str) {
     const p = document.createElement('p');
     p.textContent = str;
@@ -89,7 +113,7 @@ async function postReply() {
 
     if (res.ok) {
         document.getElementById('replyText').value = '';
-        loadThread(); // Refresh
+        loadThread(); 
     } else {
         alert("Failed to post reply. Are you logged in?");
     }
