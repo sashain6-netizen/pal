@@ -255,3 +255,25 @@ body {
     display: flex;
     align-items: center;
 }
+
+.modal-input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: 'Varela Round', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.modal-input:focus {
+    border-color: #3b82f6;
+}
+
+/* Ensure the primary button looks different from the 'danger' delete button */
+.modal-btn.primary {
+    background-color: #3b82f6;
+    color: white;
+}

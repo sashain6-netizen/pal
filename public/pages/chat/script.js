@@ -153,22 +153,53 @@ async function kickUser(targetUsername) {
     );
 }
 
-async function inviteUser() {
-    const targetUsername = prompt("Enter username to invite:"); // We can upgrade this to a modal later!
-    if (!targetUsername) return;
+const inviteModal = document.getElementById('inviteModal');
+const inviteInput = document.getElementById('inviteInput');
+const sendInviteBtn = document.getElementById('sendInviteBtn');
+const closeInviteBtn = document.getElementById('closeInviteBtn');
 
-    const r = await fetch('/api/manage-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'invite', chatId, targetUsername })
-    });
-    
-    const data = await r.json();
-    if (r.ok) {
-        alert("Invite sent!"); // Or a custom toast notification
-    } else {
-        alert(data.error || "User not found");
-    }
+async function inviteUser() {
+    // 1. Reset and Show the modal
+    inviteInput.value = '';
+    inviteModal.style.display = 'flex';
+    inviteInput.focus();
+
+    // 2. Handle the "Add" button click
+    sendInviteBtn.onclick = async () => {
+        const targetUsername = inviteInput.value.trim();
+        if (!targetUsername) return;
+
+        sendInviteBtn.disabled = true;
+        
+        try {
+            const r = await fetch('/api/manage-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'invite', chatId, targetUsername })
+            });
+            
+            const data = await r.json();
+            
+            if (r.ok) {
+                inviteModal.style.display = 'none';
+                // The system message will show up on the next 3s refresh!
+            } else {
+                alert(data.error || "User not found");
+            }
+        } catch (e) {
+            console.error("Invite failed", e);
+        } finally {
+            sendInviteBtn.disabled = false;
+        }
+    };
+
+    // 3. Handle closing
+    closeInviteBtn.onclick = () => inviteModal.style.display = 'none';
 }
+
+// Close modal if clicking outside the box
+window.addEventListener('click', (e) => {
+    if (e.target === inviteModal) inviteModal.style.display = 'none';
+});
 
 initChat();
