@@ -1,21 +1,24 @@
+import { verifyAndDecodeToken } from "./_jwt.js";
+
 export async function onRequest(context) {
     const { request, env } = context;
-    const url = new URL(request.url);
     const method = request.method;
 
     // --- AUTH CHECK ---
     const cookie = request.headers.get("Cookie") || "";
-    const session = cookie.split('pal_session=')[1]?.split(';')[0];
+    const token = cookie.split('pal_session=')[1]?.split(';')[0];
     
-    // Helper to get user from KV via session
-    async function getUser() {
-        if (!session) return null;
-        const data = await env.USERS_KV.get(`session:${session}`);
-        return data ? JSON.parse(data) : null;
+    let user = null;
+    if (token) {
+        try {
+            // Verify the JWT against your secret
+            user = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        } catch (e) {
+            // If token is fake or expired, user remains null
+        }
     }
 
     try {
-        // GET: Fetch all threads
         if (method === "GET") {
             const { results } = await env.DB.prepare(
                 "SELECT * FROM threads ORDER BY created_at DESC"
@@ -25,13 +28,12 @@ export async function onRequest(context) {
             });
         }
 
-        // POST: Create a new thread
         if (method === "POST") {
-            const user = await getUser();
-            if (!user) return new Response("Login required", { status: 401 });
+            // Check if JWT was valid
+            if (!user) return new Response(JSON.stringify({ error: "Login required" }), { status: 401 });
 
             const { title, content } = await request.json();
-            if (!title || !content) return new Response("Missing fields", { status: 400 });
+            if (!title || !content) return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
 
             // 1. Insert Thread
             const info = await env.DB.prepare(
@@ -47,7 +49,6 @@ export async function onRequest(context) {
 
             return new Response(JSON.stringify({ success: true, threadId }));
         }
-
     } catch (e) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
