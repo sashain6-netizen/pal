@@ -5,10 +5,10 @@ async function init() {
     loadPrivateChats();
 }
 
-function switchTab(tab) {
+function switchTab(tab, e) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
+    if (e) e.target.classList.add('active');
 
     if (tab === 'public') {
         document.getElementById('public-section').style.display = 'block';
