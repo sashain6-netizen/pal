@@ -1,51 +1,62 @@
-import { verifyAndDecodeToken } from "./_jwt.js";
-
-export async function onRequest(context) {
+export async function onRequestPost(context) {
     const { request, env } = context;
-    const url = new URL(request.url);
-    const method = request.method;
 
-    // 1. Auth Check
-    const cookie = request.headers.get("Cookie") || "";
-    const token = cookie.split('pal_session=')[1]?.split(';')[0];
-    if (!token) return new Response("Unauthorized", { status: 401 });
-    const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
-
-    // 2. GET: Fetch Messages
-    if (method === "GET") {
-        const chatId = url.searchParams.get("id");
+    try {
+        const { action, chatId } = await request.json();
         
-        const member = await env.DB.prepare(
-            "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
-        ).bind(chatId, user.username).first();
+        // 1. Auth Check
+        const cookie = request.headers.get("Cookie") || "";
+        const token = cookie.split('pal_session=')[1]?.split(';')[0];
+        if (!token) return new Response("Unauthorized", { status: 401 });
 
-        if (!member) return new Response("Forbidden", { status: 403 });
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const username = payload.username;
 
-        const messages = await env.DB.prepare(
-            "SELECT username, content, created_at FROM chat_messages WHERE room_id = ? ORDER BY created_at ASC LIMIT 50"
-        ).bind(chatId).all();
+        if (action === "leave") {
+            // We use 3 placeholders for 3 bind values: chatId, 'System', and the message.
+            // CURRENT_TIMESTAMP is a SQL function and doesn't need a placeholder.
+            await env.DB.prepare(
+                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
+            ).bind(chatId, `${username} left the chat`).run();
 
-        // 1. Change created_by to creator_username here
-        const room = await env.DB.prepare("SELECT room_name, creator_username FROM chat_rooms WHERE id = ?")
-            .bind(chatId)
-            .first();
+            // Remove the user from members
+            await env.DB.prepare(
+                "DELETE FROM chat_members WHERE room_id = ? AND username = ?"
+            ).bind(chatId, username).run();
+            
+            return new Response(JSON.stringify({ success: true }), {
+                headers: { "Content-Type": "application/json" }
+            });
+        }
 
-        return new Response(JSON.stringify({ 
-            roomName: room?.room_name, 
-            createdBy: room?.creator_username, // 2. Keep the JSON key as createdBy for your script.js
-            messages: messages.results 
-        }));
-    }
+        if (action === "delete") {
+            // Verify ownership using the correct column name: creator_username
+            const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
+                .bind(chatId).first();
 
-    // 3. POST: Send Message
-    if (method === "POST") {
-        const { chatId, content } = await request.json();
-        
-        // Use new Date().toISOString() or CURRENT_TIMESTAMP for better sorting
-        await env.DB.prepare(
-            "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, ?)"
-        ).bind(chatId, user.username, content, new Date().toISOString()).run();
+            if (!room || room.creator_username !== username) {
+                return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+            }
 
-        return new Response(JSON.stringify({ success: true }));
+            // Wipe everything
+            await env.DB.batch([
+                env.DB.prepare("DELETE FROM chat_rooms WHERE id = ?").bind(chatId),
+                env.DB.prepare("DELETE FROM chat_members WHERE room_id = ?").bind(chatId),
+                env.DB.prepare("DELETE FROM chat_messages WHERE room_id = ?").bind(chatId)
+            ]);
+
+            return new Response(JSON.stringify({ success: true }), {
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
+        return new Response("Invalid Action", { status: 400 });
+
+    } catch (err) {
+        // This returns the exact SQL error to your Network tab so you can see it
+        return new Response(JSON.stringify({ error: err.message }), { 
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        });
     }
 }
