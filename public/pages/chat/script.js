@@ -3,26 +3,23 @@ const chatId = params.get('id');
 const display = document.getElementById('messageDisplay');
 
 async function loadMessages() {
-    if (!chatId) return;
+    // Only run if we know who the user is
+    if (!chatId || !window.currentUser) return;
+
     try {
         const res = await fetch(`/api/chat-messages?id=${chatId}`, { credentials: 'include' });
         const data = await res.json();
-        
-        if (data.error) return console.error(data.error);
-        
+        if (data.error) return;
+
         document.getElementById('chatName').innerText = data.roomName || "Private Chat";
-        
-        // Check if we are at the bottom BEFORE adding new messages
         const isAtBottom = display.scrollHeight - display.scrollTop <= display.clientHeight + 100;
 
-        // Use a fallback to ensure we compare against a real string
-        const myUsername = window.currentUser?.username || "";
+        // Clean names for comparison (lowercase + no spaces)
+        const myName = window.currentUser.username.toLowerCase().trim();
 
         display.innerHTML = data.messages.map(m => {
-            const myName = (window.currentUser?.username || "").toLowerCase().trim();
-            const senderName = (m.username || "").toLowerCase().trim();
-
-            const isMe = (senderName === myName) && myName !== "";
+            const senderName = m.username.toLowerCase().trim();
+            const isMe = (senderName === myName);
 
             return `
                 <div class="msg-bubble ${isMe ? 'my-msg' : 'their-msg'}">
@@ -30,11 +27,9 @@ async function loadMessages() {
                     <p class="msg-text">${m.content}</p>
                 </div>
             `;
-            }).join('');
+        }).join('');
         
-        if (isAtBottom) {
-            display.scrollTop = display.scrollHeight;
-        }
+        if (isAtBottom) display.scrollTop = display.scrollHeight;
     } catch (e) { console.error("Load failed", e); }
 }
 
@@ -52,23 +47,23 @@ async function sendMessage(e) {
             body: JSON.stringify({ chatId, content }),
             credentials: 'include'
         });
-        
         if (res.ok) {
             await loadMessages();
-            display.scrollTop = display.scrollHeight; // Force scroll on own message
+            display.scrollTop = display.scrollHeight;
         }
     } catch (e) { console.error("Send failed", e); }
 }
 
-function initChat() {
-    if (window.currentUser && window.currentUser.username) {
-        console.log("Auth ready! Starting chat for:", window.currentUser.username);
-        loadMessages(); // Load immediately
-        setInterval(loadMessages, 3000); // Start polling
+// --- THE FIX: WAIT FOR AUTH PROPERLY ---
+function startChat() {
+    if (window.currentUser && window.currentUser.loggedIn) {
+        console.log("Chat started for:", window.currentUser.username);
+        loadMessages();
+        setInterval(loadMessages, 3000);
     } else {
-        console.log("Auth not ready yet, retrying...");
-        setTimeout(initChat, 100);
+        // Check again in 100ms
+        setTimeout(startChat, 100);
     }
 }
 
-initChat();
+startChat();
