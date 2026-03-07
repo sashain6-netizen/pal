@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion • Pal</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/forums/thread/style.css">
+</head>
+<body>
+    <div class="container forum-view">
+        <div class="thread-header">
+            <a href="/forums" class="back-btn">← Back to Forums</a>
+            <h1 id="thread-title">Loading thread...</h1>
+        </div>
+
+        <div id="posts-container">
+            </div>
+
+        <div class="reply-box feature-card">
+            <h3>Add to the conversation</h3>
+            <textarea id="replyText" placeholder="Write your reply..."></textarea>
+            <div class="reply-actions">
+                <button class="nav-btn" onclick="postReply()">Post Reply</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/navbar.js"></script>
+    <script src="/forums/thread/script.js"></script>
+</body>
+</html>
