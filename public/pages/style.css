@@ -191,47 +191,81 @@
     background: white;
 }
 
+/* Container for the search */
 .search-container {
     position: relative;
-    max-width: 500px;
-    margin: 20px auto;
+    width: 100%;
+    max-width: 450px;
+    margin: 10px 0;
+    z-index: 1000;
 }
 
+/* The Input Field - Matching the "Pal" look */
 #forumSearch {
     width: 100%;
     padding: 12px 20px;
-    border-radius: 25px;
+    border-radius: 15px; /* Matches your post buttons */
     border: 2px solid #334155;
-    background: #1e293b;
-    color: white;
+    background: #0f172a; /* Deeper navy/slate */
+    color: #f8fafc;
     font-family: 'Varela Round', sans-serif;
+    font-size: 1rem;
+    transition: all 0.2s ease;
     outline: none;
+    box-sizing: border-box;
 }
 
+#forumSearch:focus {
+    border-color: #3b82f6; /* Blue highlight from your buttons */
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+/* The Dropdown - This fix removes the ghost line */
 .search-dropdown {
     position: absolute;
-    top: 110%;
+    top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    z-index: 100;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    background: #1e293b; /* Matches feature-card */
+    border: none; /* Removed by default to hide the black line */
+    border-radius: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 9999;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    display: none; /* Hidden until search starts */
 }
 
+/* When active, we add the border back via this class */
+.search-dropdown.active {
+    display: block;
+    border: 2px solid #334155;
+}
+
+/* Search Result Items */
 .search-item {
-    display: flex;
-    flex-direction: column;
-    padding: 12px 20px;
+    display: block;
+    padding: 14px 20px;
     text-decoration: none;
-    color: white;
+    color: #e2e8f0;
     border-bottom: 1px solid #334155;
+    font-family: 'Varela Round', sans-serif;
+    transition: background 0.2s;
+}
+
+.search-item:last-child {
+    border-bottom: none;
 }
 
 .search-item:hover {
     background: #334155;
+}
+
+.search-title {
+    display: block;
+    font-weight: bold;
+    color: #3b82f6; /* Matching the blue theme */
+    margin-bottom: 2px;
 }
 
 .search-meta {

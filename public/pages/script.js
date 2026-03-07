@@ -135,33 +135,39 @@ async function submitPost() {
 
 let searchTimeout;
 
-function handleSearch() {
-    const query = document.getElementById('forumSearch').value;
+async function handleSearch() {
+    const query = document.getElementById('forumSearch').value.trim();
     const resultsDiv = document.getElementById('searchResults');
 
     clearTimeout(searchTimeout);
+
     if (query.length < 2) {
-        resultsDiv.style.display = 'none';
+        resultsDiv.classList.remove('active'); // Hides the box and border
+        resultsDiv.innerHTML = '';
         return;
     }
 
     searchTimeout = setTimeout(async () => {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        const results = await res.json();
+        try {
+            const res = await fetch(`/api/forums-search?q=${encodeURIComponent(query)}`);
+            const results = await res.json();
 
-        if (results.length > 0) {
-            resultsDiv.innerHTML = results.map(thread => `
-                <a href="/pages/thread?id=${thread.id}" class="search-item">
-                    <span class="search-title">${thread.title}</span>
-                    <span class="search-meta">by ${thread.creator_username}</span>
-                </a>
-            `).join('');
-            resultsDiv.style.display = 'block';
-        } else {
-            resultsDiv.innerHTML = '<div class="search-item">No results found</div>';
-            resultsDiv.style.display = 'block';
+            if (results.length > 0) {
+                resultsDiv.innerHTML = results.map(thread => `
+                    <a href="/pages/thread?id=${thread.id}" class="search-item">
+                        <span class="search-title">${thread.title}</span>
+                        <span class="search-meta">Started by ${thread.creator_username}</span>
+                    </a>
+                `).join('');
+                resultsDiv.classList.add('active'); // Shows the box and the border
+            } else {
+                resultsDiv.innerHTML = '<div class="search-item">No results found</div>';
+                resultsDiv.classList.add('active');
+            }
+        } catch (err) {
+            console.error("Search error:", err);
         }
-    }, 300); // Wait 300ms after user stops typing
+    }, 300);
 }
 
 init();
