@@ -1,8 +1,11 @@
 // Example Game Data - Add your game links here!
 const games = [
-    { title: "2048", thumb: "https://via.placeholder.com/200x150", url: "https://play2048.co/" },
-    { title: "Retro Bowl", thumb: "https://via.placeholder.com/200x150", url: "https://gameads.io/retro-bowl" },
-    { title: "Cookie Clicker", thumb: "https://via.placeholder.com/200x150", url: "https://orteil.dashnet.org/cookieclicker/" }
+    { title: "2048", thumb: "https://via.placeholder.com/200x150", url: "https://play2048.co/", extrnal: true },
+    { title: "Retro Bowl", thumb: "https://via.placeholder.com/200x150", url: "https://gameads.io/retro-bowl", extrnal: true },
+    { title: "Cookie Clicker", thumb: "https://via.placeholder.com/200x150", url: "https://orteil.dashnet.org/cookieclicker/", extrnal: true },
+    { title: "Polytrack", thumb: "https://via.placeholder.com/200x150", url: "https://poly-track-unblocked.pages.dev/"},
+    {title: "67 Games", thumb: "https://via.placeholder.com/200x150", url: "https://sixsevengames.pages.dev"}
+
 ];
 
 function initGames() {
@@ -16,14 +19,18 @@ function initGames() {
             <img src="${game.thumb}" class="game-thumb">
             <div class="game-info"><h3>${game.title}</h3></div>
         `;
-        card.onclick = () => openGame(game.url);
+        card.onclick = () => openGame(game);
         grid.appendChild(card);
     });
 }
 
-function openGame(url) {
-    document.getElementById('gameFrame').src = url;
-    document.getElementById('gameOverlay').style.display = 'block';
+function openGame(game) {
+    if (game.extrnal) {
+        window.open(game.url, '_blank');
+    } else {
+        document.getElementById('gameFrame').src = game.url;
+        document.getElementById('gameOverlay').style.display = 'block';
+    }
 }
 
 function closeGame() {
@@ -47,4 +54,7 @@ function filterGames() {
 }
 
 // Load games on start
+
 initGames();
+
+
