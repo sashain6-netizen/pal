@@ -5,6 +5,10 @@ const apps = [
     { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" }
 ];
 
+/**
+ * Populate the apps grid with the given filter.
+ * @param {string} filter - The category to filter by. Defaults to 'All'.
+ */
 function loadApps(filter = 'All') {
     const grid = document.getElementById('appsGrid');
     grid.innerHTML = '';

@@ -115,7 +115,7 @@ async function postReply() {
         document.getElementById('replyText').value = '';
         loadThread(); 
     } else {
-        alert("Failed to post reply. Are you logged in?");
+        showToast("Failed to post reply. Are you logged in?");
     }
 }
 
