@@ -2,7 +2,10 @@
 const games = [
     { title: "2048", thumb: "https://via.placeholder.com/200x150", url: "https://play2048.co/" },
     { title: "Retro Bowl", thumb: "https://via.placeholder.com/200x150", url: "https://gameads.io/retro-bowl" },
-    { title: "Cookie Clicker", thumb: "https://via.placeholder.com/200x150", url: "https://orteil.dashnet.org/cookieclicker/" }
+    { title: "Cookie Clicker", thumb: "https://via.placeholder.com/200x150", url: "https://orteil.dashnet.org/cookieclicker/" },
+    { title: "Polytrack", thumb: "https://via.placeholder.com/200x150", url: "https://poly-track-unblocked.pages.dev/"},
+    {title: "67 Games", thumb: "https://via.placeholder.com/200x150", url: "https://sixsevengames.pages.dev"}
+
 ];
 
 function initGames() {
@@ -47,4 +50,5 @@ function filterGames() {
 }
 
 // Load games on start
+
 initGames();
