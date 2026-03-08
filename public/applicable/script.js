@@ -5,7 +5,7 @@ const apps = [
     { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" },
     { name: "YouTube", desc: "Watch Videos", cat: "Fun", icon: "▷", url: "youtube.com" },
     { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "chatgpt.com" },
-    { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", url: "https://www.canvascalculator.xyz/"},
+    { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", url: "https://www.canvascalculator.xyz/"}
     
 ];
 
@@ -66,6 +66,7 @@ function filterApps() {
 
 
 loadApps();
+
 
 
 
