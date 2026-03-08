@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
       ## 1. FOUNDERS (All Freshmen)
       - Simon Shain: Lead Developer. Handles 100% of Backend and Frontend.
       - Meher Nagi: Games & Apps. Responsible for sourcing and downloading site content.
-      - Cristian Stafford: Social Media & Outreach. Manages community coordination.
+      - Cristian Stafford: Social Media & Outreach. Manages community coordination. 
 
       ## 2. NAVIGATION & INTERFACE
       - [Magnifying Glass]: User Search. View profiles, search users, buy/equip items with currency.
