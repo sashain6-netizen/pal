@@ -6,79 +6,65 @@
     --off-white:    #f8faff;
 }
 
+/* style.css (AI Page Specific) */
+
+/* 1. Override Global Body settings for the Chat Layout */
 body {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    padding-top: 80px !important; /* Forces the gap for the navbar */
     margin: 0;
-    padding: 0;
-    /* 1. Add padding so the fixed navbar doesn't cover the chat */
-    padding-top: 70px; 
-    font-family: 'Varela Round', sans-serif;
-    background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
+    overflow: hidden !important; /* Prevents double scrollbars */
 }
 
-/* 2. Fix Navbar overlap and visibility */
-.navbar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    padding: 0 50px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(37, 99, 235, 0.1);
-    z-index: 1000;
-    box-sizing: border-box;
-}
-
-/* 3. Ensure the nav links are visible and styled */
+/* 2. Style the Injected Navbar Links (They are missing because global.css 
+      doesn't know how to style the specific JS-injected classes) */
 .nav-links {
-    display: flex;
-    gap: 20px;
+    display: flex !important;
     list-style: none;
+    gap: 25px;
     margin: 0;
     padding: 0;
 }
 
 .nav-links a {
     text-decoration: none;
-    color: var(--blue-soft);
+    color: #64748b; /* --blue-soft */
     font-weight: 500;
+    font-size: 0.95rem;
     transition: color 0.2s;
 }
 
 .nav-links a:hover {
-    color: var(--blue-primary);
+    color: #2563eb; /* --blue-primary */
 }
 
+/* 3. Adjust the Chat Scene to fill the remaining space */
 .chat-scene {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    width: 100%;
 }
 
 .chat-container {
     width: 100%;
     max-width: 800px;
-    /* 4. Use calc so it fits perfectly between nav and bottom */
-    height: calc(100vh - 120px); 
-    background: var(--white);
+    height: 85vh; /* Adjusted for better fit */
+    background: #ffffff;
     border-radius: 24px;
     box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     border: 1px solid rgba(37, 99, 235, 0.1);
+    pointer-events: auto; /* Ensure clicks work */
 }
 
+/* 4. Keep your window, message, and input styles below... */
 .chat-window {
     flex: 1;
     padding: 30px;
@@ -88,6 +74,7 @@ body {
     gap: 15px;
 }
 
+/* ... (Your existing .message, .ai-message, .user-message, .input-area styles) ... */
 /* --- Keep the rest of your Message Bubbles and Input Area styles below --- */
 .message {
     max-width: 80%;
