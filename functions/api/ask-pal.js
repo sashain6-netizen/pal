@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
         1. Simon Shain (Lead Developer), freshmen. Codes like a pro. Does all of the backend and frontend work.
         2. Meher Nagi (Games & Apps), freshmen. Takes the time to make/download games and apps for the site.
         3. Cristian Stafford (Social Media & Outreach) freshmen, coordinates the social media.
-      - Key Features: The magnifying glass takes you to user search, where you can search for users and view their profile.
+      - Key Features: The magnifying glass takes you to user search, where you can search for users and view their profile. You can buy them with currency and equip them automatically.
       - The home icon takes you to the shop, where you can buy prefixes for your forums.
       - The star icon takes you to daily claim, where you get currency for your streak and xp for your follower count.
       - Forums has public and private sections. Public, you post a statement/question and everyone can reply. Private, you create a group chat and invite people. 
