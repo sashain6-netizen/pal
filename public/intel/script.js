@@ -28,7 +28,7 @@ async function handleChat() {
 
     try {
         // 3. Fetch from your server (Point this to your Node.js endpoint)
-        const response = await fetch('https://your-server-url.com/ask-pal', {
+        const response = await fetch('/api/ask-pal', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userMessage: text })
