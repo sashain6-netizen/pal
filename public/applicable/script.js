@@ -2,7 +2,9 @@ const apps = [
     { name: "Calculator", desc: "Advanced math tool", cat: "Utility", icon: "±", url: "https://www.desmos.com/scientific" },
     { name: "Pal Chat", desc: "Private community messaging", cat: "Fun", icon: "P", url: "/pages" },
     { name: "Whiteboard", desc: "Sketch out your ideas", cat: "Study", icon: "✎", url: "https://excalidraw.com" },
-    { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" }
+    { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" },
+    { name: "YouTube", desc: "Watch videos", cat: "Fun", icon: "▷", url: "youtube.com" },
+    { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "chatgpt.com" }
 ];
 
 /**
@@ -59,5 +61,6 @@ function filterApps() {
         cards[index].style.display = matches ? 'flex' : 'none';
     });
 }
+
 
 loadApps();
