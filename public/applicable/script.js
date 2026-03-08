@@ -3,9 +3,9 @@ const apps = [
     { name: "Pal Chat", desc: "Private community messaging", cat: "Fun", icon: "P", url: "/pages" },
     { name: "Whiteboard", desc: "Sketch out your ideas", cat: "Study", icon: "✎", url: "https://excalidraw.com" },
     { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" },
-    { name: "YouTube", desc: "Watch Videos", cat: "Fun", icon: "▷", url: "https://youtube.com" },
-    { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "https://chatgpt.com" },
-    { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", url: "https://www.canvascalculator.xyz/"}
+    { name: "YouTube", desc: "Watch Videos", cat: "Fun", icon: "▷", url: "https://youtube.com", extrnal: True},
+    { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "https://chatgpt.com", extrnal: True },
+    { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", icon: "xyz", url: "https://www.canvascalculator.xyz/"}
     
 ];
 
@@ -36,6 +36,10 @@ function loadApps(filter = 'All') {
 
 function openApp(app) {
     document.getElementById('activeAppName').innerText = app.name;
+    if (app.extrnal) {
+        window.open(app.url, "_blank");
+        return;
+    }
     document.getElementById('appFrame').src = app.url;
     document.getElementById('appOverlay').style.display = 'block';
 }
@@ -66,6 +70,7 @@ function filterApps() {
 
 
 loadApps();
+
 
 
 
