@@ -3,11 +3,9 @@ const apps = [
     { name: "Pal Chat", desc: "Private community messaging", cat: "Fun", icon: "P", url: "/pages" },
     { name: "Whiteboard", desc: "Sketch out your ideas", cat: "Study", icon: "✎", url: "https://excalidraw.com" },
     { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" },
-    { name: "YouTube", desc: "Watch Videos", cat: "Fun", icon: "▷", url: "https://youtube.com" },
-    { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "https://chatgpt.com" },
-    {name: "Polytrack", desc: "The OG Car Game", cat: "Games", icon: "🎮", url: "https://poly-track-unblocked.pages.dev/"},
-    {name: "67 Games", desc: "An Elite Database", cat: "Games", icon: "🎮", url: "https://sixsevengames.pages.dev"},
-    {name: "Cool Math Games", desc: "Free Games", cat: "Games", icon: "🎮", url: "https://www.coolmathgames.com/"}
+    { name: "YouTube", desc: "Watch Videos", cat: "Fun", icon: "▷", url: "youtube.com" },
+    { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "chatgpt.com" },
+    { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", url: "https://www.canvascalculator.xyz/"},
     
 ];
 
@@ -68,5 +66,6 @@ function filterApps() {
 
 
 loadApps();
+
 
 
