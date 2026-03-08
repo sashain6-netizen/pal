@@ -19,14 +19,18 @@ function initGames() {
             <img src="${game.thumb}" class="game-thumb">
             <div class="game-info"><h3>${game.title}</h3></div>
         `;
-        card.onclick = () => openGame(game.url);
+        card.onclick = () => openGame(game);
         grid.appendChild(card);
     });
 }
 
-function openGame(url) {
-    document.getElementById('gameFrame').src = url;
-    document.getElementById('gameOverlay').style.display = 'block';
+function openGame(game) {
+    if (game.extrnal) {
+        window.open(game.url, '_blank');
+    } else {
+        document.getElementById('gameFrame').src = game.url;
+        document.getElementById('gameOverlay').style.display = 'block';
+    }
 }
 
 function closeGame() {
@@ -52,4 +56,5 @@ function filterGames() {
 // Load games on start
 
 initGames();
+
 
