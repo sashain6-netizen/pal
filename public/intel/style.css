@@ -135,3 +135,43 @@ body {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+body {
+    margin: 0;
+    padding: 0;
+    /* Add this: navbar is 70px tall, so 80px gives a little breathing room */
+    padding-top: 80px; 
+    font-family: 'Varela Round', sans-serif;
+    background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
+    /* Change this to min-height so it doesn't squish on small screens */
+    min-height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* Remove the .navbar block from your AI page CSS entirely */
+/* The injected navbar script already provides the styles needed. */
+
+.chat-scene {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    /* This ensures the container stays centered in the remaining space */
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 800px;
+    /* Adjusted height to prevent overflow on shorter screens */
+    height: calc(100vh - 120px); 
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+}
