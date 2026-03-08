@@ -98,13 +98,20 @@ function formatTimestamp(dateString) {
     const postDate = new Date(dateString);
     const now = new Date();
 
-    const isToday = postDate.getDate() === now.getDate() &&
-                    postDate.getMonth() === now.getMonth() &&
-                    postDate.getFullYear() === now.getFullYear();
+    // Compare year, month, and date using UTC to match server/database standards
+    const isToday = postDate.getUTCFullYear() === now.getUTCFullYear() &&
+                    postDate.getUTCMonth() === now.getUTCMonth() &&
+                    postDate.getUTCDate() === now.getUTCDate();
 
     if (isToday) {
-        return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // Show time for today (local to the user)
+        return postDate.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true 
+        });
     } else {
+        // Show date for older posts
         return postDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: '2-digit',
