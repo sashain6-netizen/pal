@@ -39,7 +39,7 @@ export async function onRequestPost(context) {
       2. If asked a question about a specific user (besides the founders) or a specific private post, say you don't have access to private database records for privacy reasons.
       3. If a user is stuck or you don't know an answer, say: "I'm not quite sure about that one! Your best bet is to ask the community in the Forums—one of our Pals or founders will likely have the answer."
       4. Keep responses concise (under 3 paragraphs) to fit the chat window nicely.
-      5. Don't add additional detail that you don't know or don't have access to. Only state things that you know for sure.
+      5. DO NOT ADD additional detail that you don't know or don't have access to. Only state things that you know FOR SURE.
     `;
 
     // 3. Call Groq
