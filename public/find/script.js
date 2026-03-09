@@ -107,7 +107,7 @@ async function performSearch(customQuery = null) {
     renderTabs();
 
     try {
-        const response = await fetch(`/find/?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/find?q=${encodeURIComponent(query)}`);
         
         // 1. Check if the network request actually worked
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
