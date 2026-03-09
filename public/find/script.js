@@ -115,16 +115,20 @@ async function performSearch(customQuery = null) {
             throw new Error("Search server busy.");
         }
 
-        const results = await response.json();
-        container.innerHTML = ""; 
+        // ... inside your try block in performSearch ...
 
-        if (!results || results.length === 0) {
-            container.innerHTML = "<p>No results found.</p>";
-        } else {
-            results.forEach(result => {
-                renderResult(result.title, result.url, result.content);
-            });
-        }
+const data = await response.json(); // Rename 'results' to 'data' for clarity
+container.innerHTML = ""; 
+
+// SearXNG returns an object with a 'results' property which is the array
+if (!data.results || data.results.length === 0) {
+    container.innerHTML = "<p>No results found.</p>";
+} else {
+    // CHANGE THIS LINE: loop through data.results, not just data
+    data.results.forEach(result => {
+        renderResult(result.title, result.url, result.content);
+    });
+}
 
         // SAVE the results into the tab object so they stay there when switching
         currentTab.results = container.innerHTML;
