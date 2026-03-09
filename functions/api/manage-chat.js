@@ -1,14 +1,16 @@
+import { verifyAndDecodeToken } from './_jwt.js';
+
 export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
         const body = await request.json();
         const { action, chatId, targetUsername } = body;
-        
-        // 1. JWT Authentication
+
+        // 1. SECURE JWT AUTHENTICATION
         const cookie = request.headers.get("Cookie") || "";
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
-        
+
         if (!token) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), { 
                 status: 401,
@@ -16,11 +18,11 @@ export async function onRequestPost(context) {
             });
         }
 
-        const payload = JSON.parse(atob(token.split(".")[1]));
+        // Use verifyAndDecodeToken to prevent JWT spoofing
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = payload.username;
 
-        // --- 2. MANDATORY MEMBERSHIP GATE ---
-        // This stops the chat from loading or interacting for anyone NOT in the chat
+        // 2. MANDATORY MEMBERSHIP GATE
         const isMember = await env.DB.prepare(
             "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
         ).bind(chatId, username).first();
@@ -31,22 +33,18 @@ export async function onRequestPost(context) {
             }), { status: 403 });
         }
 
-        // --- ACTION: LEAVE ---
-        // Moved above Owner Verification so non-owners can still leave
+        // --- ACTION: LEAVE (Available to any member) ---
         if (action === "leave") {
-            await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
-            ).bind(chatId, `@${username} left the chat`).run();
-
-            await env.DB.prepare(
-                "DELETE FROM chat_members WHERE room_id = ? AND username = ?"
-            ).bind(chatId, username).run();
-            
+            await env.DB.batch([
+                env.DB.prepare("INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)")
+                    .bind(chatId, `@${username} left the chat`),
+                env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
+                    .bind(chatId, username)
+            ]);
             return new Response(JSON.stringify({ success: true }));
         }
 
-        // --- OWNER VERIFICATION ---
-        // Only the creator can Invite, Kick, or Delete
+        // 3. OWNER VERIFICATION (For Admin Actions)
         const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
             .bind(chatId).first();
 
@@ -68,20 +66,27 @@ export async function onRequestPost(context) {
         if (action === "invite") {
             if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
 
+            // Check if user exists globally
             const allUsersJson = await env.USERS_KV.get("all_users_index");
             const userList = JSON.parse(allUsersJson || "[]");
-            const userExists = userList.some(u => u.toLowerCase() === targetUsername.toLowerCase());
-
-            if (!userExists) {
+            if (!userList.some(u => u.toLowerCase() === targetUsername.toLowerCase())) {
                 return new Response(JSON.stringify({ error: "User does not exist" }), { status: 404 });
             }
 
-            await env.DB.prepare("INSERT OR IGNORE INTO chat_members (room_id, username) VALUES (?, ?)")
-                .bind(chatId, targetUsername).run();
+            // Check if user is already in this chat
+            const alreadyIn = await env.DB.prepare("SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?")
+                .bind(chatId, targetUsername).first();
 
-            await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
-            ).bind(chatId, `@${username} invited @${targetUsername} to the chat`).run();
+            if (alreadyIn) {
+                return new Response(JSON.stringify({ error: "User is already in this chat" }), { status: 400 });
+            }
+
+            await env.DB.batch([
+                env.DB.prepare("INSERT INTO chat_members (room_id, username) VALUES (?, ?)")
+                    .bind(chatId, targetUsername),
+                env.DB.prepare("INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)")
+                    .bind(chatId, `@${username} invited @${targetUsername}`)
+            ]);
 
             return new Response(JSON.stringify({ success: true }));
         }
@@ -94,19 +99,20 @@ export async function onRequestPost(context) {
                 return new Response(JSON.stringify({ error: "You cannot kick yourself" }), { status: 400 });
             }
 
-            const member = await env.DB.prepare("SELECT username FROM chat_members WHERE room_id = ? AND username = ?")
+            // Verify they are in the chat before trying to kick
+            const memberToKick = await env.DB.prepare("SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?")
                 .bind(chatId, targetUsername).first();
 
-            if (!member) {
+            if (!memberToKick) {
                 return new Response(JSON.stringify({ error: "User is not in this chat" }), { status: 404 });
             }
 
-            await env.DB.prepare(
-                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
-            ).bind(chatId, `@${targetUsername} was kicked from the chat`).run();
-
-            await env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
-                .bind(chatId, targetUsername).run();
+            await env.DB.batch([
+                env.DB.prepare("INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)")
+                    .bind(chatId, `@${targetUsername} was kicked`),
+                env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
+                    .bind(chatId, targetUsername)
+            ]);
 
             return new Response(JSON.stringify({ success: true }));
         }
