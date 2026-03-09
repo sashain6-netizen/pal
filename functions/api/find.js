@@ -7,13 +7,17 @@ export default {
 
     // Try these instances in order. If one fails, it moves to the next.
     const instances = [
-      "https://searx.work",
-      "https://search.mdosch.de",
-      "https://searx.be",
-      "https://priv.au"
-    ];
+  "https://search.mdosch.de",
+  "https://searx.orion-belt.net",
+  "https://search.privacytools.io",
+  "https://searx.sethforprivacy.com",
+  "https://search.ononoki.org",
+  "https://searx.perennialte.ch"
+];
 
     for (let instance of instances) {
+
+    await new Promise(resolve => setTimeout(resolve, 150));
       try {
         const targetUrl = `${instance}/search?q=${encodeURIComponent(query)}&format=json`;
         
