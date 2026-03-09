@@ -52,7 +52,7 @@ function deleteTab(event, id) {
     
     // Check if it's the last tab
     if (tabs.length === 1) {
-        showToast("Don't close that tab! Do you want to make a black hole?");
+        showToast("Cannot close tab");
         return;
     }
     
