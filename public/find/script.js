@@ -49,7 +49,12 @@ function addTab() {
 
 function deleteTab(event, id) {
     event.stopPropagation();
-    if (tabs.length === 1) return;
+    
+    // Check if it's the last tab
+    if (tabs.length === 1) {
+        showToast("Don't close that tab! Do you want to make a black hole??!!")
+        return;
+    }
     
     const index = tabs.findIndex(t => t.id === id);
     const wasActive = tabs[index].active;
@@ -59,6 +64,7 @@ function deleteTab(event, id) {
         tabs[0].active = true;
         activeTabId = tabs[0].id;
     }
+    
     renderTabs();
     updateUI();
 }
