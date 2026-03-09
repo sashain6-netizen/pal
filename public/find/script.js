@@ -1,18 +1,15 @@
-// 1. Get references to elements outside the functions so they are always available
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
 const container = document.getElementById('results-container');
 
 searchButton.addEventListener('click', performSearch);
 
-// Add "Enter" key support for convenience
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') performSearch();
 });
 
 async function performSearch() {
     const query = searchInput.value;
-    
     if (!query) return;
 
     container.innerHTML = "<p>Searching...</p>";
@@ -20,14 +17,17 @@ async function performSearch() {
     try {
         const response = await fetch(`/find/?q=${encodeURIComponent(query)}`);
         
-        if (!response.ok) throw new Error('Search failed');
+        // 1. Check if the response is actually JSON
+        const contentType = response.headers.get("content-type");
+        if (!response.ok || !contentType || !contentType.includes("application/json")) {
+            throw new Error("The search server is currently busy or blocking the request.");
+        }
 
         const results = await response.json();
-
         container.innerHTML = ""; 
 
         if (!results || results.length === 0) {
-            container.innerHTML = "<p>No results found. The search instance might be busy. Try again.</p>";
+            container.innerHTML = "<p>No results found. Try a different search term.</p>";
             return;
         }
 
@@ -41,14 +41,14 @@ async function performSearch() {
 
     } catch (error) {
         console.error("Search Error:", error);
-        container.innerHTML = "<p>Error: Could not connect to the search proxy.</p>";
+        // 2. Give the user a more helpful message
+        container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
     }
 }
 
 function renderResult(title, url, text) {
     const div = document.createElement('div');
     div.className = 'result-item';
-    // Clean up the snippet text (remove HTML tags if SearXNG sends them)
     const cleanText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
     
     div.innerHTML = `
