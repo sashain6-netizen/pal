@@ -229,9 +229,6 @@ footer {
     background: #1765cc;
 }
 
-/* --- ISOLATION FIX --- */
-
-/* 1. Ensure the browser container ignores the global "height: auto" */
 #browser-container {
     display: flex;
     flex-direction: column;
@@ -240,27 +237,24 @@ footer {
     background: #fff;
     width: 100%; /* Ensure it spans the screen width */
     position: relative;
-    z-index: 50; /* Above the hero scene */
+    z-index: 50;
 }
 
-/* 2. FORCE the tabs-list to respect the available space */
 #tabs-list {
     display: flex;
     flex-direction: row;
     gap: 2px;
     flex: 1; 
     overflow-x: hidden; /* Prevent horizontal stretching */
-    width: 0; /* THE SECRET SAUCE: Allows flex-basis to shrink properly */
+    width: 0; 
     min-width: 0;
 }
 
-/* 3. Refine the .tab to prevent width takeover */
 .tab {
-    flex: 0 1 200px; /* Changed from flex: 1 to flex: 0 1 (don't grow by default) */
+    flex: 0 1 200px; 
     min-width: 35px;
     max-width: 200px;
     display: flex;
     align-items: center;
     gap: 8px;
-    /* ... keep your existing tab styles (background, border, etc.) ... */
 }
