@@ -3,54 +3,59 @@ export default {
     const url = new URL(request.url);
     const query = url.searchParams.get("q");
 
-    if (!query) return new Response("No query", { status: 400 });
+    if (!query) return new Response(JSON.stringify({ error: "No query" }), { status: 400 });
 
-    // Try these instances in order. If one fails, it moves to the next.
     const instances = [
-  "https://search.mdosch.de",
-  "https://searx.orion-belt.net",
-  "https://search.privacytools.io",
-  "https://searx.sethforprivacy.com",
-  "https://search.ononoki.org",
-  "https://searx.perennialte.ch"
-];
+      "https://searx.be",
+      "https://search.mdosch.de",
+      "https://searx.priv.pw",
+      "https://search.ononoki.org",
+      "https://searx.perennialte.ch",
+      "https://priv.au"
+    ];
 
-    for (let instance of instances) {
+    // Shuffle instances for better reliability
+    const shuffled = instances.sort(() => 0.5 - Math.random());
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    for (let instance of shuffled) {
       try {
         const targetUrl = `${instance}/search?q=${encodeURIComponent(query)}&format=json`;
         
         const response = await fetch(targetUrl, {
           method: "GET",
           headers: {
-            // This header is vital to avoid being blocked as a bot
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             "Accept": "application/json"
           },
-          // Short timeout so we don't wait forever on a dead instance
-          signal: AbortSignal.timeout(5000) 
+          signal: AbortSignal.timeout(4000) // Slightly faster timeout
         });
 
-        if (response.ok) {
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data = await response.text(); // Get as text first to verify
-            return new Response(data, {
-              headers: { 
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*" 
-              }
-            });
+        const contentType = response.headers.get("content-type");
+
+        if (response.ok && contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          
+          // Verify we actually got a results array
+          if (data && data.results) {
+             return new Response(JSON.stringify(data), {
+                headers: { 
+                  "Content-Type": "application/json",
+                  "Access-Control-Allow-Origin": "*" 
+                }
+             });
           }
         }
+        // If we reach here, this instance returned HTML or bad data. 
+        // Throwing an error here triggers the 'catch' which 'continues' the loop.
+        throw new Error("Invalid response");
+
       } catch (e) {
-        console.log(`Instance ${instance} failed, trying next...`);
-        continue; // Try the next instance in the list
+        console.log(`Skipping ${instance}: ${e.message}`);
+        continue; 
       }
     }
 
-    return new Response(JSON.stringify({ error: "All search instances are busy. Please try again in a minute." }), { 
+    return new Response(JSON.stringify({ error: "All nodes busy" }), { 
       status: 503,
       headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
     });

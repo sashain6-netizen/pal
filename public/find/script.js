@@ -130,6 +130,7 @@ async function performSearch(customQuery = null) {
         currentTab.results = container.innerHTML;
 
     } catch (error) {
+        console.error("Search Error Detail:", error); // Check your F12 console for this!
         container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         currentTab.results = container.innerHTML;
     }
