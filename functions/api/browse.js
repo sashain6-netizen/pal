@@ -10,53 +10,40 @@ export async function onRequest(context) {
         });
     }
 
+    // A list of reliable 2026 public SearXNG instances
+    const instances = [
+        "https://search.rhscz.eu",
+        "https://search.inetol.net",
+        "https://search.indst.eu",
+        "https://searx.work"
+    ];
+
+    // Pick a random instance to avoid rate limits
+    const selectedInstance = instances[Math.floor(Math.random() * instances.length)];
+
     try {
-        const targetUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+        // format=json is the key here. We also specify engines for better results.
+        const targetUrl = `${selectedInstance}/search?q=${encodeURIComponent(query)}&format=json&engines=google,bing,duckduckgo,wikipedia`;
         
         const response = await fetch(targetUrl, {
             method: "GET",
             headers: {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                "Accept": "application/json"
             }
         });
 
+        if (!response.ok) throw new Error(`Instance ${selectedInstance} returned ${response.status}`);
+
         const data = await response.json();
-        const results = [];
-
-        // 1. Check for the main Abstract (Primary Result)
-        if (data.AbstractText && data.AbstractURL) {
-            results.push({
-                title: data.Heading || "Summary",
-                url: data.AbstractURL,
-                content: data.AbstractText
-            });
-        }
-
-        // 2. Map RelatedTopics (Supporting Results)
-        if (data.RelatedTopics) {
-            data.RelatedTopics.forEach(item => {
-                // Direct topic
-                if (item.FirstURL && item.Text) {
-                    results.push({
-                        title: item.Text.split(" - ")[0],
-                        url: item.FirstURL,
-                        content: item.Text
-                    });
-                } 
-                // Nested categories
-                else if (item.Topics) {
-                    item.Topics.forEach(sub => {
-                        if (sub.FirstURL) {
-                            results.push({
-                                title: sub.Text.split(" - ")[0],
-                                url: sub.FirstURL,
-                                content: sub.Text
-                            });
-                        }
-                    });
-                }
-            });
-        }
+        
+        // SearXNG returns results in a 'results' array.
+        // We map them to the keys your frontend expects: title, url, content.
+        const results = (data.results || []).map(item => ({
+            title: item.title || "Untitled Result",
+            url: item.url || "#",
+            content: item.content || item.snippet || "No description available."
+        }));
 
         return new Response(JSON.stringify({ results }), {
             headers: { 
@@ -66,7 +53,11 @@ export async function onRequest(context) {
         });
 
     } catch (e) {
-        return new Response(JSON.stringify({ error: "API connection failed", details: e.message }), { 
+        console.error("Search Error:", e.message);
+        return new Response(JSON.stringify({ 
+            error: "Search failed", 
+            details: e.message 
+        }), { 
             status: 500,
             headers: { "Content-Type": "application/json" }
         });
