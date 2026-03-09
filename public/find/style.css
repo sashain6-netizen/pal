@@ -21,28 +21,60 @@ body {
 }
 
 /* --- Header & Tab Bar (Fixed Stacking) --- */
+/* --- Header & Tab Bar --- */
 header {
     background: #dee1e6;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 #tab-bar {
-    display: flex;
-    align-items: center;
+    display: flex;          /* Aligns tabs-list and plus button in a row */
+    flex-direction: row;
+    align-items: center;    /* Vertically centers the plus button */
     padding: 8px 8px 0;
-    background: #dee1e6;
+    gap: 4px;
 }
 
 #tabs-list {
-    display: flex;     
+    display: flex;
     flex-direction: row;
-    gap: 4px;
+    gap: 2px;
     overflow-x: auto;
-    white-space: nowrap;
+    scrollbar-width: none;  /* Hides scrollbar in Firefox */
 }
 
 #tabs-list::-webkit-scrollbar {
-    display: none;
+    display: none;          /* Hides scrollbar in Chrome/Safari */
+}
+
+/* --- The Plus Button Styling --- */
+#add-tab-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;        /* Prevents it from shrinking */
+    margin-bottom: 4px;     /* Aligns it visually with the tab height */
+    border: none;
+    background: transparent;
+    color: #5f6368;
+    font-size: 20px;
+    font-weight: 300;
+    cursor: pointer;
+    border-radius: 50%;     /* Makes the hover effect a circle */
+    transition: background 0.2s, color 0.2s;
+}
+
+#add-tab-btn:hover {
+    background-color: #cfd2d7;
+    color: #202124;
+}
+
+#add-tab-btn:active {
+    background-color: #bdc1c6;
 }
 
 /* --- Individual Tab Styling --- */
