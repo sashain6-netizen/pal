@@ -277,3 +277,38 @@ footer {
 .search-box button:hover {
     background: var(--pal-blue-deep);
 }
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: #f1f3f4; /* Light gray browser chrome color */
+    border-bottom: 1px solid #ccc;
+}
+
+.nav-btn {
+    display: none; /* Hidden by default, toggled by JS */
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    color: #5f6368;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.nav-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #202124;
+}
+
+#address-input {
+    flex-grow: 1;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #dfe1e5;
+    outline: none;
+}

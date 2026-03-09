@@ -144,14 +144,69 @@ async function performSearch(customQuery = null) {
 function renderResult(title, url, text) {
     const div = document.createElement('div');
     div.className = 'result-item';
+    
+    // Create the title link
+    const link = document.createElement('a');
+    link.href = "#"; 
+    link.className = "result-title";
+    link.style.cssText = "font-weight:bold; display:block; color:#1a0dab; cursor:pointer; text-decoration:none;";
+    link.textContent = title;
+
+    // INTERCEPT CLICK: Use our internal navigation
+    link.onclick = (e) => {
+        e.preventDefault();
+        navigateToPage(url);
+    };
+
     const cleanText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
-    div.innerHTML = `
-        <a href="${url}" target="_blank" style="font-weight:bold; display:block;">${title}</a>
+    div.appendChild(link);
+    div.innerHTML += `
         <span style="color:green; font-size:0.75rem;">${url}</span>
         <p style="margin: 0; font-size: 0.9rem;">${cleanText}</p>
     `;
     container.appendChild(div);
 }
+
+const backButton = document.getElementById('back-button');
+
+function navigateToPage(url) {
+    const currentTab = tabs.find(t => t.active);
+    
+    // Save the SEARCH RESULTS specifically before overwriting the container
+    // This ensures we can restore the list of links later
+    currentTab.lastSearchHtml = container.innerHTML; 
+    
+    currentTab.query = url;
+    currentTab.title = "Browsing...";
+    addressInput.value = url;
+    
+    homeView.style.display = 'none';
+    backButton.style.display = 'block'; // Show the back button
+
+    container.innerHTML = `
+        <div class="browser-frame-container" style="width:100%; height:85vh;">
+            <iframe src="/api/proxy?url=${encodeURIComponent(url)}" 
+                    style="width:100%; height:100%; border:none; background:white;"
+                    sandbox="allow-scripts allow-same-origin allow-forms">
+            </iframe>
+        </div>
+    `;
+    
+    currentTab.results = container.innerHTML;
+    renderTabs();
+}
+
+// Logic for the Back Button
+backButton.addEventListener('click', () => {
+    const currentTab = tabs.find(t => t.active);
+    if (currentTab.lastSearchHtml) {
+        container.innerHTML = currentTab.lastSearchHtml;
+        currentTab.results = container.innerHTML;
+        currentTab.title = currentTab.query; // Reset title to the search term
+        backButton.style.display = 'none'; // Hide back button
+        renderTabs();
+    }
+});
 
 // --- Event Listeners ---
 
