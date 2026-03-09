@@ -22,9 +22,23 @@ function renderTabs() {
         tabEl.onclick = () => switchTab(tab.id);
         tabsList.appendChild(tabEl);
     });
+
+    // Toggle the "+" button appearance if we hit the limit
+    if (tabs.length >= 12) {
+        addTabBtn.style.opacity = '0.5';
+        addTabBtn.style.cursor = 'not-allowed';
+    } else {
+        addTabBtn.style.opacity = '1';
+        addTabBtn.style.cursor = 'pointer';
+    }
 }
 
 function addTab() {
+    if (tabs.length >= 12) {
+        showToast("Tab limit reached")
+        return; 
+    }
+
     const newId = Date.now();
     tabs.forEach(t => t.active = false);
     tabs.push({ id: newId, title: 'New Tab', active: true, results: null, query: '' });
