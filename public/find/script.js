@@ -1,15 +1,16 @@
-// State Management
-let tabs = [{ id: Date.now(), title: 'Home', active: true, results: null, query: '' }];
+// --- State Management ---
+let tabs = [{ id: Date.now(), title: 'Home', active: true, results: null, query: '', lastSearchHtml: null }];
 let activeTabId = tabs[0].id;
 
-// Elements
+// --- Elements (All together at the top) ---
 const tabsList = document.getElementById('tabs-list');
 const addTabBtn = document.getElementById('add-tab-btn');
 const container = document.getElementById('results-container');
 const homeView = document.getElementById('home-view');
-const searchInput = document.getElementById('search-input'); // Bottom search
-const addressInput = document.getElementById('address-input'); // Top address bar
+const searchInput = document.getElementById('search-input');
+const addressInput = document.getElementById('address-input');
 const searchButton = document.getElementById('search-button');
+const backButton = document.getElementById('back-button'); 
 
 // --- Tab Logic ---
 
@@ -23,25 +24,18 @@ function renderTabs() {
         tabsList.appendChild(tabEl);
     });
 
-    // Toggle the "+" button appearance if we hit the limit
-    if (tabs.length >= 12) {
-        addTabBtn.style.opacity = '0.5';
-        addTabBtn.style.cursor = 'not-allowed';
-    } else {
-        addTabBtn.style.opacity = '1';
-        addTabBtn.style.cursor = 'pointer';
-    }
+    // Cleaned up the toggle logic
+    const isLimit = tabs.length >= 12;
+    addTabBtn.style.opacity = isLimit ? '0.5' : '1';
+    addTabBtn.style.cursor = isLimit ? 'not-allowed' : 'pointer';
 }
 
 function addTab() {
-    if (tabs.length >= 12) {
-        showToast("Tab limit reached")
-        return; 
-    }
+    if (tabs.length >= 12) return showToast("Tab limit reached");
 
     const newId = Date.now();
     tabs.forEach(t => t.active = false);
-    tabs.push({ id: newId, title: 'New Tab', active: true, results: null, query: '' });
+    tabs.push({ id: newId, title: 'New Tab', active: true, results: null, query: '', lastSearchHtml: null });
     activeTabId = newId;
     renderTabs();
     updateUI();
@@ -49,20 +43,16 @@ function addTab() {
 
 function deleteTab(event, id) {
     event.stopPropagation();
-    
-    // Check if it's the last tab
-    if (tabs.length === 1) {
-        showToast("Cannot close tab");
-        return;
-    }
+    if (tabs.length === 1) return showToast("Cannot close tab");
     
     const index = tabs.findIndex(t => t.id === id);
     const wasActive = tabs[index].active;
     tabs.splice(index, 1);
     
     if (wasActive) {
-        tabs[0].active = true;
-        activeTabId = tabs[0].id;
+        const nextTab = tabs[index] || tabs[tabs.length - 1]; // Neighbor or last remaining
+        nextTab.active = true;
+        activeTabId = nextTab.id;
     }
     
     renderTabs();
@@ -76,18 +66,15 @@ function switchTab(id) {
     updateUI();
 }
 
-// This function "repaints" the screen based on the active tab's data
 function updateUI() {
     const activeTab = tabs.find(t => t.active);
-    
+    if (!activeTab) return;
+
     addressInput.value = activeTab.query || "";
 
-    // Sync back button visibility for the active tab
-    if (activeTab.lastSearchHtml && activeTab.results && activeTab.results.includes('iframe')) {
-        backButton.style.display = 'block';
-    } else {
-        backButton.style.display = 'none';
-    }
+    // Sync back button: Logic is now centralized here
+    const isViewingPage = activeTab.results && activeTab.results.includes('iframe');
+    backButton.style.display = (activeTab.lastSearchHtml && isViewingPage) ? 'block' : 'none';
 
     if (!activeTab.results && !activeTab.query) {
         homeView.style.display = 'block';
@@ -107,41 +94,27 @@ async function performSearch(customQuery = null) {
     const currentTab = tabs.find(t => t.active);
     currentTab.query = query;
     currentTab.title = query;
+    currentTab.results = "<p>Searching...</p>"; // Caching the loading state
     
-    homeView.style.display = 'none';
-    container.innerHTML = "<p>Searching...</p>";
+    updateUI(); 
     renderTabs();
 
     try {
         const response = await fetch(`/api/browse?q=${encodeURIComponent(query)}`);
-        
-        // 1. Check if the network request actually worked
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
-        // 2. Try to parse the JSON directly
-        let data;
-        try {
-            data = await response.json();
-        } catch (parseError) {
-            // This happens if the server sends HTML (like an error page) instead of JSON
-            throw new Error("Received invalid data from server.");
-        }
-
+        const data = await response.json();
         container.innerHTML = ""; 
 
-        // 3. Render the results
         if (!data.results || data.results.length === 0) {
             container.innerHTML = `<p>No results found for "${query}".</p>`;
         } else {
-            data.results.forEach(result => {
-                renderResult(result.title, result.url, result.content);
-            });
+            data.results.forEach(res => renderResult(res.title, res.url, res.content));
         }
 
         currentTab.results = container.innerHTML;
-
+        updateUI(); // Ensure UI reflects the new HTML
     } catch (error) {
-        console.error("Full Error:", error);
         container.innerHTML = `<p style="color: red;">${error.message}</p>`;
         currentTab.results = container.innerHTML;
     }
@@ -151,20 +124,12 @@ function renderResult(title, url, text) {
     const div = document.createElement('div');
     div.className = 'result-item';
     
-    // 1. Create the title link
     const link = document.createElement('a');
-    link.href = "javascript:void(0)"; // Better than "#" to prevent jumping
-    link.className = "result-title";
+    link.href = "javascript:void(0)";
     link.style.cssText = "font-weight:bold; display:block; color:#1a0dab; cursor:pointer; text-decoration:none;";
     link.textContent = title;
+    link.onclick = () => navigateToPage(url);
 
-    // 2. INTERCEPT CLICK
-    link.onclick = (e) => {
-        e.preventDefault();
-        navigateToPage(url);
-    };
-
-    // 3. Create the text content wrapper
     const description = document.createElement('div');
     const cleanText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
     description.innerHTML = `
@@ -172,28 +137,18 @@ function renderResult(title, url, text) {
         <p style="margin: 0; font-size: 0.9rem;">${cleanText}</p>
     `;
 
-    // 4. APPEND (Do not use innerHTML +=)
     div.appendChild(link);
     div.appendChild(description);
     container.appendChild(div);
 }
 
-const backButton = document.getElementById('back-button');
-
 function navigateToPage(url) {
     const currentTab = tabs.find(t => t.active);
-    
-    // Save the SEARCH RESULTS specifically before overwriting the container
-    // This ensures we can restore the list of links later
     currentTab.lastSearchHtml = container.innerHTML; 
-    
     currentTab.query = url;
     currentTab.title = "Browsing...";
-    addressInput.value = url;
     
-    homeView.style.display = 'none';
-    backButton.style.display = 'block'; // Show the back button
-
+    // Using a template for the iframe
     container.innerHTML = `
         <div class="browser-frame-container" style="width:100%; height:85vh;">
             <iframe src="/api/proxy?url=${encodeURIComponent(url)}" 
@@ -205,32 +160,26 @@ function navigateToPage(url) {
     
     currentTab.results = container.innerHTML;
     renderTabs();
+    updateUI(); // Keep button visibility in sync
 }
 
-// Logic for the Back Button
 backButton.addEventListener('click', () => {
     const currentTab = tabs.find(t => t.active);
     if (currentTab.lastSearchHtml) {
-        container.innerHTML = currentTab.lastSearchHtml;
-        currentTab.results = container.innerHTML;
-        currentTab.title = currentTab.query; // Reset title to the search term
-        backButton.style.display = 'none'; // Hide back button
+        currentTab.results = currentTab.lastSearchHtml;
+        currentTab.title = currentTab.query;
+        currentTab.lastSearchHtml = null; // Clear history to prevent multi-back issues
+        updateUI();
         renderTabs();
     }
 });
 
-// --- Event Listeners ---
-
+// --- Listeners ---
 addTabBtn.addEventListener('click', addTab);
-
 searchButton.addEventListener('click', () => performSearch(searchInput.value));
 searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(searchInput.value); });
+addressInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(addressInput.value); });
 
-// Address bar search
-addressInput.addEventListener('keypress', (e) => { 
-    if (e.key === 'Enter') performSearch(addressInput.value); 
-});
-
-// Initial Setup
+// Init
 renderTabs();
 updateUI();
