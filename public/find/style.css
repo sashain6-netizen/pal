@@ -1,31 +1,9 @@
-/* --- Global Reset & Fonts --- */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Varela Round', sans-serif;
-    background-color: #f0f2f5; 
-    overflow: hidden;
-}
-
-/* --- Main Container (80px Offset) --- */
-#browser-container {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 80px); 
-    margin-top: 80px; 
-    background: #fff;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-}
-
-/* --- Header & Tabs --- */
+/* --- Header & Tabs (The Squish Fix) --- */
 header {
     background: #dee1e6;
     flex-shrink: 0;
     padding-top: 4px;
+    width: 100%;
 }
 
 #tab-bar {
@@ -34,6 +12,8 @@ header {
     align-items: center;
     padding: 0 12px;
     gap: 8px;
+    width: 100%;
+    overflow: hidden; /* Keeps the + button from being pushed off screen */
 }
 
 #tabs-list {
@@ -41,19 +21,20 @@ header {
     flex-direction: row;
     gap: 2px;
     flex: 1; 
-    overflow: hidden; 
+    /* These two lines are mandatory for squishing to work */
+    min-width: 0; 
+    overflow: hidden;
 }
 
 .tab {
     display: flex;
     align-items: center;
-    /* Removed justify-content to prevent 'X' from floating strangely */
-    gap: 4px; 
+    gap: 6px;
     
-    /* THE SQUISH LOGIC */
-    flex: 1 1 200px;    
-    min-width: 35px;    
-    max-width: 200px;   
+    /* flex: grow shrink basis */
+    flex: 1 1 200px; 
+    min-width: 35px; /* Smallest it can get */
+    max-width: 200px; /* Largest it can get */
     
     height: 36px;
     padding: 0 10px;
@@ -62,43 +43,28 @@ header {
     cursor: pointer;
     font-size: 13px;
     color: #3c4043;
-    transition: all 0.1s ease;
-    border: none;
-    position: relative;
+    transition: width 0.2s ease, background 0.2s;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: hidden; /* Clips text when tab is small */
 }
 
 .tab span {
+    flex: 1;
     overflow: hidden;
-    text-overflow: ellipsis; 
-    flex: 1; /* Pushes the close button to the right */
-}
-
-.tab.active {
-    background: #ffffff;
-    color: #1a73e8;
-    z-index: 2;
-    min-width: 100px; 
-    font-weight: 600;
-    box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
-}
-
-.tab:hover:not(.active) {
-    background: #cfd2d7;
+    text-overflow: ellipsis;
+    pointer-events: none;
 }
 
 .close-tab {
-    flex-shrink: 0; /* Prevents X from getting squished or wide */
-    width: 20px;
-    height: 20px;
+    flex-shrink: 0; /* Ensures the X never gets smaller than 18px */
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    font-size: 14px;
-    color: #5f6368;
-    transition: background 0.2s, color 0.2s;
+    font-size: 12px;
+    transition: background 0.2s;
 }
 
 .close-tab:hover {
