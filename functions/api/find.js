@@ -9,8 +9,7 @@ export default {
     }
 
     // 2. Define the Target (Using DuckDuckGo HTML version as an example)
-    const targetUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
-
+    const targetUrl = `https://duckduckgo.com/lite/?q=${encodeURIComponent(query)}`;
     // 3. Set up Headers to look like a real browser (Crucial to avoid blocks)
     const modifiedHeaders = new Headers(request.headers);
     modifiedHeaders.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
@@ -20,8 +19,13 @@ export default {
       // 4. Perform the fetch to the internet
       const response = await fetch(targetUrl, {
         method: "GET",
-        headers: modifiedHeaders,
-      });
+        headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Upgrade-Insecure-Requests": "1"
+        }
+        });
 
       // 5. Return the result to your visitor
       return new Response(response.body, {
