@@ -23,17 +23,26 @@ body {
 /* --- Header & Tab Bar (Fixed Stacking) --- */
 header {
     background: #dee1e6;
-    flex-shrink: 0; /* Prevents the header from squishing */
+    flex-shrink: 0;
 }
 
 #tab-bar {
-    display: flex;          /* This puts children in a row */
-    flex-direction: row;    /* Forces horizontal alignment */
-    align-items: flex-end;
+    display: flex;
+    align-items: center;
     padding: 8px 8px 0;
+    background: #dee1e6;
+}
+
+#tabs-list {
+    display: flex;     
+    flex-direction: row;
     gap: 4px;
-    overflow-x: auto;       /* Allows scrolling if you have too many tabs */
-    white-space: nowrap;    /* Prevents tabs from wrapping to a new line */
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+#tabs-list::-webkit-scrollbar {
+    display: none;
 }
 
 /* --- Individual Tab Styling --- */
