@@ -88,34 +88,51 @@ function updateUI() {
 // --- Search Logic ---
 
 async function performSearch(customQuery = null) {
-    const query = customQuery || searchInput.value || addressInput.value;
-    if (!query) return;
+    const input = customQuery || searchInput.value || addressInput.value;
+    if (!input) return;
 
     const currentTab = tabs.find(t => t.active);
-    currentTab.query = query;
-    currentTab.title = query;
-    currentTab.results = "<p>Searching...</p>"; // Caching the loading state
+    
+    // 1. URL Detection Logic
+    // This checks if it starts with http/https OR looks like a domain (word.word)
+    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/;
+    const isUrl = urlPattern.test(input.trim());
+
+    if (isUrl) {
+        // If it's a URL, add https:// if it's missing and navigate
+        let finalUrl = input.trim();
+        if (!/^https?:\/\//i.test(finalUrl)) {
+            finalUrl = 'https://' + finalUrl;
+        }
+        navigateToPage(finalUrl);
+        return; // Stop here, don't run the search API
+    }
+
+    // 2. Regular Search Logic (if not a URL)
+    currentTab.query = input;
+    currentTab.title = input;
+    currentTab.results = "<p style='text-align:center; padding:20px;'>Searching...</p>";
     
     updateUI(); 
     renderTabs();
 
     try {
-        const response = await fetch(`/api/browse?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/browse?q=${encodeURIComponent(input)}`);
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
         const data = await response.json();
         container.innerHTML = ""; 
 
         if (!data.results || data.results.length === 0) {
-            container.innerHTML = `<p>No results found for "${query}".</p>`;
+            container.innerHTML = `<p style='padding:20px;'>No results found for "${input}".</p>`;
         } else {
             data.results.forEach(res => renderResult(res.title, res.url, res.content));
         }
 
         currentTab.results = container.innerHTML;
-        updateUI(); // Ensure UI reflects the new HTML
+        updateUI();
     } catch (error) {
-        container.innerHTML = `<p style="color: red;">${error.message}</p>`;
+        container.innerHTML = `<p style="color: red; padding:20px;">${error.message}</p>`;
         currentTab.results = container.innerHTML;
     }
 }
