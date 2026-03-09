@@ -88,19 +88,31 @@ header {
     box-shadow: 0 -4px 10px rgba(37, 99, 235, 0.05);
 }
 
-/* The Perfect Circle Close Button */
+.tab span:first-child {
+    flex: 1;            
+    overflow: hidden;    
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    min-width: 0;        
+}
+
 .close-tab {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    
     width: 20px;
     height: 20px;
-    flex: 0 0 20px;
+    
+    flex: 0 0 20px; 
+    
+    margin-left: 4px;    
     border-radius: 50%;
-    font-size: 16px;
+    
+    font-size: 14px;
     line-height: 1;
-    margin-left: auto;
-    transition: all 0.2s;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
 .close-tab:hover {
