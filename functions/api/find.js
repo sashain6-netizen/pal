@@ -1,42 +1,40 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
-
-    // 1. Get the search query from your URL (e.g., /find?q=apples)
     const query = url.searchParams.get("q");
-    if (!query) {
-      return new Response("Please provide a query.", { status: 400 });
-    }
 
-    // 2. Define the Target (Using DuckDuckGo HTML version as an example)
-    const targetUrl = `https://duckduckgo.com/lite/?q=${encodeURIComponent(query)}`;
-    // 3. Set up Headers to look like a real browser (Crucial to avoid blocks)
-    const modifiedHeaders = new Headers(request.headers);
-    modifiedHeaders.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-    modifiedHeaders.set("Accept-Language", "en-US,en;q=0.9");
+    if (!query) return new Response("No query", { status: 400 });
+
+    // A list of public SearXNG instances from searx.space
+    // If one stops working, just replace it with another from the list!
+    const instances = [
+      "https://searx.be",
+      "https://searxng.site",
+      "https://priv.au"
+    ];
+    
+    // We'll use the first one for now
+    const targetUrl = `${instances[0]}/search?q=${encodeURIComponent(query)}&format=json`;
 
     try {
-      // 4. Perform the fetch to the internet
       const response = await fetch(targetUrl, {
-        method: "GET",
         headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,webp,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.5",
-            "Upgrade-Insecure-Requests": "1"
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MyPal/1.0",
+          "Accept": "application/json"
         }
-        });
-
-      // 5. Return the result to your visitor
-      return new Response(response.body, {
-        status: response.status,
-        headers: {
-          "Content-Type": "text/html",
-          "Access-Control-Allow-Origin": "*", // Allows your website to read the data
-        },
       });
-    } catch (e) {
-      return new Response("Proxy Error: " + e.message, { status: 500 });
+
+      const data = await response.json();
+      
+      // Return just the results to your frontend
+      return new Response(JSON.stringify(data.results), {
+        headers: { 
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*" 
+        }
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: "Search failed" }), { status: 500 });
     }
-  },
+  }
 };
