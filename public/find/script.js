@@ -10,7 +10,7 @@ async function performSearch() {
 
     try {
         // Point this to your Cloudflare Worker URL or /find route
-        const response = await fetch(`/find?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/find/?q=${encodeURIComponent(query)}`);
         const htmlText = await response.text();
 
         // Use DOMParser to turn the string into a readable document
