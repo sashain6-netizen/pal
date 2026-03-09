@@ -41,16 +41,18 @@ header {
     flex-direction: row;
     gap: 2px;
     flex: 1; 
+    /* REQUIRED: This allows the list to shrink even if the text inside is long */
+    min-width: 0; 
+    width: 0; 
     overflow: hidden; 
 }
 
 .tab {
     display: flex;
     align-items: center;
-    /* Removed justify-content to prevent 'X' from floating strangely */
     gap: 4px; 
     
-    /* THE SQUISH LOGIC */
+    /* flex-grow: 1, flex-shrink: 1, flex-basis: 200px */
     flex: 1 1 200px;    
     min-width: 35px;    
     max-width: 200px;   
@@ -66,7 +68,7 @@ header {
     border: none;
     position: relative;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: hidden; 
 }
 
 .tab span {
