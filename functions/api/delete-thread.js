@@ -30,8 +30,9 @@ export async function onRequestPost(context) {
         // We check against thread.creator_username now
         const isOP = thread.creator_username.toLowerCase() === username;
         const isOwner = user.rank === "Owner";
+        const isMod = user.rank === "Moderator";
 
-        if (!isOP && !isOwner) {
+        if (!isOP && !isOwner && !isMod) {
             return new Response(JSON.stringify({ error: "You do not have permission to delete this." }), { status: 403 });
         }
 
