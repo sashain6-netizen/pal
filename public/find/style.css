@@ -46,6 +46,9 @@ header {
 }
 
 .tab {
+
+    align-items: center;
+
     display: flex;
     align-items: center;
     gap: 4px; 
