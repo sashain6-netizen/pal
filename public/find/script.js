@@ -18,10 +18,7 @@ function renderTabs() {
     tabs.forEach(tab => {
         const tabEl = document.createElement('div');
         tabEl.className = `tab ${tab.active ? 'active' : ''}`;
-        tabEl.innerHTML = `
-            <span>${tab.title}</span>
-            <span class="close-tab" onclick="deleteTab(event, ${tab.id})">×</span>
-        `;
+        tabEl.innerHTML = `<span>${tab.title}</span><span class="close-tab" onclick="deleteTab(event, ${tab.id})">×</span>`;
         tabEl.onclick = () => switchTab(tab.id);
         tabsList.appendChild(tabEl);
     });
