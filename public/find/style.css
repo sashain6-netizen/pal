@@ -39,21 +39,21 @@ header {
 #tabs-list {
     display: flex;
     flex-direction: row;
-    gap: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    gap: 2px;
+    flex: 1; /* Allows the list to take up all available space in the bar */
+    overflow: hidden; /* Prevents the bar from growing; we want tabs to shrink instead */
 }
 
-#tabs-list::-webkit-scrollbar { display: none; }
-
-/* Individual Tab */
 .tab {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-width: 140px;
-    max-width: 220px;
-    flex-shrink: 0;
+    
+    /* THE SQUISH LOGIC */
+    flex: 1 1 200px;    /* Grow to 1, Shrink to 1, Ideal size 200px */
+    min-width: 30px;    /* The absolute smallest a tab can get (icon size) */
+    max-width: 200px;   /* The largest a tab can get */
+    
     height: 36px;
     padding: 0 12px;
     background: #bdc1c6;
@@ -61,8 +61,29 @@ header {
     cursor: pointer;
     font-size: 13px;
     color: #3c4043;
-    transition: all 0.2s ease;
+    transition: all 0.1s ease;
     border: none;
+    position: relative;
+    white-space: nowrap; /* Keeps text on one line */
+}
+
+@media (max-width: 600px) {
+    .tab {
+        padding: 0 8px;
+    }
+}
+
+.tab span {
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    flex: 1;
+}
+
+.tab.active {
+    background: #ffffff;
+    color: #1a73e8;
+    z-index: 2;
+    min-width: 100px; 
 }
 
 .tab.active {
