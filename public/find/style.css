@@ -91,10 +91,10 @@ header {
 }
 
 .close-tab {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     
-    flex: 0 0 24px; 
+    flex: 0 0 20px; 
     
     display: flex;
     align-items: center;
@@ -107,6 +107,9 @@ header {
     color: #5f6368;
     transition: background 0.2s, color 0.2s;
     cursor: pointer;
+
+    padding: 0;
+    margin: 0;
 }
 
 .close-tab:hover {
