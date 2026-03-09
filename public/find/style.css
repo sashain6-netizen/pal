@@ -46,16 +46,12 @@ header {
 }
 
 .tab {
-
-    align-items: center;
-
     display: flex;
     align-items: center;
-    gap: 4px; 
+    gap: 8px;
     
-    flex: 0 1 200px;    
-    min-width: 35px;    
-    max-width: 200px;   
+    flex: 0 0 160px; 
+    min-width: 160px; 
     
     height: 36px;
     padding: 0 10px;
@@ -91,29 +87,27 @@ header {
 }
 
 .close-tab {
-    width: 20px;
-    height: 20px;
-    
-    flex: 0 0 20px; 
-    
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     
-    font-size: 16px;
-    line-height: 1;
+    width: 20px;
+    aspect-ratio: 1 / 1; 
+    flex: 0 0 20px; 
+    
+    padding: 0 !important;
+    margin: 0;
+    line-height: 0; 
     border-radius: 50%;
     
+    font-size: 14px;
     color: #5f6368;
     transition: background 0.2s, color 0.2s;
     cursor: pointer;
-
-    padding: 0;
-    margin: 0;
 }
 
 .close-tab:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.15);
     color: #d93025;
 }
 
