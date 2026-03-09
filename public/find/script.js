@@ -123,6 +123,14 @@ async function performSearch(customQuery = null) {
 function renderResult(title, url, text) {
     const div = document.createElement('div');
     div.className = 'result-item';
+    div.innerHTML = `
+        <a href="javascript:void(0)" data-url="${url}" style="font-weight:bold; display:block; color:#1a0dab; cursor:pointer; text-decoration:none;">${title}</a>
+        <div class="description">
+            <span style="color:green; font-size:0.75rem; display:block;">${url}</span>
+            <p style="margin: 0; font-size: 0.9rem;">${text.replace(/<\/?[^>]+(>|$)/g, "")}</p>
+        </div>
+    `;
+    container.appendChild(div);
     
     const link = document.createElement('a');
     link.href = "javascript:void(0)";
