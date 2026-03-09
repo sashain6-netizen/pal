@@ -23,7 +23,7 @@ export async function onRequest(context) {
         // 2. Security Bypass & Link Fixing
         // This regex finds relative links (like /style.css) and makes them absolute (https://site.com/style.css)
         // It helps the page look right inside your iframe.
-        html = html.replace(/(src|href|action)="\/(?!\/)/g, `$1="${origin}/`);
+        html = html.replace("<head>", `<head><base href="${origin}/">`);
 
         // 3. Return the modified HTML
         return new Response(html, {

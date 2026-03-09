@@ -180,6 +180,15 @@ searchButton.addEventListener('click', () => performSearch(searchInput.value));
 searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(searchInput.value); });
 addressInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(addressInput.value); });
 
+container.addEventListener('click', (e) => {
+    const link = e.target.closest('.result-item a');
+    if (link) {
+        e.preventDefault();
+        const url = link.getAttribute('data-url');
+        if (url) navigateToPage(url);
+    }
+});
+
 // Init
 renderTabs();
 updateUI();
