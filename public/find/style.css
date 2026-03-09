@@ -40,8 +40,7 @@ header {
     display: flex;
     flex-direction: row;
     gap: 2px;
-    flex: 1; 
-    /* REQUIRED: This allows the list to shrink even if the text inside is long */
+    flex: 0 1 auto; 
     min-width: 0; 
     width: 0; 
     overflow: hidden; 
@@ -52,8 +51,7 @@ header {
     align-items: center;
     gap: 4px; 
     
-    /* flex-grow: 1, flex-shrink: 1, flex-basis: 200px */
-    flex: 1 1 200px;    
+    flex: 0 1 200px;    
     min-width: 35px;    
     max-width: 200px;   
     
@@ -91,7 +89,7 @@ header {
 }
 
 .close-tab {
-    flex-shrink: 0; /* Prevents X from getting squished or wide */
+    flex: 0 0 20px; 
     width: 20px;
     height: 20px;
     display: flex;
