@@ -95,13 +95,12 @@ function updateUI() {
 // --- Search Logic ---
 
 async function performSearch(customQuery = null) {
-    // Determine if we are searching from address bar or bottom bar
     const query = customQuery || searchInput.value || addressInput.value;
     if (!query) return;
 
     const currentTab = tabs.find(t => t.active);
     currentTab.query = query;
-    currentTab.title = query.substring(0, 15) + (query.length > 15 ? '...' : '');
+    currentTab.title = query; // CSS Ellipsis handles the "..." for us now!
     
     homeView.style.display = 'none';
     container.innerHTML = "<p>Searching...</p>";
@@ -109,28 +108,25 @@ async function performSearch(customQuery = null) {
 
     try {
         const response = await fetch(`/find/?q=${encodeURIComponent(query)}`);
-        const contentType = response.headers.get("content-type");
         
+        // Ensure the response is valid JSON before parsing
+        const contentType = response.headers.get("content-type");
         if (!response.ok || !contentType || !contentType.includes("application/json")) {
             throw new Error("Search server busy.");
         }
 
-        // ... inside your try block in performSearch ...
+        const data = await response.json(); 
+        container.innerHTML = ""; 
 
-const data = await response.json(); // Rename 'results' to 'data' for clarity
-container.innerHTML = ""; 
+        if (!data.results || data.results.length === 0) {
+            container.innerHTML = "<p>No results found.</p>";
+        } else {
+            data.results.forEach(result => {
+                renderResult(result.title, result.url, result.content);
+            });
+        }
 
-// SearXNG returns an object with a 'results' property which is the array
-if (!data.results || data.results.length === 0) {
-    container.innerHTML = "<p>No results found.</p>";
-} else {
-    // CHANGE THIS LINE: loop through data.results, not just data
-    data.results.forEach(result => {
-        renderResult(result.title, result.url, result.content);
-    });
-}
-
-        // SAVE the results into the tab object so they stay there when switching
+        // Save current state to the tab
         currentTab.results = container.innerHTML;
 
     } catch (error) {
