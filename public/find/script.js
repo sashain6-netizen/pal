@@ -123,30 +123,21 @@ async function performSearch(customQuery = null) {
 function renderResult(title, url, text) {
     const div = document.createElement('div');
     div.className = 'result-item';
+    
+    // We use innerHTML here to build the structure once.
+    // Note the 'data-url' attribute which makes the click listener work!
+    const cleanText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
+    
     div.innerHTML = `
-        <a href="javascript:void(0)" data-url="${url}" style="font-weight:bold; display:block; color:#1a0dab; cursor:pointer; text-decoration:none;">${title}</a>
+        <a href="javascript:void(0)" data-url="${url}" class="result-link" style="font-weight:bold; display:block; color:#1a0dab; cursor:pointer; text-decoration:none;">
+            ${title}
+        </a>
         <div class="description">
             <span style="color:green; font-size:0.75rem; display:block;">${url}</span>
-            <p style="margin: 0; font-size: 0.9rem;">${text.replace(/<\/?[^>]+(>|$)/g, "")}</p>
+            <p style="margin: 0; font-size: 0.9rem;">${cleanText}</p>
         </div>
     `;
-    container.appendChild(div);
     
-    const link = document.createElement('a');
-    link.href = "javascript:void(0)";
-    link.style.cssText = "font-weight:bold; display:block; color:#1a0dab; cursor:pointer; text-decoration:none;";
-    link.textContent = title;
-    link.onclick = () => navigateToPage(url);
-
-    const description = document.createElement('div');
-    const cleanText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
-    description.innerHTML = `
-        <span style="color:green; font-size:0.75rem; display:block;">${url}</span>
-        <p style="margin: 0; font-size: 0.9rem;">${cleanText}</p>
-    `;
-
-    div.appendChild(link);
-    div.appendChild(description);
     container.appendChild(div);
 }
 
