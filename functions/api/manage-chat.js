@@ -5,6 +5,7 @@ export async function onRequestPost(context) {
         const body = await request.json();
         const { action, chatId, targetUsername } = body;
         
+        // 1. JWT Authentication
         const cookie = request.headers.get("Cookie") || "";
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
         
@@ -18,14 +19,25 @@ export async function onRequestPost(context) {
         const payload = JSON.parse(atob(token.split(".")[1]));
         const username = payload.username;
 
+        // --- 2. MANDATORY MEMBERSHIP GATE ---
+        // This stops the chat from loading or interacting for anyone NOT in the chat
+        const isMember = await env.DB.prepare(
+            "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
+        ).bind(chatId, username).first();
+
+        if (!isMember) {
+            return new Response(JSON.stringify({ 
+                error: "Access Denied: You are not a member of this conversation." 
+            }), { status: 403 });
+        }
+
         // --- ACTION: LEAVE ---
+        // Moved above Owner Verification so non-owners can still leave
         if (action === "leave") {
-            // 1. Add System Message
             await env.DB.prepare(
                 "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
             ).bind(chatId, `@${username} left the chat`).run();
 
-            // 2. Remove Member
             await env.DB.prepare(
                 "DELETE FROM chat_members WHERE room_id = ? AND username = ?"
             ).bind(chatId, username).run();
@@ -34,11 +46,12 @@ export async function onRequestPost(context) {
         }
 
         // --- OWNER VERIFICATION ---
+        // Only the creator can Invite, Kick, or Delete
         const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
             .bind(chatId).first();
 
         if (!room || room.creator_username !== username) {
-            return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+            return new Response(JSON.stringify({ error: "Only the chat creator can do this." }), { status: 403 });
         }
 
         // --- ACTION: DELETE ---
@@ -63,11 +76,9 @@ export async function onRequestPost(context) {
                 return new Response(JSON.stringify({ error: "User does not exist" }), { status: 404 });
             }
 
-            // 1. Add to Members
             await env.DB.prepare("INSERT OR IGNORE INTO chat_members (room_id, username) VALUES (?, ?)")
                 .bind(chatId, targetUsername).run();
 
-            // 2. Add System Message
             await env.DB.prepare(
                 "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
             ).bind(chatId, `@${username} invited @${targetUsername} to the chat`).run();
@@ -76,34 +87,29 @@ export async function onRequestPost(context) {
         }
 
         // --- ACTION: KICK ---
-        // --- ACTION: KICK ---
-if (action === "kick") {
-    if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
-    
-    // 1. Prevent self-kick
-    if (targetUsername.toLowerCase() === username.toLowerCase()) {
-        return new Response(JSON.stringify({ error: "You cannot kick yourself" }), { status: 400 });
-    }
+        if (action === "kick") {
+            if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
+            
+            if (targetUsername.toLowerCase() === username.toLowerCase()) {
+                return new Response(JSON.stringify({ error: "You cannot kick yourself" }), { status: 400 });
+            }
 
-    // 2. Verify target is actually in this specific room
-        const member = await env.DB.prepare("SELECT username FROM chat_members WHERE room_id = ? AND username = ?")
-            .bind(chatId, targetUsername).first();
+            const member = await env.DB.prepare("SELECT username FROM chat_members WHERE room_id = ? AND username = ?")
+                .bind(chatId, targetUsername).first();
 
-        if (!member) {
-            return new Response(JSON.stringify({ error: "User is not in this chat" }), { status: 404 });
+            if (!member) {
+                return new Response(JSON.stringify({ error: "User is not in this chat" }), { status: 404 });
+            }
+
+            await env.DB.prepare(
+                "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
+            ).bind(chatId, `@${targetUsername} was kicked from the chat`).run();
+
+            await env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
+                .bind(chatId, targetUsername).run();
+
+            return new Response(JSON.stringify({ success: true }));
         }
-
-        // 3. Add System Message
-        await env.DB.prepare(
-            "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)"
-        ).bind(chatId, `@${targetUsername} was kicked from the chat`).run();
-
-        // 4. Remove Member
-        await env.DB.prepare("DELETE FROM chat_members WHERE room_id = ? AND username = ?")
-            .bind(chatId, targetUsername).run();
-
-        return new Response(JSON.stringify({ success: true }));
-    }
 
         return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400 });
 

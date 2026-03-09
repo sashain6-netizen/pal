@@ -29,10 +29,10 @@ export async function onRequestPost(context) {
         // 4. THE SECURITY CHECK (FIXED REFERENCE)
         // We check against thread.creator_username now
         const isOP = thread.creator_username.toLowerCase() === username;
-        const isOwner = user.rank === "Owner";
-        const isMod = user.rank === "Moderator";
+        const staffRoles = ["Owner", "Moderator", "Admin"];
+        const isStaff = staffRoles.includes(user.rank);
 
-        if (!isOP && !isOwner && !isMod) {
+        if (!isOP && !isStaff) {
             return new Response(JSON.stringify({ error: "You do not have permission to delete this." }), { status: 403 });
         }
 
