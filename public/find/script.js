@@ -74,7 +74,7 @@ function updateUI() {
 
     // Sync back button: Logic is now centralized here
     const isViewingPage = activeTab.results && activeTab.results.includes('iframe');
-    backButton.style.display = (activeTab.lastSearchHtml && isViewingPage) ? 'block' : 'none';
+    backButton.style.display = (activeTab.lastSearchHtml && isViewingPage) ? 'flex' : 'none';
 
     if (!activeTab.results && !activeTab.query) {
         homeView.style.display = 'block';

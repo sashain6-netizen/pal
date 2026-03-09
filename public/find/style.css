@@ -288,11 +288,12 @@ footer {
     border-bottom: 1px solid var(--border-light);
 }
 
+/* --- Optimized Toolbar & Nav Button --- */
 .nav-btn {
-    display: none; /* Controlled by JS */
-    align-items: center;
-    justify-content: center;
-    background: #f1f5f9; /* Soft gray background */
+    display: none; /* Controlled by JS as 'flex' */
+    align-items: center;    /* Vertical center */
+    justify-content: center; /* Horizontal center */
+    background: #f1f5f9; 
     border: none;
     border-radius: 50%;
     width: 36px;
@@ -301,6 +302,7 @@ footer {
     color: var(--pal-blue-soft);
     transition: all 0.2s ease;
     flex-shrink: 0;
+    padding: 0; /* Important: removes default button padding that offsets icons */
 }
 
 .nav-btn:hover {
@@ -310,7 +312,11 @@ footer {
 }
 
 .nav-btn svg {
-    display: block; /* Centers the icon */
+    display: block; 
+    width: 20px;  /* Fixed size for consistency */
+    height: 20px;
+    /* Remove any implicit margins */
+    margin: 0; 
 }
 
 /* Unified Address Input */
