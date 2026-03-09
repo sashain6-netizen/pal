@@ -100,7 +100,7 @@ async function performSearch(customQuery = null) {
 
     const currentTab = tabs.find(t => t.active);
     currentTab.query = query;
-    currentTab.title = query; // CSS Ellipsis handles the "..." for us now!
+    currentTab.title = query;
     
     homeView.style.display = 'none';
     container.innerHTML = "<p>Searching...</p>";
@@ -109,29 +109,34 @@ async function performSearch(customQuery = null) {
     try {
         const response = await fetch(`/find/?q=${encodeURIComponent(query)}`);
         
-        // Ensure the response is valid JSON before parsing
-        const contentType = response.headers.get("content-type");
-        if (!response.ok || !contentType || !contentType.includes("application/json")) {
-            throw new Error("Search server busy.");
+        // 1. Check if the network request actually worked
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+        // 2. Try to parse the JSON directly
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            // This happens if the server sends HTML (like an error page) instead of JSON
+            throw new Error("Received invalid data from server.");
         }
 
-        const data = await response.json(); 
         container.innerHTML = ""; 
 
+        // 3. Render the results
         if (!data.results || data.results.length === 0) {
-            container.innerHTML = "<p>No results found.</p>";
+            container.innerHTML = `<p>No results found for "${query}".</p>`;
         } else {
             data.results.forEach(result => {
                 renderResult(result.title, result.url, result.content);
             });
         }
 
-        // Save current state to the tab
         currentTab.results = container.innerHTML;
 
     } catch (error) {
-        console.error("Search Error Detail:", error); // Check your F12 console for this!
-        container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        console.error("Full Error:", error);
+        container.innerHTML = `<p style="color: red;">${error.message}</p>`;
         currentTab.results = container.innerHTML;
     }
 }
