@@ -47,15 +47,15 @@ header {
 .tab {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; <-- Remove this, we'll use gap instead */
+    gap: 4px; 
     
-    /* THE SQUISH LOGIC */
-    flex: 1 1 200px;    /* Grow to 1, Shrink to 1, Ideal size 200px */
-    min-width: 30px;    /* The absolute smallest a tab can get (icon size) */
-    max-width: 200px;   /* The largest a tab can get */
+    flex: 1 1 200px;
+    min-width: 35px; /* Slightly wider to prevent total overlap */
+    max-width: 200px;
     
     height: 36px;
-    padding: 0 12px;
+    padding: 0 10px;
     background: #bdc1c6;
     border-radius: 10px 10px 0 0;
     cursor: pointer;
@@ -64,49 +64,40 @@ header {
     transition: all 0.1s ease;
     border: none;
     position: relative;
-    white-space: nowrap; /* Keeps text on one line */
-}
-
-@media (max-width: 600px) {
-    .tab {
-        padding: 0 8px;
-    }
+    white-space: nowrap;
+    overflow: hidden; /* Critical for keeping content inside */
 }
 
 .tab span {
     overflow: hidden;
     text-overflow: ellipsis; 
-    flex: 1;
-}
-
-.tab.active {
-    background: #ffffff;
-    color: #1a73e8;
-    z-index: 2;
-    min-width: 100px; 
-}
-
-.tab.active {
-    background: #ffffff;
-    color: #1a73e8;
-    font-weight: 600;
-    box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
-}
-
-.tab:hover:not(.active) {
-    background: #cfd2d7;
+    flex: 1; /* This pushes the X button to the right */
+    pointer-events: none; /* Helps clicking the tab without hitting text bounds */
 }
 
 .close-tab {
-    width: 18px;
-    height: 18px;
+    flex-shrink: 0; /* Prevents the 'X' from ever getting squished or wide */
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    margin-left: 8px;
     font-size: 14px;
-    transition: background 0.2s;
+    color: #5f6368;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Hide the X when the tab gets super tiny so it doesn't overlap the text */
+@media (max-width: 80px) {
+    .close-tab {
+        display: none;
+    }
+}
+
+.close-tab:hover {
+    background: rgba(0,0,0,0.15);
+    color: #d93025;
 }
 
 .close-tab:hover {
