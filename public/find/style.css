@@ -92,12 +92,13 @@ header {
     justify-content: center;
     
     width: 20px;
-    aspect-ratio: 1 / 1; 
+    height: 20px; 
+    
     flex: 0 0 20px; 
     
     padding: 0 !important;
     margin: 0;
-    line-height: 0; 
+    line-height: 1; 
     border-radius: 50%;
     
     font-size: 14px;
