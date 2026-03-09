@@ -4,22 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search • Pal</title>
+    <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
     <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body>
 
-    <div class="search-container">
-        <h1>My-Pal Search</h1>
-        <div class="input-group">
-            <input type="text" id="search-input" placeholder="Search the internet...">
-            <button id="search-button">Search</button>
+    <div id="browser-container">
+    <header>
+        <div id="tab-bar">
+            <div id="tabs-list"></div>
+            <button id="add-tab-btn">+</button>
         </div>
-    </div>
+        <div class="address-bar-container">
+            <input type="text" id="address-input" placeholder="Enter URL or type to search...">
+        </div>
+    </header>
 
-    <div id="results-container">
+    <main id="content-viewport">
+        <div id="home-view">
+            <h1>Pal</h1>
+            <p>Your private gateway.</p>
         </div>
+        <div id="results-container"></div>
+    </main>
+
+    <footer>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search the web...">
+            <button id="search-button">Go</button>
+        </div>
+    </footer>
+</div>
     
     <script src="/navbar.js"></script>
     <script src="/global-settings.js"></script>
