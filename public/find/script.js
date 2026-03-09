@@ -80,15 +80,21 @@ function switchTab(id) {
 function updateUI() {
     const activeTab = tabs.find(t => t.active);
     
-    // Update Address Bar text
     addressInput.value = activeTab.query || "";
+
+    // Sync back button visibility for the active tab
+    if (activeTab.lastSearchHtml && activeTab.results && activeTab.results.includes('iframe')) {
+        backButton.style.display = 'block';
+    } else {
+        backButton.style.display = 'none';
+    }
 
     if (!activeTab.results && !activeTab.query) {
         homeView.style.display = 'block';
         container.innerHTML = '';
     } else {
         homeView.style.display = 'none';
-        container.innerHTML = activeTab.results || ''; // Restore saved HTML results
+        container.innerHTML = activeTab.results || ''; 
     }
 }
 
@@ -145,25 +151,30 @@ function renderResult(title, url, text) {
     const div = document.createElement('div');
     div.className = 'result-item';
     
-    // Create the title link
+    // 1. Create the title link
     const link = document.createElement('a');
-    link.href = "#"; 
+    link.href = "javascript:void(0)"; // Better than "#" to prevent jumping
     link.className = "result-title";
     link.style.cssText = "font-weight:bold; display:block; color:#1a0dab; cursor:pointer; text-decoration:none;";
     link.textContent = title;
 
-    // INTERCEPT CLICK: Use our internal navigation
+    // 2. INTERCEPT CLICK
     link.onclick = (e) => {
         e.preventDefault();
         navigateToPage(url);
     };
 
+    // 3. Create the text content wrapper
+    const description = document.createElement('div');
     const cleanText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
-    div.appendChild(link);
-    div.innerHTML += `
-        <span style="color:green; font-size:0.75rem;">${url}</span>
+    description.innerHTML = `
+        <span style="color:green; font-size:0.75rem; display:block;">${url}</span>
         <p style="margin: 0; font-size: 0.9rem;">${cleanText}</p>
     `;
+
+    // 4. APPEND (Do not use innerHTML +=)
+    div.appendChild(link);
+    div.appendChild(description);
     container.appendChild(div);
 }
 
