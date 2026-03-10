@@ -8,22 +8,21 @@ function injectNavbar() {
 
     const navStyles = `
     <style>
-    /* Change 'navbar' to '.navbar' */
-.navbar {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    background: #ffffff !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-    z-index: 1000 !important;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 50px;
-    height: 70px;
-    box-sizing: border-box; /* Ensures padding doesn't push width past 100% */
-}
+        .navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            background: #ffffff !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+            z-index: 1000 !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+            height: 70px;
+            box-sizing: border-box;
+        }
         #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; }
         #profile-notif-dot { 
             position: absolute !important; 
@@ -46,7 +45,6 @@ function injectNavbar() {
             align-items: center; 
             gap: 20px; 
             margin-left: 25px; 
-            /* CHANGE: Removed margin-right: auto */
             margin-right: 35px; 
         }
         
@@ -58,14 +56,20 @@ function injectNavbar() {
             margin: 0;
         }
         .nav-icons a, 
+        .nav-icons button.stealth-btn,
         .nav-icons a:visited { 
             color: #64748b; 
             transition: color 0.2s, transform 0.2s; 
             display: flex; 
             align-items: center; 
             text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
         }
-        .nav-icons a:hover { 
+        .nav-icons a:hover,
+        .nav-icons button.stealth-btn:hover { 
             color: #2563eb !important; 
             transform: translateY(-2px); 
         }
@@ -85,6 +89,9 @@ function injectNavbar() {
             <a href="/daily">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             </a>
+            <button class="stealth-btn" id="stealth-trigger" title="Stealth Mode">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
         </div>
 
         <ul class="nav-links">
@@ -125,6 +132,40 @@ function injectNavbar() {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     
     window.navbarHasLoaded = true;
+
+    // --- STEALTH LOGIC ---
+    const stealthBtn = document.getElementById('stealth-trigger');
+    if (stealthBtn) {
+        stealthBtn.addEventListener('click', () => {
+            const win = window.open();
+            if (!win) {
+                alert("Please allow pop-ups to use Stealth Mode.");
+                return;
+            }
+
+            const doc = win.document;
+            // Fake the tab title
+            doc.title = "Google Docs";
+            
+            // Add a fake favicon (Google Docs icon)
+            const link = doc.createElement('link');
+            link.rel = 'icon';
+            link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+            doc.head.appendChild(link);
+
+            // Create the iframe
+            const iframe = doc.createElement('iframe');
+            iframe.src = window.location.href;
+            iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
+            
+            doc.body.style.margin = '0';
+            doc.body.style.overflow = 'hidden';
+            doc.body.appendChild(iframe);
+
+            // Redirect original tab to something safe (optional)
+            window.location.replace("https://classroom.google.com");
+        });
+    }
 
     // Notification Listener
     window.addEventListener('notifsUpdated', (e) => {
