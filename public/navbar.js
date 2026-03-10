@@ -137,7 +137,15 @@ function injectNavbar() {
     const eyeBtn = document.getElementById('stealth-launch-btn');
     if (eyeBtn) {
         eyeBtn.addEventListener('click', () => {
-            // Open the new tab
+            // 1. Tell the confirmation script to SHUT DOWN for this action
+            if (typeof allowExit !== 'undefined') {
+                allowExit = true; 
+            } else {
+                // Fallback: search for the flag if it's in a different scope
+                window.allowExit = true; 
+            }
+
+            // 2. Open the new tab
             const win = window.open('about:blank', '_blank');
             
             if (win) {
@@ -157,10 +165,9 @@ function injectNavbar() {
                 doc.body.style.overflow = 'hidden';
                 doc.body.appendChild(iframe);
 
-                // Focus the new stealth tab
                 win.focus();
                 
-                // Cover the trail in the original tab
+                // 3. Redirect the current tab without the popup
                 window.location.replace("https://google.com");
             } else {
                 alert("Please allow pop-ups to enable Stealth Mode.");
