@@ -137,28 +137,34 @@ function injectNavbar() {
     const eyeBtn = document.getElementById('stealth-launch-btn');
     if (eyeBtn) {
         eyeBtn.addEventListener('click', () => {
-            const win = window.open();
-            if (!win) return;
-
-            const doc = win.document;
-            doc.title = "Google Docs";
+            // Open the new tab
+            const win = window.open('about:blank', '_blank');
             
-            const link = doc.createElement('link');
-            link.rel = 'icon';
-            link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-            doc.head.appendChild(link);
+            if (win) {
+                const doc = win.document;
+                doc.title = "Google Docs";
+                
+                const link = doc.createElement('link');
+                link.rel = 'icon';
+                link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+                doc.head.appendChild(link);
 
-            const iframe = doc.createElement('iframe');
-            iframe.src = window.location.origin + "/"; 
-            iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
-            
-            doc.body.style.margin = '0';
-            doc.body.style.overflow = 'hidden';
-            doc.body.appendChild(iframe);
+                const iframe = doc.createElement('iframe');
+                iframe.src = window.location.origin + "/"; 
+                iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
+                
+                doc.body.style.margin = '0';
+                doc.body.style.overflow = 'hidden';
+                doc.body.appendChild(iframe);
 
-            // FALLBACK: Redirect original tab to Google and try to close it
-            window.location.replace("https://google.com");
-            window.close();
+                // Focus the new stealth tab
+                win.focus();
+                
+                // Cover the trail in the original tab
+                window.location.replace("https://google.com");
+            } else {
+                alert("Please allow pop-ups to enable Stealth Mode.");
+            }
         });
     }
 
