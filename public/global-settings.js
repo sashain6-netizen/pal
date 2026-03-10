@@ -61,29 +61,22 @@
         }
     }, { capture: true });
 
-    // --- 4. LEAVE CONFIRMATION (The Smart Version) ---
-    if (settings.leaveConfirm) {
-        window.addEventListener('beforeunload', (e) => {
-            // 1. Check if a script/panic key manually allowed the exit
-            if (allowExit) return;
-
-            // 2. Check the active element (the last thing clicked)
-            const activeEl = document.activeElement;
-            if (activeEl && (activeEl.tagName === 'A' || activeEl.tagName === 'BUTTON')) {
-                const url = activeEl.href || activeEl.form?.action;
-                if (isInternal(url)) return;
-            }
-
-            // If we get here, it's an actual external exit
-            e.preventDefault();
-            e.returnValue = ''; 
-        });
-
-        // Reset the flag if the user stays on the page
-        window.addEventListener('mousemove', () => {
-            if (allowExit) setTimeout(() => { allowExit = false; }, 100);
-        }, { once: true });
-    }
+   // --- 4. LEAVE CONFIRMATION (The Smart Version) ---
+if (settings.leaveConfirm) {
+    window.addEventListener('beforeunload', (e) => {
+        if (window.allowExit) return;
+        const activeEl = document.activeElement;
+        if (activeEl && (activeEl.tagName === 'A' || activeEl.tagName === 'BUTTON')) {
+            const url = activeEl.href || activeEl.form?.action;
+            if (isInternal(url)) return;
+        }
+        e.preventDefault();
+        e.returnValue = ''; 
+    });
+    window.addEventListener('mousemove', () => {
+        if (window.allowExit) setTimeout(() => { window.allowExit = false; }, 100);
+    }, { once: true });
+}
 
     // --- 5. NOTIFICATION POLLING ---
     let seenNotifIds = new Set();
