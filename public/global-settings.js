@@ -114,24 +114,43 @@
         });
     }
 
-    // --- 6. NAVIGATION GUARD ---
-    const blockedSites = settings.blockedSites || ["blocked.goguardian.com/", "another-site.org"];
+    // --- 6. IMPROVED NAVIGATION GUARD ---
+    const blockedSites = settings.blockedSites || ["blocked.goguardian.com", "another-site.org"];
+
+    // Helper function to check if a URL is forbidden
+    const isForbidden = (urlStr) => {
+        try {
+            const url = new URL(urlStr, window.location.origin);
+            return blockedSites.some(site => url.hostname.includes(site));
+        } catch (e) { return false; }
+    };
 
     document.addEventListener('click', (e) => {
         const anchor = e.target.closest('a');
-        
-        if (anchor && anchor.href) {
-            const url = new URL(anchor.href);
-            
-            const isBlocked = blockedSites.some(site => url.hostname.includes(site));
-
-            if (isBlocked) {
-                e.preventDefault();
-                window.showToast("Malicious redirect detected", "error");
-                console.warn(`Blocked navigation to: ${url.hostname}`);
-            }
+        if (anchor && anchor.href && isForbidden(anchor.href)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            window.showToast("Redirect blocked by guard.", "error");
         }
-    }, true); // Use capture phase to catch clicks early
+    }, true);
+
+    const originalReplace = window.location.replace;
+    window.location.replace = function(url) {
+        if (isForbidden(url)) {
+            window.showToast("Script redirect blocked.", "error");
+            return;
+        }
+        return originalReplace.apply(this, [url]);
+    };
+
+    const originalAssign = window.location.assign;
+    window.location.assign = function(url) {
+        if (isForbidden(url)) {
+            window.showToast("Script redirect blocked.", "error");
+            return;
+        }
+        return originalAssign.apply(this, [url]);
+    };
 
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
     const panicKey = settings.panicKey || "`"; // Default to backtick
