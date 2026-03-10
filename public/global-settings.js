@@ -114,6 +114,25 @@
         });
     }
 
+    // --- 6. NAVIGATION GUARD ---
+    const blockedSites = settings.blockedSites || ["blocked.goguardian.com/", "another-site.org"];
+
+    document.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a');
+        
+        if (anchor && anchor.href) {
+            const url = new URL(anchor.href);
+            
+            const isBlocked = blockedSites.some(site => url.hostname.includes(site));
+
+            if (isBlocked) {
+                e.preventDefault();
+                window.showToast("Malicious redirect detected", "error");
+                console.warn(`Blocked navigation to: ${url.hostname}`);
+            }
+        }
+    }, true); // Use capture phase to catch clicks early
+
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
     const panicKey = settings.panicKey || "`"; // Default to backtick
 
