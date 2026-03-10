@@ -2,36 +2,31 @@
     const saved = localStorage.getItem('site_settings');
     const settings = saved ? JSON.parse(saved) : {};
 
-    // --- 1. TOAST SYSTEM ---
-    let toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toast-container';
-        document.body.appendChild(toastContainer);
-    }
+    // Flag to bypass the "Are you sure?" popup for intentional exits
+    let allowExit = false;
 
+    // --- 1. TOAST SYSTEM ---
     window.showToast = function(message, typeOrUrl = null) {
-        let container = document.getElementById('toast-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'toast-container';
-            document.body.appendChild(container);
-        }
+        let container = document.getElementById('toast-container') || (function() {
+            const c = document.createElement('div');
+            c.id = 'toast-container';
+            document.body.appendChild(c);
+            return c;
+        })();
 
         const toast = document.createElement('div');
         toast.className = 'game-toast'; 
-        
-        // Check if the second argument is a URL (starts with /) or a style type
         const isUrl = typeOrUrl && (typeOrUrl.startsWith('/') || typeOrUrl.startsWith('http'));
-        const isError = typeOrUrl === 'error';
-        const isSuccess = typeOrUrl === 'success';
 
-        if (isError) toast.style.borderLeft = "4px solid #ef4444"; // Red for error
-        if (isSuccess) toast.style.borderLeft = "4px solid #10b981"; // Green for success
+        if (typeOrUrl === 'error') toast.style.borderLeft = "4px solid #ef4444";
+        if (typeOrUrl === 'success') toast.style.borderLeft = "4px solid #10b981";
 
         if (isUrl) {
             toast.style.cursor = 'pointer';
-            toast.onclick = () => { window.location.href = typeOrUrl; };
+            toast.onclick = () => { 
+                allowExit = true; // Set flag so popup doesn't show
+                window.location.href = typeOrUrl; 
+            };
             toast.innerHTML = `
                 <div style="margin-bottom: 4px;">${message}</div>
                 <div style="font-size: 0.7rem; opacity: 0.8; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px;">
@@ -39,13 +34,10 @@
                 </div>
             `;
         } else {
-            // No "Click to view" for errors or simple messages
             toast.textContent = message;
         }
 
         container.appendChild(toast);
-
-        // Fade out and remove
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transform = 'translateX(50px)';
@@ -53,22 +45,29 @@
         }, 4000);
     };
 
-    // --- 2. NOTIFICATION POLLING (The Master) ---
+    // --- 2. INTERNAL LINK BYPASS ---
+    // This makes sure clicking your own navbar links doesn't trigger the popup
+    document.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a');
+        if (anchor && anchor.href) {
+            const url = new URL(anchor.href, window.location.origin);
+            if (url.host === window.location.host) {
+                allowExit = true;
+            }
+        }
+    });
+
+    // --- 3. NOTIFICATION POLLING ---
     let seenNotifIds = new Set();
     let isFirstCheck = true;
-
     async function checkNewNotifications() {
         try {
             const res = await fetch('/api/notifications');
             if (!res.ok) return;
-
             const notifications = await res.json();
             const hasNotifs = notifications.length > 0;
 
-            // Update the Navbar dot via Broadcast
-            window.dispatchEvent(new CustomEvent('notifsUpdated', { 
-                detail: { hasNotifs, count: notifications.length } 
-            }));
+            window.dispatchEvent(new CustomEvent('notifsUpdated', { detail: { hasNotifs } }));
 
             if (isFirstCheck) {
                 notifications.forEach(n => seenNotifIds.add(String(n.id)));
@@ -80,63 +79,51 @@
                 const id = String(n.id);
                 if (!seenNotifIds.has(id)) {
                     seenNotifIds.add(id);
-                    const msg = n.from ? `New from ${n.from}: ${n.text}` : n.text;
-                    window.showToast(msg, '/notifications'); 
+                    window.showToast(n.from ? `New from ${n.from}: ${n.text}` : n.text, '/notifications'); 
                 }
             });
-        } catch (e) {
-            console.error("Notif Error:", e);
-        }
+        } catch (e) { console.error("Notif Error:", e); }
     }
-
     setInterval(checkNewNotifications, 10000);
     checkNewNotifications();
 
-
-    // --- 4. TAB CLOAKING LOGIC ---
+    // --- 4. TAB CLOAKING ---
     if (settings.cloaking) {
         document.title = "Google Docs";
-        const iconUrl = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-        let link = document.querySelector("link[rel*='icon']");
-        if (!link) {
-            link = document.createElement('link');
-            link.rel = 'icon';
-            document.head.appendChild(link);
-        }
-        link.href = iconUrl;
+        let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+        link.rel = 'icon';
+        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+        document.head.appendChild(link);
     }
 
-    // --- 5. LEAVE CONFIRMATION LOGIC ---
+    // --- 5. LEAVE CONFIRMATION ---
     if (settings.leaveConfirm) {
         window.addEventListener('beforeunload', (e) => {
+            if (allowExit) return; // Silent exit if flag is true
             e.preventDefault();
             e.returnValue = ''; 
         });
     }
+
+    // --- 6. STEALTH LAUNCHER ---
     window.launchStealth = function() {
-    const win = window.open();
-    if (!win) return; // Browser blocked it
+        const win = window.open();
+        if (!win) return;
+        const doc = win.document;
+        doc.title = "Google Docs";
+        const link = doc.createElement('link');
+        link.rel = 'icon'; link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+        doc.head.appendChild(link);
+        const iframe = doc.createElement('iframe');
+        iframe.src = window.location.href;
+        iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
+        doc.body.style.margin = '0'; doc.body.style.overflow = 'hidden';
+        doc.body.appendChild(iframe);
+    };
 
-    const doc = win.document;
-    doc.title = "Google Docs";
-    
-    const link = doc.createElement('link');
-    link.rel = 'icon';
-    link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-    doc.head.appendChild(link);
-
-    const iframe = doc.createElement('iframe');
-    iframe.src = window.location.href; // Keep you exactly where you were
-    iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
-    
-    doc.body.style.margin = '0';
-    doc.body.style.overflow = 'hidden';
-    doc.body.appendChild(iframe);
-};
-
-    // --- PANIC KEY WITH STEALTH REDIRECT ---
+    // --- 7. PANIC KEY ---
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
-    const panicKey = settings.panicKey || "`"; // Default: backtick
+    const panicKey = settings.panicKey || "`";
 
     window.addEventListener('keydown', (e) => {
         let modifiers = "";
@@ -148,10 +135,8 @@
         const pressedKey = modifiers + e.key.toUpperCase();
 
         if (pressedKey === panicKey) {
-            // 1. Launch the site in about:blank (Stealth Mode)
-            if (typeof window.launchStealth === 'function') {
-                window.launchStealth(); 
-            }
+            allowExit = true; // Bypass confirmation immediately
+            window.launchStealth(); 
             window.location.replace(panicUrl);
         }
     });
