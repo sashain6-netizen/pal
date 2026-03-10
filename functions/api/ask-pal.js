@@ -4,7 +4,8 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    const { userMessage } = await request.json();
+    // 1. Accept 'history' from the frontend (an array of {role, content})
+    const { userMessage, history = [] } = await request.json();
 
     const groq = new Groq({ apiKey: env.GROQ_API_KEY });
 
@@ -14,7 +15,6 @@ export async function onRequestPost(context) {
       Tone: Friendly, tech-savvy, and concise.
 
       # KNOWLEDGE BASE (STRICT TRUTH)
-      
       ## 1. FOUNDERS (All Freshmen)
       - Simon Shain: Lead Developer. Handles 100% of Backend and Frontend.
       - Meher Nagi: Games & Apps. Responsible for sourcing and downloading site content.
@@ -30,41 +30,46 @@ export async function onRequestPost(context) {
         * Notifications: View Private Messages and System Updates.
 
       ## 3. CORE MODULES
-      - Forums: 
-        * Public: Open threads for statements/questions and community replies.
-        * Private: Invite-only group chats.
-      - Games: Large library; playable in Full Screen or Windowed mode.
-      - Apps: Large-scale, feature-rich tools organized by categories.
-      - Proxy: Private browsing tab; safe browsing without device history.
+      - Forums: Public/Private threads.
+      - Games: Large library; Full Screen/Windowed.
+      - Apps: Categorized feature-rich tools.
+      - Proxy: Private browsing tab.
       - AI Module: You (this assistant).
-      - Contacts: View site contributors; links to Discord, Instagram, and YouTube.
+      - Contacts: Discord, Instagram, and YouTube links.
 
       ## 4. USER ECONOMY & SOCIAL
-      - Currency: Earned via Daily Streaks; spent in Shop/Search.
+      - Currency: Earned via Daily Streaks.
       - XP & Levels: Increases via activity and Follower count.
-      - Social Actions: Message users, follow users, and view public stats (XP, Currency, Followers/Following).
-      - Authentication: Signup/Login via Email and Password; can use Email or Name as the identifier.
+      - Social Actions: Message, follow, and view public stats.
 
       # RESPONSE GUIDELINES
-      - NEVER speculate. If a feature is not in the list above, it does not exist.
-      - If asked about specific user data (non-founders) or private chats, state: "I cannot access private database records for privacy reasons."
-      - If the answer is unknown, suggest asking in the Forums.
-      - LIMIT: Maximum 2 paragraphs per response.
+      - NEVER speculate.
+      - Maximum 2 paragraphs per response.
     `;
 
-    // 3. Call Groq
+    // 2. Format the Conversation History
+    // We take the last 3 messages from the history provided by the frontend
+    const limitedHistory = history.slice(-3);
+
+    // 3. Construct the full message list for Groq
+    const messages = [
+      { role: "system", content: PAL_SYSTEM_PROMPT },
+      ...limitedHistory,
+      { role: "user", content: userMessage }
+    ];
+
+    // 4. Call Groq
     const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        { role: "system", content: PAL_SYSTEM_PROMPT },
-        { role: "user", content: userMessage }
-      ],
+      messages: messages,
       model: "llama-3.1-8b-instant",
       temperature: 0.3,
     });
 
-    // 4. Return the response
+    const aiResponse = chatCompletion.choices[0].message.content;
+
+    // 5. Return the response
     return new Response(JSON.stringify({ 
-      response: chatCompletion.choices[0].message.content 
+      response: aiResponse 
     }), {
       headers: { "Content-Type": "application/json" }
     });
