@@ -2,10 +2,23 @@
     const saved = localStorage.getItem('site_settings');
     const settings = saved ? JSON.parse(saved) : {};
 
-    // Flag to bypass the "Are you sure?" popup
+    // Flag for manual triggers (Panic Key, Toasts)
     let allowExit = false;
 
-    // --- 1. TOAST SYSTEM ---
+    // --- 1. THE CHECKER ---
+    // Returns true if the URL belongs to your site
+    const isInternal = (url) => {
+        if (!url) return false;
+        try {
+            const target = new URL(url, window.location.origin);
+            return target.hostname === window.location.hostname || 
+                   target.hostname === 'my-pal.pages.dev';
+        } catch (e) {
+            return true; // Assume internal if it's a relative path like /pages
+        }
+    };
+
+    // --- 2. TOAST SYSTEM ---
     window.showToast = function(message, typeOrUrl = null) {
         let container = document.getElementById('toast-container') || (function() {
             const c = document.createElement('div');
@@ -40,29 +53,39 @@
         }, 4000);
     };
 
-   // --- 2. AGGRESSIVE INTERNAL LINK BYPASS ---
+    // --- 3. GLOBAL CLICK LISTENER ---
     document.addEventListener('click', (e) => {
         const anchor = e.target.closest('a');
-        if (anchor && anchor.href) {
-            const href = anchor.getAttribute('href');
-            if (href.startsWith('/') || href.startsWith('#') || href.startsWith('.')) {
-                allowExit = true;
-                return;
-            }
-
-            try {
-                const targetUrl = new URL(anchor.href);
-                const currentHost = window.location.hostname;
-                if (targetUrl.hostname === currentHost || targetUrl.hostname === 'my-pal.pages.dev') {
-                    allowExit = true;
-                }
-            } catch (err) {
-                allowExit = true; 
-            }
+        if (anchor && isInternal(anchor.href)) {
+            allowExit = true;
         }
-    }, { capture: true }); 
+    }, { capture: true });
 
-    // --- 3. NOTIFICATION POLLING ---
+    // --- 4. LEAVE CONFIRMATION (The Smart Version) ---
+    if (settings.leaveConfirm) {
+        window.addEventListener('beforeunload', (e) => {
+            // 1. Check if a script/panic key manually allowed the exit
+            if (allowExit) return;
+
+            // 2. Check the active element (the last thing clicked)
+            const activeEl = document.activeElement;
+            if (activeEl && (activeEl.tagName === 'A' || activeEl.tagName === 'BUTTON')) {
+                const url = activeEl.href || activeEl.form?.action;
+                if (isInternal(url)) return;
+            }
+
+            // If we get here, it's an actual external exit
+            e.preventDefault();
+            e.returnValue = ''; 
+        });
+
+        // Reset the flag if the user stays on the page
+        window.addEventListener('mousemove', () => {
+            if (allowExit) setTimeout(() => { allowExit = false; }, 100);
+        }, { once: true });
+    }
+
+    // --- 5. NOTIFICATION POLLING ---
     let seenNotifIds = new Set();
     let isFirstCheck = true;
     async function checkNewNotifications() {
@@ -89,7 +112,7 @@
     setInterval(checkNewNotifications, 10000);
     checkNewNotifications();
 
-    // --- 4. TAB CLOAKING ---
+    // --- 6. TAB CLOAKING ---
     if (settings.cloaking) {
         document.title = "Google Docs";
         let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
@@ -98,16 +121,7 @@
         document.head.appendChild(link);
     }
 
-    // --- 5. LEAVE CONFIRMATION ---
-    if (settings.leaveConfirm) {
-        window.addEventListener('beforeunload', (e) => {
-            if (allowExit) return; 
-            e.preventDefault();
-            e.returnValue = ''; 
-        });
-    }
-
-    // --- 6. PANIC KEY ---
+    // --- 7. PANIC KEY ---
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
     const panicKey = settings.panicKey || "`";
 
