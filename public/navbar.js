@@ -32,7 +32,7 @@ function injectNavbar() {
             height: 12px !important; 
             background-color: #ef4444 !important; 
             border-radius: 50% !important; 
-            border: 2px solid #0f172a !important; 
+            border: 2px solid #ffffff !important; 
             z-index: 2147483647 !important; 
             pointer-events: none;
             display: none; 
@@ -55,8 +55,10 @@ function injectNavbar() {
             padding: 0;
             margin: 0;
         }
+        
+        /* Apply styles to both links and the new stealth button */
         .nav-icons a, 
-        .nav-icons button.stealth-btn,
+        .nav-icons .stealth-btn,
         .nav-icons a:visited { 
             color: #64748b; 
             transition: color 0.2s, transform 0.2s; 
@@ -68,8 +70,9 @@ function injectNavbar() {
             padding: 0;
             cursor: pointer;
         }
-        .nav-icons a:hover,
-        .nav-icons button.stealth-btn:hover { 
+        
+        .nav-icons a:hover, 
+        .nav-icons .stealth-btn:hover { 
             color: #2563eb !important; 
             transform: translateY(-2px); 
         }
@@ -83,15 +86,14 @@ function injectNavbar() {
             <a href="/search">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </a>
+            
+            <button class="stealth-btn" id="nav-stealth-trigger" title="Stealth Mode">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+
             <a href="/prefix">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             </a>
-            <a href="/daily">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            </a>
-            <button class="stealth-btn" id="stealth-trigger" title="Stealth Mode">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-            </button>
         </div>
 
         <ul class="nav-links">
@@ -133,27 +135,23 @@ function injectNavbar() {
     
     window.navbarHasLoaded = true;
 
-    // --- STEALTH LOGIC ---
-    const stealthBtn = document.getElementById('stealth-trigger');
+    // --- STEALTH CLICK HANDLER ---
+    const stealthBtn = document.getElementById('nav-stealth-trigger');
     if (stealthBtn) {
-        stealthBtn.addEventListener('click', () => {
+        stealthBtn.onclick = function() {
             const win = window.open();
-            if (!win) {
-                alert("Please allow pop-ups to use Stealth Mode.");
-                return;
-            }
+            if (!win) return; // Blocked by pop-up blocker
 
             const doc = win.document;
-            // Fake the tab title
             doc.title = "Google Docs";
             
-            // Add a fake favicon (Google Docs icon)
+            // Add Google Docs Favicon
             const link = doc.createElement('link');
             link.rel = 'icon';
             link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
             doc.head.appendChild(link);
 
-            // Create the iframe
+            // Create fullscreen iframe mirroring current page
             const iframe = doc.createElement('iframe');
             iframe.src = window.location.href;
             iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
@@ -161,10 +159,7 @@ function injectNavbar() {
             doc.body.style.margin = '0';
             doc.body.style.overflow = 'hidden';
             doc.body.appendChild(iframe);
-
-            // Redirect original tab to something safe (optional)
-            window.location.replace("https://classroom.google.com");
-        });
+        };
     }
 
     // Notification Listener
