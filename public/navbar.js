@@ -55,7 +55,7 @@ function injectNavbar() {
         padding: 0;
         margin: 0;
     }
-    /* Updated selector to include the stealth button */
+
     .nav-icons a, 
     .nav-icons a:visited,
     .nav-icons .stealth-btn { 
@@ -131,7 +131,6 @@ function injectNavbar() {
 
     document.head.insertAdjacentHTML('beforeend', navStyles);
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
-    
     window.navbarHasLoaded = true;
 
     // --- STEALTH LOGIC ---
@@ -150,7 +149,6 @@ function injectNavbar() {
             doc.head.appendChild(link);
 
             const iframe = doc.createElement('iframe');
-            // Hardcoded to put you on the Home Page
             iframe.src = window.location.origin + "/"; 
             iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
             
@@ -158,7 +156,8 @@ function injectNavbar() {
             doc.body.style.overflow = 'hidden';
             doc.body.appendChild(iframe);
 
-            // Close the current tab
+            // FALLBACK: Redirect original tab to Google and try to close it
+            window.location.replace("https://google.com");
             window.close();
         });
     }
