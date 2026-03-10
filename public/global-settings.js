@@ -130,9 +130,9 @@
         doc.body.appendChild(iframe);
     };
 
-    // --- 7. PANIC KEY ---
+    // --- 1. SETTINGS LOAD ---
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
-    const panicKey = settings.panicKey || "`";
+    const panicKey = settings.panicKey || "`"; // Default: backtick
 
     window.addEventListener('keydown', (e) => {
         let modifiers = "";
@@ -144,8 +144,7 @@
         const pressedKey = modifiers + e.key.toUpperCase();
 
         if (pressedKey === panicKey) {
-            allowExit = true; // Bypass confirmation immediately
-            window.launchStealth(); 
+            
             window.location.replace(panicUrl);
         }
     });
