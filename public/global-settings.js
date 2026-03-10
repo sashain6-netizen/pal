@@ -114,42 +114,39 @@
         });
     }
 
-    // --- 6. IMPROVED NAVIGATION GUARD ---
-    const blockedSites = settings.blockedSites || ["blocked.goguardian.com", "another-site.org"];
-
-    // Helper function to check if a URL is forbidden
-    const isForbidden = (urlStr) => {
-        try {
-            const url = new URL(urlStr, window.location.origin);
-            return blockedSites.some(site => url.hostname.includes(site));
-        } catch (e) { return false; }
-    };
-
-    document.addEventListener('click', (e) => {
-        const anchor = e.target.closest('a');
-        if (anchor && anchor.href && isForbidden(anchor.href)) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            window.showToast("Redirect blocked by guard.", "error");
-        }
-    }, true);
-
-    const originalReplace = window.location.replace;
-    window.location.replace = function(url) {
-        if (isForbidden(url)) {
-            window.showToast("Script redirect blocked.", "error");
+    // --- 5 STEALTH LAUNCHER ---
+    window.launchStealth = function() {
+        const win = window.open();
+        if (!win) {
+            window.showToast("Pop-up blocked! Please allow pop-ups to use Stealth Mode.", "error");
             return;
         }
-        return originalReplace.apply(this, [url]);
-    };
 
-    const originalAssign = window.location.assign;
-    window.location.assign = function(url) {
-        if (isForbidden(url)) {
-            window.showToast("Script redirect blocked.", "error");
-            return;
-        }
-        return originalAssign.apply(this, [url]);
+        // 1. Clear the new window
+        const doc = win.document;
+        doc.title = "Google Docs"; // Tab title cloak
+        
+        // 2. Add a favicon (Google Docs icon)
+        const link = doc.createElement('link');
+        link.rel = 'icon';
+        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+        doc.head.appendChild(link);
+
+        // 3. Create the Full-Screen Iframe
+        const iframe = doc.createElement('iframe');
+        iframe.src = window.location.origin; // Loads your current site
+        iframe.style.width = '100vw';
+        iframe.style.height = '100vh';
+        iframe.style.border = 'none';
+        iframe.style.position = 'fixed';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        
+        doc.body.style.margin = '0';
+        doc.body.style.overflow = 'hidden';
+        doc.body.appendChild(iframe);
+
+        window.showToast("Stealth window launched!", "success");
     };
 
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
