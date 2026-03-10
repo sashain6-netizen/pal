@@ -114,41 +114,6 @@
         });
     }
 
-    // --- 5 STEALTH LAUNCHER ---
-    window.launchStealth = function() {
-        const win = window.open();
-        if (!win) {
-            window.showToast("Pop-up blocked! Please allow pop-ups to use Stealth Mode.", "error");
-            return;
-        }
-
-        // 1. Clear the new window
-        const doc = win.document;
-        doc.title = "Google Docs"; // Tab title cloak
-        
-        // 2. Add a favicon (Google Docs icon)
-        const link = doc.createElement('link');
-        link.rel = 'icon';
-        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-        doc.head.appendChild(link);
-
-        // 3. Create the Full-Screen Iframe
-        const iframe = doc.createElement('iframe');
-        iframe.src = window.location.origin; // Loads your current site
-        iframe.style.width = '100vw';
-        iframe.style.height = '100vh';
-        iframe.style.border = 'none';
-        iframe.style.position = 'fixed';
-        iframe.style.top = '0';
-        iframe.style.left = '0';
-        
-        doc.body.style.margin = '0';
-        doc.body.style.overflow = 'hidden';
-        doc.body.appendChild(iframe);
-
-        window.showToast("Stealth window launched!", "success");
-    };
-
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
     const panicKey = settings.panicKey || "`"; // Default to backtick
 

@@ -6,64 +6,24 @@ if (typeof window.navbarHasLoaded === 'undefined') {
 function injectNavbar() {
     if (window.navbarHasLoaded) return;
 
-    // --- STEALTH LOGIC ---
-    window.launchStealth = function() {
-        const win = window.open();
-        if (!win) {
-            // Fallback if browser blocks the popup
-            alert("Please allow pop-ups to enable Stealth Mode.");
-            return;
-        }
-
-        const doc = win.document;
-        doc.title = "Google Docs"; // Tab cloak
-        
-        // Add favicon cloak
-        const link = doc.createElement('link');
-        link.rel = 'icon';
-        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-        doc.head.appendChild(link);
-
-        // Create the full-screen iframe
-        const iframe = doc.createElement('iframe');
-        iframe.src = window.location.href; 
-        iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
-        
-        doc.body.style.margin = '0';
-        doc.body.style.overflow = 'hidden';
-        doc.body.appendChild(iframe);
-        
-        // "Decline" the current page by leaving it entirely
-        window.location.replace("https://google.com");
-    };
-
     const navStyles = `
     <style>
-        .navbar {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            background: #ffffff !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-            z-index: 1000 !important;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 50px;
-            height: 70px;
-            box-sizing: border-box;
-        }
-        
-        /* Highlight Stealth Link */
-        .stealth-link {
-            color: #8b5cf6 !important; 
-            font-weight: bold !important;
-        }
-        .stealth-link:hover {
-            color: #7c3aed !important;
-        }
-
+    /* Change 'navbar' to '.navbar' */
+.navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+    z-index: 1000 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    height: 70px;
+    box-sizing: border-box; /* Ensures padding doesn't push width past 100% */
+}
         #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; }
         #profile-notif-dot { 
             position: absolute !important; 
@@ -86,6 +46,7 @@ function injectNavbar() {
             align-items: center; 
             gap: 20px; 
             margin-left: 25px; 
+            /* CHANGE: Removed margin-right: auto */
             margin-right: 35px; 
         }
         
@@ -104,14 +65,15 @@ function injectNavbar() {
             align-items: center; 
             text-decoration: none;
         }
-        .nav-icons a:hover, .nav-links a:hover { 
+        .nav-icons a:hover { 
             color: #2563eb !important; 
+            transform: translateY(-2px); 
         }
     </style>`;
 
     const navbarHTML = `
     <nav class="navbar">
-        <div class="nav-logo"><a href="/" style="text-decoration: none; color: inherit; font-weight: bold;">PAL</a></div>
+        <div class="nav-logo"><a href="/" style="text-decoration: none; color: inherit;">PAL</a></div>
         
         <div class="nav-icons">
             <a href="/search">
@@ -131,24 +93,40 @@ function injectNavbar() {
             <li><a href="/assist">Games</a></li>
             <li><a href="/find">Proxy</a></li>
             <li><a href="/applicable">Apps</a></li>
-            <li><a href="#" onclick="launchStealth(); return false;" class="stealth-link">✨ Stealth</a></li>
+            <li><a href="/resources">Contacts</a></li>
         </ul>
-
         <div class="nav-right">
+            <a href="/" class="nav-btn-link"><button class="nav-btn">Home</button></a>
             <div class="profile-dropdown">
                 <div class="profile-icon" id="profile-icon">
                     <div id="profile-notif-dot"></div>
                     <div id="avatar-container"></div> 
                 </div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-arrow"></div>
+                    <div class="menu-content">
+                        <div id="loggedOutLinks"><a href="/login">Login</a><a href="/signup">Sign Up</a></div>
+                        <div id="loggedInLinks" style="display: none;">
+                            <a href="/profile">My Profile</a>
+                            <a href="/settings">Settings</a> 
+                            <hr>
+                            <a href="/notifications">Notifications</a>
+                            <a href="#" class="logout-btn" id="logoutLink">Log Out</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>`;
 
+    // Add Styles
     document.head.insertAdjacentHTML('beforeend', navStyles);
+    // Add HTML
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     
     window.navbarHasLoaded = true;
 
+    // Notification Listener
     window.addEventListener('notifsUpdated', (e) => {
         const dot = document.getElementById('profile-notif-dot');
         if (dot) {
@@ -157,6 +135,7 @@ function injectNavbar() {
     });
 }
 
+// 2. Run the function
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', injectNavbar);
 } else {
