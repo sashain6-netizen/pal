@@ -113,12 +113,32 @@
             e.returnValue = ''; 
         });
     }
+    window.launchStealth = function() {
+    const win = window.open();
+    if (!win) return; // Browser blocked it
 
+    const doc = win.document;
+    doc.title = "Google Docs";
+    
+    const link = doc.createElement('link');
+    link.rel = 'icon';
+    link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+    doc.head.appendChild(link);
+
+    const iframe = doc.createElement('iframe');
+    iframe.src = window.location.href; // Keep you exactly where you were
+    iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
+    
+    doc.body.style.margin = '0';
+    doc.body.style.overflow = 'hidden';
+    doc.body.appendChild(iframe);
+};
+
+    // --- PANIC KEY WITH STEALTH REDIRECT ---
     const panicUrl = settings.panicUrl || "https://classroom.google.com";
-    const panicKey = settings.panicKey || "`"; // Default to backtick
+    const panicKey = settings.panicKey || "`"; // Default: backtick
 
     window.addEventListener('keydown', (e) => {
-        // 1. Build the same combination string as the recorder
         let modifiers = "";
         if (e.ctrlKey) modifiers += "Control+";
         if (e.shiftKey) modifiers += "Shift+";
@@ -127,8 +147,11 @@
 
         const pressedKey = modifiers + e.key.toUpperCase();
 
-        // 2. Compare against the saved panicKey
         if (pressedKey === panicKey) {
+            // 1. Launch the site in about:blank (Stealth Mode)
+            if (typeof window.launchStealth === 'function') {
+                window.launchStealth(); 
+            }
             window.location.replace(panicUrl);
         }
     });
