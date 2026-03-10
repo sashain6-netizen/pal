@@ -32,7 +32,7 @@ async function loadThread() {
 
     // --- PERMISSION CHECK ---
     const isAuthor = currentUser.username === data.author_username;
-    const isOwner = currentUser.rank === "Owner";
+    const isOwner = ["Owner", "Admin", "Moderator"].includes(currentUser.rank);
 
     const oldBtn = document.querySelector('.delete-thread-btn');
     if (oldBtn) oldBtn.remove();

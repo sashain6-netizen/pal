@@ -18,7 +18,7 @@
     "url": "https://github.com/sashain6-netizen/pal/issues"
   },
   "homepage": "https://github.com/sashain6-netizen/pal#readme",
-  "dependencies": { 
+  "dependencies": {
     "groq-sdk": "^0.37.0"
   }
 }

@@ -4,10 +4,8 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    // 1. Get the user message from the request
     const { userMessage } = await request.json();
 
-    // 2. Initialize Groq using the environment variable from Cloudflare Dashboard
     const groq = new Groq({ apiKey: env.GROQ_API_KEY });
 
     const PAL_SYSTEM_PROMPT = `
