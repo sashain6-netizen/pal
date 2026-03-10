@@ -40,33 +40,27 @@
         }, 4000);
     };
 
-    // --- 2. THE AIRTIGHT BYPASS LOGIC ---
-    // Reset the flag on every mousedown to ensure we re-evaluate the next exit
-    document.addEventListener('mousedown', () => { allowExit = false; });
-
+   // --- 2. AGGRESSIVE INTERNAL LINK BYPASS ---
     document.addEventListener('click', (e) => {
         const anchor = e.target.closest('a');
         if (anchor && anchor.href) {
-            try {
-                const targetUrl = new URL(anchor.href, window.location.origin);
-                const currentHost = window.location.hostname;
-                const targetHost = targetUrl.hostname;
+            const href = anchor.getAttribute('href');
+            if (href.startsWith('/') || href.startsWith('#') || href.startsWith('.')) {
+                allowExit = true;
+                return;
+            }
 
-                // Check if it's a relative path, same domain, or specific dev domain
-                if (
-                    targetHost === currentHost || 
-                    targetHost === 'my-pal.pages.dev' ||
-                    anchor.getAttribute('href').startsWith('/') ||
-                    anchor.getAttribute('href').startsWith('#')
-                ) {
+            try {
+                const targetUrl = new URL(anchor.href);
+                const currentHost = window.location.hostname;
+                if (targetUrl.hostname === currentHost || targetUrl.hostname === 'my-pal.pages.dev') {
                     allowExit = true;
                 }
             } catch (err) {
-                // If it's a malformed URL or relative path that failed parsing, allow it
                 allowExit = true; 
             }
         }
-    }, true);
+    }, { capture: true }); 
 
     // --- 3. NOTIFICATION POLLING ---
     let seenNotifIds = new Set();
@@ -127,7 +121,7 @@
         const pressedKey = modifiers + e.key.toUpperCase();
 
         if (pressedKey === panicKey) {
-            allowExit = true; // CRITICAL: This was missing in your snippet
+            allowExit = true; 
             window.location.replace(panicUrl);
         }
     });
