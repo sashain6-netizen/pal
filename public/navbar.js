@@ -6,6 +6,37 @@ if (typeof window.navbarHasLoaded === 'undefined') {
 function injectNavbar() {
     if (window.navbarHasLoaded) return;
 
+    // --- STEALTH LOGIC ---
+    window.launchStealth = function() {
+        const win = window.open();
+        if (!win) {
+            // Fallback if browser blocks the popup
+            alert("Please allow pop-ups to enable Stealth Mode.");
+            return;
+        }
+
+        const doc = win.document;
+        doc.title = "Google Docs"; // Tab cloak
+        
+        // Add favicon cloak
+        const link = doc.createElement('link');
+        link.rel = 'icon';
+        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+        doc.head.appendChild(link);
+
+        // Create the full-screen iframe
+        const iframe = doc.createElement('iframe');
+        iframe.src = window.location.href; 
+        iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
+        
+        doc.body.style.margin = '0';
+        doc.body.style.overflow = 'hidden';
+        doc.body.appendChild(iframe);
+        
+        // "Decline" the current page by leaving it entirely
+        window.location.replace("https://google.com");
+    };
+
     const navStyles = `
     <style>
         .navbar {
@@ -24,18 +55,13 @@ function injectNavbar() {
             box-sizing: border-box;
         }
         
-        /* Stealth Button Styling */
+        /* Highlight Stealth Link */
         .stealth-link {
-            color: #8b5cf6 !important;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
+            color: #8b5cf6 !important; 
+            font-weight: bold !important;
         }
         .stealth-link:hover {
             color: #7c3aed !important;
-            transform: scale(1.05);
         }
 
         #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; }
@@ -70,43 +96,18 @@ function injectNavbar() {
             padding: 0;
             margin: 0;
         }
-        .nav-links a, .nav-icons a { 
+        .nav-icons a, 
+        .nav-icons a:visited { 
             color: #64748b; 
+            transition: color 0.2s, transform 0.2s; 
+            display: flex; 
+            align-items: center; 
             text-decoration: none;
-            transition: color 0.2s;
         }
-        .nav-links a:hover, .nav-icons a:hover { 
+        .nav-icons a:hover, .nav-links a:hover { 
             color: #2563eb !important; 
         }
     </style>`;
-
-    // --- STEALTH LOGIC ---
-    window.launchStealth = function() {
-        const win = window.open();
-        if (!win) {
-            alert("Please allow pop-ups to enable Stealth Mode.");
-            return;
-        }
-
-        const doc = win.document;
-        doc.title = "Google Docs";
-        
-        const link = doc.createElement('link');
-        link.rel = 'icon';
-        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-        doc.head.appendChild(link);
-
-        const iframe = doc.createElement('iframe');
-        iframe.src = window.location.href; 
-        iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
-        
-        doc.body.style.margin = '0';
-        doc.body.style.overflow = 'hidden';
-        doc.body.appendChild(iframe);
-        
-        // Redirect the original tab to a safe site to "hide" it
-        window.location.replace("https://google.com");
-    };
 
     const navbarHTML = `
     <nav class="navbar">
@@ -114,10 +115,13 @@ function injectNavbar() {
         
         <div class="nav-icons">
             <a href="/search">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </a>
             <a href="/prefix">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </a>
+            <a href="/daily">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             </a>
         </div>
 
@@ -126,14 +130,16 @@ function injectNavbar() {
             <li><a href="/intel">AI</a></li>
             <li><a href="/assist">Games</a></li>
             <li><a href="/find">Proxy</a></li>
+            <li><a href="/applicable">Apps</a></li>
             <li><a href="#" onclick="launchStealth(); return false;" class="stealth-link">✨ Stealth</a></li>
         </ul>
 
-        <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
-            <a href="/" class="nav-btn-link"><button class="nav-btn" style="padding: 8px 16px; border-radius: 6px; border: none; background: #2563eb; color: white; cursor: pointer;">Home</button></a>
-            <div class="profile-icon" id="profile-icon">
-                <div id="profile-notif-dot"></div>
-                <div id="avatar-container"></div> 
+        <div class="nav-right">
+            <div class="profile-dropdown">
+                <div class="profile-icon" id="profile-icon">
+                    <div id="profile-notif-dot"></div>
+                    <div id="avatar-container"></div> 
+                </div>
             </div>
         </div>
     </nav>`;
@@ -145,7 +151,9 @@ function injectNavbar() {
 
     window.addEventListener('notifsUpdated', (e) => {
         const dot = document.getElementById('profile-notif-dot');
-        if (dot) dot.style.display = e.detail.hasNotifs ? 'block' : 'none';
+        if (dot) {
+            dot.style.display = e.detail.hasNotifs ? 'block' : 'none';
+        }
     });
 }
 
