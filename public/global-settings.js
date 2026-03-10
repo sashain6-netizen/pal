@@ -45,18 +45,21 @@
         }, 4000);
     };
 
-    // --- 2. INTERNAL LINK BYPASS ---
-    // This makes sure clicking your own navbar links doesn't trigger the popup
+    // --- 2. IMPROVED INTERNAL LINK BYPASS ---
     document.addEventListener('click', (e) => {
         const anchor = e.target.closest('a');
         if (anchor && anchor.href) {
-            const url = new URL(anchor.href, window.location.origin);
-            if (url.host === window.location.host) {
-                allowExit = true;
+            try {
+                const targetUrl = new URL(anchor.href, window.location.origin);
+                const currentUrl = new URL(window.location.href);
+                if (targetUrl.hostname === currentUrl.hostname || targetUrl.hostname === 'my-pal.pages.dev') {
+                    allowExit = true;
+                }
+            } catch (err) {
+                allowExit = true; 
             }
         }
-    });
-
+    }, true);
     // --- 3. NOTIFICATION POLLING ---
     let seenNotifIds = new Set();
     let isFirstCheck = true;
@@ -96,12 +99,18 @@
         document.head.appendChild(link);
     }
 
-    // --- 5. LEAVE CONFIRMATION ---
+    // --- 5. LEAVE CONFIRMATION LOGIC ---
     if (settings.leaveConfirm) {
         window.addEventListener('beforeunload', (e) => {
-            if (allowExit) return; // Silent exit if flag is true
+            if (allowExit) {
+                return; 
+            }
             e.preventDefault();
             e.returnValue = ''; 
+        });
+
+        window.addEventListener('unload', () => {
+            allowExit = false;
         });
     }
 
