@@ -7,14 +7,20 @@ export async function onRequest(context) {
     const secret = env.JWT_SECRET; 
 
     // --- Helper: Verify Staff Rank via KV ---
-    async function getStaffUser(request) {
+    // We pass 'env' and 'secret' directly to avoid scope issues
+    async function getStaffUser(request, env, secret) {
         const authHeader = request.headers.get("Authorization");
         if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
         
         const token = authHeader.split(" ")[1];
         try {
+            // Use your existing _jwt.js function
             const payload = await verifyAndDecodeToken(token, secret);
-            const kvData = await env.USERS_KV.get(`user:${payload.username.toLowerCase()}`);
+            
+            // Logically force lowercase for the KV lookup
+            const username = payload.username.toLowerCase();
+            const kvData = await env.USERS_KV.get(`user:${username}`);
+            
             if (!kvData) return null;
 
             const userData = JSON.parse(kvData);
@@ -25,6 +31,7 @@ export async function onRequest(context) {
             }
             return null;
         } catch (e) {
+            console.error("JWT Verification failed:", e.message);
             return null;
         }
     }
@@ -35,43 +42,42 @@ export async function onRequest(context) {
             const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?").bind(id).first();
             return article ? Response.json(article) : new Response("Not Found", { status: 404 });
         }
-        
-        // Filter to only show published posts for the public feed
-        const { results } = await env.DB.prepare(
-            "SELECT * FROM news_articles WHERE is_published = 1 ORDER BY created_at DESC"
-        ).all();
+        const { results } = await env.DB.prepare("SELECT * FROM news_articles WHERE is_published = 1 ORDER BY created_at DESC").all();
         return Response.json(results);
     }
 
     // --- POST: Create News (Staff Only) ---
     if (request.method === "POST") {
-        const user = await getStaffUser(request);
+        // Pass the env and secret here
+        const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
 
         const data = await request.json();
         
-        // Added 'category' and 'is_published' to the INSERT
-        // 'id' is typically AUTOINCREMENT and 'created_at' is usually DEFAULT CURRENT_TIMESTAMP in D1
-        await env.DB.prepare(
-            `INSERT INTO news_articles 
-            (title, slug, content, author_name, author_rank, category, is_published) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)`
-        ).bind(
-            data.title, 
-            data.slug, 
-            data.content, 
-            user.username, 
-            user.rank, 
-            data.category || 'General', 
-            data.is_published ?? 1
-        ).run();
+        try {
+            await env.DB.prepare(
+                `INSERT INTO news_articles 
+                (title, slug, content, author_name, author_rank, category, is_published) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`
+            ).bind(
+                data.title, 
+                data.slug, 
+                data.content, 
+                user.username, 
+                user.rank, 
+                data.category || 'General', 
+                data.is_published ?? 1
+            ).run();
 
-        return new Response("Article Created", { status: 201 });
+            return new Response("Article Created", { status: 201 });
+        } catch (dbError) {
+            return new Response("Database Error: " + dbError.message, { status: 500 });
+        }
     }
 
     // --- DELETE: Remove News (Staff Only) ---
     if (request.method === "DELETE") {
-        const user = await getStaffUser(request);
+        const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
         if (!id) return new Response("Missing ID", { status: 400 });
 
