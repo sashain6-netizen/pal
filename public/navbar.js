@@ -8,21 +8,21 @@ function injectNavbar() {
 
     const navStyles = `
     <style>
-.navbar {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    background: #ffffff !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
-    z-index: 1000 !important;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 50px;
-    height: 70px;
-    box-sizing: border-box;
-}
+    .navbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+        z-index: 1000 !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 50px;
+        height: 70px;
+        box-sizing: border-box;
+    }
     #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; }
     #profile-notif-dot { 
         position: absolute !important; 
@@ -57,22 +57,58 @@ function injectNavbar() {
     }
 
     .nav-icons a, 
-    .nav-icons a:visited,
-    .nav-icons .stealth-btn { 
+    .nav-icons a:visited { 
         color: #64748b; 
         transition: color 0.2s, transform 0.2s; 
         display: flex; 
         align-items: center; 
         text-decoration: none;
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
     }
-    .nav-icons a:hover,
-    .nav-icons .stealth-btn:hover { 
+
+    .nav-icons a:hover { 
         color: #2563eb !important; 
         transform: translateY(-2px); 
+    }
+
+    /* --- DARK & BROODING STEALTH BUTTON --- */
+    .stealth-wrapper {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+    }
+
+    .stealth-btn {
+        width: 56px;
+        height: 56px;
+        background: #0f172a !important; /* Deep dark slate */
+        color: #f8fafc !important;
+        border: 2px solid #334155 !important;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: stealth-pulse 3s infinite;
+    }
+
+    .stealth-btn:hover {
+        background: #000000 !important;
+        border-color: #6366f1 !important; /* Subtle purple glow on hover */
+        transform: scale(1.1) rotate(-5deg);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+    }
+
+    .stealth-btn svg {
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+    }
+
+    @keyframes stealth-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(15, 23, 42, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(15, 23, 42, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(15, 23, 42, 0); }
     }
     </style>`;
 
@@ -84,10 +120,6 @@ function injectNavbar() {
             <a href="/search">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </a>
-
-            <button class="stealth-btn" id="stealth-launch-btn" title="Stealth Home">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </button>
 
             <a href="/prefix">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -127,7 +159,16 @@ function injectNavbar() {
                 </div>
             </div>
         </div>
-    </nav>`;
+    </nav>
+
+    <div class="stealth-wrapper">
+        <button class="stealth-btn" id="stealth-launch-btn" title="Initiate Stealth Protocol">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3" fill="currentColor" fill-opacity="0.3"></circle>
+            </svg>
+        </button>
+    </div>`;
 
     document.head.insertAdjacentHTML('beforeend', navStyles);
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
@@ -137,17 +178,13 @@ function injectNavbar() {
     const eyeBtn = document.getElementById('stealth-launch-btn');
     if (eyeBtn) {
         eyeBtn.addEventListener('click', () => {
-            // 1. Tell the confirmation script to SHUT DOWN for this action
             if (typeof allowExit !== 'undefined') {
                 allowExit = true; 
             } else {
-                // Fallback: search for the flag if it's in a different scope
                 window.allowExit = true; 
             }
 
-            // 2. Open the new tab
             const win = window.open('about:blank', '_blank');
-            
             if (win) {
                 const doc = win.document;
                 doc.title = "Google Docs";
@@ -166,11 +203,9 @@ function injectNavbar() {
                 doc.body.appendChild(iframe);
 
                 win.focus();
-                
-                // 3. Redirect the current tab without the popup
                 window.location.replace("https://google.com");
             } else {
-                alert("Please allow pop-ups to enable Stealth Mode.");
+                alert("Stealth protocol blocked. Please allow pop-ups.");
             }
         });
     }
