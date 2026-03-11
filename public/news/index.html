@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News • Pal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="site-nav">
+        <a href="/">Home</a>
+        <a href="/games">Games</a>
+        <a href="/forums">Forums</a>
+        <a href="/latest" class="active">News</a>
+    </nav>
+
+    <div class="container">
+        <section id="hub-view">
+            <header class="page-header">
+                <h1>Latest Updates</h1>
+                <p>Stay up to date with the latest in gaming and community news.</p>
+            </header>
+            <div id="news-list" class="news-grid">
+                <div class="loader">Loading news feed...</div>
+            </div>
+        </section>
+
+        <section id="article-view" class="hidden">
+            <button class="back-btn" onclick="clearArticle()">← Back to News</button>
+            <article>
+                <h1 id="article-title"></h1>
+                <div class="article-meta">
+                    <span id="article-author"></span> • 
+                    <span id="article-date"></span>
+                </div>
+                <hr>
+                <div id="article-content" class="article-body"></div>
+            </article>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

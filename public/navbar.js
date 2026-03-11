@@ -133,7 +133,7 @@ function injectNavbar() {
             <li><a href="/pages">Forums</a></li>
             <li><a href="/intel">AI</a></li>
             <li><a href="/assist">Games</a></li>
-            <li><a href="/find">Proxy</a></li>
+            <li><a href="/latest">News</a></li>
             <li><a href="/applicable">Apps</a></li>
             <li><a href="/resources">Contacts</a></li>
         </ul>
