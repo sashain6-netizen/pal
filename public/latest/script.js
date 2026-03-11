@@ -1,4 +1,4 @@
-const apiPath = '/news'; // Maps to /functions/news.js
+const apiPath = '/api/news';
 
 async function init() {
     const params = new URLSearchParams(window.location.search);
