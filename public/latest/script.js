@@ -2,9 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const newsContainer = document.getElementById('news-container');
     const adminControls = document.getElementById('admin-controls');
     
-    // 1. Check if user is Staff (Assume you store JWT and Rank in localStorage)
     const token = localStorage.getItem('token');
-    const userRank = localStorage.getItem('rank'); // 'Owner', 'Admin', or 'Moderator'
+    const userRank = localStorage.getItem('rank'); 
     const isStaff = ['Owner', 'Admin', 'Moderator'].includes(userRank);
 
     if (isStaff) {
