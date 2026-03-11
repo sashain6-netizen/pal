@@ -14,7 +14,7 @@ export async function onRequest(context) {
         const token = authHeader.split(" ")[1];
         try {
             const payload = await verifyAndDecodeToken(token, secret);
-            const kvData = await env.USERS_KV.get(`user:${payload.username}`);
+            const kvData = await env.USERS_KV.get(`user:${payload.username.toLowerCase()}`);
             if (!kvData) return null;
 
             const userData = JSON.parse(kvData);
