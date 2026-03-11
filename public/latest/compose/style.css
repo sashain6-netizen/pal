@@ -1,0 +1,51 @@
+.compose-wrapper {
+    padding-top: 100px; /* Slightly more space for the form */
+    max-width: 800px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.compose-input, .compose-textarea {
+    width: 100%;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    font-family: 'Varela Round', sans-serif;
+    background: var(--white);
+    font-size: 1rem;
+}
+
+.compose-input:focus, .compose-textarea:focus {
+    outline: none;
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.compose-textarea {
+    height: 400px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+#submit-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 50px;
+    background: var(--blue-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#submit-btn:hover {
+    background: var(--blue-deep);
+    transform: translateY(-2px);
+}

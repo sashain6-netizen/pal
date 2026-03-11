@@ -1,30 +1,87 @@
-:root {
-    --primary: #0070f3;
-    --danger: #ff4d4d;
-    --bg: #f4f4f9;
+/* NEWS HUB STYLES */
+.news-page-wrapper {
+    padding-top: 80px; /* Accommodate fixed navbar */
+    min-height: 100vh;
 }
 
-body { font-family: system-ui, sans-serif; background: var(--bg); margin: 0; padding: 2rem; }
-header { display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto 2rem; }
+.news-header {
+    max-width: 800px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-#news-container { max-width: 800px; margin: 0 auto; }
+.news-header h1 {
+    color: var(--blue-deep);
+    font-size: 2rem;
+}
+
+.btn-new {
+    background: var(--blue-primary);
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-new:hover {
+    background: var(--blue-deep);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+}
+
+#news-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
 .article-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: var(--white);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 20px;
     position: relative;
+    transition: transform 0.2s ease;
 }
 
-.article-card h2 { margin-top: 0; }
-.meta { font-size: 0.85rem; color: #666; }
-
-.btn-new { background: var(--primary); color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 5px; }
-.btn-delete { 
-    background: var(--danger); color: white; border: none; padding: 5px 10px; 
-    border-radius: 4px; cursor: pointer; position: absolute; top: 1rem; right: 1rem;
+.article-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(10, 45, 143, 0.05);
 }
 
-.hidden { display: none; }
+.article-card h2 a {
+    color: var(--blue-primary);
+    text-decoration: none;
+    font-size: 1.4rem;
+}
+
+.article-card .meta {
+    color: var(--blue-soft);
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+.btn-delete {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #fee2e2;
+    color: #ef4444;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.btn-delete:hover {
+    background: #ef4444;
+    color: white;
+}
