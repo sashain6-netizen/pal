@@ -5,8 +5,37 @@
     // Flag for manual triggers (Panic Key, Toasts)
     let allowExit = false;
 
+    // --- 0. AUTO-STEALTH LOGIC ---
+    // This must run early to catch the user before they see the site
+    if (settings.autoStealth && !window.location.href.includes('override=true')) {
+        // If we aren't already inside the 'about:blank' frame
+        if (window.self === window.top) {
+            window.allowExit = true; 
+            const win = window.open('about:blank', '_blank');
+            if (win) {
+                const doc = win.document;
+                doc.title = "Google Docs";
+                const link = doc.createElement('link');
+                link.rel = 'icon';
+                link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+                doc.head.appendChild(link);
+
+                const iframe = doc.createElement('iframe');
+                iframe.src = window.location.origin + window.location.pathname + window.location.search; 
+                iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
+                doc.body.style.margin = '0';
+                doc.body.style.overflow = 'hidden';
+                doc.body.appendChild(iframe);
+
+                win.focus();
+                // Redirect original tab to the panic URL (or Google)
+                window.location.replace(settings.panicUrl || "https://google.com");
+                return; // Stop execution on the original tab
+            }
+        }
+    }
+
     // --- 1. THE CHECKER ---
-    // Returns true if the URL belongs to your site
     const isInternal = (url) => {
         if (!url) return false;
         try {
@@ -14,7 +43,7 @@
             return target.hostname === window.location.hostname || 
                    target.hostname === 'my-pal.pages.dev';
         } catch (e) {
-            return true; // Assume internal if it's a relative path like /pages
+            return true; 
         }
     };
 
@@ -61,22 +90,22 @@
         }
     }, { capture: true });
 
-   // --- 4. LEAVE CONFIRMATION (The Smart Version) ---
-if (settings.leaveConfirm) {
-    window.addEventListener('beforeunload', (e) => {
-        if (window.allowExit) return;
-        const activeEl = document.activeElement;
-        if (activeEl && (activeEl.tagName === 'A' || activeEl.tagName === 'BUTTON')) {
-            const url = activeEl.href || activeEl.form?.action;
-            if (isInternal(url)) return;
-        }
-        e.preventDefault();
-        e.returnValue = ''; 
-    });
-    window.addEventListener('mousemove', () => {
-        if (window.allowExit) setTimeout(() => { window.allowExit = false; }, 100);
-    }, { once: true });
-}
+    // --- 4. LEAVE CONFIRMATION ---
+    if (settings.leaveConfirm) {
+        window.addEventListener('beforeunload', (e) => {
+            if (window.allowExit || allowExit) return;
+            const activeEl = document.activeElement;
+            if (activeEl && (activeEl.tagName === 'A' || activeEl.tagName === 'BUTTON')) {
+                const url = activeEl.href || activeEl.form?.action;
+                if (isInternal(url)) return;
+            }
+            e.preventDefault();
+            e.returnValue = ''; 
+        });
+        window.addEventListener('mousemove', () => {
+            if (window.allowExit) setTimeout(() => { window.allowExit = false; }, 100);
+        }, { once: true });
+    }
 
     // --- 5. NOTIFICATION POLLING ---
     let seenNotifIds = new Set();
