@@ -35,15 +35,18 @@
         }
     }
 
-    // --- 1. THE CHECKER ---
+    // --- 1. THE CHECKER (Improved) ---
     const isInternal = (url) => {
-        if (!url) return false;
+        if (!url || url.startsWith('javascript:')) return true; // Don't trigger for script links
         try {
             const target = new URL(url, window.location.origin);
-            return target.hostname === window.location.hostname || 
-                   target.hostname === 'my-pal.pages.dev';
+            const isLocal = target.hostname === window.location.hostname || 
+                           target.hostname === 'my-pal.pages.dev' ||
+                           target.hostname === 'localhost';
+            return isLocal;
         } catch (e) {
-            return true; 
+            // If it's a relative path (starts with / or doesn't have a protocol), it's internal
+            return !url.includes('://'); 
         }
     };
 
@@ -85,15 +88,19 @@
     // --- 3. GLOBAL CLICK LISTENER ---
     document.addEventListener('click', (e) => {
         const anchor = e.target.closest('a');
-        if (anchor && isInternal(anchor.href)) {
-            allowExit = true;
+        if (anchor) {
+            const href = anchor.getAttribute('href');
+            if (isInternal(href)) {
+                allowExit = true;
+                window.allowExit = true;
+            }
         }
-    }, { capture: true });
+    }, { capture: true, passive: true });
 
     // --- 4. LEAVE CONFIRMATION ---
     if (settings.leaveConfirm) {
         window.addEventListener('beforeunload', (e) => {
-            if (window.allowExit || allowExit) return;
+            if (window.allowExit === true || allowExit === true) return;
             const activeEl = document.activeElement;
             if (activeEl && (activeEl.tagName === 'A' || activeEl.tagName === 'BUTTON')) {
                 const url = activeEl.href || activeEl.form?.action;
