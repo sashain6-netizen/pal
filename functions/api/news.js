@@ -14,8 +14,6 @@ export async function onRequest(context) {
         const token = authHeader.split(" ")[1];
         try {
             const payload = await verifyAndDecodeToken(token, secret);
-            
-            // Fetch user from KV (assuming namespace is bound as env.USERS_KV)
             const kvData = await env.USERS_KV.get(`user:${payload.username}`);
             if (!kvData) return null;
 
@@ -37,7 +35,11 @@ export async function onRequest(context) {
             const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?").bind(id).first();
             return article ? Response.json(article) : new Response("Not Found", { status: 404 });
         }
-        const { results } = await env.DB.prepare("SELECT * FROM news_articles ORDER BY created_at DESC").all();
+        
+        // Filter to only show published posts for the public feed
+        const { results } = await env.DB.prepare(
+            "SELECT * FROM news_articles WHERE is_published = 1 ORDER BY created_at DESC"
+        ).all();
         return Response.json(results);
     }
 
@@ -47,9 +49,22 @@ export async function onRequest(context) {
         if (!user) return new Response("Unauthorized", { status: 401 });
 
         const data = await request.json();
+        
+        // Added 'category' and 'is_published' to the INSERT
+        // 'id' is typically AUTOINCREMENT and 'created_at' is usually DEFAULT CURRENT_TIMESTAMP in D1
         await env.DB.prepare(
-            "INSERT INTO news_articles (title, slug, content, author_name, author_rank) VALUES (?, ?, ?, ?, ?)"
-        ).bind(data.title, data.slug, data.content, user.username, user.rank).run();
+            `INSERT INTO news_articles 
+            (title, slug, content, author_name, author_rank, category, is_published) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+            data.title, 
+            data.slug, 
+            data.content, 
+            user.username, 
+            user.rank, 
+            data.category || 'General', 
+            data.is_published ?? 1
+        ).run();
 
         return new Response("Article Created", { status: 201 });
     }

@@ -12,17 +12,29 @@
     <div id="nav-placeholder"></div>
 
     <div class="compose-wrapper">
-        <div class="container">
-            <h1>Compose New Post</h1>
-            <div class="form-group">
-                <input type="text" id="title" class="compose-input" placeholder="Article Title">
-            </div>
-            <div class="form-group">
-                <textarea id="content" class="compose-textarea" placeholder="Content (use **bold** and *italics*)"></textarea>
-            </div>
-            <button id="submit-btn">Publish Post</button>
+    <div class="container">
+        <h1>Compose New Post</h1>
+        <div class="form-group">
+            <input type="text" id="title" class="compose-input" placeholder="Article Title">
         </div>
+        <div class="form-group">
+            <select id="category" class="compose-input">
+                <option value="General">General News</option>
+                <option value="Update">Game Update</option>
+                <option value="Event">Community Event</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <textarea id="content" class="compose-textarea" placeholder="Content..."></textarea>
+        </div>
+        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+            <label style="color: var(--blue-soft);">
+                <input type="checkbox" id="is_published" checked> Publish immediately
+            </label>
+        </div>
+        <button id="submit-btn">Publish Post</button>
     </div>
+</div>
 
     <script src="/global-settings.js"></script>
     <script src="/global-auth.js"></script> 
