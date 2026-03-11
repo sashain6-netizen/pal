@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>New Post • Pal</title>
+    <meta charset="UTF-8">
+    <title>New Post • Pal</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="stylesheet" href="/latest/compose/style.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container" style="max-width: 600px; margin: auto;">
-        <h1>Compose New Post</h1>
-        <input type="text" id="title" placeholder="Article Title" style="width:100%; padding:10px; margin-bottom:10px;">
-        <textarea id="content" placeholder="Content (use **bold** and *italics*)" style="width:100%; height:300px; padding:10px;"></textarea>
-        <button id="submit-btn" class="btn-new" style="width:100%; border:none; cursor:pointer;">Publish Post</button>
+    <div id="nav-placeholder"></div>
+
+    <div class="compose-wrapper">
+        <div class="container">
+            <h1>Compose New Post</h1>
+            <div class="form-group">
+                <input type="text" id="title" class="compose-input" placeholder="Article Title">
+            </div>
+            <div class="form-group">
+                <textarea id="content" class="compose-textarea" placeholder="Content (use **bold** and *italics*)"></textarea>
+            </div>
+            <button id="submit-btn">Publish Post</button>
+        </div>
     </div>
 
     <script src="/global-settings.js"></script>

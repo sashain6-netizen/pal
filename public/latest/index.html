@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Latest News • Pal</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="stylesheet" href="/latest/style.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Latest Updates</h1>
-        <div id="admin-controls" class="hidden">
-            <a href="compose/" class="btn-new">+ New Post</a>
-        </div>
-    </header>
+    <div id="nav-placeholder"></div>
 
-    <main id="news-container">
-        <p class="loading">Fetching the latest stories...</p>
-    </main>
+    <div class="news-page-wrapper">
+        <header class="news-header">
+            <h1>Latest Updates</h1>
+            <div id="admin-controls" class="hidden">
+                <a href="compose/" class="btn-new">+ New Post</a>
+            </div>
+        </header>
+
+        <main id="news-container">
+            <p class="loading">Fetching the latest stories...</p>
+        </main>
+    </div>
 
     <script src="/global-settings.js"></script>
     <script src="/global-auth.js"></script>
