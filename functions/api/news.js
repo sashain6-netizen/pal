@@ -1,50 +1,68 @@
+import { verifyAndDecodeToken } from "../_jwt.js";
+
 export async function onRequest(context) {
     const { request, env } = context;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const secret = env.JWT_SECRET; 
 
-    // 1. GET: Fetching Articles
+    // --- Helper: Verify Staff Rank via KV ---
+    async function getStaffUser(request) {
+        const authHeader = request.headers.get("Authorization");
+        if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+        
+        const token = authHeader.split(" ")[1];
+        try {
+            const payload = await verifyAndDecodeToken(token, secret);
+            
+            // Fetch user from KV (assuming namespace is bound as env.USERS_KV)
+            const kvData = await env.USERS_KV.get(`user:${payload.username}`);
+            if (!kvData) return null;
+
+            const userData = JSON.parse(kvData);
+            const allowedRanks = ['Owner', 'Admin', 'Moderator'];
+
+            if (userData && allowedRanks.includes(userData.rank)) {
+                return { username: payload.username, rank: userData.rank };
+            }
+            return null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // --- GET: Public News Feed ---
     if (request.method === "GET") {
         if (id) {
-            // Fetch specific article
-            const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?")
-                .bind(id)
-                .first();
-            
-            if (!article) {
-                return new Response("Article not found", { status: 404 });
-            }
-            return Response.json(article);
-        } else {
-            // Fetch all for the /latest hub
-            const { results } = await env.DB.prepare(
-                "SELECT id, title, author_name, created_at FROM news_articles WHERE is_published = 1 ORDER BY created_at DESC"
-            ).all();
-            return Response.json(results);
+            const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?").bind(id).first();
+            return article ? Response.json(article) : new Response("Not Found", { status: 404 });
         }
+        const { results } = await env.DB.prepare("SELECT * FROM news_articles ORDER BY created_at DESC").all();
+        return Response.json(results);
     }
 
-    // 2. POST: Creating Articles
+    // --- POST: Create News (Staff Only) ---
     if (request.method === "POST") {
-        try {
-            const data = await request.json();
-            
-            // Authorization Check
-            const allowedRanks = ['Admin', 'Moderator', 'Owner'];
-            if (!allowedRanks.includes(data.author_rank)) {
-                return new Response("Unauthorized", { status: 401 });
-            }
+        const user = await getStaffUser(request);
+        if (!user) return new Response("Unauthorized", { status: 401 });
 
-            // Insert into D1
-            await env.DB.prepare(
-                "INSERT INTO news_articles (title, slug, content, author_name, author_rank) VALUES (?, ?, ?, ?, ?)"
-            ).bind(data.title, data.slug, data.content, data.author_name, data.author_rank).run();
+        const data = await request.json();
+        await env.DB.prepare(
+            "INSERT INTO news_articles (title, slug, content, author_name, author_rank) VALUES (?, ?, ?, ?, ?)"
+        ).bind(data.title, data.slug, data.content, user.username, user.rank).run();
 
-            return new Response("Article Created!", { status: 201 });
-        } catch (err) {
-            return new Response("Error processing request", { status: 400 });
-        }
+        return new Response("Article Created", { status: 201 });
     }
 
-    return new Response("Method not allowed", { status: 405 });
+    // --- DELETE: Remove News (Staff Only) ---
+    if (request.method === "DELETE") {
+        const user = await getStaffUser(request);
+        if (!user) return new Response("Unauthorized", { status: 401 });
+        if (!id) return new Response("Missing ID", { status: 400 });
+
+        await env.DB.prepare("DELETE FROM news_articles WHERE id = ?").bind(id).run();
+        return new Response("Article Deleted", { status: 200 });
+    }
+
+    return new Response("Method Not Allowed", { status: 405 });
 }

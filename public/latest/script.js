@@ -1,70 +1,57 @@
-const apiPath = '/api/news';
+document.addEventListener('DOMContentLoaded', () => {
+    const newsContainer = document.getElementById('news-container');
+    const adminControls = document.getElementById('admin-controls');
+    
+    // 1. Check if user is Staff (Assume you store JWT and Rank in localStorage)
+    const token = localStorage.getItem('token');
+    const userRank = localStorage.getItem('rank'); // 'Owner', 'Admin', or 'Moderator'
+    const isStaff = ['Owner', 'Admin', 'Moderator'].includes(userRank);
 
-async function init() {
-    const params = new URLSearchParams(window.location.search);
-    const articleId = params.get('id');
-
-    if (articleId) {
-        loadSingleArticle(articleId);
-    } else {
-        loadNewsHub();
+    if (isStaff) {
+        adminControls.classList.remove('hidden');
     }
-}
 
-async function loadNewsHub() {
-    try {
-        const response = await fetch(apiPath);
-        const articles = await response.json();
-        
-        const listContainer = document.getElementById('news-list');
-        if (articles.length === 0) {
-            listContainer.innerHTML = '<p>No news updates found.</p>';
-            return;
+    // 2. Fetch Articles
+    async function fetchNews() {
+        try {
+            const response = await fetch('/api/news');
+            const articles = await response.json();
+            
+            if (articles.length === 0) {
+                newsContainer.innerHTML = '<p>No news yet.</p>';
+                return;
+            }
+
+            newsContainer.innerHTML = articles.map(art => `
+                <div class="article-card" data-id="${art.id}">
+                    ${isStaff ? `<button class="btn-delete" onclick="deletePost(${art.id})">Delete</button>` : ''}
+                    <h2><a href="article/?id=${art.id}">${art.title}</a></h2>
+                    <div class="meta">
+                        By ${art.author_name} (${art.author_rank}) • 
+                        ${new Date(art.created_at).toLocaleDateString()}
+                    </div>
+                </div>
+            `).join('');
+        } catch (err) {
+            newsContainer.innerHTML = '<p>Error loading news.</p>';
         }
-
-        listContainer.innerHTML = articles.map(post => `
-            <div class="news-card" onclick="openArticle(${post.id})">
-                <div class="meta-info">${new Date(post.created_at).toLocaleDateString()}</div>
-                <h2>${post.title}</h2>
-                <div class="meta-info">By ${post.author_name}</div>
-            </div>
-        `).join('');
-    } catch (err) {
-        console.error("Failed to load news:", err);
     }
-}
 
-async function loadSingleArticle(id) {
-    document.getElementById('hub-view').classList.add('hidden');
-    document.getElementById('article-view').classList.remove('hidden');
+    // 3. Delete Function
+    window.deletePost = async (id) => {
+        if (!confirm("Are you sure you want to delete this post?")) return;
 
-    try {
-        const response = await fetch(`${apiPath}?id=${id}`);
-        const article = await response.json();
+        const res = await fetch(`/api/news?id=${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-        document.getElementById('article-title').innerText = article.title;
-        document.getElementById('article-author').innerText = `By ${article.author_name} (${article.author_rank})`;
-        document.getElementById('article-date').innerText = new Date(article.created_at).toLocaleDateString();
-        document.getElementById('article-content').innerText = article.content;
-    } catch (err) {
-        document.getElementById('article-content').innerText = "Error loading article.";
-    }
-}
+        if (res.ok) {
+            document.querySelector(`[data-id="${id}"]`).remove();
+        } else {
+            alert("Failed to delete. You might not have permission.");
+        }
+    };
 
-function openArticle(id) {
-    // Updates URL without refreshing the page, then re-runs init
-    window.history.pushState({}, '', `?id=${id}`);
-    init();
-}
-
-function clearArticle() {
-    window.history.pushState({}, '', window.location.pathname);
-    document.getElementById('article-view').classList.add('hidden');
-    document.getElementById('hub-view').classList.remove('hidden');
-    loadNewsHub();
-}
-
-// Listen for browser back/forward buttons
-window.onpopstate = init;
-
-init();
+    fetchNews();
+});
