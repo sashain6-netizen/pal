@@ -6,9 +6,10 @@
     let allowExit = false;
 
     // --- 0. AUTO-STEALTH LOGIC ---
-    // This must run early to catch the user before they see the site
-    if (settings.autoStealth && !window.location.href.includes('override=true')) {
-        // If we aren't already inside the 'about:blank' frame
+    const isSettingsPage = window.location.pathname.includes('settings'); // Detect settings page
+    const isOverridden = window.location.href.includes('override=true');
+
+    if (settings.autoStealth && !isSettingsPage && !isOverridden) {
         if (window.self === window.top) {
             window.allowExit = true; 
             const win = window.open('about:blank', '_blank');
@@ -21,16 +22,15 @@
                 doc.head.appendChild(link);
 
                 const iframe = doc.createElement('iframe');
-                iframe.src = window.location.origin + window.location.pathname + window.location.search; 
+                iframe.src = window.location.href; // Use full current URL
                 iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
                 doc.body.style.margin = '0';
                 doc.body.style.overflow = 'hidden';
                 doc.body.appendChild(iframe);
 
                 win.focus();
-                // Redirect original tab to the panic URL (or Google)
                 window.location.replace(settings.panicUrl || "https://google.com");
-                return; // Stop execution on the original tab
+                return; 
             }
         }
     }
