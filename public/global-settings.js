@@ -6,32 +6,46 @@
     let allowExit = false;
 
     // --- 0. AUTO-STEALTH LOGIC ---
-    const isSettingsPage = window.location.pathname.includes('settings'); // Detect settings page
-    const isOverridden = window.location.href.includes('override=true');
+    // 1. Check if we are already "cloaked" (inside the iframe)
+    const isInsideIframe = window.self !== window.top;
 
-    if (settings.autoStealth && !isSettingsPage && !isOverridden) {
-        if (window.self === window.top) {
-            window.allowExit = true; 
-            const win = window.open('about:blank', '_blank');
-            if (win) {
-                const doc = win.document;
-                doc.title = "Google Docs";
-                const link = doc.createElement('link');
-                link.rel = 'icon';
-                link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-                doc.head.appendChild(link);
+    // 2. Check for settings page (Searching for 'settings' anywhere in the path)
+    const path = window.location.pathname.toLowerCase();
+    const isSettingsPage = path.includes('/settings/') || path.includes('settings.html');
+    
+    // 3. Check for the override flag
+    const isOverridden = window.location.search.includes('override=true');
 
-                const iframe = doc.createElement('iframe');
-                iframe.src = window.location.href; // Use full current URL
-                iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
-                doc.body.style.margin = '0';
-                doc.body.style.overflow = 'hidden';
-                doc.body.appendChild(iframe);
+    // DEBUG: Uncomment the line below to see what's happening in F12 console
+    // console.log("Stealth Check:", { isInsideIframe, path, isSettingsPage });
 
-                win.focus();
-                window.location.replace(settings.panicUrl || "https://google.com");
-                return; 
-            }
+    if (settings.autoStealth && !isInsideIframe && !isSettingsPage && !isOverridden) {
+        // We only run this if we are the TOP window and NOT on settings
+        const win = window.open('about:blank', '_blank');
+        if (win) {
+            const doc = win.document;
+            doc.title = "Google Docs";
+            
+            // Favicon
+            const link = doc.createElement('link');
+            link.rel = 'icon';
+            link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
+            doc.head.appendChild(link);
+
+            // Iframe
+            const iframe = doc.createElement('iframe');
+            iframe.src = window.location.href; 
+            iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
+            
+            doc.body.style.margin = '0';
+            doc.body.style.overflow = 'hidden';
+            doc.body.appendChild(iframe);
+
+            win.focus();
+            
+            // Redirect original tab
+            window.location.replace(settings.panicUrl || "https://google.com");
+            return; 
         }
     }
 

@@ -3,7 +3,7 @@ const DEFAULTS = {
     panicUrl: "https://classroom.google.com",
     cloaking: false,
     leaveConfirm: false,
-    autoStealth: false // Added new default
+    autoStealth: false
 };
 
 const panicBtn = document.getElementById('panicKeyBtn');
@@ -21,7 +21,6 @@ function loadSettings() {
     if(document.getElementById('cloakingToggle')) document.getElementById('cloakingToggle').checked = settings.cloaking;
     if(document.getElementById('leaveConfirmToggle')) document.getElementById('leaveConfirmToggle').checked = settings.leaveConfirm;
     
-    // Added UI update for Auto-Stealth toggle
     const autoStealthToggle = document.getElementById('autoStealthToggle');
     if(autoStealthToggle) autoStealthToggle.checked = settings.autoStealth;
     
@@ -30,44 +29,18 @@ function loadSettings() {
 
 let currentSettings = loadSettings();
 
-// --- AUTO-STEALTH EXECUTION ---
-// This runs immediately if the setting is true
-if (currentSettings.autoStealth && !window.location.href.includes('override=true')) {
-    // We assume your stealth logic is globally available or defined here
-    // Redirect to the "Google Docs" cloaked tab immediately
-    triggerStealthProtocol(); 
-}
-
-function triggerStealthProtocol() {
-    window.allowExit = true; 
-    const win = window.open('about:blank', '_blank');
-    if (win) {
-        const doc = win.document;
-        doc.title = "Google Docs";
-        const link = doc.createElement('link');
-        link.rel = 'icon';
-        link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
-        doc.head.appendChild(link);
-
-        const iframe = doc.createElement('iframe');
-        iframe.src = window.location.origin + "/"; 
-        iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
-        doc.body.style.margin = '0';
-        doc.body.style.overflow = 'hidden';
-        doc.body.appendChild(iframe);
-
-        win.focus();
-        window.location.replace(currentSettings.panicUrl); // Use the saved panic URL
-    }
-}
+// --- NOTE: ALL AUTO-STEALTH LOGIC MOVED TO GLOBAL-SETTINGS.JS ---
+// Do not add triggerStealthProtocol here to avoid conflicts.
 
 // 1. KEY RECORDING LOGIC
-panicBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    isRecording = true;
-    panicBtn.innerText = "Press any key...";
-    panicBtn.classList.add('active');
-});
+if (panicBtn) {
+    panicBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        isRecording = true;
+        panicBtn.innerText = "Press any key...";
+        panicBtn.classList.add('active');
+    });
+}
 
 window.addEventListener('keydown', (e) => {
     if (isRecording) {
@@ -91,21 +64,17 @@ window.addEventListener('keydown', (e) => {
 
 // 2. SAVE LOGIC
 saveBtn.addEventListener('click', () => {
-    // Update our settings object from the inputs
     currentSettings.panicUrl = document.getElementById('panicUrl').value || DEFAULTS.panicUrl;
     currentSettings.cloaking = document.getElementById('cloakingToggle').checked;
     currentSettings.leaveConfirm = document.getElementById('leaveConfirmToggle').checked;
     
-    // Grab the new autoStealth toggle value
     const autoStealthToggle = document.getElementById('autoStealthToggle');
     if(autoStealthToggle) {
         currentSettings.autoStealth = autoStealthToggle.checked;
     }
     
-    // Save to LocalStorage
     localStorage.setItem('site_settings', JSON.stringify(currentSettings));
     
-    // Visual Feedback
     const originalText = saveBtn.innerText;
     saveBtn.innerText = "✅ Saved!";
     saveBtn.style.background = "#059669"; 
