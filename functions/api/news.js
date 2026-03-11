@@ -1,4 +1,4 @@
-import { verifyAndDecodeToken } from "../_jwt.js";
+import { verifyAndDecodeToken } from "./_jwt.js";
 
 export async function onRequest(context) {
     const { request, env } = context;

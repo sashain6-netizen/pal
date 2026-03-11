@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const newsContainer = document.getElementById('news-container');
     const adminControls = document.getElementById('admin-controls');
-    
     const token = localStorage.getItem('token');
-    const userRank = localStorage.getItem('rank'); 
+    const userRank = localStorage.getItem('rank');
     const isStaff = ['Owner', 'Admin', 'Moderator'].includes(userRank);
 
     if (isStaff) {
