@@ -191,14 +191,13 @@
     background: white;
 }
 
-/* Container: Inline-block stops it from hogging the whole row */
 .search-container {
     position: relative;
     display: inline-block; 
     width: 220px; /* Shorter width to fit in the header row */
     margin: 0 10px;
     vertical-align: middle;
-    z-index: 1000;
+    z-index: 1;
 }
 
 /* The Input: Bright Blue & Compact */
