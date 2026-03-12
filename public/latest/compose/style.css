@@ -83,7 +83,7 @@
     transition: all 0.3s ease;
 }
 
-/* --- THE PREVIEW BOX (MATCHED TO ARTICLE CSS) --- */
+/* --- THE PREVIEW BOX --- */
 .preview-container {
     position: sticky;
     top: 100px;
@@ -105,11 +105,10 @@
     padding: 40px;
     height: 100%;
     overflow-y: auto;
-    /* This ensures the text wraps exactly like the 700px article view */
     max-width: 740px; 
 }
 
-/* Match: #article-content h1 (2.5rem, 1.2 line-height) */
+/* Match: #article-content h1 (ID updated for sync) */
 #preview-title {
     color: var(--blue-deep);
     font-size: 2.5rem;
@@ -118,32 +117,30 @@
     font-family: 'Varela Round', sans-serif;
 }
 
-/* Match: #article-body (1.1rem, 1.8 line-height, #334155 color) */
-#preview-body {
+/* Match: #article-body (SELECTOR UPDATED TO MATCH HTML) */
+#article-body {
     font-size: 1.1rem;
     line-height: 1.8;
     color: #334155;
-    margin-top: 30px; /* Space after the title/meta area */
+    margin-top: 30px; 
 }
 
-/* Match: #article-body strong */
-#preview-body strong { 
+#article-body strong { 
     color: var(--blue-deep); 
 }
 
-/* Match: #article-body br (10px margin) */
-#preview-body br {
+#article-body br {
     content: "";
     display: block;
     margin-bottom: 10px;
 }
 
-/* Standardizing the Markdown Header (#) to look natural */
-#preview-body h3 {
+#article-body h3 {
     color: var(--blue-deep);
     font-size: 1.4rem;
     margin-top: 25px;
     margin-bottom: 10px;
+    font-weight: 700;
 }
 
 /* --- RESPONSIVE --- */
