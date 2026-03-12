@@ -191,14 +191,13 @@
     background: white;
 }
 
-/* Container: Inline-block stops it from hogging the whole row */
 .search-container {
     position: relative;
     display: inline-block; 
     width: 220px; /* Shorter width to fit in the header row */
     margin: 0 10px;
     vertical-align: middle;
-    z-index: 1000;
+    z-index: 1;
 }
 
 /* The Input: Bright Blue & Compact */
@@ -311,3 +310,26 @@
 }
 
 .user-result:hover { background: #f0f9ff; }
+
+.forum-header {
+    position: relative;
+    z-index: 50; /* Above thread cards */
+}
+
+.search-container {
+    position: relative;
+    z-index: 60; /* Slightly above header content */
+}
+
+.search-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    z-index: 70; /* Above threads but below navbar */
+}
+
+.thread-card {
+    position: relative;
+    z-index: 1;
+}
