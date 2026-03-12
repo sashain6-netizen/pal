@@ -15,10 +15,17 @@
     <div class="news-page-wrapper">
         <header class="news-header">
             <h1>Latest Updates</h1>
-            <div id="admin-controls" class="hidden">
+            <div id="aadmin-controls" class="hidden">
                 <a href="compose/" class="btn-new">+ New Post</a>
             </div>
         </header>
+
+        <div class="filter-bar">
+            <button onclick="filterByCategory('All')" class="filter-btn">All</button>
+            <button onclick="filterByCategory('Update')" class="filter-btn">Updates</button>
+            <button onclick="filterByCategory('Event')" class="filter-btn">Events</button>
+            <button onclick="filterByCategory('Community')" class="filter-btn">Community</button>
+        </div>
 
         <main id="news-container">
             <p class="loading">Fetching the latest stories...</p>
