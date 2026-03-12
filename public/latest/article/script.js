@@ -20,15 +20,20 @@ function parseMarkup(text) {
         .replace(/\n/g, '<br>');
 }
 
-// 1. Listen for Auth to show Edit Button
 window.addEventListener('authReady', (e) => {
-    const userData = e.detail;
+    handleAuthDetection(e.detail);
+});
+
+if (window.currentUserData) { 
+    handleAuthDetection(window.currentUserData); 
+}
+
+function handleAuthDetection(userData) {
     const staffRanks = ['Owner', 'Admin', 'Moderator'];
-    
-    if (userData.loggedIn && staffRanks.includes(userData.rank)) {
+    if (userData && userData.loggedIn && staffRanks.includes(userData.rank)) {
         renderEditButton();
     }
-});
+}
 
 function renderEditButton() {
     if (document.getElementById('edit-article-btn')) return;

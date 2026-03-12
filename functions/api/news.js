@@ -43,25 +43,25 @@ export async function onRequest(context) {
     }
 
     // --- 2. PATCH: Update Article (Staff Only) ---
-    // We use PATCH for updates. If you prefer POST, you can check for the 'id' param.
     if (request.method === "PATCH") {
         const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
-
         if (!id) return new Response("Missing Article ID", { status: 400 });
 
         const data = await request.json();
+        
         try {
+            const current = await env.DB.prepare("SELECT title, category FROM news_articles WHERE id = ?").bind(id).first();
+            if (!current) return new Response("Not Found", { status: 404 });
+
+            const finalTitle = data.title || current.title;
+            const finalContent = data.content || "";
+            const finalCategory = data.category || current.category;
+
             const result = await env.DB.prepare(
                 "UPDATE news_articles SET title = ?, content = ?, category = ? WHERE id = ?"
-            ).bind(
-                data.title, 
-                data.content, 
-                data.category || 'General', 
-                id
-            ).run();
+            ).bind(finalTitle, finalContent, finalCategory, id).run();
 
-            if (result.meta.changes === 0) return new Response("Article not found", { status: 404 });
             return Response.json({ success: true });
         } catch (e) {
             return new Response("Database Error: " + e.message, { status: 500 });
