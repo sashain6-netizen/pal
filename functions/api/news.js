@@ -6,18 +6,20 @@ export async function onRequest(context) {
     const id = searchParams.get('id');
     const secret = env.JWT_SECRET; 
 
-    // --- Helper: Verify Staff Rank via KV ---
-    // We pass 'env' and 'secret' directly to avoid scope issues
+    // --- Helper: Verify Staff Rank via Cookies ---
     async function getStaffUser(request, env, secret) {
-        const authHeader = request.headers.get("Authorization");
-        if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+        const cookieHeader = request.headers.get("Cookie") || "";
         
-        const token = authHeader.split(" ")[1];
+        // Match your global-auth.js cookie name
+        if (!cookieHeader.includes("pal_session=")) return null;
+        
         try {
-            // Use your existing _jwt.js function
+            // Extract token from cookie string
+            const token = cookieHeader.split("pal_session=")[1].split(";")[0];
+            
+            // Verify signature using your _jwt.js
             const payload = await verifyAndDecodeToken(token, secret);
             
-            // Logically force lowercase for the KV lookup
             const username = payload.username.toLowerCase();
             const kvData = await env.USERS_KV.get(`user:${username}`);
             
@@ -27,7 +29,7 @@ export async function onRequest(context) {
             const allowedRanks = ['Owner', 'Admin', 'Moderator'];
 
             if (userData && allowedRanks.includes(userData.rank)) {
-                return { username: payload.username, rank: userData.rank };
+                return { username: userData.username, rank: userData.rank };
             }
             return null;
         } catch (e) {
@@ -48,7 +50,6 @@ export async function onRequest(context) {
 
     // --- POST: Create News (Staff Only) ---
     if (request.method === "POST") {
-        // Pass the env and secret here
         const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
 
