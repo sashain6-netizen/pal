@@ -19,10 +19,10 @@
                 <li><em>*Italic*</em> <span>*text*</span></li>
                 <li><ins>Underline</ins> <span>__text__</span></li>
                 <li><del>Strikethrough</del> <span>~~text~~</span></li>
-                <li><code style="background:#eee;padding:2px">Inline Code</code> <span>`code`</span></li>
+                <li><code style="background:#eee;padding:2px">Code</code> <span>`code`</span></li>
                 <li><h4 style="margin:0;display:inline">Heading</h4> <span># text</span></li>
-                <li><span style="color:#2563eb">Blue Text</span> <span>[b]text[/b]</span></li>
-                <li><span style="color:#ff4757">Red Text</span> <span>[r]text[/r]</span></li>
+                <li><span style="color:#2563eb">Blue</span> <span>[b]text[/b]</span></li>
+                <li><span style="color:#ff4757">Red</span> <span>[r]text[/r]</span></li>
                 <li>Bullet Point <span>- text</span></li>
             </ul>
         </aside>
@@ -31,7 +31,7 @@
             <h1>Compose New Post</h1>
             
             <div class="form-group">
-                <input type="text" id="title" class="compose-input" placeholder="Article Title">
+                <input type="text" id="title" class="compose-input" placeholder="Article Title" autocomplete="off">
             </div>
 
             <div class="form-group">
@@ -49,6 +49,15 @@
 
             <button id="submit-btn">Publish Post</button>
         </main>
+
+        <section class="preview-container">
+            <h3>Live Preview</h3>
+            <div class="preview-box">
+                <h1 id="preview-title"></h1>
+                <hr id="preview-hr" style="display:none; margin: 20px 0;">
+                <div id="preview-body"></div>
+            </div>
+        </section>
     </div>
 
     <script src="/global-settings.js"></script>
