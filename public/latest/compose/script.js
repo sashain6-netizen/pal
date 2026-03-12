@@ -1,8 +1,7 @@
 document.getElementById('submit-btn').addEventListener('click', async () => {
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
     const category = document.getElementById('category').value;
-    const isPublished = document.getElementById('is_published').checked ? 1 : 0;
 
     if (!title || !content) {
         alert("Please fill in both the title and content.");
@@ -13,21 +12,20 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
         title, 
         content,
         category,
-        is_published: isPublished,
-        slug: title.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, '-') 
+        is_published: 1, // Always 1 now
+        slug: title.toLowerCase()
+                  .replace(/[^a-z0-9 ]/g, '')
+                  .replace(/\s+/g, '-') 
     };
 
-    // Notice: We removed the Authorization header
     const res = await fetch('/api/news', {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     });
 
     if (res.ok) {
-        alert("Article saved successfully!");
+        alert("Article published successfully!");
         window.location.href = '../';
     } else {
         const errorText = await res.text();

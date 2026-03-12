@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New Post • Pal</title>
+    <title>Compose New Post • Pal</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/latest/compose/style.css">
     <link rel="icon" href="/favicon.png" type="image/png">
@@ -11,30 +11,45 @@
 <body>
     <div id="nav-placeholder"></div>
 
-    <div class="compose-wrapper">
-    <div class="container">
-        <h1>Compose New Post</h1>
-        <div class="form-group">
-            <input type="text" id="title" class="compose-input" placeholder="Article Title">
-        </div>
-        <div class="form-group">
-            <select id="category" class="compose-input">
-                <option value="General">General News</option>
-                <option value="Update">Game Update</option>
-                <option value="Event">Community Event</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <textarea id="content" class="compose-textarea" placeholder="Content..."></textarea>
-        </div>
-        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
-            <label style="color: var(--blue-soft);">
-                <input type="checkbox" id="is_published" checked> Publish immediately
-            </label>
-        </div>
-        <button id="submit-btn">Publish Post</button>
+    <div class="compose-layout-wrapper">
+        <aside class="markup-key">
+            <h3>Markdown Key</h3>
+            <ul>
+                <li><strong>**Bold**</strong> <span>**text**</span></li>
+                <li><em>*Italic*</em> <span>*text*</span></li>
+                <li><ins>Underline</ins> <span>__text__</span></li>
+                <li><del>Strikethrough</del> <span>~~text~~</span></li>
+                <li><code style="background:#eee;padding:2px">Inline Code</code> <span>`code`</span></li>
+                <li><h4 style="margin:0;display:inline">Heading</h4> <span># text</span></li>
+                <li><span style="color:#2563eb">Blue Text</span> <span>[b]text[/b]</span></li>
+                <li><span style="color:#ff4757">Red Text</span> <span>[r]text[/r]</span></li>
+                <li>Bullet Point <span>- text</span></li>
+            </ul>
+        </aside>
+
+        <main class="compose-container">
+            <h1>Compose New Post</h1>
+            
+            <div class="form-group">
+                <input type="text" id="title" class="compose-input" placeholder="Article Title">
+            </div>
+
+            <div class="form-group">
+                <select id="category" class="compose-input">
+                    <option value="Update">Game Update</option>
+                    <option value="Event">Community Event</option>
+                    <option value="Community">Community News</option>
+                    <option value="General">General</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <textarea id="content" class="compose-textarea" placeholder="Write your story here..."></textarea>
+            </div>
+
+            <button id="submit-btn">Publish Post</button>
+        </main>
     </div>
-</div>
 
     <script src="/global-settings.js"></script>
     <script src="/global-auth.js"></script> 

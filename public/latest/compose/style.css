@@ -1,46 +1,85 @@
-.compose-wrapper {
-    padding-top: 100px; /* Slightly more space for the form */
-    max-width: 800px;
-    margin: 0 auto;
-    padding-left: 20px;
-    padding-right: 20px;
+.compose-layout-wrapper {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 40px;
+    max-width: 1100px;
+    margin: 100px auto 40px;
+    padding: 0 20px;
 }
 
-.form-group {
-    margin-bottom: 20px;
+/* Sidebar Key */
+.markup-key {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
 }
+
+.markup-key h3 {
+    color: var(--blue-deep);
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    border-bottom: 2px solid rgba(37, 99, 235, 0.05);
+    padding-bottom: 10px;
+}
+
+.markup-key ul {
+    list-style: none;
+    padding: 0;
+}
+
+.markup-key li {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    color: var(--blue-soft);
+}
+
+.markup-key span {
+    font-family: monospace;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #475569;
+    margin-top: 4px;
+    width: fit-content;
+}
+
+/* Form Styles */
+.compose-container h1 {
+    color: var(--blue-deep);
+    margin-bottom: 25px;
+}
+
+.form-group { margin-bottom: 20px; }
 
 .compose-input, .compose-textarea {
     width: 100%;
     border: 1px solid rgba(37, 99, 235, 0.1);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 15px;
     font-family: 'Varela Round', sans-serif;
-    background: var(--white);
     font-size: 1rem;
-}
-
-.compose-input:focus, .compose-textarea:focus {
-    outline: none;
-    border-color: var(--blue-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: white;
 }
 
 .compose-textarea {
-    height: 400px;
-    resize: vertical;
-    line-height: 1.6;
+    height: 450px;
+    line-height: 1.7;
 }
 
 #submit-btn {
     width: 100%;
-    padding: 15px;
+    padding: 16px;
     border: none;
     border-radius: 50px;
     background: var(--blue-primary);
     color: white;
     font-weight: 700;
-    font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -48,5 +87,16 @@
 #submit-btn:hover {
     background: var(--blue-deep);
     transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
 }
 
+/* Mobile Responsive */
+@media (max-width: 800px) {
+    .compose-layout-wrapper {
+        grid-template-columns: 1fr;
+    }
+    .markup-key {
+        position: static;
+        order: 2;
+    }
+}
