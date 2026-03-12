@@ -7,7 +7,7 @@ async function checkAuth() {
         
         updateGlobalUI(data.loggedIn, data);
         
-        // Notify other scripts (like search or shop) that user data is ready
+        // Notify other scripts that user data is ready
         window.dispatchEvent(new CustomEvent('authReady', { detail: data }));
     } catch (e) {
         updateGlobalUI(false);
@@ -15,11 +15,17 @@ async function checkAuth() {
 }
 
 function updateGlobalUI(isLoggedIn, userData = {}) {
+    // CRITICAL: Set the global variable BEFORE any "if (!element) return" checks.
+    // This ensures script.js can see the user's rank even if the navbar is slow.
+    window.currentUserData = { loggedIn: isLoggedIn, ...userData };
+
     const loggedInLinks = document.getElementById('loggedInLinks');
     const loggedOutLinks = document.getElementById('loggedOutLinks');
     const avatarContainer = document.getElementById('avatar-container');
     const profileIcon = document.getElementById('profile-icon');
     
+    // If navbar elements aren't injected yet, we stop UI updates, 
+    // but the data above is already saved globally!
     if (!profileIcon || !avatarContainer) return;
 
     if (isLoggedIn) {
@@ -39,7 +45,6 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
                 </svg>`;
         }
         
-        // Setup Logout Button immediately if it exists
         const logoutBtn = document.getElementById('logoutLink');
         if (logoutBtn) logoutBtn.onclick = handleLogout;
 
@@ -58,16 +63,14 @@ async function handleLogout(e) {
     window.location.href = "/";
 }
 
-// Robust Init: Check auth immediately, and also watch for navbar injection
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     
-    // Watch for the navbar being added to the DOM to attach the logout listener
     const observer = new MutationObserver(() => {
         const logoutBtn = document.getElementById('logoutLink');
         if (logoutBtn) {
             logoutBtn.onclick = handleLogout;
-            observer.disconnect(); // Stop watching once found
+            observer.disconnect();
         }
     });
 

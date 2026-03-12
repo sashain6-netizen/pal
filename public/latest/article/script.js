@@ -1,6 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
-let currentRawContent = ""; // Stores unparsed markup for editing
+let currentRawContent = ""; 
+let isStaff = false; // Track staff status globally in this script
 
 /**
  * Advanced Markup Parser
@@ -20,24 +21,29 @@ function parseMarkup(text) {
         .replace(/\n/g, '<br>');
 }
 
+// 1. Auth Detection Logic
+function handleAuthDetection(userData) {
+    const staffRanks = ['Owner', 'Admin', 'Moderator'];
+    if (userData && userData.loggedIn && staffRanks.includes(userData.rank)) {
+        isStaff = true;
+        renderEditButton(); // Attempt to render
+    }
+}
+
 window.addEventListener('authReady', (e) => {
     handleAuthDetection(e.detail);
 });
 
+// Check if auth already finished before this script loaded
 if (window.currentUserData) { 
     handleAuthDetection(window.currentUserData); 
 }
 
-function handleAuthDetection(userData) {
-    const staffRanks = ['Owner', 'Admin', 'Moderator'];
-    if (userData && userData.loggedIn && staffRanks.includes(userData.rank)) {
-        renderEditButton();
-    }
-}
-
 function renderEditButton() {
-    if (document.getElementById('edit-article-btn')) return;
+    // Only render if we are staff AND the meta container exists (article loaded)
     const meta = document.getElementById('meta');
+    if (!isStaff || !meta || document.getElementById('edit-article-btn')) return;
+
     const btn = document.createElement('button');
     btn.id = 'edit-article-btn';
     btn.innerText = "Edit Article";
@@ -47,13 +53,15 @@ function renderEditButton() {
 
 // 2. Modal Logic
 function openEditModal() {
+    if (document.getElementById('edit-modal')) return;
+    
     const modal = document.createElement('div');
     modal.id = 'edit-modal';
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Edit Article Content</h2>
-                <button onclick="closeModal()">×</button>
+                <button onclick="closeModal()" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
             </div>
             <div class="editor-grid">
                 <textarea id="edit-textarea" placeholder="Enter markup...">${currentRawContent}</textarea>
@@ -67,7 +75,6 @@ function openEditModal() {
     `;
     document.body.appendChild(modal);
 
-    // Live Preview Listener
     const textarea = document.getElementById('edit-textarea');
     const preview = document.getElementById('edit-preview');
     textarea.addEventListener('input', () => {
@@ -75,10 +82,10 @@ function openEditModal() {
     });
 }
 
-function closeModal() {
+window.closeModal = function() {
     const modal = document.getElementById('edit-modal');
     if (modal) modal.remove();
-}
+};
 
 async function saveChanges() {
     const newContent = document.getElementById('edit-textarea').value;
@@ -117,13 +124,19 @@ async function loadArticle() {
         }
 
         const data = await res.json();
-        currentRawContent = data.content; // Store for the editor
+        currentRawContent = data.content;
 
         document.getElementById('title').textContent = data.title;
         const date = new Date(data.created_at).toLocaleDateString();
+        
+        // This line overwrites the meta div. 
         document.getElementById('meta').innerHTML = `By <strong>${data.author_name}</strong> (${data.author_rank}) on ${date}`;
+        
         document.getElementById('article-body').innerHTML = parseMarkup(data.content);
         document.title = `${data.title} • Pal`;
+
+        // CRITICAL: Now that the HTML is injected, try to render the button again
+        renderEditButton();
 
     } catch (err) {
         console.error("Error loading article:", err);
