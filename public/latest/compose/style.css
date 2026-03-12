@@ -137,7 +137,7 @@
     display: block !important;
     font-size: 1.1rem !important;
     line-height: 1.8 !important;
-    color: #050505 !important;
+    color: #000000 !important;
     margin-top: 20px !important;
     font-family: 'Varela Round', sans-serif !important;
 }
@@ -146,7 +146,7 @@
 #article-content #article-body h3 {
     all: revert; /* Revert to basic block behavior but keep our styles */
     display: block !important;
-    color: var(--blue-deep) !important;
+    color: #000000 !important;
     font-size: 1.3rem !important;
     margin-top: 25px !important;
     margin-bottom: 10px !important;
