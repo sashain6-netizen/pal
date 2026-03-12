@@ -19,7 +19,7 @@ function parseMarkup(text) {
 const titleInput = document.getElementById('title');
 const contentInput = document.getElementById('content');
 const previewTitle = document.getElementById('preview-title');
-const previewBody = document.getElementById('preview-body');
+const previewBody = document.getElementById('article-body'); // UPDATED TO MATCH HTML
 const previewHr = document.getElementById('preview-hr');
 
 // Handle Live Preview
