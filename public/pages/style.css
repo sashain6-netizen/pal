@@ -255,7 +255,6 @@
     border-bottom: 1px solid #f1f5f9;
     font-size: 0.8rem;
     transition: background 0.1s;
-    z-index: 9999;
 }
 
 .search-item:hover {
@@ -311,3 +310,26 @@
 }
 
 .user-result:hover { background: #f0f9ff; }
+
+.forum-header {
+    position: relative;
+    z-index: 50; /* Above thread cards */
+}
+
+.search-container {
+    position: relative;
+    z-index: 60; /* Slightly above header content */
+}
+
+.search-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    z-index: 70; /* Above threads but below navbar */
+}
+
+.thread-card {
+    position: relative;
+    z-index: 1;
+}
