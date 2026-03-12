@@ -1,12 +1,11 @@
 // Example Game Data - Add your game links here!
 const games = [
-    { title: "Polytrack", thumb: "https://via.placeholder.com/200x150", url: "blob:https://coolubg2.github.io/fca55c15-d83b-4177-a3bf-2e3f9317026f"}
-
+    { title: "Polytrack", thumb: "https://via.placeholder.com/200x150", url: "https://coolubg2.github.io/fca55c15-d83b-4177-a3bf-2e3f9317026f"}
 ];
 
 function initGames() {
     const grid = document.getElementById('gamesGrid');
-    grid.innerHTML = ''; // Clear grid
+    grid.innerHTML = ''; 
 
     games.forEach(game => {
         const card = document.createElement('div');
@@ -46,7 +45,7 @@ async function openGame(game) {
 
 function closeGame() {
     document.getElementById('gameOverlay').style.display = 'none';
-    document.getElementById('gameFrame').src = ''; // Stop the game audio
+    document.getElementById('gameFrame').src = ''; 
 }
 
 function toggleFullScreen() {
@@ -63,8 +62,6 @@ function filterGames() {
         card.style.display = title.includes(query) ? 'block' : 'none';
     });
 }
-
-// Load games on start
 
 initGames();
 
