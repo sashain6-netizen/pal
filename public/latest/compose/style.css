@@ -1,3 +1,6 @@
+/* ===========================
+   1. LAYOUT & FORM
+   =========================== */
 .compose-layout-wrapper {
     display: grid;
     grid-template-columns: 220px 1fr 1.2fr;
@@ -7,7 +10,6 @@
     padding: 0 20px;
 }
 
-/* Sidebar Key */
 .markup-key {
     background: white;
     padding: 20px;
@@ -45,7 +47,6 @@
     width: fit-content;
 }
 
-/* Form Styles */
 .compose-container h1 {
     color: var(--blue-deep);
     margin-bottom: 25px;
@@ -84,7 +85,7 @@
 }
 
 /* =========================================
-   THE PREVIEW BOX - ARTICLE SYNC ENFORCER
+   2. THE PREVIEW BOX (BULLETPROOF)
    ========================================= */
 
 .preview-container {
@@ -93,14 +94,16 @@
     height: calc(100vh - 140px);
 }
 
-/* The Label at the top of the box */
+/* Forces the "Live Preview" label to stay small */
 .preview-container h3 {
+    all: initial; /* Resets everything */
+    display: block;
     color: var(--blue-soft) !important;
     font-size: 0.8rem !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     margin-bottom: 15px !important;
-    border: none !important; /* Prevents global border-bottoms */
+    font-family: 'Varela Round', sans-serif !important;
 }
 
 .preview-box {
@@ -113,48 +116,75 @@
     max-width: 740px; 
 }
 
-/* --- THE ARTICLE OVERRIDES --- */
+/* --- THE ARTICLE SYNC OVERRIDES --- */
 
-/* Targets the Title inside the preview */
+/* Title: Forced no-caps and correct sizing */
 #article-content #preview-title {
+    all: initial;
+    display: block !important;
     color: var(--blue-deep) !important;
     font-size: 2.5rem !important;
     margin-bottom: 10px !important;
     line-height: 1.2 !important;
     font-family: 'Varela Round', sans-serif !important;
-    display: block !important;
+    text-transform: none !important;
+    font-weight: 900 !important;
 }
 
-/* Targets the Body text */
+/* Body container reset */
 #article-content #article-body {
+    all: initial;
+    display: block !important;
     font-size: 1.1rem !important;
     line-height: 1.8 !important;
     color: #334155 !important;
     margin-top: 20px !important;
-    display: block !important;
+    font-family: 'Varela Round', sans-serif !important;
 }
 
-/* THE SPECIFIC FIX FOR THE "BIG BLUE" HEADERS */
-/* This targets ONLY the headers you type in the editor */
+/* Sub-headers (#): Forced no-caps and correct sizing */
 #article-content #article-body h3 {
-    all: revert; /* Resets global/browser junk */
+    all: revert; /* Revert to basic block behavior but keep our styles */
+    display: block !important;
     color: var(--blue-deep) !important;
     font-size: 1.3rem !important;
     margin-top: 25px !important;
     margin-bottom: 10px !important;
     font-weight: 700 !important;
     font-family: 'Varela Round', sans-serif !important;
-    display: block !important;
+    text-transform: none !important;
 }
 
-/* Matches Article Strong Tags */
-#article-body strong { 
-    color: var(--blue-deep) !important; 
+/* Bold/Strong text inside preview */
+#article-content #article-body strong { 
+    color: var(--blue-deep) !important;
+    font-weight: 700 !important;
 }
 
-/* Matches Article Line Breaks */
-#article-body br {
+/* Line break management */
+#article-content #article-body br {
     display: block !important;
     content: "" !important;
     margin-bottom: 10px !important;
+}
+
+/* ===========================
+   3. RESPONSIVE
+   =========================== */
+@media (max-width: 1200px) {
+    .compose-layout-wrapper {
+        grid-template-columns: 200px 1fr;
+    }
+    .preview-container {
+        grid-column: 1 / span 2;
+        position: static;
+        height: auto;
+    }
+    .preview-box { height: 500px; max-width: 100%; }
+}
+
+@media (max-width: 800px) {
+    .compose-layout-wrapper { grid-template-columns: 1fr; }
+    .markup-key { order: 3; }
+    .preview-container { order: 2; }
 }
