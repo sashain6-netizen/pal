@@ -83,20 +83,24 @@
     transition: all 0.3s ease;
 }
 
-/* --- THE PREVIEW BOX --- */
+/* =========================================
+   THE PREVIEW BOX - ARTICLE SYNC ENFORCER
+   ========================================= */
+
 .preview-container {
     position: sticky;
     top: 100px;
     height: calc(100vh - 140px);
 }
 
-/* The "Live Preview" Label */
+/* The Label at the top of the box */
 .preview-container h3 {
-    color: var(--blue-soft);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
+    color: var(--blue-soft) !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 15px !important;
+    border: none !important; /* Prevents global border-bottoms */
 }
 
 .preview-box {
@@ -106,46 +110,51 @@
     padding: 40px;
     height: 100%;
     overflow-y: auto;
-    max-width: 740px; /* Forces exact line wrapping as the article view */
+    max-width: 740px; 
 }
 
-/* --- SYNCED TYPOGRAPHY (Matches Article CSS) --- */
+/* --- THE ARTICLE OVERRIDES --- */
 
-/* Matches #article-content h1 */
-#preview-title, #article-content h1 {
-    color: var(--blue-deep);
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    line-height: 1.2;
-    font-family: 'Varela Round', sans-serif;
+/* Targets the Title inside the preview */
+#article-content #preview-title {
+    color: var(--blue-deep) !important;
+    font-size: 2.5rem !important;
+    margin-bottom: 10px !important;
+    line-height: 1.2 !important;
+    font-family: 'Varela Round', sans-serif !important;
+    display: block !important;
 }
 
-/* Matches #article-body */
-#article-body {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #334155;
-    margin-top: 20px;
+/* Targets the Body text */
+#article-content #article-body {
+    font-size: 1.1rem !important;
+    line-height: 1.8 !important;
+    color: #334155 !important;
+    margin-top: 20px !important;
+    display: block !important;
 }
 
-/* Matches #article-body h3 (THE HEADER FIX) */
-/* This specifically tames the # markdown header */
-#article-body h3 {
-    color: var(--blue-deep);
-    font-size: 1.4rem;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    font-weight: 700;
+/* THE SPECIFIC FIX FOR THE "BIG BLUE" HEADERS */
+/* This targets ONLY the headers you type in the editor */
+#article-content #article-body h3 {
+    all: revert; /* Resets global/browser junk */
+    color: var(--blue-deep) !important;
+    font-size: 1.3rem !important;
+    margin-top: 25px !important;
+    margin-bottom: 10px !important;
+    font-weight: 700 !important;
+    font-family: 'Varela Round', sans-serif !important;
+    display: block !important;
 }
 
-/* Matches #article-body strong */
+/* Matches Article Strong Tags */
 #article-body strong { 
-    color: var(--blue-deep); 
+    color: var(--blue-deep) !important; 
 }
 
-/* Matches #article-body br */
+/* Matches Article Line Breaks */
 #article-body br {
-    display: block;
-    content: "";
-    margin-bottom: 10px;
+    display: block !important;
+    content: "" !important;
+    margin-bottom: 10px !important;
 }
