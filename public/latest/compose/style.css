@@ -90,6 +90,7 @@
     height: calc(100vh - 140px);
 }
 
+/* The "Live Preview" Label */
 .preview-container h3 {
     color: var(--blue-soft);
     font-size: 0.8rem;
@@ -105,36 +106,30 @@
     padding: 40px;
     height: 100%;
     overflow-y: auto;
-    max-width: 740px; 
+    max-width: 740px; /* Forces exact line wrapping as the article view */
 }
 
-/* Match: #article-content h1 (ID updated for sync) */
-#preview-title {
+/* --- SYNCED TYPOGRAPHY (Matches Article CSS) --- */
+
+/* Matches #article-content h1 */
+#preview-title, #article-content h1 {
     color: var(--blue-deep);
     font-size: 2.5rem;
-    margin: 0;
+    margin-bottom: 10px;
     line-height: 1.2;
     font-family: 'Varela Round', sans-serif;
 }
 
-/* Match: #article-body (SELECTOR UPDATED TO MATCH HTML) */
+/* Matches #article-body */
 #article-body {
     font-size: 1.1rem;
     line-height: 1.8;
     color: #334155;
-    margin-top: 30px; 
+    margin-top: 20px;
 }
 
-#article-body strong { 
-    color: var(--blue-deep); 
-}
-
-#article-body br {
-    content: "";
-    display: block;
-    margin-bottom: 10px;
-}
-
+/* Matches #article-body h3 (THE HEADER FIX) */
+/* This specifically tames the # markdown header */
 #article-body h3 {
     color: var(--blue-deep);
     font-size: 1.4rem;
@@ -143,21 +138,14 @@
     font-weight: 700;
 }
 
-/* --- RESPONSIVE --- */
-@media (max-width: 1200px) {
-    .compose-layout-wrapper {
-        grid-template-columns: 200px 1fr;
-    }
-    .preview-container {
-        grid-column: 1 / span 2;
-        position: static;
-        height: auto;
-    }
-    .preview-box { height: 500px; max-width: 100%; }
+/* Matches #article-body strong */
+#article-body strong { 
+    color: var(--blue-deep); 
 }
 
-@media (max-width: 800px) {
-    .compose-layout-wrapper { grid-template-columns: 1fr; }
-    .markup-key { order: 3; }
-    .preview-container { order: 2; }
+/* Matches #article-body br */
+#article-body br {
+    display: block;
+    content: "";
+    margin-bottom: 10px;
 }
