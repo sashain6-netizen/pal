@@ -1,6 +1,6 @@
 // Example Game Data - Add your game links here!
 const games = [
-    { title: "Polytrack", thumb: "https://via.placeholder.com/200x150", url: "https://www.kodub.com/apps/polytrack"}
+    { title: "Polytrack", thumb: "https://via.placeholder.com/200x150", url: "blob:https://coolubg2.github.io/fca55c15-d83b-4177-a3bf-2e3f9317026f"}
 
 ];
 
