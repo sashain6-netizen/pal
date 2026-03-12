@@ -6,18 +6,13 @@ export async function onRequest(context) {
     const id = searchParams.get('id');
     const secret = env.JWT_SECRET; 
 
-    // --- Helper: Verify Staff Rank via Cookies ---
+    // --- Helper: Verify Staff Rank via Cookies & USERS_KV ---
     async function getStaffUser(request, env, secret) {
         const cookieHeader = request.headers.get("Cookie") || "";
-        
-        // Match your global-auth.js cookie name
         if (!cookieHeader.includes("pal_session=")) return null;
         
         try {
-            // Extract token from cookie string
             const token = cookieHeader.split("pal_session=")[1].split(";")[0];
-            
-            // Verify signature using your _jwt.js
             const payload = await verifyAndDecodeToken(token, secret);
             
             const username = payload.username.toLowerCase();
@@ -33,12 +28,11 @@ export async function onRequest(context) {
             }
             return null;
         } catch (e) {
-            console.error("JWT Verification failed:", e.message);
             return null;
         }
     }
 
-    // --- GET: Public News Feed ---
+    // --- 1. GET: Fetch Article(s) ---
     if (request.method === "GET") {
         if (id) {
             const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?").bind(id).first();
@@ -48,35 +42,56 @@ export async function onRequest(context) {
         return Response.json(results);
     }
 
-    // --- POST: Create News (Staff Only) ---
+    // --- 2. PATCH: Update Article (Staff Only) ---
+    // We use PATCH for updates. If you prefer POST, you can check for the 'id' param.
+    if (request.method === "PATCH") {
+        const user = await getStaffUser(request, env, secret);
+        if (!user) return new Response("Unauthorized", { status: 401 });
+
+        if (!id) return new Response("Missing Article ID", { status: 400 });
+
+        const data = await request.json();
+        try {
+            const result = await env.DB.prepare(
+                "UPDATE news_articles SET title = ?, content = ?, category = ? WHERE id = ?"
+            ).bind(
+                data.title, 
+                data.content, 
+                data.category || 'General', 
+                id
+            ).run();
+
+            if (result.meta.changes === 0) return new Response("Article not found", { status: 404 });
+            return Response.json({ success: true });
+        } catch (e) {
+            return new Response("Database Error: " + e.message, { status: 500 });
+        }
+    }
+
+    // --- 3. POST: Create Article (Staff Only) ---
     if (request.method === "POST") {
         const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
 
         const data = await request.json();
-        
         try {
             await env.DB.prepare(
                 `INSERT INTO news_articles 
                 (title, slug, content, author_name, author_rank, category, is_published) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)`
             ).bind(
-                data.title, 
-                data.slug, 
-                data.content, 
-                user.username, 
-                user.rank, 
-                data.category || 'General', 
-                data.is_published ?? 1
+                data.title, data.slug, data.content, 
+                user.username, user.rank, 
+                data.category || 'General', 1
             ).run();
 
             return new Response("Article Created", { status: 201 });
-        } catch (dbError) {
-            return new Response("Database Error: " + dbError.message, { status: 500 });
+        } catch (e) {
+            return new Response("Database Error: " + e.message, { status: 500 });
         }
     }
 
-    // --- DELETE: Remove News (Staff Only) ---
+    // --- 4. DELETE: Remove Article (Staff Only) ---
     if (request.method === "DELETE") {
         const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
