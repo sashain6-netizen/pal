@@ -162,3 +162,11 @@
     .markup-key { order: 3; }
     .preview-container { order: 2; }
 }
+
+#preview-body h3 {
+    color: var(--blue-deep);
+    font-size: 1.5rem;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
