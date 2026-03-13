@@ -3,7 +3,7 @@ const threadId = params.get('id');
 
 // --- PAGINATION & CACHING STATE ---
 let currentOffset = 0;
-const limit = 10;
+const limit = 50;
 let currentUser = null; 
 
 async function loadThread(append = false) {
