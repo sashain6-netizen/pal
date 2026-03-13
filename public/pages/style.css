@@ -333,3 +333,39 @@
     position: relative;
     z-index: 1;
 }
+
+/* --- LOAD MORE BUTTON --- */
+.load-more-btn {
+    display: block;
+    width: fit-content;
+    margin: 40px auto; /* Centers it and adds space from the grid */
+    padding: 12px 32px;
+    background: white; /* Matches thread-card background */
+    color: var(--blue-primary);
+    border: 2px solid var(--blue-primary);
+    border-radius: 50px; /* Pill shape for a modern feel */
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+.load-more-btn:hover {
+    background: var(--blue-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+}
+
+.load-more-btn:active {
+    transform: translateY(0);
+}
+
+/* Optional: Add a "Loading" state class for the button */
+.load-more-btn.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    cursor: wait;
+}

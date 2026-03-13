@@ -3,6 +3,7 @@ import { verifyAndDecodeToken } from "./_jwt.js";
 export async function onRequest(context) {
     const { request, env } = context;
     const method = request.method;
+    const url = new URL(request.url);
 
     // --- AUTH CHECK ---
     const cookie = request.headers.get("Cookie") || "";
@@ -11,25 +12,35 @@ export async function onRequest(context) {
     let user = null;
     if (token) {
         try {
-            // Verify the JWT against your secret
             user = await verifyAndDecodeToken(token, env.JWT_SECRET);
-        } catch (e) {
-            // If token is fake or expired, user remains null
-        }
+        } catch (e) {}
     }
 
     try {
         if (method === "GET") {
-            const { results } = await env.DB.prepare(
-                "SELECT * FROM threads ORDER BY created_at DESC"
-            ).all();
-            return new Response(JSON.stringify(results), {
+            // 1. Get pagination params from URL (Default to 50)
+            const limit = parseInt(url.searchParams.get("limit")) || 50;
+            const offset = parseInt(url.searchParams.get("offset")) || 0;
+
+            // 2. Fetch threads with LIMIT and OFFSET
+            // We fetch limit + 1 to check if there is a next page
+            const { results: threads } = await env.DB.prepare(
+                "SELECT * FROM threads ORDER BY created_at DESC LIMIT ? OFFSET ?"
+            ).bind(limit + 1, offset).all();
+
+            const hasMore = threads.length > limit;
+            const threadsToSend = hasMore ? threads.slice(0, limit) : threads;
+
+            // 3. Return the results wrapped in an object
+            return new Response(JSON.stringify({
+                threads: threadsToSend,
+                hasMore: hasMore
+            }), {
                 headers: { "Content-Type": "application/json" }
             });
         }
 
         if (method === "POST") {
-            // Check if JWT was valid
             if (!user) return new Response(JSON.stringify({ error: "Login required" }), { status: 401 });
 
             const { title, content } = await request.json();

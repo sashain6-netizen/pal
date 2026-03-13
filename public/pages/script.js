@@ -1,13 +1,87 @@
 let currentTab = 'public';
-let invitedUsers = []; // Track selected usernames for private chats
+let invitedUsers = []; 
 let searchTimeout;
 
+// --- PAGINATION STATE ---
+let currentOffset = 0;
+const limit = 50; // Match your backend default
+
 async function init() {
-    loadPublicThreads();
+    loadPublicThreads(); // Initial load
     loadPrivateChats();
 }
 
-// --- TAB LOGIC ---
+// --- DATA LOADING ---
+async function loadPublicThreads(append = false) {
+    const container = document.getElementById('thread-list');
+    
+    if (!append) {
+        currentOffset = 0;
+        container.innerHTML = '<p class="empty-msg">Loading threads...</p>';
+    }
+
+    try {
+        // Updated URL with limit and offset
+        const res = await fetch(`/api/forum?limit=${limit}&offset=${currentOffset}`, { credentials: 'include' });
+        
+        if (res.status === 401) {
+            container.innerHTML = '<p class="empty-msg">Please <a href="/login">log in</a>.</p>';
+            return;
+        }
+
+        const data = await res.json();
+        const threads = data.threads || []; // Backend now returns an object, not a raw array
+
+        if (!append && threads.length === 0) {
+            container.innerHTML = '<p class="empty-msg">No threads yet.</p>';
+            toggleLoadMoreButton(false);
+            return;
+        }
+
+        const threadsHTML = threads.map(t => `
+            <div class="feature-card thread-card" onclick="location.href='/pages/thread?id=${t.id}'">
+                <h3>${t.title}</h3>
+                <div class="meta-info">
+                    By <span class="user-mention">@${t.creator_username}</span> • ${new Date(t.created_at).toLocaleDateString()}
+                </div>
+            </div>
+        `).join('');
+
+        if (!append) {
+            container.innerHTML = threadsHTML;
+        } else {
+            container.insertAdjacentHTML('beforeend', threadsHTML);
+        }
+
+        // Update pagination tracking
+        currentOffset += threads.length;
+        toggleLoadMoreButton(data.hasMore);
+
+    } catch (e) { 
+        console.error(e);
+        container.innerHTML = '<p class="empty-msg">Error loading threads.</p>'; 
+    }
+}
+
+// --- NEW PAGINATION HELPER ---
+function toggleLoadMoreButton(hasMore) {
+    let btn = document.getElementById('load-more-threads-btn');
+    const listSection = document.getElementById('public-section');
+
+    if (!btn) {
+        btn = document.createElement('button');
+        btn.id = 'load-more-threads-btn';
+        btn.className = 'load-more-btn'; // Use your existing CSS class
+        btn.innerText = "Load More Threads";
+        btn.onclick = () => loadPublicThreads(true);
+        listSection.appendChild(btn);
+    }
+    
+    // Only show the button if there is more data AND we are on the public tab
+    btn.style.display = (hasMore && currentTab === 'public') ? 'block' : 'none';
+}
+
+// --- MODIFIED TAB LOGIC ---
 function switchTab(tab, e) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -16,43 +90,20 @@ function switchTab(tab, e) {
     const isPublic = tab === 'public';
     const searchInput = document.getElementById('forumSearch');
     
-    // UI Feedback
     searchInput.placeholder = isPublic ? "Search public threads..." : "Filter my private chats...";
-    searchInput.value = ""; // Clear search when switching tabs
+    searchInput.value = ""; 
     
-    // Reset private list visibility
     if (!isPublic) {
         document.querySelectorAll('#chat-list .thread-card').forEach(c => c.style.display = 'block');
+        const btn = document.getElementById('load-more-threads-btn');
+        if(btn) btn.style.display = 'none';
+    } else {
+        loadPublicThreads(false); 
     }
 
     document.getElementById('public-section').style.display = isPublic ? 'block' : 'none';
     document.getElementById('private-section').style.display = !isPublic ? 'block' : 'none';
     document.getElementById('modalTitle').innerText = isPublic ? 'Create New Thread' : 'Start Private Chat';
-}
-
-// --- DATA LOADING ---
-async function loadPublicThreads() {
-    const container = document.getElementById('thread-list');
-    try {
-        const res = await fetch('/api/forum', { credentials: 'include' });
-        if (res.status === 401) {
-            container.innerHTML = '<p class="empty-msg">Please <a href="/login">log in</a>.</p>';
-            return;
-        }
-        const threads = await res.json();
-        if (!threads || threads.length === 0) {
-            container.innerHTML = '<p class="empty-msg">No threads yet.</p>';
-            return;
-        }
-        container.innerHTML = threads.map(t => `
-            <div class="feature-card thread-card" onclick="location.href='/pages/thread?id=${t.id}'">
-                <h3>${t.title}</h3>
-                <div class="meta-info">
-                    By <span class="user-mention">@${t.creator_username}</span> • ${new Date(t.created_at).toLocaleDateString()}
-                </div>
-            </div>
-        `).join('');
-    } catch (e) { container.innerHTML = '<p class="empty-msg">Error loading threads.</p>'; }
 }
 
 async function loadPrivateChats() {
