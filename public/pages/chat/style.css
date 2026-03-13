@@ -292,3 +292,37 @@ body {
     margin: 10px 0;
     padding: 4px;
 }
+
+/* Container for the button to give it some breathing room */
+#loadMoreBtn {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    margin: 10px 0;
+    background-color: rgba(0, 0, 0, 0.05); /* Very light grey */
+    color: #666;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Varela Round', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+#loadMoreBtn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+#loadMoreBtn:active {
+    transform: scale(0.98);
+}
+
+/* Optional: Add a "loading" state class if you want to dim it while fetching */
+#loadMoreBtn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: none;
+}
