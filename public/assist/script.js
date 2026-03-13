@@ -7,7 +7,7 @@ function initGames() {
     if (!grid) return;
     
     grid.innerHTML = games.map((game, index) => `
-        <div class="game-card" onclick="openGame(${index})">
+        <div class="game-card" data-title="${game.title.toLowerCase()}" onclick="openGame(${index})">
             <img src="${game.thumb}" class="game-thumb" alt="${game.title}">
             <div class="game-info"><h3>${game.title}</h3></div>
         </div>
@@ -16,25 +16,41 @@ function initGames() {
 
 function openGame(index) {
     const game = games[index];
-    if (game.external) {
-        return window.open(game.url, '_blank');
-    }
-
     const frame = document.getElementById('gameFrame');
     const overlay = document.getElementById('gameOverlay');
     
+    if (game.external) {
+        window.open(game.url, '_blank');
+        return;
+    }
+
     overlay.style.display = 'block';
-    // Direct assignment is safer and more reliable than fetching blobs for external sites
     frame.src = game.url; 
+}
+
+function closeGame() {
+    const overlay = document.getElementById('gameOverlay');
+    const frame = document.getElementById('gameFrame');
+    overlay.style.display = 'none';
+    frame.src = ''; // Stops game audio/processing when closed
+}
+
+function toggleFullScreen() {
+    const frame = document.getElementById('gameFrame');
+    if (frame.requestFullscreen) {
+        frame.requestFullscreen();
+    } else if (frame.webkitRequestFullscreen) {
+        frame.webkitRequestFullscreen();
+    }
 }
 
 function filterGames() {
     const query = document.getElementById('gameSearch').value.toLowerCase();
     const cards = document.querySelectorAll('.game-card');
     
-    // Using the data-attribute or checking the inner text is safer than array index
     cards.forEach(card => {
-        const title = card.querySelector('h3').textContent.toLowerCase();
+        const title = card.getAttribute('data-title');
         card.style.display = title.includes(query) ? 'block' : 'none';
     });
 }
+document.addEventListener('DOMContentLoaded', initGames);
