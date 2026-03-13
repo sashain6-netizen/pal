@@ -7,15 +7,16 @@ let currentOffset = 0;
 const limit = 50; 
 
 async function init() {
+    // Initial data load
     loadPublicThreads();
     loadPrivateChats();
 }
 
-// --- DATA LOADING ---
-// --- 1. Update loadPublicThreads Rendering ---
+// --- FORUM DATA LOADING ---
 async function loadPublicThreads(append = false) {
     const container = document.getElementById('thread-list');
     
+    // Reset offset if we are doing a fresh load (not clicking 'Load More')
     if (!append) {
         currentOffset = 0;
         container.innerHTML = '<p class="empty-msg">Loading threads...</p>';
@@ -25,7 +26,7 @@ async function loadPublicThreads(append = false) {
         const res = await fetch(`/api/forum?limit=${limit}&offset=${currentOffset}`, { credentials: 'include' });
         
         if (res.status === 401) {
-            container.innerHTML = '<p class="empty-msg">Please <a href="/login">log in</a>.</p>';
+            container.innerHTML = '<p class="empty-msg">Please <a href="/login">log in</a> to view the forum.</p>';
             return;
         }
 
@@ -33,17 +34,16 @@ async function loadPublicThreads(append = false) {
         const threads = data.threads || [];
 
         if (!append && threads.length === 0) {
-            container.innerHTML = '<p class="empty-msg">No threads yet.</p>';
+            container.innerHTML = '<p class="empty-msg">No threads yet. Be the first to start one!</p>';
             toggleLoadMoreButton(false);
             return;
         }
 
-        // Updated mapping to include the Pin Button
         const threadsHTML = threads.map(t => `
             <div class="feature-card thread-card ${t.is_pinned ? 'pinned' : ''}">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <h3 onclick="location.href='/pages/thread?id=${t.id}'">${t.title}</h3>
-                    <button class="pin-btn ${t.is_pinned ? 'active' : ''}" 
+                    <button id="pin-icon-${t.id}" class="pin-btn ${t.is_pinned ? 'active' : ''}" 
                             onclick="togglePin(${t.id}, event)" 
                             title="${t.is_pinned ? 'Unpin' : 'Pin'} Thread">
                         📌
@@ -61,19 +61,23 @@ async function loadPublicThreads(append = false) {
             container.insertAdjacentHTML('beforeend', threadsHTML);
         }
 
+        // Update the offset for the next pagination call
         currentOffset += threads.length;
         toggleLoadMoreButton(data.hasMore);
 
     } catch (e) { 
-        console.error(e);
-        container.innerHTML = '<p class="empty-msg">Error loading threads.</p>'; 
+        console.error("Forum Load Error:", e);
+        container.innerHTML = '<p class="empty-msg">Error loading threads. Please refresh.</p>'; 
     }
 }
 
-// --- 2. Add the Toggle Pin Function ---
+// --- PINNING LOGIC ---
 window.togglePin = async (threadId, event) => {
-    // Crucial: Stops the click from triggering the thread-card's location change
-    event.stopPropagation(); 
+    event.stopPropagation(); // Prevent opening the thread when clicking the pin
+    const btn = document.getElementById(`pin-icon-${threadId}`);
+    
+    // Optimistic UI update
+    btn.classList.toggle('active');
 
     try {
         const res = await fetch('/api/forum', {
@@ -83,38 +87,40 @@ window.togglePin = async (threadId, event) => {
             credentials: 'include'
         });
 
-        const data = await res.json();
-
         if (res.ok) {
-            // Re-load the list so that pinned items jump to the top automatically
+            // Refresh the list to apply sorting (Pins fly to top)
             loadPublicThreads(false);
         } else {
-            alert(data.error || "Failed to toggle pin.");
+            const data = await res.json();
+            alert(data.error || "Login required to pin threads.");
+            loadPublicThreads(false); // Revert UI
         }
     } catch (e) {
         console.error("Pinning error:", e);
+        loadPublicThreads(false);
     }
 };
 
-// --- NEW PAGINATION HELPER ---
+// --- PAGINATION HELPER ---
 function toggleLoadMoreButton(hasMore) {
     let btn = document.getElementById('load-more-threads-btn');
     const listSection = document.getElementById('public-section');
 
-    if (!btn) {
+    if (!btn && listSection) {
         btn = document.createElement('button');
         btn.id = 'load-more-threads-btn';
-        btn.className = 'load-more-btn'; // Use your existing CSS class
+        btn.className = 'load-more-btn'; 
         btn.innerText = "Load More Threads";
         btn.onclick = () => loadPublicThreads(true);
         listSection.appendChild(btn);
     }
     
-    // Only show the button if there is more data AND we are on the public tab
-    btn.style.display = (hasMore && currentTab === 'public') ? 'block' : 'none';
+    if (btn) {
+        btn.style.display = (hasMore && currentTab === 'public') ? 'block' : 'none';
+    }
 }
 
-// --- MODIFIED TAB LOGIC ---
+// --- TAB SWITCHING ---
 function switchTab(tab, e) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -122,14 +128,16 @@ function switchTab(tab, e) {
 
     const isPublic = tab === 'public';
     const searchInput = document.getElementById('forumSearch');
+    const searchResults = document.getElementById('searchResults');
     
     searchInput.placeholder = isPublic ? "Search public threads..." : "Filter my private chats...";
     searchInput.value = ""; 
+    if (searchResults) searchResults.classList.remove('active');
     
     if (!isPublic) {
-        document.querySelectorAll('#chat-list .thread-card').forEach(c => c.style.display = 'block');
+        loadPrivateChats();
         const btn = document.getElementById('load-more-threads-btn');
-        if(btn) btn.style.display = 'none';
+        if (btn) btn.style.display = 'none';
     } else {
         loadPublicThreads(false); 
     }
@@ -139,6 +147,7 @@ function switchTab(tab, e) {
     document.getElementById('modalTitle').innerText = isPublic ? 'Create New Thread' : 'Start Private Chat';
 }
 
+// --- PRIVATE CHATS ---
 async function loadPrivateChats() {
     const container = document.getElementById('chat-list');
     try {
@@ -154,10 +163,12 @@ async function loadPrivateChats() {
                 <div class="meta-info">Owner: @${c.creator_username}</div>
             </div>
         `).join('');
-    } catch (e) { container.innerHTML = '<p class="empty-msg">Error loading chats.</p>'; }
+    } catch (e) { 
+        container.innerHTML = '<p class="empty-msg">Error loading chats.</p>'; 
+    }
 }
 
-// --- MODAL & POSTING ---
+// --- MODAL HANDLING ---
 function openModal() {
     document.getElementById('postModal').style.display = 'flex';
     document.getElementById('publicFields').style.display = currentTab === 'public' ? 'block' : 'none';
@@ -174,18 +185,17 @@ function closeModal() {
 
 async function submitPost() {
     const endpoint = currentTab === 'public' ? '/api/forum' : '/api/create-chat';
-    
-    // Build specific payload based on tab
     let payload;
+
     if (currentTab === 'public') {
         const title = document.getElementById('newTitle').value;
         const content = document.getElementById('newContent').value;
-        if (!title || !content) return showToast("Title and Content required!");
+        if (!title || !content) return alert("Title and Content required!");
         payload = { title, content };
     } else {
         const roomName = document.getElementById('roomName').value;
-        if (invitedUsers.length === 0) return showToast("Invite at least one person!");
-        payload = { roomName, invitedUsers }; // Sends the ARRAY
+        if (invitedUsers.length === 0) return alert("Invite at least one person!");
+        payload = { roomName, invitedUsers };
     }
 
     try {
@@ -197,44 +207,31 @@ async function submitPost() {
         });
 
         if (res.ok) {
-            // Reset all inputs
-            document.querySelectorAll('#postModal input, #postModal textarea').forEach(i => i.value = '');
             closeModal();
-            currentTab === 'public' ? loadPublicThreads() : loadPrivateChats();
+            currentTab === 'public' ? loadPublicThreads(false) : loadPrivateChats();
         } else {
             const errData = await res.json();
-            showToast(`Error: ${errData.error}`);
+            alert(`Error: ${errData.error}`);
         }
-    } catch (e) { showToast("Server connection failed."); }
+    } catch (e) { 
+        alert("Server connection failed."); 
+    }
 }
 
+// --- SEARCH LOGIC ---
 async function handleSearch() {
     const query = document.getElementById('forumSearch').value.toLowerCase().trim();
     const forumResultsDiv = document.getElementById('searchResults');
     
-    // TAB: PRIVATE CHATS (Client-side filtering for speed)
     if (currentTab === 'private') {
         const chats = document.querySelectorAll('#chat-list .thread-card');
-        let foundAny = false;
-
         chats.forEach(chat => {
-            const chatName = chat.querySelector('h3').innerText.toLowerCase();
-            const ownerName = chat.querySelector('.meta-info').innerText.toLowerCase();
-            
-            if (chatName.includes(query) || ownerName.includes(query)) {
-                chat.style.display = 'block';
-                foundAny = true;
-            } else {
-                chat.style.display = 'none';
-            }
+            const text = chat.innerText.toLowerCase();
+            chat.style.display = text.includes(query) ? 'block' : 'none';
         });
-
-        // Optional: Hide the dropdown results div since we are filtering the list directly
-        forumResultsDiv.classList.remove('active');
         return; 
     }
 
-    // TAB: PUBLIC FORUMS (Server-side search with debounce)
     clearTimeout(searchTimeout);
     if (query.length < 2) {
         forumResultsDiv.classList.remove('active');
@@ -260,7 +257,7 @@ async function handleSearch() {
     }, 300);
 }
 
-// --- SEARCH: USER INVITES ---
+// --- USER INVITE SEARCH ---
 async function searchUsersForInvite() {
     const query = document.getElementById('userSearchInput').value.toLowerCase().trim();
     const resultsDiv = document.getElementById('userSearchResults');
@@ -282,11 +279,9 @@ async function searchUsersForInvite() {
 }
 
 function selectUser(username) {
-
     if (!invitedUsers.includes(username)) {
         invitedUsers.push(username);
         renderUserTags();
-        document.getElementById('userSearchInput').focus();
     }
     document.getElementById('userSearchInput').value = '';
     document.getElementById('userSearchResults').style.display = 'none';
@@ -294,7 +289,7 @@ function selectUser(username) {
 
 function renderUserTags() {
     const container = document.getElementById('selectedUsers');
-    if(!container) return;
+    if (!container) return;
     container.innerHTML = invitedUsers.map(u => `
         <span class="user-tag">@${u} <span class="remove-tag" onclick="removeUser('${u}')">×</span></span>
     `).join('');
@@ -305,17 +300,17 @@ function removeUser(username) {
     renderUserTags();
 }
 
-// --- GLOBAL CLICKS ---
+// --- CLICK-OUTSIDE DISMISSAL ---
 document.addEventListener('click', (e) => {
-    // Close forum search
     if (!e.target.closest('.search-container')) {
-        document.getElementById('searchResults').classList.remove('active');
+        const sr = document.getElementById('searchResults');
+        if (sr) sr.classList.remove('active');
     }
-    // Close user invite search
     if (!e.target.closest('.user-search-wrapper')) {
         const uRes = document.getElementById('userSearchResults');
-        if(uRes) uRes.style.display = 'none';
+        if (uRes) uRes.style.display = 'none';
     }
 });
 
+// Launch!
 init();
