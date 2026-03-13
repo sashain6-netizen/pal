@@ -1,4 +1,4 @@
-import { verifyAndDecodeToken } from "./_jwt.js"; // Use your existing JWT helper
+import { verifyAndDecodeToken } from "./_jwt.js"; 
 
 export async function onRequestGet(context) {
     const { request, env } = context;

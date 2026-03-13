@@ -4,10 +4,10 @@ let searchTimeout;
 
 // --- PAGINATION STATE ---
 let currentOffset = 0;
-const limit = 1; // Match your backend default
+const limit = 50; 
 
 async function init() {
-    loadPublicThreads(); // Initial load
+    loadPublicThreads();
     loadPrivateChats();
 }
 
@@ -21,7 +21,6 @@ async function loadPublicThreads(append = false) {
     }
 
     try {
-        // Updated URL with limit and offset
         const res = await fetch(`/api/forum?limit=${limit}&offset=${currentOffset}`, { credentials: 'include' });
         
         if (res.status === 401) {

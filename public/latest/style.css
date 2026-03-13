@@ -143,3 +143,41 @@
 }
 
 .hidden { display: none; }
+
+/* --- LOAD MORE NEWS BUTTON --- */
+.load-more-btn {
+    display: block;
+    width: fit-content;
+    margin: 30px auto 60px; /* Centered with plenty of space at the bottom */
+    padding: 14px 40px;
+    background: white;
+    color: var(--blue-primary);
+    border: 2px solid var(--blue-primary);
+    border-radius: 50px; /* Matching your filter buttons */
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.05);
+}
+
+.load-more-btn:hover {
+    background: var(--blue-primary);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+}
+
+.load-more-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Optional: Loading State */
+.load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+}

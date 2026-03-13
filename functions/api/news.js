@@ -2,8 +2,8 @@ import { verifyAndDecodeToken } from "./_jwt.js";
 
 export async function onRequest(context) {
     const { request, env } = context;
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
     const secret = env.JWT_SECRET; 
 
     // --- Helper: Verify Staff Rank via Cookies & USERS_KV ---
@@ -34,12 +34,30 @@ export async function onRequest(context) {
 
     // --- 1. GET: Fetch Article(s) ---
     if (request.method === "GET") {
+        // Individual Article View
         if (id) {
             const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?").bind(id).first();
             return article ? Response.json(article) : new Response("Not Found", { status: 404 });
         }
-        const { results } = await env.DB.prepare("SELECT * FROM news_articles WHERE is_published = 1 ORDER BY created_at DESC").all();
-        return Response.json(results);
+
+        // List View with Pagination
+        const limit = parseInt(url.searchParams.get("limit")) || 10; // News usually looks better with 10-20 per page
+        const offset = parseInt(url.searchParams.get("offset")) || 0;
+
+        const { results: articles } = await env.DB.prepare(`
+            SELECT * FROM news_articles 
+            WHERE is_published = 1 
+            ORDER BY created_at DESC 
+            LIMIT ? OFFSET ?
+        `).bind(limit + 1, offset).all();
+
+        const hasMore = articles.length > limit;
+        const articlesToSend = hasMore ? articles.slice(0, limit) : articles;
+
+        return Response.json({
+            articles: articlesToSend,
+            hasMore: hasMore
+        });
     }
 
     // --- 2. PATCH: Update Article (Staff Only) ---

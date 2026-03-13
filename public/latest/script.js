@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const newsContainer = document.getElementById('news-container');
     const adminControls = document.getElementById('admin-controls');
+    
+    // --- PAGINATION STATE ---
     let allArticles = []; 
-    let isStaffMember = false; // Persistent flag to solve the "first load" issue
+    let currentOffset = 0;
+    const limit = 10;
+    let isStaffMember = false;
 
     // 1. Listen for Auth
     window.addEventListener('authReady', (e) => {
@@ -13,29 +17,44 @@ document.addEventListener('DOMContentLoaded', () => {
             adminControls.classList.remove('hidden');
         }
         
-        // Re-render once we know the rank to show delete buttons
-        renderArticles(allArticles);
+        renderArticles(allArticles, false);
     });
 
-    // 2. Fetch Articles
-    async function fetchNews() {
+    // 2. Fetch Articles (Updated for Pagination)
+    async function fetchNews(append = false) {
+        if (!append) currentOffset = 0;
+
         try {
-            const response = await fetch('/api/news');
-            allArticles = await response.json();
-            renderArticles(allArticles);
+            const response = await fetch(`/api/news?limit=${limit}&offset=${currentOffset}`);
+            const data = await response.json(); // Data is now { articles, hasMore }
+            
+            const newArticles = data.articles || [];
+            
+            if (append) {
+                allArticles = [...allArticles, ...newArticles];
+            } else {
+                allArticles = newArticles;
+            }
+
+            renderArticles(newArticles, append);
+            
+            currentOffset += newArticles.length;
+            toggleLoadMoreButton(data.hasMore);
+
         } catch (err) {
-            newsContainer.innerHTML = '<p>Error loading news.</p>';
+            console.error(err);
+            if (!append) newsContainer.innerHTML = '<p>Error loading news.</p>';
         }
     }
 
-    // 3. Render function
-    function renderArticles(articles) {
-        if (!articles || articles.length === 0) {
+    // 3. Render function (Updated to support appending)
+    function renderArticles(articles, append) {
+        if (!append && (!articles || articles.length === 0)) {
             newsContainer.innerHTML = '<p>No news yet.</p>';
             return;
         }
 
-        newsContainer.innerHTML = articles.map(art => `
+        const html = articles.map(art => `
             <div class="article-card" data-id="${art.id}">
                 <div class="card-header">
                     <span class="category-badge">${art.category || 'General'}</span>
@@ -48,32 +67,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `).join('');
+
+        if (append) {
+            newsContainer.insertAdjacentHTML('beforeend', html);
+        } else {
+            newsContainer.innerHTML = html;
+        }
     }
 
-    // 4. Category Filtering (Updated to pass 'this' for active state)
+    // 4. Load More Button Helper
+    function toggleLoadMoreButton(hasMore) {
+        let btn = document.getElementById('load-more-news-btn');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.id = 'load-more-news-btn';
+            btn.className = 'load-more-btn'; // Uses the same CSS we created earlier
+            btn.innerText = "Load More News";
+            btn.onclick = () => fetchNews(true);
+            newsContainer.after(btn);
+        }
+        btn.style.display = hasMore ? 'block' : 'none';
+    }
+
+    // 5. Category Filtering (Note: This filters the CURRENT loaded articles)
     window.filterByCategory = (category, btn) => {
-        // Handle active button styling
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
 
+        // Hide Load More while filtering to prevent logic conflicts
+        const loadMoreBtn = document.getElementById('load-more-news-btn');
+        
         if (category === 'All') {
-            renderArticles(allArticles);
+            renderArticles(allArticles, false);
+            if (loadMoreBtn) loadMoreBtn.style.display = 'block';
         } else {
             const filtered = allArticles.filter(a => a.category === category);
-            renderArticles(filtered);
+            renderArticles(filtered, false);
+            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
         }
     };
 
-    // 5. Delete Function
+    // 6. Delete Function
     window.deletePost = async (id) => {
         if (!confirm("Are you sure you want to delete this post?")) return;
         const res = await fetch(`/api/news?id=${id}`, { method: 'DELETE' });
 
         if (res.ok) {
             allArticles = allArticles.filter(a => a.id !== id);
-            renderArticles(allArticles); // Re-render to keep list synced
+            renderArticles(allArticles, false);
         } else {
-            alert("Failed to delete. You might not have permission.");
+            alert("Failed to delete.");
         }
     };
 
