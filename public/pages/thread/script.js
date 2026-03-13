@@ -1,7 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 const threadId = params.get('id');
 
-// --- NEW PAGINATION STATE ---
+// --- PAGINATION & CACHING STATE ---
 let currentOffset = 0;
 const limit = 10;
 let currentUser = null; 
@@ -9,15 +9,19 @@ let currentUser = null;
 async function loadThread(append = false) {
     if (!threadId) return window.location.href = '/pages';
 
-    // If not appending, we are starting fresh (initial load or new reply)
+    // If we aren't appending (e.g., initial load or fresh reply), reset
     if (!append) {
         currentOffset = 0;
-        document.getElementById('posts-container').innerHTML = ''; 
+        const container = document.getElementById('posts-container');
+        if (container) container.innerHTML = ''; 
     }
 
     try {
-        // Efficiency: Only fetch 'me' once
-        const fetchTasks = [fetch(`/api/thread?id=${threadId}&limit=${limit}&offset=${currentOffset}`)];
+        // Efficiency: Only fetch 'me' if we don't have it yet
+        const fetchTasks = [
+            fetch(`/api/thread?id=${threadId}&limit=${limit}&offset=${currentOffset}`)
+        ];
+        
         if (!currentUser) {
             fetchTasks.push(fetch('/api/me').then(res => res.json()));
         }
@@ -27,11 +31,12 @@ async function loadThread(append = false) {
         
         if (userData) currentUser = userData;
 
+        // Update UI
         document.getElementById('thread-title').innerText = data.title;
         const container = document.getElementById('posts-container');
 
-        // Map posts to HTML
-        const postsHTML = data.posts.map(post => `
+        // Generate HTML for the posts returned in this batch
+        const postsHTML = (data.posts || []).map(post => `
             <div class="compact-post-row">
                 <span class="rank-tag" style="background: ${post.themeColor}">${post.rank}</span>
                 <div class="post-body-inline">
@@ -46,16 +51,16 @@ async function loadThread(append = false) {
             </div>
         `).join('');
 
-        // IMPORTANT: Use insertAdjacentHTML so we append instead of overwriting
+        // Append to container
         container.insertAdjacentHTML('beforeend', postsHTML);
 
-        // Update offset for the next "Load More" click
-        currentOffset += data.posts.length;
+        // Update tracking
+        currentOffset += (data.posts || []).length;
 
-        // Handle Load More button visibility
+        // Manage Load More button
         toggleLoadMoreButton(data.hasMore);
 
-        // Only run permission check on initial load
+        // Permission check for delete button (only needs to run on initial load)
         if (!append) {
             renderDeleteButton(currentUser, data.author_username);
         }
@@ -65,7 +70,8 @@ async function loadThread(append = false) {
     }
 }
 
-// --- NEW HELPER FOR LOAD MORE BUTTON ---
+// --- NEW UI HELPERS ---
+
 function toggleLoadMoreButton(hasMore) {
     let btn = document.getElementById('load-more-btn');
     if (!btn) {
@@ -74,12 +80,12 @@ function toggleLoadMoreButton(hasMore) {
         btn.className = 'load-more-btn';
         btn.innerText = "Load More";
         btn.onclick = () => loadThread(true);
+        // Inserts after the posts container
         document.getElementById('posts-container').after(btn);
     }
     btn.style.display = hasMore ? 'block' : 'none';
 }
 
-// --- REFACTORED PERMISSION CHECK ---
 function renderDeleteButton(user, authorUsername) {
     const oldBtn = document.querySelector('.delete-thread-btn');
     if (oldBtn) oldBtn.remove();
@@ -96,7 +102,79 @@ function renderDeleteButton(user, authorUsername) {
     }
 }
 
-// ... Keep your escapeHTML, formatTimestamp, and Modal functions exactly as they were ...
+// --- MODAL FUNCTIONS (KEEPING YOURS) ---
+
+function openDeleteModal(id) {
+    const modal = document.getElementById('deleteModal');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    modal.classList.add('active');
+
+    confirmBtn.onclick = async () => {
+        confirmBtn.innerText = "Deleting...";
+        confirmBtn.disabled = true;
+        await executeDelete(id);
+    };
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+}
+
+async function executeDelete(id) {
+    try {
+        const res = await fetch('/api/delete-thread', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ threadId: id })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+            window.location.href = "/pages";
+        } else {
+            alert(data.error);
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            confirmBtn.innerText = "Yes, Delete It";
+            confirmBtn.disabled = false;
+            closeDeleteModal();
+        }
+    } catch (err) {
+        console.error(err);
+        closeDeleteModal();
+    }
+}
+
+// --- HELPERS (KEEPING YOURS) ---
+
+function escapeHTML(str) {
+    if (!str) return "";
+    const p = document.createElement('p');
+    p.textContent = str;
+    return p.innerHTML;
+}
+
+function formatTimestamp(dateString) {
+    const postDate = new Date(dateString);
+    const now = new Date();
+
+    const isToday = postDate.getUTCFullYear() === now.getUTCFullYear() &&
+                    postDate.getUTCMonth() === now.getUTCMonth() &&
+                    postDate.getUTCDate() === now.getUTCDate();
+
+    if (isToday) {
+        return postDate.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true 
+        });
+    } else {
+        return postDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+    }
+}
 
 async function postReply() {
     const content = document.getElementById('replyText').value;
@@ -111,10 +189,12 @@ async function postReply() {
 
     if (res.ok) {
         document.getElementById('replyText').value = '';
-        loadThread(false); // Refresh from top to show the new reply
+        // Load fresh (false) to see the new reply at the end
+        loadThread(false); 
     } else {
         alert("Failed to post reply.");
     }
 }
 
+// Start
 loadThread();
