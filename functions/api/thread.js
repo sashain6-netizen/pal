@@ -1,42 +1,42 @@
 export async function onRequestGet(context) {
     const { request, env } = context;
     const url = new URL(request.url);
-    const threadId = url.searchParams.get("id");
-
-    if (!threadId) return new Response("ID Required", { status: 400 });
+    
+    const limit = parseInt(url.searchParams.get("limit")) || 10;
+    const offset = parseInt(url.searchParams.get("offset")) || 0;
 
     try {
-        // 1. FIXED: Changed 'author_username' to 'creator_username' to match your DB
-        const thread = await env.DB.prepare("SELECT title, creator_username FROM threads WHERE id = ?")
-            .bind(threadId).first();
+        // 1. Fetch the most recent threads with pagination
+        // We use LIMIT to restrict the count and OFFSET to skip already loaded ones
+        const { results: threads } = await env.DB.prepare(`
+            SELECT id, title, creator_username, created_at 
+            FROM threads 
+            ORDER BY created_at DESC 
+            LIMIT ? OFFSET ?
+        `)
+        .bind(limit, offset)
+        .all();
 
-        if (!thread) return new Response("Thread not found", { status: 404 });
-
-        // 2. Get All Posts
-        const { results: posts } = await env.DB.prepare(
-            "SELECT * FROM thread_posts WHERE thread_id = ? ORDER BY created_at ASC"
-        ).bind(threadId).all();
-
-        const decoratedPosts = await Promise.all(posts.map(async (post) => {
-            const userData = await env.USERS_KV.get(`user:${post.username.toLowerCase().trim()}`);
+        // 2. Decorate threads with User KV data (optional, but good for avatars on list)
+        const decoratedThreads = await Promise.all(threads.map(async (thread) => {
+            const userData = await env.USERS_KV.get(`user:${thread.creator_username.toLowerCase().trim()}`);
             const user = userData ? JSON.parse(userData) : {};
             
             return {
-                ...post,
-                displayName: user.displayName || post.username,
-                avatarUrl: user.avatarUrl || "/default-avatar.png",
-                themeColor: user.themeColor || "#2563eb",
-                rank: user.rank || "Member",
-                prefix: user.currentPrefix || user.prefix || "" 
-             };
+                ...thread,
+                author_display_name: user.displayName || thread.creator_username,
+                author_avatar: user.avatarUrl || "/default-avatar.png"
+            };
         }));
 
-        // 3. MAP 'creator_username' to 'author_username' for the frontend
+        // 3. Return the list and the next offset for the frontend to use
         return new Response(JSON.stringify({ 
-            title: thread.title, 
-            author_username: thread.creator_username, // The frontend expects 'author_username'
-            posts: decoratedPosts 
-        }), { headers: { "Content-Type": "application/json" } });
+            threads: decoratedThreads,
+            nextOffset: offset + limit,
+            hasMore: threads.length === limit // If we got fewer than the limit, there's no more data
+        }), { 
+            headers: { "Content-Type": "application/json" } 
+        });
 
     } catch (e) {
         return new Response(e.message, { status: 500 });

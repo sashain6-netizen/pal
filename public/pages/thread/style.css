@@ -246,3 +246,18 @@
 
 .btn-secondary:hover { background: #64748b; }
 .btn-danger:hover { background: #ff6b81; }
+
+.load-more-btn {
+    padding: 10px 25px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-family: 'Varela Round', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.load-more-btn:hover {
+    opacity: 0.8;
+}
