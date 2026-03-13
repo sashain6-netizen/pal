@@ -14,44 +14,47 @@ export async function onRequest(context) {
         const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = user.username;
 
-        // 2. GET: Fetch Messages (Security Gate Added Here)
-        if (method === "GET") {
-            const chatId = url.searchParams.get("id");
-            if (!chatId) return new Response(JSON.stringify({ error: "Missing ID" }), { status: 400 });
+        // 2. GET: Fetch Messages
+if (method === "GET") {
+    const chatId = url.searchParams.get("id");
+    // Get the page from URL, default to 0 (the most recent 50)
+    const page = parseInt(url.searchParams.get("page") || "0");
+    const limit = 50;
+    const offset = page * limit;
 
-            // --- THE SECURITY GATE ---
-            // Check if this specific user is a member of this specific room
-            const membership = await env.DB.prepare(
-                "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
-            ).bind(chatId, username).first();
+    if (!chatId) return new Response(JSON.stringify({ error: "Missing ID" }), { status: 400 });
 
-            if (!membership) {
-                return new Response(JSON.stringify({ 
-                    error: "Access Denied: You are not a member of this chat." 
-                }), { 
-                    status: 403, 
-                    headers: { "Content-Type": "application/json" } 
-                });
-            }
-            // -------------------------
+    const membership = await env.DB.prepare(
+        "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
+    ).bind(chatId, username).first();
 
-            // If they pass the gate, fetch data as normal
-            const messages = await env.DB.prepare(
-                "SELECT username, content, created_at FROM chat_messages WHERE room_id = ? ORDER BY created_at ASC LIMIT 50"
-            ).bind(chatId).all();
+    if (!membership) {
+        return new Response(JSON.stringify({ error: "Access Denied" }), { status: 403 });
+    }
 
-            const room = await env.DB.prepare("SELECT room_name, creator_username FROM chat_rooms WHERE id = ?")
-                .bind(chatId)
-                .first();
+    // 1. Fetch the LATEST messages using DESC and OFFSET
+    const result = await env.DB.prepare(
+        `SELECT username, content, created_at 
+         FROM chat_messages 
+         WHERE room_id = ? 
+         ORDER BY created_at DESC 
+         LIMIT ? OFFSET ?`
+    ).bind(chatId, limit, offset).all();
 
-            if (!room) return new Response(JSON.stringify({ error: "Room not found" }), { status: 404 });
+    // 2. Re-reverse the array so they appear in chronological order (oldest to newest) for the UI
+    const messages = (result.results || []).reverse();
 
-            return new Response(JSON.stringify({ 
-                roomName: room.room_name, 
-                createdBy: room.creator_username, 
-                messages: messages.results || []
-            }), { headers: { "Content-Type": "application/json" } });
-        }
+    const room = await env.DB.prepare("SELECT room_name, creator_username FROM chat_rooms WHERE id = ?")
+        .bind(chatId)
+        .first();
+
+    return new Response(JSON.stringify({ 
+        roomName: room?.room_name, 
+        createdBy: room?.creator_username, 
+        messages: messages,
+        currentPage: page
+    }), { headers: { "Content-Type": "application/json" } });
+}
 
         // 3. POST: Send Message (Add Security Gate here too)
         if (method === "POST") {
