@@ -1,84 +1,85 @@
 const encoder = new TextEncoder();
 
-function base64UrlEncode(str) {
-  return btoa(str)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
+// Modern Base64URL Encode
+function base64UrlEncode(buffer) {
+    if (typeof buffer === 'string') buffer = encoder.encode(buffer);
+    const binString = Array.from(new Uint8Array(buffer), (byte) => String.fromCharCode(byte)).join("");
+    return btoa(binString)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
 }
 
-// Helper to decode Base64URL back to a string
+// Modern Base64URL Decode
 function base64UrlDecode(str) {
-  str = str.replace(/-/g, "+").replace(/_/g, "/");
-  while (str.length % 4) str += "=";
-  return atob(str);
+    str = str.replace(/-/g, "+").replace(/_/g, "/");
+    while (str.length % 4) str += "=";
+    const binString = atob(str);
+    return new Uint8Array(Array.from(binString, (char) => char.charCodeAt(0)));
 }
 
 export async function createToken(username, secret) {
-  const header = JSON.stringify({ alg: "HS256", typ: "JWT" });
-  const payload = JSON.stringify({
-    username,
-    exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), 
-  });
+    const header = JSON.stringify({ alg: "HS256", typ: "JWT" });
+    const payload = JSON.stringify({
+        username,
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), 
+    });
 
-  const encodedHeader = base64UrlEncode(header);
-  const encodedPayload = base64UrlEncode(payload);
-  const data = `${encodedHeader}.${encodedPayload}`;
+    const encodedHeader = base64UrlEncode(header);
+    const encodedPayload = base64UrlEncode(payload);
+    const data = `${encodedHeader}.${encodedPayload}`;
 
-  const key = await crypto.subtle.importKey(
-    "raw", 
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false, 
-    ["sign"]
-  );
+    const key = await crypto.subtle.importKey(
+        "raw", 
+        encoder.encode(secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false, 
+        ["sign"]
+    );
 
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
-  const encodedSignature = base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+    const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
+    const encodedSignature = base64UrlEncode(signature);
 
-  return `${data}.${encodedSignature}`;
+    return `${data}.${encodedSignature}`;
 }
 
-// ADD THIS: The function update_profile.js is looking for!
 export async function verifyAndDecodeToken(token, secret) {
-  const [headerB64, payloadB64, signatureB64] = token.split(".");
-  
-  // 1. Re-sign the data to verify authenticity
-  const data = `${headerB64}.${payloadB64}`;
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["verify"]
-  );
+    const parts = token.split(".");
+    if (parts.length !== 3) throw new Error("Invalid Token Format");
+    
+    const [headerB64, payloadB64, signatureB64] = parts;
+    const data = `${headerB64}.${payloadB64}`;
+    
+    const key = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["verify"]
+    );
 
-  const signature = new Uint8Array(
-    Array.from(base64UrlDecode(signatureB64), c => c.charCodeAt(0))
-  );
+    const signature = base64UrlDecode(signatureB64);
+    const isValid = await crypto.subtle.verify(
+        "HMAC",
+        key,
+        signature,
+        encoder.encode(data)
+    );
 
-  const isValid = await crypto.subtle.verify(
-    "HMAC",
-    key,
-    signature,
-    encoder.encode(data)
-  );
+    if (!isValid) throw new Error("Invalid Token Signature");
 
-  if (!isValid) throw new Error("Invalid Token Signature");
-
-  try {
-      const payload = JSON.parse(base64UrlDecode(payloadB64));
-      
-      // Check expiration
-      if (payload.exp && Date.now() / 1000 > payload.exp) {
-          throw new Error("Token Expired");
-      }
-      
-      return payload;
-  } catch (e) {
-      throw new Error("Malformed Token Payload");
-  }
+    try {
+        const decodedPayload = new TextDecoder().decode(base64UrlDecode(payloadB64));
+        const payload = JSON.parse(decodedPayload);
+        
+        if (payload.exp && Date.now() / 1000 > payload.exp) {
+            throw new Error("Token Expired");
+        }
+        
+        return payload;
+    } catch (e) {
+        throw new Error("Malformed Token Payload");
+    }
 }
 
-// ALSO ADD THIS: Just in case you use the name parseToken elsewhere
 export const parseToken = verifyAndDecodeToken;
