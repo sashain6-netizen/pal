@@ -1,5 +1,5 @@
 const games = [
-    { title: "Polytrack", thumb: "https://placehold.co/200x150", url: "https://polytrack.io/", external: false }
+    { title: "Polytrack", thumb: "https://placehold.co/200x150", url: "https://stuffed18.github.io/polytrack-0.4.1/", external: false }
 ];
 
 function initGames() {
