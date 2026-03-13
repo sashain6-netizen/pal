@@ -27,6 +27,11 @@ function openGame(index) {
 
     overlay.style.display = 'block';
     frame.src = game.url; 
+
+    frame.onload = function() {
+        frame.focus();
+        frame.contentWindow.focus();
+    };
 }
 
 function closeGame() {
