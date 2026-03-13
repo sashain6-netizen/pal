@@ -4,7 +4,7 @@ let searchTimeout;
 
 // --- PAGINATION STATE ---
 let currentOffset = 0;
-const limit = 50; // Match your backend default
+const limit = 1; // Match your backend default
 
 async function init() {
     loadPublicThreads(); // Initial load

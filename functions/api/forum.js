@@ -18,8 +18,7 @@ export async function onRequest(context) {
 
     try {
         if (method === "GET") {
-            // 1. Get pagination params from URL (Default to 50)
-            const limit = parseInt(url.searchParams.get("limit")) || 50;
+            const limit = parseInt(url.searchParams.get("limit")) || 1;
             const offset = parseInt(url.searchParams.get("offset")) || 0;
 
             // 2. Fetch threads with LIMIT and OFFSET
