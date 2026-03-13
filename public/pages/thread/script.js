@@ -132,7 +132,7 @@ async function executeDelete(id) {
         if (data.success) {
             window.location.href = "/pages";
         } else {
-            alert(data.error);
+            showToast(data.error);
             const confirmBtn = document.getElementById('confirmDeleteBtn');
             confirmBtn.innerText = "Yes, Delete It";
             confirmBtn.disabled = false;
@@ -192,7 +192,7 @@ async function postReply() {
         // Load fresh (false) to see the new reply at the end
         loadThread(false); 
     } else {
-        alert("Failed to post reply.");
+        showToast("Failed to post reply.");
     }
 }
 
