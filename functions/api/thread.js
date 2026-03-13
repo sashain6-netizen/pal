@@ -4,7 +4,7 @@ export async function onRequestGet(context) {
     
     // Get parameters
     const threadId = url.searchParams.get("id");
-    const limit = parseInt(url.searchParams.get("limit")) || 10;
+    const limit = parseInt(url.searchParams.get("limit")) || 50;
     const offset = parseInt(url.searchParams.get("offset")) || 0;
 
     if (!threadId) return new Response("ID Required", { status: 400 });
