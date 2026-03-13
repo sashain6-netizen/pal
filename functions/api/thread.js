@@ -2,43 +2,60 @@ export async function onRequestGet(context) {
     const { request, env } = context;
     const url = new URL(request.url);
     
+    // Get parameters
+    const threadId = url.searchParams.get("id");
     const limit = parseInt(url.searchParams.get("limit")) || 10;
     const offset = parseInt(url.searchParams.get("offset")) || 0;
 
+    if (!threadId) return new Response("ID Required", { status: 400 });
+
     try {
-        // 1. Fetch the most recent threads with pagination
-        // We use LIMIT to restrict the count and OFFSET to skip already loaded ones
-        const { results: threads } = await env.DB.prepare(`
-            SELECT id, title, creator_username, created_at 
-            FROM threads 
-            ORDER BY created_at DESC 
+        // 1. Get the main thread info (Title and Author)
+        const thread = await env.DB.prepare("SELECT title, creator_username FROM threads WHERE id = ?")
+            .bind(threadId)
+            .first();
+
+        if (!thread) return new Response("Thread not found", { status: 404 });
+
+        // 2. Get the POSTS for this thread with pagination
+        // We fetch limit + 1 to see if there is another page available
+        const { results: posts } = await env.DB.prepare(`
+            SELECT * FROM thread_posts 
+            WHERE thread_id = ? 
+            ORDER BY created_at ASC 
             LIMIT ? OFFSET ?
         `)
-        .bind(limit, offset)
+        .bind(threadId, limit + 1, offset)
         .all();
 
-        // 2. Decorate threads with User KV data (optional, but good for avatars on list)
-        const decoratedThreads = await Promise.all(threads.map(async (thread) => {
-            const userData = await env.USERS_KV.get(`user:${thread.creator_username.toLowerCase().trim()}`);
+        const hasMore = posts.length > limit;
+        const postsToSend = hasMore ? posts.slice(0, limit) : posts;
+
+        // 3. Decorate posts with User KV data
+        const decoratedPosts = await Promise.all(postsToSend.map(async (post) => {
+            const userData = await env.USERS_KV.get(`user:${post.username.toLowerCase().trim()}`);
             const user = userData ? JSON.parse(userData) : {};
             
             return {
-                ...thread,
-                author_display_name: user.displayName || thread.creator_username,
-                author_avatar: user.avatarUrl || "/default-avatar.png"
+                ...post,
+                displayName: user.displayName || post.username,
+                themeColor: user.themeColor || "#2563eb",
+                rank: user.rank || "Member",
+                prefix: user.currentPrefix || user.prefix || "" 
             };
         }));
 
-        // 3. Return the list and the next offset for the frontend to use
+        // 4. Return what the frontend expects: { title, author_username, posts, hasMore }
         return new Response(JSON.stringify({ 
-            threads: decoratedThreads,
-            nextOffset: offset + limit,
-            hasMore: threads.length === limit // If we got fewer than the limit, there's no more data
+            title: thread.title, 
+            author_username: thread.creator_username, 
+            posts: decoratedPosts, 
+            hasMore: hasMore
         }), { 
             headers: { "Content-Type": "application/json" } 
         });
 
     } catch (e) {
-        return new Response(e.message, { status: 500 });
+        return new Response(JSON.stringify({ error: e.message, posts: [] }), { status: 500 });
     }
 }
