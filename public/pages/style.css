@@ -369,3 +369,32 @@
     pointer-events: none;
     cursor: wait;
 }
+
+/* The Pin Button */
+.pin-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    filter: grayscale(1); /* Looks muted when not pinned */
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    padding: 4px;
+}
+
+.pin-btn:hover {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.pin-btn.active {
+    filter: grayscale(0); /* Full color when pinned */
+    opacity: 1;
+    transform: rotate(-45deg); /* Tilted look */
+}
+
+/* Highlighted card for pinned threads */
+.thread-card.pinned {
+    border-left: 5px solid #f59e0b; /* Amber/Gold border */
+    background: #fffdf5; /* Very subtle warm background */
+}

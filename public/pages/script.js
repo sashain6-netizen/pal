@@ -12,6 +12,7 @@ async function init() {
 }
 
 // --- DATA LOADING ---
+// --- 1. Update loadPublicThreads Rendering ---
 async function loadPublicThreads(append = false) {
     const container = document.getElementById('thread-list');
     
@@ -29,7 +30,7 @@ async function loadPublicThreads(append = false) {
         }
 
         const data = await res.json();
-        const threads = data.threads || []; // Backend now returns an object, not a raw array
+        const threads = data.threads || [];
 
         if (!append && threads.length === 0) {
             container.innerHTML = '<p class="empty-msg">No threads yet.</p>';
@@ -37,10 +38,18 @@ async function loadPublicThreads(append = false) {
             return;
         }
 
+        // Updated mapping to include the Pin Button
         const threadsHTML = threads.map(t => `
-            <div class="feature-card thread-card" onclick="location.href='/pages/thread?id=${t.id}'">
-                <h3>${t.title}</h3>
-                <div class="meta-info">
+            <div class="feature-card thread-card ${t.is_pinned ? 'pinned' : ''}">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <h3 onclick="location.href='/pages/thread?id=${t.id}'">${t.title}</h3>
+                    <button class="pin-btn ${t.is_pinned ? 'active' : ''}" 
+                            onclick="togglePin(${t.id}, event)" 
+                            title="${t.is_pinned ? 'Unpin' : 'Pin'} Thread">
+                        📌
+                    </button>
+                </div>
+                <div class="meta-info" onclick="location.href='/pages/thread?id=${t.id}'">
                     By <span class="user-mention">@${t.creator_username}</span> • ${new Date(t.created_at).toLocaleDateString()}
                 </div>
             </div>
@@ -52,7 +61,6 @@ async function loadPublicThreads(append = false) {
             container.insertAdjacentHTML('beforeend', threadsHTML);
         }
 
-        // Update pagination tracking
         currentOffset += threads.length;
         toggleLoadMoreButton(data.hasMore);
 
@@ -61,6 +69,32 @@ async function loadPublicThreads(append = false) {
         container.innerHTML = '<p class="empty-msg">Error loading threads.</p>'; 
     }
 }
+
+// --- 2. Add the Toggle Pin Function ---
+window.togglePin = async (threadId, event) => {
+    // Crucial: Stops the click from triggering the thread-card's location change
+    event.stopPropagation(); 
+
+    try {
+        const res = await fetch('/api/forum', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pinThreadId: threadId }),
+            credentials: 'include'
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            // Re-load the list so that pinned items jump to the top automatically
+            loadPublicThreads(false);
+        } else {
+            alert(data.error || "Failed to toggle pin.");
+        }
+    } catch (e) {
+        console.error("Pinning error:", e);
+    }
+};
 
 // --- NEW PAGINATION HELPER ---
 function toggleLoadMoreButton(hasMore) {
