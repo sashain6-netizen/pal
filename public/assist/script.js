@@ -1,6 +1,6 @@
 const games = [
     { title: "Polytrack", thumb: "/assist/polytrack.jpg", url: "https://stuffed18.github.io/polytrack-0.4.1/", external: false },
-    { title: "Minecraft", thumb: "/assist/minecraft.jpg", url: "/assist/eagtek", external: true }
+    { title: "Minecraft", thumb: "/assist/minecraft.jpg", url: "/assist/eagtek", external: false }
 ];
 
 function initGames() {
