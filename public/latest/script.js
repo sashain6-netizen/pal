@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentOffset = 0;
     let isLoading = false;
     let isStaffMember = false;
+    let serverHasMore = false;
     const LIMIT = 10;
 
     // Helper: Prevent XSS by escaping HTML entities
@@ -44,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Network response was not ok');
             
             const data = await response.json(); 
+            serverHasMore = data.hasMore; 
+            toggleLoadMoreButton(serverHasMore);
             const newArticles = data.articles || [];
             
             allArticles = append ? [...allArticles, ...newArticles] : newArticles;
@@ -141,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (category === 'All') {
                 renderArticles(allArticles, false);
-                if (loadMoreBtn) loadMoreBtn.style.display = 'block';
+                if (loadMoreBtn) loadMoreBtn.style.display = serverHasMore ? 'block' : 'none';
             } else {
                 const filtered = allArticles.filter(a => a.category === category);
                 renderArticles(filtered, false);
