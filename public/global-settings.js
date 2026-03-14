@@ -155,6 +155,31 @@
     setInterval(checkNewNotifications, 10000);
     checkNewNotifications();
 
+    async function checkForumUnread() {
+        try {
+            const [threadRes, chatRes] = await Promise.all([
+                fetch('/api/forum?limit=1', { credentials: 'include' }),
+                fetch('/api/my-chats', { credentials: 'include' })
+            ]);
+
+            const threads = await threadRes.json();
+            const chats = await chatRes.json();
+
+            const unreadThreads = (threads.threads || []).some(t => t.has_unread);
+            const unreadChats = (chats || []).some(c => c.has_unread);
+
+            const hasUnread = unreadThreads || unreadChats;
+
+            window.dispatchEvent(new CustomEvent('forumUnreadUpdated', { 
+                detail: { hasUnread } 
+            }));
+        } catch (e) { 
+        }
+    }
+
+    setInterval(checkForumUnread, 10000);
+    checkForumUnread();
+
     // --- 6. TAB CLOAKING ---
     if (settings.cloaking) {
         document.title = "Google Docs";

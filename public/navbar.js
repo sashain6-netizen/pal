@@ -110,6 +110,24 @@ function injectNavbar() {
         70% { box-shadow: 0 0 0 15px rgba(15, 23, 42, 0); }
         100% { box-shadow: 0 0 0 0 rgba(15, 23, 42, 0); }
     }
+
+    /* Add this alongside your other navbar styles */
+    .nav-link-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    #forum-notif-dot {
+        position: absolute;
+        top: -4px;
+        right: -8px;
+        width: 8px;
+        height: 8px;
+        background-color: #ef4444; /* Match your profile dot red */
+        border-radius: 50%;
+        border: 1px solid #ffffff;
+        display: none; /* Hidden by default */
+        pointer-events: none;
+    }
     </style>`;
 
     const navbarHTML = `
@@ -130,7 +148,12 @@ function injectNavbar() {
         </div>
 
         <ul class="nav-links">
-            <li><a href="/pages">Forums</a></li>
+            <li>
+                <a href="/pages" class="nav-link-wrapper">
+                    Forums
+                    <div id="forum-notif-dot"></div>
+                </a>
+            </li>
             <li><a href="/intel">AI</a></li>
             <li><a href="/assist">Games</a></li>
             <li><a href="/latest">News</a></li>
@@ -217,6 +240,14 @@ function injectNavbar() {
             dot.style.display = e.detail.hasNotifs ? 'block' : 'none';
         }
     });
+
+    // Forum Unread Listener
+    window.addEventListener('forumUnreadUpdated', (e) => {
+        const forumDot = document.getElementById('forum-notif-dot');
+        if (forumDot) {
+            forumDot.style.display = e.detail.hasUnread ? 'block' : 'none';
+        }
+    });
 }
 
 // 2. Run the function
@@ -225,3 +256,9 @@ if (document.readyState === 'loading') {
 } else {
     injectNavbar();
 }
+
+window.addEventListener('pageshow', (event) => {
+    if (typeof checkForumUnread === 'function') {
+        checkForumUnread();
+    }
+});
