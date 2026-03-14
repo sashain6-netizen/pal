@@ -20,17 +20,18 @@
             </div>
         </header>
 
-        <div class="filter-bar">
-            <button onclick="filterByCategory('All')" class="filter-btn">All</button>
-            <button onclick="filterByCategory('Update')" class="filter-btn">Updates</button>
-            <button onclick="filterByCategory('Event')" class="filter-btn">Events</button>
-            <button onclick="filterByCategory('Community')" class="filter-btn">Community</button>
+        <div class="filter-bar filter-container">
+            <button class="filter-btn active">All</button>
+            <button class="filter-btn">Update</button>
+            <button class="filter-btn">Event</button>
+            <button class="filter-btn">Community</button>
         </div>
 
         <main id="news-container">
             <p class="loading">Fetching the latest stories...</p>
         </main>
-    </div>
+        
+        </div>
 
     <script src="/global-settings.js"></script>
     <script src="/global-auth.js"></script>
