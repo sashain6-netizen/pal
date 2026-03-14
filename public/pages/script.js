@@ -13,10 +13,9 @@ async function init() {
 }
 
 // --- FORUM DATA LOADING ---
+// --- UPDATE: loadPublicThreads ---
 async function loadPublicThreads(append = false) {
     const container = document.getElementById('thread-list');
-    
-    // Reset offset if we are doing a fresh load (not clicking 'Load More')
     if (!append) {
         currentOffset = 0;
         container.innerHTML = '<p class="empty-msg">Loading threads...</p>';
@@ -24,7 +23,6 @@ async function loadPublicThreads(append = false) {
 
     try {
         const res = await fetch(`/api/forum?limit=${limit}&offset=${currentOffset}`, { credentials: 'include' });
-        
         if (res.status === 401) {
             container.innerHTML = '<p class="empty-msg">Please <a href="/login">log in</a> to view the forum.</p>';
             return;
@@ -34,7 +32,7 @@ async function loadPublicThreads(append = false) {
         const threads = data.threads || [];
 
         if (!append && threads.length === 0) {
-            container.innerHTML = '<p class="empty-msg">No threads yet. Be the first to start one!</p>';
+            container.innerHTML = '<p class="empty-msg">No threads yet.</p>';
             toggleLoadMoreButton(false);
             return;
         }
@@ -42,10 +40,12 @@ async function loadPublicThreads(append = false) {
         const threadsHTML = threads.map(t => `
             <div class="feature-card thread-card ${t.is_pinned ? 'pinned' : ''}">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <h3 onclick="location.href='/pages/thread?id=${t.id}'">${t.title}</h3>
+                    <h3 onclick="location.href='/pages/thread?id=${t.id}'">
+                        ${t.title}
+                        ${t.has_unread ? '<span class="unread-dot" title="New activity!"></span>' : ''}
+                    </h3>
                     <button id="pin-icon-${t.id}" class="pin-btn ${t.is_pinned ? 'active' : ''}" 
-                            onclick="togglePin(${t.id}, event)" 
-                            title="${t.is_pinned ? 'Unpin' : 'Pin'} Thread">
+                            onclick="togglePin(${t.id}, event)">
                         📌
                     </button>
                 </div>
@@ -55,22 +55,13 @@ async function loadPublicThreads(append = false) {
             </div>
         `).join('');
 
-        if (!append) {
-            container.innerHTML = threadsHTML;
-        } else {
-            container.insertAdjacentHTML('beforeend', threadsHTML);
-        }
+        if (!append) container.innerHTML = threadsHTML;
+        else container.insertAdjacentHTML('beforeend', threadsHTML);
 
-        // Update the offset for the next pagination call
         currentOffset += threads.length;
         toggleLoadMoreButton(data.hasMore);
-
-    } catch (e) { 
-        console.error("Forum Load Error:", e);
-        container.innerHTML = '<p class="empty-msg">Error loading threads. Please refresh.</p>'; 
-    }
+    } catch (e) { console.error(e); }
 }
-
 // --- PINNING LOGIC ---
 window.togglePin = async (threadId, event) => {
     event.stopPropagation(); // Prevent opening the thread when clicking the pin
@@ -148,6 +139,7 @@ function switchTab(tab, e) {
 }
 
 // --- PRIVATE CHATS ---
+// --- UPDATE: loadPrivateChats ---
 async function loadPrivateChats() {
     const container = document.getElementById('chat-list');
     try {
@@ -159,13 +151,14 @@ async function loadPrivateChats() {
         }
         container.innerHTML = chats.map(c => `
             <div class="feature-card thread-card" onclick="location.href='/pages/chat?id=${c.id}'">
-                <h3>🔒 ${c.room_name || 'Private Group'}</h3>
+                <h3>
+                    🔒 ${c.room_name || 'Private Group'}
+                    ${c.has_unread ? '<span class="unread-dot"></span>' : ''}
+                </h3>
                 <div class="meta-info">Owner: @${c.creator_username}</div>
             </div>
         `).join('');
-    } catch (e) { 
-        container.innerHTML = '<p class="empty-msg">Error loading chats.</p>'; 
-    }
+    } catch (e) { console.error(e); }
 }
 
 // --- MODAL HANDLING ---
