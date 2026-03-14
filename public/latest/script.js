@@ -2,11 +2,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const newsContainer = document.getElementById('news-container');
     const adminControls = document.getElementById('admin-controls');
     
-    // --- PAGINATION STATE ---
+    // --- STATE MANAGEMENT ---
     let allArticles = []; 
     let currentOffset = 0;
-    const limit = 10;
+    let isLoading = false;
     let isStaffMember = false;
+    const LIMIT = 10;
+
+    // Helper: Prevent XSS by escaping HTML entities
+    const escapeHTML = (str) => {
+        if (!str) return "";
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    };
 
     // 1. Listen for Auth
     window.addEventListener('authReady', (e) => {
@@ -17,37 +29,37 @@ document.addEventListener('DOMContentLoaded', () => {
             adminControls.classList.remove('hidden');
         }
         
+        // Re-render current articles to show/hide delete buttons based on new auth state
         renderArticles(allArticles, false);
     });
 
-    // 2. Fetch Articles (Updated for Pagination)
+    // 2. Fetch Articles
     async function fetchNews(append = false) {
+        if (isLoading) return; // Prevent double-fetching
         if (!append) currentOffset = 0;
 
+        isLoading = true;
         try {
-            const response = await fetch(`/api/news?limit=${limit}&offset=${currentOffset}`);
-            const data = await response.json(); // Data is now { articles, hasMore }
+            const response = await fetch(`/api/news?limit=${LIMIT}&offset=${currentOffset}`);
+            if (!response.ok) throw new Error('Network response was not ok');
             
+            const data = await response.json(); 
             const newArticles = data.articles || [];
             
-            if (append) {
-                allArticles = [...allArticles, ...newArticles];
-            } else {
-                allArticles = newArticles;
-            }
-
+            allArticles = append ? [...allArticles, ...newArticles] : newArticles;
             renderArticles(newArticles, append);
             
             currentOffset += newArticles.length;
             toggleLoadMoreButton(data.hasMore);
-
         } catch (err) {
-            console.error(err);
-            if (!append) newsContainer.innerHTML = '<p>Error loading news.</p>';
+            console.error("Fetch error:", err);
+            if (!append) newsContainer.innerHTML = '<p>Error loading news. Please try again later.</p>';
+        } finally {
+            isLoading = false;
         }
     }
 
-    // 3. Render function (Updated to support appending)
+    // 3. Render function
     function renderArticles(articles, append) {
         if (!append && (!articles || articles.length === 0)) {
             newsContainer.innerHTML = '<p>No news yet.</p>';
@@ -57,12 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const html = articles.map(art => `
             <div class="article-card" data-id="${art.id}">
                 <div class="card-header">
-                    <span class="category-badge">${art.category || 'General'}</span>
-                    ${isStaffMember ? `<button class="btn-delete" onclick="deletePost(${art.id})">Delete</button>` : ''}
+                    <span class="category-badge">${escapeHTML(art.category) || 'General'}</span>
+                    ${isStaffMember ? `<button class="btn-delete" data-action="delete">Delete</button>` : ''}
                 </div>
-                <h2><a href="article/?id=${art.id}">${art.title}</a></h2>
+                <h2><a href="article/?id=${art.id}">${escapeHTML(art.title)}</a></h2>
                 <div class="meta">
-                    By <strong>${art.author_name}</strong> (${art.author_rank}) • 
+                    By <strong>${escapeHTML(art.author_name)}</strong> (${escapeHTML(art.author_rank)}) • 
                     ${new Date(art.created_at).toLocaleDateString()}
                 </div>
             </div>
@@ -81,44 +93,63 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!btn) {
             btn = document.createElement('button');
             btn.id = 'load-more-news-btn';
-            btn.className = 'load-more-btn'; // Uses the same CSS we created earlier
+            btn.className = 'load-more-btn';
             btn.innerText = "Load More News";
-            btn.onclick = () => fetchNews(true);
+            btn.addEventListener('click', () => fetchNews(true));
             newsContainer.after(btn);
         }
         btn.style.display = hasMore ? 'block' : 'none';
     }
 
-    // 5. Category Filtering (Note: This filters the CURRENT loaded articles)
-    window.filterByCategory = (category, btn) => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        if(btn) btn.classList.add('active');
-
-        // Hide Load More while filtering to prevent logic conflicts
-        const loadMoreBtn = document.getElementById('load-more-news-btn');
+    // 5. Global Event Listener (Event Delegation)
+    // This handles all clicks inside the news container for better performance
+    newsContainer.addEventListener('click', async (e) => {
+        const target = e.target;
         
-        if (category === 'All') {
-            renderArticles(allArticles, false);
-            if (loadMoreBtn) loadMoreBtn.style.display = 'block';
-        } else {
-            const filtered = allArticles.filter(a => a.category === category);
-            renderArticles(filtered, false);
-            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+        // Handle Delete Action
+        if (target.dataset.action === 'delete') {
+            const card = target.closest('.article-card');
+            const id = card.dataset.id;
+
+            if (!confirm("Are you sure you want to delete this post?")) return;
+
+            try {
+                const res = await fetch(`/api/news?id=${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    allArticles = allArticles.filter(a => a.id != id);
+                    card.remove(); // Smoothly remove from DOM without full re-render
+                } else {
+                    alert("Failed to delete.");
+                }
+            } catch (err) {
+                console.error("Delete error:", err);
+            }
         }
-    };
+    });
 
-    // 6. Delete Function
-    window.deletePost = async (id) => {
-        if (!confirm("Are you sure you want to delete this post?")) return;
-        const res = await fetch(`/api/news?id=${id}`, { method: 'DELETE' });
+    // 6. Category Filtering (Updated to work without 'window' scope)
+    const filterContainer = document.querySelector('.filter-container'); // Assuming you have one
+    if (filterContainer) {
+        filterContainer.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('filter-btn')) return;
 
-        if (res.ok) {
-            allArticles = allArticles.filter(a => a.id !== id);
-            renderArticles(allArticles, false);
-        } else {
-            alert("Failed to delete.");
-        }
-    };
+            const category = e.target.innerText; // Or use a data-category attribute
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
 
+            const loadMoreBtn = document.getElementById('load-more-news-btn');
+            
+            if (category === 'All') {
+                renderArticles(allArticles, false);
+                if (loadMoreBtn) loadMoreBtn.style.display = 'block';
+            } else {
+                const filtered = allArticles.filter(a => a.category === category);
+                renderArticles(filtered, false);
+                if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+            }
+        });
+    }
+
+    // Initial Load
     fetchNews();
 });
