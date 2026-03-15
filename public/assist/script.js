@@ -1,7 +1,7 @@
 const games = [
     { title: "Polytrack", thumb: "/assist/polytrack.jpg", url: "https://stuffed18.github.io/polytrack-0.4.1/", external: false },
     { title: "Minecraft", thumb: "/assist/minecraft.jpg", url: "/assist/eagtek/eaglercraft.1.5.2.html", external: false },
-    { title: "Supermarket Sim", thumb: "/assist/pong.jpg", url: "https://html5.gamedistribution.com/b40bcd08ddba4a649b7642d3804b2f01/?gd_sdk_referrer_url=https://gamedistribution.com/games/supermarket-simulator:-dream-store/", external: false },
+    { title: "Supermarket Sim", thumb: "/assist/pong.jpg", url: "https://html5.gamedistribution.com/b40bcd08ddba4a649b7642d3804b2f01/?gd_sdk_referrer_url=https://www.my-pal.pages.dev/games", external: false },
 ];
 
 function initGames() {
