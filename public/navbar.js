@@ -1,4 +1,3 @@
-// 1. Prevent double injection
 if (typeof window.navbarHasLoaded === 'undefined') {
     window.navbarHasLoaded = false;
 }
@@ -22,129 +21,130 @@ function injectNavbar() {
         padding: 0 50px;
         height: 70px;
         box-sizing: border-box;
+        font-family: 'Varela Round', sans-serif;
     }
 
-    /* Desktop View Essentials */
-    #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    #profile-notif-dot { 
-        position: absolute !important; 
-        top: -2px !important; 
-        right: -2px !important; 
-        width: 12px !important; 
-        height: 12px !important; 
-        background-color: #ef4444 !important; 
-        border-radius: 50% !important; 
-        border: 2px solid #ffffff !important; 
-        z-index: 1001;
-        display: none; 
+    /* --- PROFILE DROPDOWN FIX --- */
+    .profile-dropdown { position: relative; }
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 180px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        padding: 10px 0;
+        display: none; /* Hidden by default */
+        z-index: 1002;
+        margin-top: 10px;
+        border: 1px solid #f1f5f9;
     }
-    #avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #eee; }
+    .profile-dropdown:hover .dropdown-menu { display: block; } /* Show on hover */
+    
+    .dropdown-menu a {
+        display: block;
+        padding: 10px 20px;
+        color: #64748b;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+    }
+    .dropdown-menu a:hover { background: #f8fafc; color: #2563eb; }
+    .dropdown-menu hr { border: 0; border-top: 1px solid #f1f5f9; margin: 5px 0; }
+
+    #profile-icon { position: relative; width: 40px; height: 40px; cursor: pointer; }
+    #profile-notif-dot { 
+        position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; 
+        background-color: #ef4444; border-radius: 50%; border: 2px solid #ffffff; 
+        z-index: 1001; display: none; 
+    }
+    #avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: #eee; }
     #avatar-container img { width: 100%; height: 100%; object-fit: cover; }
 
     .nav-icons { display: flex; align-items: center; gap: 20px; margin-left: 25px; margin-right: 35px; }
     .nav-links { display: flex; gap: 20px; list-style: none; padding: 0; margin: 0; }
-    .nav-icons a, .nav-links a { color: #64748b; text-decoration: none; transition: 0.2s; display: flex; align-items: center; }
+    .nav-icons a, .nav-links a { color: #64748b; text-decoration: none; transition: 0.2s; }
     .nav-icons a:hover, .nav-links a:hover { color: #2563eb !important; }
 
-    /* Hamburger Menu Button (Hidden on Desktop) */
-    .mobile-toggle {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #64748b;
-        padding: 5px;
-    }
-
-    /* Mobile Responsive Logic */
-    @media (max-width: 950px) {
-        .navbar { padding: 0 20px; }
-        .nav-links { display: none; } /* Hide standard links */
-        .mobile-toggle { display: block; } /* Show hamburger */
-        
-        .nav-icons { margin-right: 15px; gap: 15px; }
-    }
-
-    /* Mobile Menu Overlay */
+    /* --- STYLISH LEFT MOBILE MENU --- */
+    .mobile-toggle { display: none; background: none; border: none; cursor: pointer; color: #64748b; }
+    
     .mobile-menu {
         position: fixed;
         top: 0;
-        right: -100%;
-        width: 280px;
+        left: -100%; /* Slide from left */
+        width: 300px;
         height: 100vh;
         background: #ffffff;
         z-index: 2000;
-        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-        padding: 80px 30px;
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+        padding: 40px 30px;
         display: flex;
         flex-direction: column;
-        gap: 25px;
     }
-    .mobile-menu.open { right: 0; }
+    .mobile-menu.open { left: 0; }
+    
+    .mobile-menu .menu-logo {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #2563eb;
+        margin-bottom: 40px;
+    }
+
     .mobile-menu a {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: #1e293b;
         text-decoration: none;
         font-weight: 500;
+        padding: 15px 0;
+        border-bottom: 1px solid #f1f5f9;
+        transition: padding-left 0.3s;
     }
-    .mobile-menu-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: none;
-        border: none;
-        font-size: 2rem;
-        color: #64748b;
-        cursor: pointer;
-    }
+    .mobile-menu a:hover { padding-left: 10px; color: #2563eb; }
+
     .menu-backdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.3);
-        z-index: 1999;
-        display: none;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+        z-index: 1999; display: none;
     }
     .menu-backdrop.visible { display: block; }
 
-    /* Stealth & Dots */
+    @media (max-width: 950px) {
+        .navbar { padding: 0 20px; }
+        .nav-links { display: none; }
+        .mobile-toggle { display: block; }
+        .nav-icons { margin-right: 15px; gap: 15px; }
+    }
+
+    /* Stealth */
     .stealth-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
     .stealth-btn {
         width: 56px; height: 56px;
         background: #0f172a !important; color: #f8fafc !important;
         border: 2px solid #334155 !important; border-radius: 16px;
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        animation: stealth-pulse 3s infinite;
+        cursor: pointer; animation: stealth-pulse 3s infinite;
     }
     @keyframes stealth-pulse {
         0% { box-shadow: 0 0 0 0 rgba(15, 23, 42, 0.7); }
         70% { box-shadow: 0 0 0 15px rgba(15, 23, 42, 0); }
         100% { box-shadow: 0 0 0 0 rgba(15, 23, 42, 0); }
     }
-    .nav-link-wrapper { position: relative; }
-    #forum-notif-dot {
-        position: absolute; top: -4px; right: -8px; width: 8px; height: 8px;
-        background-color: #ef4444; border-radius: 50%; border: 1px solid #ffffff;
-        display: none;
-    }
     </style>`;
 
     const navbarHTML = `
     <div class="menu-backdrop" id="menuBackdrop"></div>
     <div class="mobile-menu" id="mobileMenu">
-        <button class="mobile-menu-close" id="menuClose">&times;</button>
+        <div class="menu-logo">PAL</div>
         <a href="/pages">Forums</a>
         <a href="/intel">AI</a>
         <a href="/assist">Games</a>
         <a href="/latest">News</a>
         <a href="/applicable">Apps</a>
         <a href="/resources">Contacts</a>
-        <hr style="width:100%; border:0; border-top:1px solid #eee;">
-        <a href="/">Home</a>
+        <a href="/settings" style="margin-top: auto; border:none; font-size: 0.9rem; color: #94a3b8;">Settings</a>
     </div>
 
     <nav class="navbar">
@@ -161,7 +161,7 @@ function injectNavbar() {
         </div>
 
         <ul class="nav-links">
-            <li><a href="/pages" class="nav-link-wrapper">Forums<div id="forum-notif-dot"></div></a></li>
+            <li><a href="/pages">Forums</a></li>
             <li><a href="/intel">AI</a></li>
             <li><a href="/assist">Games</a></li>
             <li><a href="/latest">News</a></li>
@@ -174,6 +174,12 @@ function injectNavbar() {
                 <div class="profile-icon" id="profile-icon">
                     <div id="profile-notif-dot"></div>
                     <div id="avatar-container"></div> 
+                </div>
+                <div class="dropdown-menu">
+                    <a href="/profile">My Profile</a>
+                    <a href="/settings">Settings</a>
+                    <hr>
+                    <a href="/logout" style="color: #ef4444;">Log Out</a>
                 </div>
             </div>
         </div>
@@ -189,9 +195,8 @@ function injectNavbar() {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     window.navbarHasLoaded = true;
 
-    // --- INTERACTION LOGIC ---
+    // --- LOGIC ---
     const menuOpen = document.getElementById('menuOpen');
-    const menuClose = document.getElementById('menuClose');
     const mobileMenu = document.getElementById('mobileMenu');
     const backdrop = document.getElementById('menuBackdrop');
 
@@ -201,13 +206,11 @@ function injectNavbar() {
     };
 
     menuOpen.onclick = () => toggleMenu(true);
-    menuClose.onclick = () => toggleMenu(false);
     backdrop.onclick = () => toggleMenu(false);
 
-    // Stealth Launch
     const eyeBtn = document.getElementById('stealth-launch-btn');
     if (eyeBtn) {
-        eyeBtn.addEventListener('click', () => {
+        eyeBtn.onclick = () => {
             window.allowExit = true; 
             const win = window.open('about:blank', '_blank');
             if (win) {
@@ -219,10 +222,9 @@ function injectNavbar() {
                 doc.body.appendChild(iframe);
                 window.location.replace("https://google.com");
             }
-        });
+        };
     }
 
-    // Notif Listeners
     window.addEventListener('notifsUpdated', (e) => {
         const dot = document.getElementById('profile-notif-dot');
         if (dot) dot.style.display = e.detail.hasNotifs ? 'block' : 'none';
