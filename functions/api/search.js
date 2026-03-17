@@ -3,24 +3,22 @@ export async function onRequestGet(context) {
     const url = new URL(request.url);
     const query = url.searchParams.get("q")?.toLowerCase().trim();
 
-    // 1. Validation check immediately
     if (!query) {
-        return new Response(JSON.stringify([]), { 
-            headers: { "Content-Type": "application/json" } 
-        });
+        return new Response(JSON.stringify([]), { headers: { "Content-Type": "application/json" } });
     }
 
     try {
-        // 2. Fetch the "Master List" from KV
-        const allUsersRaw = await env.USERS_KV.get("all_users_index") || "[]";
-        const allUsers = JSON.parse(allUsersRaw);
+        // Fetch Master List AND Premium List
+        const [allUsersRaw, premiumRaw] = await Promise.all([
+            env.USERS_KV.get("all_users_index"),
+            env.USERS_KV.get("pal_premium")
+        ]);
 
-        // 3. Filter for EXACT match only (as requested)
-        const matches = allUsers.filter(username => 
-            username.toLowerCase() === query
-        );
+        const allUsers = JSON.parse(allUsersRaw || "[]");
+        const premiumUsers = JSON.parse(premiumRaw || "[]");
 
-        // 4. Get basic data for those matches
+        const matches = allUsers.filter(username => username.toLowerCase() === query);
+
         const results = await Promise.all(matches.map(async (username) => {
             const userData = await env.USERS_KV.get(`user:${username}`);
             if (!userData) return null;
@@ -31,7 +29,9 @@ export async function onRequestGet(context) {
                 displayName: user.displayName,
                 avatarUrl: user.avatarUrl || "/default-avatar.png",
                 prefix: user.currentPrefix || "",
-                themeColor: user.themeColor || "#2563eb"
+                themeColor: user.themeColor || "#2563eb",
+                // ADD THIS FLAG
+                isPremium: premiumUsers.includes(username.toLowerCase()) 
             };
         }));
 
@@ -40,11 +40,6 @@ export async function onRequestGet(context) {
         });
 
     } catch (e) {
-        // Log the error to your Cloudflare console
-        console.error(e);
-        return new Response(JSON.stringify({ error: "Search failed", details: e.message }), { 
-            status: 500,
-            headers: { "Content-Type": "application/json" }
-        });
+        return new Response(JSON.stringify({ error: "Search failed" }), { status: 500 });
     }
 }

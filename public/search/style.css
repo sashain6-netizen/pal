@@ -100,16 +100,49 @@ h1 {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block; /* Removes the bottom whitespace gap */
+    display: block; 
 }
 
 .logo {
     font-family: 'Varela Round', sans-serif;
     font-weight: 900;
     font-size: 1.8rem;
-    letter-spacing: -1px; /* Makes it look more like a "brand" logo */
+    letter-spacing: -1px; 
     color: var(--blue-deep);
     text-decoration: none;
     display: flex;
     align-items: center;
+}
+
+.premium-card-pulse {
+    border: 2px solid #ffd700 !important;
+    animation: gold-pulse-border 3s infinite ease-in-out;
+}
+
+.premium-avatar-pulse {
+    position: relative;
+}
+.premium-avatar-pulse::after {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border-radius: 50%;
+    border: 2px solid #ffd700;
+    animation: avatar-glow-ring 2s infinite ease-out;
+    pointer-events: none;
+}
+
+.premium-user-text {
+    color: #b8860b !important;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes gold-pulse-border {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+}
+
+@keyframes avatar-glow-ring {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.3); opacity: 0; }
 }

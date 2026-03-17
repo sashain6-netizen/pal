@@ -25,14 +25,18 @@ async function performSearch() {
             return;
         }
 
-        // Show the exact match
         users.forEach(user => {
+            const cardClass = user.isPremium ? "feature-card premium-card-pulse" : "feature-card";
+            const iconClass = user.isPremium ? "profile-icon premium-avatar-pulse" : "profile-icon";
+            const star = user.isPremium ? " ⭐" : "";
+            const nameClass = user.isPremium ? "premium-user-text" : "";
+
             resultsArea.innerHTML += `
-                <div class="feature-card">
-                    <div class="profile-icon" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}">
+                <div class="${cardClass}">
+                    <div class="${iconClass}" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}">
                         <img src="${user.avatarUrl || '/default-avatar.png'}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
                     </div>
-                    <h3>${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}</h3>
+                    <h3 class="${nameClass}">${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}${star}</h3>
                     <p style="color: var(--blue-soft);">@${user.username}</p>
                     <a href="/users?id=${user.username}" class="nav-btn" style="display:inline-block; text-decoration:none; margin-top:15px; font-size: 0.85rem;">
                         View Profile
