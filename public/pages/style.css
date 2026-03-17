@@ -450,10 +450,3 @@
         transform: scale(1);
     }
 }
-
-.premium-user-text::after {
-    content: '⭐';
-    font-size: 0.75rem;
-    margin-left: 2px;
-    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
-}
