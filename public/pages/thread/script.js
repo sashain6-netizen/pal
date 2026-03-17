@@ -35,21 +35,22 @@ async function loadThread(append = false) {
         document.getElementById('thread-title').innerText = data.title;
         const container = document.getElementById('posts-container');
 
-        // Generate HTML for the posts returned in this batch
         const postsHTML = (data.posts || []).map(post => `
-            <div class="compact-post-row">
-                <span class="rank-tag" style="background: ${post.themeColor}">${post.rank}</span>
-                <div class="post-body-inline">
-                    <span class="author-area">
-                        ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
-                        <a href="/users?id=${post.username}" class="author-name">${post.displayName}</a>
-                    </span>
-                    <span class="separator">:</span>
-                    <span class="content">${escapeHTML(post.content)}</span>
-                </div>
-                <span class="timestamp">${formatTimestamp(post.created_at)}</span>
+        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''}">
+            <span class="rank-tag" style="background: ${post.themeColor}">${post.rank}</span>
+            <div class="post-body-inline">
+                <span class="author-area">
+                    ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
+                    <a href="/users?id=${post.username}" class="author-name ${post.isPremium ? 'premium-user-text' : ''}">
+                        ${post.displayName} ${post.isPremium ? '⭐' : ''}
+                    </a>
+                </span>
+                <span class="separator">:</span>
+                <span class="content">${escapeHTML(post.content)}</span>
             </div>
-        `).join('');
+            <span class="timestamp">${formatTimestamp(post.created_at)}</span>
+        </div>
+    `).join('');
 
         // Append to container
         container.insertAdjacentHTML('beforeend', postsHTML);

@@ -53,15 +53,23 @@ export async function onRequestGet(context) {
         const hasMore = posts.length > limit;
         const postsToSend = hasMore ? posts.slice(0, limit) : posts;
 
+        const premiumData = await env.USERS_KV.get("pal_premium");
+        const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
+
         const decoratedPosts = await Promise.all(postsToSend.map(async (post) => {
             const userData = await env.USERS_KV.get(`user:${post.username.toLowerCase().trim()}`);
             const user = userData ? JSON.parse(userData) : {};
+            
+            // 2. Check if this specific post author is premium
+            const isPremium = premiumUsers.includes(post.username.toLowerCase().trim());
+
             return {
                 ...post,
                 displayName: user.displayName || post.username,
                 themeColor: user.themeColor || "#2563eb",
                 rank: user.rank || "Member",
-                prefix: user.currentPrefix || user.prefix || "" 
+                prefix: user.currentPrefix || user.prefix || "",
+                isPremium: isPremium
             };
         }));
 
