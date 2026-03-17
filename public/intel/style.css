@@ -1,28 +1,46 @@
 :root {
     --blue-primary: #2563eb;
-    --blue-glow:    rgba(37, 99, 235, 0.2);
-    --blue-deep:    #1e293b;
+    --blue-deep:    #1e40af;
     --blue-soft:    #64748b;
     --white:        #ffffff;
     --off-white:    #f8faff;
-    --glass-bg:     rgba(255, 255, 255, 0.8);
-    --border-color: rgba(37, 99, 235, 0.1);
 }
 
-/* 1. Base Layout & Background */
+/* style.css (AI Page Specific) */
+
+/* 1. Override Global Body settings for the Chat Layout */
 body {
     display: flex !important;
     flex-direction: column !important;
     height: 100vh !important;
-    padding-top: 80px !important;
+    padding-top: 80px !important; /* Forces the gap for the navbar */
     margin: 0;
-    overflow: hidden !important;
-    /* Fancy subtle background gradient */
-    background: radial-gradient(at top left, #f0f4ff, #ffffff);
-    font-family: 'Montserrat', sans-serif;
+    overflow: hidden !important; /* Prevents double scrollbars */
 }
 
-/* 2. Enhanced Chat Scene */
+/* 2. Style the Injected Navbar Links (They are missing because global.css 
+      doesn't know how to style the specific JS-injected classes) */
+.nav-links {
+    display: flex !important;
+    list-style: none;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #64748b; /* --blue-soft */
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #2563eb; /* --blue-primary */
+}
+
+/* 3. Adjust the Chat Scene to fill the remaining space */
 .chat-scene {
     flex: 1;
     display: flex;
@@ -34,139 +52,114 @@ body {
 
 .chat-container {
     width: 100%;
-    max-width: 900px; /* Slightly wider for better code reading */
-    height: 85vh;
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px); /* Glassmorphism effect */
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 28px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    max-width: 800px;
+    height: 85vh; /* Adjusted for better fit */
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid var(--white);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    pointer-events: auto; /* Ensure clicks work */
 }
 
-/* 3. The Chat Window & Scrollbar */
+/* 4. Keep your window, message, and input styles below... */
 .chat-window {
     flex: 1;
-    padding: 40px;
+    padding: 30px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    scroll-behavior: smooth;
+    gap: 15px;
 }
 
-/* Modern Scrollbar Styling */
-.chat-window::-webkit-scrollbar { width: 6px; }
-.chat-window::-webkit-scrollbar-track { background: transparent; }
-.chat-window::-webkit-scrollbar-thumb { 
-    background: #e2e8f0; 
-    border-radius: 10px; 
-}
-
-/* 4. Message Bubbles */
+/* ... (Your existing .message, .ai-message, .user-message, .input-area styles) ... */
+/* --- Keep the rest of your Message Bubbles and Input Area styles below --- */
 .message {
-    max-width: 85%;
-    padding: 16px 24px;
-    border-radius: 22px;
-    font-size: 0.98rem;
-    line-height: 1.6;
-    position: relative;
-    animation: fadeInSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    max-width: 80%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    animation: fadeIn 0.3s ease forwards;
 }
 
 .ai-message {
     align-self: flex-start;
-    background: var(--white);
+    background: var(--off-white);
     color: var(--blue-deep);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     border-bottom-left-radius: 4px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
 }
 
 .user-message {
     align-self: flex-end;
-    background: linear-gradient(135deg, var(--blue-primary), var(--blue-deep));
+    background: var(--blue-primary);
     color: var(--white);
-    box-shadow: 0 10px 15px -3px var(--blue-glow);
     border-bottom-right-radius: 4px;
 }
 
-/* 5. Modern Markdown Styling */
-.ai-message h1, .ai-message h2, .ai-message h3 {
-    color: var(--blue-primary);
-    font-family: 'Montserrat', sans-serif;
-    margin: 1.5rem 0 0.5rem 0;
-}
-
-.ai-message pre {
-    background: #0f172a; /* Sleek midnight color */
-    color: #e2e8f0;
-    padding: 20px;
-    border-radius: 14px;
-    margin: 15px 0;
-    font-size: 0.9rem;
-    position: relative;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.ai-message code {
-    font-family: 'Fira Code', 'Courier New', monospace;
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue-primary);
-    padding: 3px 6px;
-    border-radius: 6px;
-    font-weight: 500;
-}
-
-/* Fix inline code inside pre blocks */
-.ai-message pre code {
-    background: transparent;
-    color: inherit;
-    padding: 0;
-}
-
-/* 6. Glowing Input Area */
 .input-area {
-    padding: 25px;
-    background: var(--white);
+    padding: 20px;
+    background: var(--off-white);
     display: flex;
-    gap: 15px;
-    border-top: 1px solid var(--border-color);
+    gap: 10px;
+    border-top: 1px solid rgba(37, 99, 235, 0.05);
 }
 
 #user-input {
     flex: 1;
-    padding: 14px 24px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    background: #fcfdfe;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-}
-
-#user-input:focus {
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: 2px solid transparent;
     outline: none;
-    border-color: var(--blue-primary);
-    box-shadow: 0 0 0 4px var(--blue-glow);
-    background: var(--white);
+    font-family: 'Varela Round', sans-serif;
 }
 
 #send-btn {
     background: var(--blue-primary);
-    transition: all 0.3s ease;
+    color: white;
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#send-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px var(--blue-glow);
-    filter: brightness(1.1);
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* 7. Animations */
-@keyframes fadeInSlide {
-    from { opacity: 0; transform: translateY(20px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+/* Styling for code blocks */
+.ai-message pre {
+    background: #1e1e1e;
+    color: #dcdcdc;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 10px 0;
+}
+
+.ai-message code {
+    font-family: 'Courier New', Courier, monospace;
+    background: rgba(0,0,0,0.05);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* Styling for headers */
+.ai-message h1, .ai-message h2, .ai-message h3 {
+    margin-top: 10px;
+    color: #2563eb;
+}
+
+/* Styling for lists */
+.ai-message ul, .ai-message ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
 }
