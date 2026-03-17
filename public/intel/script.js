@@ -4,19 +4,32 @@ const sendBtn = document.getElementById('send-btn');
 
 let chatHistory = [];
 
-/**
- * Renders the message to the chat window.
- * AI messages are parsed as Markdown for formatting.
- */
 function appendMessage(role, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role === 'ai' ? 'ai-message' : 'user-message'}`;
     
     if (role === 'ai') {
-        // Use marked to convert Markdown strings into HTML tags
+        // 1. Convert Markdown to HTML
         msgDiv.innerHTML = marked.parse(text);
+
+        // 2. Add Copy Buttons to all code blocks
+        msgDiv.querySelectorAll('pre').forEach(block => {
+            const copyBtn = document.createElement('button');
+            copyBtn.innerText = 'Copy';
+            copyBtn.className = 'copy-code-btn'; // Style this in your CSS
+            
+            copyBtn.onclick = () => {
+                const codeText = block.querySelector('code').innerText;
+                navigator.clipboard.writeText(codeText);
+                copyBtn.innerText = 'Copied!';
+                setTimeout(() => copyBtn.innerText = 'Copy', 2000);
+            };
+            block.appendChild(copyBtn);
+        });
+
+        // 3. Trigger Syntax Highlighting
+        Prism.highlightAllUnder(msgDiv);
     } else {
-        // For user messages, stick to textContent for security/simplicity
         msgDiv.textContent = text;
     }
     
@@ -28,18 +41,22 @@ async function handleChat() {
     const text = userInput.value.trim();
     if (!text) return;
 
-    // 1. Show User Message
+    // Show User Message and clear input
     appendMessage('user', text);
     userInput.value = '';
+    
+    // Professional touch: Disable input while AI "thinks"
+    userInput.disabled = true;
+    sendBtn.disabled = true;
 
-    // 2. Show "Typing..." state
+    // Show Loading State
     const loadingDiv = document.createElement('div');
-    loadingDiv.className = 'message ai-message';
-    loadingDiv.innerText = "...";
+    loadingDiv.className = 'message ai-message loading-state';
+    loadingDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
     chatWindow.appendChild(loadingDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 
     try {
-        // 3. Fetch from your server
         const response = await fetch('/api/ask-pal', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -50,21 +67,14 @@ async function handleChat() {
         });
 
         const data = await response.json();
-        
-        // Remove loading dots
         chatWindow.removeChild(loadingDiv);
 
         if (data.response) {
-            // 4. Update local history
             chatHistory.push({ role: "user", content: text });
             chatHistory.push({ role: "assistant", content: data.response });
 
-            // 5. Keep history limited (Last 3 rounds)
-            if (chatHistory.length > 6) {
-                chatHistory = chatHistory.slice(-6);
-            }
+            if (chatHistory.length > 6) chatHistory = chatHistory.slice(-6);
 
-            // 6. Append the formatted AI message
             appendMessage('ai', data.response);
         } else {
             throw new Error("No response data");
@@ -72,12 +82,16 @@ async function handleChat() {
 
     } catch (error) {
         if (chatWindow.contains(loadingDiv)) chatWindow.removeChild(loadingDiv);
-        appendMessage('ai', "I'm having trouble connecting to the Pal network. Try again later!");
+        appendMessage('ai', "I'm having trouble connecting to the Pal network.");
         console.error("Chat Error:", error);
+    } finally {
+        // Re-enable input
+        userInput.disabled = false;
+        sendBtn.disabled = false;
+        userInput.focus();
     }
 }
 
-// Event Listeners
 sendBtn.addEventListener('click', handleChat);
 userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleChat();
