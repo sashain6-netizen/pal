@@ -10,6 +10,11 @@ export async function onRequestGet(context) {
 
     const user = JSON.parse(rawData);
 
+    // --- CHECK PREMIUM STATUS ---
+    const premiumData = await env.USERS_KV.get("pal_premium");
+    const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
+    const isPremium = premiumUsers.includes(username.toLowerCase());
+
     const publicData = {
         username: user.username,
         displayName: user.displayName || user.username,
@@ -19,9 +24,9 @@ export async function onRequestGet(context) {
         rank: user.rank || "Member",
         xp: user.xp || 0,
         currency: user.currency || 0,
-        // CHANGED THESE TO MATCH SCRIPT.JS
         followers: user.followers || 0, 
-        following: user.following || [] 
+        following: user.following || [],
+        isPremium: isPremium // <--- Add this flag
     };
 
     return new Response(JSON.stringify(publicData), {

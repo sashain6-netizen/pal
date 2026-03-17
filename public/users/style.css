@@ -385,3 +385,44 @@
     from { opacity: 1; }
     to { opacity: 0; }
 }
+
+/* 1. Pulsing Gold Border for the Profile Card */
+.premium-card-pulse {
+    position: relative;
+    border: 2px solid #ffd700 !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    animation: gold-pulse-border 3s infinite ease-in-out;
+}
+
+@keyframes gold-pulse-border {
+    0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
+}
+
+/* 2. Pulsing Glow around the Avatar Circle */
+.premium-avatar-pulse {
+    position: relative;
+}
+
+.premium-avatar-pulse::after {
+    content: '';
+    position: absolute;
+    top: -5px; left: -5px; right: -5px; bottom: -5px;
+    border-radius: 50%;
+    border: 2px solid #ffd700;
+    animation: avatar-glow-ring 2s infinite ease-out;
+    pointer-events: none;
+}
+
+@keyframes avatar-glow-ring {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* 3. Style for the Name Text */
+.premium-user-text {
+    color: #b8860b !important; /* Deep Golden Rod */
+    font-weight: 800;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}

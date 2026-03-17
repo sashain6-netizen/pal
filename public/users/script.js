@@ -40,7 +40,7 @@ async function loadProfile() {
         }
 
         // 2. Handle Profile Avatar (SVG or Image)
-        const avatarWrapper = document.getElementById('avatar-wrapper'); 
+        const avatarWrapper = document.getElementById('avatar-wrapper'); // <--- Defined here!
         const avatarImg = document.getElementById('display-avatar');
 
         if (avatarWrapper) {
@@ -57,8 +57,25 @@ async function loadProfile() {
                 avatarWrapper.innerHTML = getColoredSvg(data.themeColor || "#2563eb");
             }
         }
+        
+        // --- PREMIUM SECTION ---
+        // Removed the "const avatarWrapper" line from here because it's already defined above!
+        const profileCard = document.querySelector('.profile-card'); 
 
-        // 3. Update Navbar (Your Icon) with retry loop
+        if (data.isPremium) {
+            if (profileCard) profileCard.classList.add('premium-card-pulse');
+            
+            // We can just use avatarWrapper directly now
+            if (avatarWrapper) avatarWrapper.classList.add('premium-avatar-pulse');
+            
+            const nameEl = document.getElementById('display-name');
+            if (nameEl && !nameEl.innerHTML.includes('⭐')) {
+                nameEl.innerHTML += ' ⭐';
+                nameEl.classList.add('premium-user-text');
+            }
+        }
+
+
         if (myData) {
             const updateNavbarIcon = () => {
                 const navAvatar = document.getElementById('avatar-container');
