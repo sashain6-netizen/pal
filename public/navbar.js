@@ -186,24 +186,14 @@ function injectNavbar() {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     window.navbarHasLoaded = true;
 
-    // --- PREMIUM STATUS CHECK ---
-    async function checkPremium() {
-        // Change 'username' to the key you use to store the logged-in user
-        const user = localStorage.getItem('username'); 
-        if (!user) return;
-
-        try {
-            const response = await fetch(`/api/check-premium?user=${encodeURIComponent(user)}`);
-            const data = await response.json();
-            
-            if (data.isPremium) {
-                const icon = document.getElementById('profile-icon');
-                if (icon) icon.classList.add('premium-active');
-            }
-        } catch (err) {
-            console.error("Premium check failed", err);
+    window.addEventListener('authReady', (e) => {
+        const userData = e.detail;
+        const icon = document.getElementById('profile-icon');
+        if (userData.loggedIn && userData.isPremium && icon) {
+            icon.classList.add('premium-active');
+            icon.style.setProperty('border-color', '#ffd700', 'important');
         }
-    }
+    });
 
     checkPremium();
 
