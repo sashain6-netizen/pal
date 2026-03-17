@@ -215,6 +215,7 @@ async function submitPost() {
 }
 
 // --- SEARCH LOGIC ---
+// --- SEARCH LOGIC ---
 async function handleSearch() {
     const query = document.getElementById('forumSearch').value.toLowerCase().trim();
     const forumResultsDiv = document.getElementById('searchResults');
@@ -242,7 +243,11 @@ async function handleSearch() {
                 forumResultsDiv.innerHTML = results.map(t => `
                     <a href="/pages/thread?id=${t.id}" class="search-item">
                         <span class="search-title">${t.title}</span>
-                        <span class="search-meta">By ${t.creator_username}</span>
+                        <span class="search-meta">
+                            By <span class="${t.isPremium ? 'premium-user-text' : ''}">
+                                @${t.creator_username} ${t.isPremium ? '⭐' : ''}
+                            </span>
+                        </span>
                     </a>`).join('');
                 forumResultsDiv.classList.add('active');
             } else {

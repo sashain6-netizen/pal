@@ -450,3 +450,12 @@
         transform: scale(1);
     }
 }
+
+.search-item .premium-user-text {
+    font-size: 0.8rem; 
+    animation-duration: 3s; 
+}
+
+.search-item .premium-user-text {
+    transform: none !important; 
+}

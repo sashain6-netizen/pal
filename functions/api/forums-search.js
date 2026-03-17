@@ -8,11 +8,12 @@ export async function onRequestGet(context) {
     }
 
     try {
+        const premiumData = await env.USERS_KV.get("pal_premium");
+        const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
+
         const searchTerm = `%${query}%`;
 
-        // We use a subquery to calculate a 'match_score'
-        // Title match = 2, Content match = 1
-        const { results } = await env.DB.prepare(`
+        const { results: rawResults } = await env.DB.prepare(`
             SELECT DISTINCT 
                 t.id, 
                 t.title, 
@@ -25,6 +26,11 @@ export async function onRequestGet(context) {
             ORDER BY match_score DESC, t.created_at DESC
             LIMIT 15
         `).bind(searchTerm, searchTerm, searchTerm).all();
+
+        const results = rawResults.map(t => ({
+            ...t,
+            isPremium: premiumUsers.includes(t.creator_username.toLowerCase())
+        }));
 
         return new Response(JSON.stringify(results), {
             headers: { "Content-Type": "application/json" }
