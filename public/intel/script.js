@@ -2,14 +2,24 @@ const chatWindow = document.getElementById('chat-window');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 
-// --- NEW: History Storage ---
 let chatHistory = [];
 
+/**
+ * Renders the message to the chat window.
+ * AI messages are parsed as Markdown for formatting.
+ */
 function appendMessage(role, text) {
     const msgDiv = document.createElement('div');
-    // Using 'assistant' for the class if the role is 'ai' to match standard naming
     msgDiv.className = `message ${role === 'ai' ? 'ai-message' : 'user-message'}`;
-    msgDiv.innerText = text;
+    
+    if (role === 'ai') {
+        // Use marked to convert Markdown strings into HTML tags
+        msgDiv.innerHTML = marked.parse(text);
+    } else {
+        // For user messages, stick to textContent for security/simplicity
+        msgDiv.textContent = text;
+    }
+    
     chatWindow.appendChild(msgDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
@@ -33,7 +43,6 @@ async function handleChat() {
         const response = await fetch('/api/ask-pal', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // --- UPDATED: Sending history to the backend ---
             body: JSON.stringify({ 
                 userMessage: text,
                 history: chatHistory 
@@ -42,21 +51,20 @@ async function handleChat() {
 
         const data = await response.json();
         
-        // Remove loading
+        // Remove loading dots
         chatWindow.removeChild(loadingDiv);
 
         if (data.response) {
             // 4. Update local history
-            // Add user message
             chatHistory.push({ role: "user", content: text });
-            // Add AI response
             chatHistory.push({ role: "assistant", content: data.response });
 
-            // 5. Keep history limited (Last 3 rounds = 6 messages)
+            // 5. Keep history limited (Last 3 rounds)
             if (chatHistory.length > 6) {
                 chatHistory = chatHistory.slice(-6);
             }
 
+            // 6. Append the formatted AI message
             appendMessage('ai', data.response);
         } else {
             throw new Error("No response data");
