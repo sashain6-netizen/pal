@@ -422,3 +422,21 @@
 .thread-card.pinned:has(.unread-dot) {
     border-left: 4px solid #ff4b2b;
 }
+
+/* Gold border/glow for the whole card */
+.thread-card.premium-thread {
+    border-left: 4px solid #ffd700 !important;
+    background: linear-gradient(to right, #fffdf0, #ffffff);
+}
+
+/* Gold pulsing text for the username */
+.premium-user-text {
+    color: #b8860b !important; /* Dark Gold */
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+}
+
+/* Optional: small pulse on the card itself */
+.premium-thread:hover {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}

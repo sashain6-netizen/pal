@@ -38,7 +38,7 @@ async function loadPublicThreads(append = false) {
         }
 
         const threadsHTML = threads.map(t => `
-            <div class="feature-card thread-card ${t.is_pinned ? 'pinned' : ''}">
+            <div class="feature-card thread-card ${t.is_pinned ? 'pinned' : ''} ${t.isPremium ? 'premium-thread' : ''}">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <h3 onclick="location.href='/pages/thread?id=${t.id}'">
                         ${t.title}
@@ -50,7 +50,10 @@ async function loadPublicThreads(append = false) {
                     </button>
                 </div>
                 <div class="meta-info" onclick="location.href='/pages/thread?id=${t.id}'">
-                    By <span class="user-mention">@${t.creator_username}</span> • ${new Date(t.created_at).toLocaleDateString()}
+                    By <span class="user-mention ${t.isPremium ? 'premium-user-text' : ''}">
+                        @${t.creator_username} ${t.isPremium ? '⭐' : ''}
+                    </span> 
+                    • ${new Date(t.created_at).toLocaleDateString()}
                 </div>
             </div>
         `).join('');

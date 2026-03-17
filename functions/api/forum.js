@@ -21,7 +21,9 @@ export async function onRequest(context) {
             const offset = parseInt(url.searchParams.get("offset")) || 0;
             const currentUsername = user?.username || "";
 
-            // The Subquery finds the MAX(created_at) from thread_posts for each thread
+            const premiumData = await env.USERS_KV.get("pal_premium");
+            const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
+
             const sql = `
                 SELECT 
                     t.id, t.title, t.creator_username, t.created_at,
@@ -40,9 +42,14 @@ export async function onRequest(context) {
                 LIMIT ? OFFSET ?
             `;
 
-            const { results: threads } = await env.DB.prepare(sql)
+            const { results: rawThreads } = await env.DB.prepare(sql)
                 .bind(currentUsername, currentUsername, limit + 1, offset)
                 .all();
+
+            const threads = rawThreads.map(t => ({
+                ...t,
+                isPremium: premiumUsers.includes(t.creator_username.toLowerCase())
+            }));
 
             const hasMore = threads.length > limit;
             return new Response(JSON.stringify({
@@ -51,7 +58,6 @@ export async function onRequest(context) {
             }), { headers: { "Content-Type": "application/json" } });
         }
 
-        // ... POST logic remains the same ...
         if (method === "POST") {
             if (!user) return new Response(JSON.stringify({ error: "Login required" }), { status: 401 });
             const data = await request.json();
