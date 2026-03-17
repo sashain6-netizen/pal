@@ -70,7 +70,6 @@ async function loadProfile() {
             
             const nameEl = document.getElementById('display-name');
             if (nameEl && !nameEl.innerHTML.includes('⭐')) {
-                nameEl.innerHTML += ' ⭐';
                 nameEl.classList.add('premium-user-text');
             }
         }
