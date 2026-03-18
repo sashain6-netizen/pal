@@ -1,30 +1,65 @@
+/* 1. CLOAKING SYSTEM (Crucial for the clean redirect) */
+body {
+    opacity: 0;
+    background-color: var(--off-white);
+    transition: opacity 0.3s ease-in-out;
+}
+
+body.authorized {
+    opacity: 1;
+}
+
+/* 2. LAYOUT */
 .premium-container {
-    max-width: 900px;
-    margin: 120px auto;
-    padding: 20px;
+    max-width: 1000px;
+    margin: 140px auto 80px; /* Offset for fixed navbar */
+    padding: 0 20px;
     text-align: center;
 }
 
+.premium-header h1 {
+    font-size: 3rem;
+    color: var(--blue-deep);
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.premium-header p {
+    color: var(--blue-soft);
+    font-size: 1.1rem;
+    margin-bottom: 50px;
+}
+
+/* 3. GRID & CARDS */
 .premium-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 30px;
-    margin-top: 40px;
+    align-items: stretch;
 }
 
 .tier-card {
-    background: var(--bg-secondary); /* Use your existing dark bg */
-    border: 1px solid #334155;
-    border-radius: 15px;
-    padding: 40px;
-    transition: transform 0.3s ease;
+    background: var(--white);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    border-radius: 24px;
+    padding: 50px 40px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
+.tier-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
+}
+
+/* 4. PREMIUM FEATURED CARD (The Gold Look) */
 .premium-featured {
-    border: 2px solid #ffd700;
+    border: 2px solid #FFD700;
     position: relative;
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.15);
+    background: linear-gradient(to bottom, #ffffff, #fffdf0);
 }
 
 .premium-featured .badge {
@@ -32,23 +67,40 @@
     top: -15px;
     left: 50%;
     transform: translateX(-50%);
-    background: #ffd700;
-    color: #000;
-    padding: 5px 15px;
-    border-radius: 20px;
+    background: #FFD700;
+    color: #8B6914; /* Darker gold for readability */
+    padding: 6px 20px;
+    border-radius: 50px;
     font-size: 0.75rem;
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+}
+
+/* 5. TYPOGRAPHY & LISTS */
+.tier-card h3 {
+    font-size: 1.8rem;
+    color: var(--blue-deep);
+    margin-bottom: 10px;
 }
 
 .price {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin: 20px 0;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--blue-primary);
+    margin: 15px 0;
+    letter-spacing: -2px;
+}
+
+.premium-featured .price {
+    color: #D4AF37; /* Metallic Gold */
 }
 
 .price span {
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: var(--blue-soft);
+    font-weight: 500;
+    letter-spacing: 0;
 }
 
 .tier-card ul {
@@ -56,24 +108,62 @@
     padding: 0;
     margin: 30px 0;
     text-align: left;
+    flex-grow: 1;
 }
 
 .tier-card li {
-    margin-bottom: 12px;
+    margin-bottom: 15px;
+    color: var(--blue-soft);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
+/* 6. BUTTONS */
 .premium-btn {
-    background: linear-gradient(45deg, #ffd700, #b8860b);
-    color: black;
+    background: linear-gradient(135deg, #FFD700, #FDB931);
+    color: #5C430D;
     border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-weight: bold;
+    padding: 16px 30px;
+    border-radius: 16px;
+    font-family: 'Varela Round', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
     cursor: pointer;
     width: 100%;
-    transition: opacity 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(253, 185, 49, 0.3);
 }
 
 .premium-btn:hover {
-    opacity: 0.9;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(253, 185, 49, 0.4);
+}
+
+.premium-btn:active {
+    transform: scale(0.98);
+}
+
+.nav-btn:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 7. RESPONSIVE */
+@media (max-width: 768px) {
+    .premium-container {
+        margin-top: 100px;
+    }
+    
+    .premium-header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .tier-card {
+        padding: 35px 25px;
+    }
 }
