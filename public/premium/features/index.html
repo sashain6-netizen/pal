@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Premium Features • Pal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/premium/style.css" />
+  <link rel="stylesheet" href="style.css" /> <link rel="icon" href="/favicon.png" type="image/png">
+
+  <style>
+    /* Instant Cloak: The page is invisible until JS adds the 'authorized' class */
+    body { opacity: 0; background-color: #f8faff; }
+    body.authorized { opacity: 1; transition: opacity 0.3s ease; }
+  </style>
+</head>
+<body>
+
+    <div class="premium-container">
+        <div class="premium-header">
+            <h1>Premium Dashboard</h1>
+            <p>Welcome back! Here are your exclusive Pal perks.</p>
+        </div>
+
+        <div class="premium-grid">
+            <div class="tier-card">
+                <span class="feature-emoji">🤬</span>
+                <h3>Swear Jar</h3>
+                <p>Track your "fines" for using forbidden words in the community chat. Keep it clean or pay the price!</p>
+                <div class="status-group">
+                    <span class="status-badge status-active">Active</span>
+                </div>
+                <button class="feature-btn">Configure Jar</button>
+            </div>
+
+            <div class="tier-card premium-featured">
+                <div class="badge">ENABLED</div>
+                <span class="feature-emoji">✨</span>
+                <h3>Golden Glow</h3>
+                <p>Your name currently has the legendary golden aura. You can adjust the intensity or toggle it off here.</p>
+                <button class="premium-btn" style="margin-top: 20px;">Adjust Glow</button>
+            </div>
+
+            <div class="tier-card">
+                <span class="feature-emoji">🏷️</span>
+                <h3>Custom Prefix</h3>
+                <p>Personalize your chat identity with a custom tag that appears before your username.</p>
+                <div class="status-group">
+                    <span class="status-badge">Coming Soon</span>
+                </div>
+                <button class="feature-btn btn-locked" disabled>Locked</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/global-settings.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
