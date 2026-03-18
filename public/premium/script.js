@@ -4,7 +4,6 @@ async function checkPremium() {
     try {
         const res = await fetch('/api/get-profile');
         
-        // If user isn't logged in, show the upgrade page
         if (!res.ok) {
             document.body.classList.add('authorized');
             return;
@@ -14,20 +13,16 @@ async function checkPremium() {
         window.currentUserData = myData;
 
         if (myData.isPremium) {
-            // Check if we are on the purchase page (and not the features page)
             if (window.location.pathname.includes('/premium') && !window.location.pathname.includes('/features')) {
-                // Redirect immediately while the body is still hidden
                 window.location.replace('/premium/features');
                 return; 
             }
         }
 
-        // IMPORTANT: If they are NOT premium, reveal the page content
         document.body.classList.add('authorized');
 
     } catch (err) {
         console.error("Status check failed:", err);
-        // Fallback: show the page if the API fails
         document.body.classList.add('authorized');
     }
 }
