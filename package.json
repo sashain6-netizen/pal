@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/sashain6-netizen/pal#readme",
   "dependencies": {
-    "groq-sdk": "^0.37.0"
+    "groq-sdk": "^0.37.0",
+    "stripe": "^20.4.1"
   }
 }
