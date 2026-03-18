@@ -21,14 +21,13 @@ export async function onRequestGet(context) {
         const username = payload.username;
 
         const rawData = await env.USERS_KV.get(`user:${username}`);
-        
-        if (!rawData) {
-            return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
-        }
+        if (!rawData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
 
         const user = JSON.parse(rawData);
+        const premiumEntry = await env.pal_premium.get(username); 
+        const isPremiumUser = premiumEntry !== null;
 
-        // 1. XP Ladder for auto-ranking
+        // 3. XP Ladder Logic
         const ladder = [
             { name: "Legend", xp: 30000 },
             { name: "Elite", xp: 15000 },
@@ -40,8 +39,6 @@ export async function onRequestGet(context) {
         ];
 
         const xpRank = ladder.find(r => (user.xp || 0) >= r.xp)?.name || "Member";
-
-        // 2. Protect Staff ranks from being overwritten, but allow Premium to level up
         const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot"];
         let updated = false;
 
@@ -49,7 +46,6 @@ export async function onRequestGet(context) {
             if (user.rank !== xpRank) {
                 user.rank = xpRank;
                 updated = true;
-                
                 if (!user.notifications) user.notifications = [];
                 user.notifications.push({
                     id: Date.now(),
@@ -64,23 +60,15 @@ export async function onRequestGet(context) {
             await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
         }
 
-        // 3. Prepare the data for the frontend
+        // 4. PREPARE RESPONSE
         const profileData = {
             username: user.username,
             displayName: user.displayName || user.username,
-            bio: user.bio || "",
-            themeColor: user.themeColor || "#2563eb",
+            rank: user.rank || "Member",
+            isPremium: isPremiumUser, 
             avatar: user.avatarUrl || "/default-avatar.png",
-            rank: user.rank || "Member", // Now shows their XP rank (Veteran, etc.)
-            
-            // LOGIC FIX: Check only the boolean, not the rank string
-            isPremium: user.isPremium === true, 
-            
-            xpRank: xpRank,
             xp: user.xp || 0,
             currency: user.currency || 0,
-            followersCount: user.followers || 0,
-            following: user.following || [], 
             followingCount: (user.following && Array.isArray(user.following)) ? user.following.length : 0
         };
 
@@ -93,9 +81,6 @@ export async function onRequestGet(context) {
 
     } catch (err) {
         console.error(err);
-        return new Response(JSON.stringify({ error: "Invalid Session" }), { 
-            status: 401,
-            headers: { "Content-Type": "application/json" }
-        });
+        return new Response(JSON.stringify({ error: "Invalid Session" }), { status: 401 });
     }
 }
