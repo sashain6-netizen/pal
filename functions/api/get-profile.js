@@ -20,21 +20,29 @@ export async function onRequestGet(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
         const username = payload.username;
 
-        const rawData = await env.USERS_KV.get(`user:${username}`);
-        if (!rawData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+        const rawUserData = await env.USERS_KV.get(`user:${username}`);
+        if (!rawUserData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+        const user = JSON.parse(rawUserData);
 
-        const user = JSON.parse(rawData);
-        const premiumEntry = await env.pal_premium.get(username); 
-        const isPremiumUser = premiumEntry !== null;
+        const rawPremiumData = await env.USERS_KV.get("pal_premium");
+        let isPremiumUser = false;
 
-        // 3. XP Ladder Logic
+        if (rawPremiumData) {
+            const premiumList = JSON.parse(rawPremiumData);
+            
+            if (Array.isArray(premiumList)) {
+                isPremiumUser = premiumList.includes(username);
+            } 
+            else {
+                isPremiumUser = !!premiumList[username];
+            }
+        }
+
+        // 3. XP Ladder Logic (Standard)
         const ladder = [
-            { name: "Legend", xp: 30000 },
-            { name: "Elite", xp: 15000 },
-            { name: "Veteran", xp: 7500 },
-            { name: "Contributor", xp: 3500 },
-            { name: "Supporter", xp: 1500 },
-            { name: "Active Member", xp: 500 },
+            { name: "Legend", xp: 30000 }, { name: "Elite", xp: 15000 },
+            { name: "Veteran", xp: 7500 }, { name: "Contributor", xp: 3500 },
+            { name: "Supporter", xp: 1500 }, { name: "Active Member", xp: 500 },
             { name: "Member", xp: 0 }
         ];
 
@@ -49,7 +57,7 @@ export async function onRequestGet(context) {
                 if (!user.notifications) user.notifications = [];
                 user.notifications.push({
                     id: Date.now(),
-                    text: `Congratulations! Your rank has been updated to ${xpRank}!`,
+                    text: `Rank updated to ${xpRank}!`,
                     date: new Date().toISOString(),
                     read: false
                 });
@@ -60,7 +68,6 @@ export async function onRequestGet(context) {
             await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
         }
 
-        // 4. PREPARE RESPONSE
         const profileData = {
             username: user.username,
             displayName: user.displayName || user.username,
@@ -68,19 +75,15 @@ export async function onRequestGet(context) {
             isPremium: isPremiumUser, 
             avatar: user.avatarUrl || "/default-avatar.png",
             xp: user.xp || 0,
-            currency: user.currency || 0,
-            followingCount: (user.following && Array.isArray(user.following)) ? user.following.length : 0
+            currency: user.currency || 0
         };
 
         return new Response(JSON.stringify(profileData), {
-            headers: { 
-                "Content-Type": "application/json",
-                "Cache-Control": "no-store" 
-            }
+            headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
         });
 
     } catch (err) {
         console.error(err);
-        return new Response(JSON.stringify({ error: "Invalid Session" }), { status: 401 });
+        return new Response(JSON.stringify({ error: "Server Error" }), { status: 500 });
     }
 }
