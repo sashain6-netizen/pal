@@ -63,7 +63,6 @@ export async function onRequestGet(context) {
         }
 
         // 4. PREPARE FULL DATA (including stats)
-        // 4. PREPARE FULL DATA (including stats)
         const profileData = {
             username: user.username,
             displayName: user.displayName || user.username,
@@ -71,11 +70,11 @@ export async function onRequestGet(context) {
             themeColor: user.themeColor || "#2563eb",
             avatar: user.avatarUrl || "/default-avatar.png",
             rank: user.rank || "Member",
+            isPremium: user.rank === "Premium" || user.isPremium === true, // ADD THIS LINE
             xpRank: xpRank,
             xp: user.xp || 0,
             currency: user.currency || 0,
             followersCount: user.followers || 0,
-            // FIX: Add the actual list here so the frontend can check it
             following: user.following || [], 
             followingCount: (user.following && Array.isArray(user.following)) ? user.following.length : 0
         };
