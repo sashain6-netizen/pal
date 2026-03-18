@@ -28,6 +28,7 @@ export async function onRequestGet(context) {
 
         const user = JSON.parse(rawData);
 
+        // 1. XP Ladder for auto-ranking
         const ladder = [
             { name: "Legend", xp: 30000 },
             { name: "Elite", xp: 15000 },
@@ -40,7 +41,8 @@ export async function onRequestGet(context) {
 
         const xpRank = ladder.find(r => (user.xp || 0) >= r.xp)?.name || "Member";
 
-        const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot", "Premium"];
+        // 2. Protect Staff ranks from being overwritten, but allow Premium to level up
+        const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot"];
         let updated = false;
 
         if (!staffRanks.includes(user.rank)) {
@@ -62,15 +64,18 @@ export async function onRequestGet(context) {
             await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
         }
 
-        // 4. PREPARE FULL DATA (including stats)
+        // 3. Prepare the data for the frontend
         const profileData = {
             username: user.username,
             displayName: user.displayName || user.username,
             bio: user.bio || "",
             themeColor: user.themeColor || "#2563eb",
             avatar: user.avatarUrl || "/default-avatar.png",
-            rank: user.rank || "Member",
-            isPremium: user.rank === "Premium" || user.isPremium === true, 
+            rank: user.rank || "Member", // Now shows their XP rank (Veteran, etc.)
+            
+            // LOGIC FIX: Check only the boolean, not the rank string
+            isPremium: user.isPremium === true, 
+            
             xpRank: xpRank,
             xp: user.xp || 0,
             currency: user.currency || 0,
