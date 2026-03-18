@@ -1,0 +1,79 @@
+.premium-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.premium-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.tier-card {
+    background: var(--bg-secondary); /* Use your existing dark bg */
+    border: 1px solid #334155;
+    border-radius: 15px;
+    padding: 40px;
+    transition: transform 0.3s ease;
+}
+
+.premium-featured {
+    border: 2px solid #ffd700;
+    position: relative;
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+}
+
+.premium-featured .badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffd700;
+    color: #000;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.price span {
+    font-size: 1rem;
+    color: var(--blue-soft);
+}
+
+.tier-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.tier-card li {
+    margin-bottom: 12px;
+}
+
+.premium-btn {
+    background: linear-gradient(45deg, #ffd700, #b8860b);
+    color: black;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.2s;
+}
+
+.premium-btn:hover {
+    opacity: 0.9;
+}
