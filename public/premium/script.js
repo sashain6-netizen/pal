@@ -28,7 +28,7 @@ document.getElementById('checkout-button').onclick = async () => {
 
     // Double-check global data
     if (window.currentUserData && window.currentUserData.isPremium) {
-        alert("You are already a Premium member! ⭐");
+        showToast("You are already a Premium member! ⭐");
         return;
     }
 
@@ -47,7 +47,7 @@ document.getElementById('checkout-button').onclick = async () => {
         window.location.href = url;
     } catch (err) {
         console.error(err);
-        alert("Checkout unavailable. Please try again later.");
+        showToast("Checkout unavailable. Please try again later.");
         checkoutBtn.disabled = false;
         checkoutBtn.textContent = "Upgrade Now";
     }
