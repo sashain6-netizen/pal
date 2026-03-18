@@ -28,7 +28,7 @@ async function performSearch() {
         users.forEach(user => {
             const cardClass = user.isPremium ? "feature-card premium-card-pulse" : "feature-card";
             const iconClass = user.isPremium ? "profile-icon premium-avatar-pulse" : "profile-icon";
-            const star = user.isPremium;
+            const star = user.isPremium ? "" : "";
             const nameClass = user.isPremium ? "premium-user-text" : "";
 
             resultsArea.innerHTML += `
