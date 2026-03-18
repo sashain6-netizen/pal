@@ -40,7 +40,7 @@ export async function onRequestGet(context) {
 
         const xpRank = ladder.find(r => (user.xp || 0) >= r.xp)?.name || "Member";
 
-        const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot"];
+        const staffRanks = ["Admin", "Moderator", "Staff", "Owner", "Bot", "Premium"];
         let updated = false;
 
         if (!staffRanks.includes(user.rank)) {
