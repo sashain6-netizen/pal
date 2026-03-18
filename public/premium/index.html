@@ -12,6 +12,20 @@
   <link rel="stylesheet" href="/premium/style.css" />
   <link rel="stylesheet" href="/style.css" />
   <link rel="icon" href="/favicon.png" type="image/png">
+
+  <style>
+    /* Hide the entire page immediately */
+    body { 
+        opacity: 0; 
+        background-color: #ffffff; /* Match this to your site's background */
+    }
+    
+    /* This class will be added by script.js only if NOT premium */
+    body.authorized { 
+        opacity: 1; 
+        transition: opacity 0.2s ease-in; 
+    }
+  </style>
 </head>
 <body>
 
@@ -45,9 +59,10 @@
             </div>
         </div>
     </div>
+
   <script src="/global-settings.js"></script>
   <script src="/navbar.js"></script>
-<script src="/global-auth.js"></script>
-<script src="script.js"></script>
+  <script src="/global-auth.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
