@@ -195,6 +195,10 @@ html, body {
   color: #ef4444 !important;
 }
 
+.premium-text {
+  color: #FFD700 !important;
+}
+
 /* ===========================
    3. HERO SCENE & DECORATIONS
    Z-Index: 1 (Behind everything)

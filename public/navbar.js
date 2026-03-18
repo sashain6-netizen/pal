@@ -166,6 +166,7 @@ function injectNavbar() {
                             <a href="/settings">Settings</a> 
                             <hr>
                             <a href="/notifications">Notifications</a>
+                            <a href="/premium" class="premium-text" id="premiumLink">Premium</a>
                             <a href="#" class="logout-btn" id="logoutLink">Log Out</a>
                         </div>
                     </div>
