@@ -70,7 +70,7 @@ export async function onRequestGet(context) {
             themeColor: user.themeColor || "#2563eb",
             avatar: user.avatarUrl || "/default-avatar.png",
             rank: user.rank || "Member",
-            isPremium: user.rank === "Premium" || user.isPremium === true, // ADD THIS LINE
+            isPremium: user.rank === "Premium" || user.isPremium === true, 
             xpRank: xpRank,
             xp: user.xp || 0,
             currency: user.currency || 0,
