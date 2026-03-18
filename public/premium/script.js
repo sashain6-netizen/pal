@@ -1,21 +1,16 @@
-// Function to handle the initial page state
 async function checkPremiumStatus() {
     const checkoutBtn = document.getElementById('checkout-button');
     
     try {
-        // Fetch the logged-in user's data from your me.js endpoint
         const res = await fetch('/api/get-profile');
         if (!res.ok) return;
 
         const myData = await res.json();
-        window.currentUserData = myData; // Store globally
+        window.currentUserData = myData;
 
-        // If already premium, lock the button immediately
         if (myData.isPremium) {
-            checkoutBtn.disabled = true;
-            checkoutBtn.textContent = "⭐ Premium Active";
-            checkoutBtn.style.background = "linear-gradient(45deg, #475569, #1e293b)";
-            checkoutBtn.style.cursor = "default";
+            window.location.replace('/premium/features');
+            return; 
         }
     } catch (err) {
         console.error("Status check failed:", err);
@@ -25,10 +20,8 @@ async function checkPremiumStatus() {
 // The click handler
 document.getElementById('checkout-button').onclick = async () => {
     const checkoutBtn = document.getElementById('checkout-button');
-
-    // Double-check global data
     if (window.currentUserData && window.currentUserData.isPremium) {
-        showToast("You are already a Premium member! ⭐");
+        window.location.replace('/premium/features');
         return;
     }
 
