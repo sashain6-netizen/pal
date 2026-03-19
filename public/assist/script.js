@@ -1,62 +1,117 @@
-const games = [
-    { title: "Polytrack", thumb: "/assist/polytrack.jpg", url: "https://stuffed18.github.io/polytrack-0.4.1/", external: false },
-    { title: "Minecraft", thumb: "/assist/minecraft.jpg", url: "/assist/eagtek/eaglercraft.1.5.2.html", external: false },
-    { title: "Supermarket Sim", thumb: "/assist/pong.jpg", url: "https://html5.gamedistribution.com/b40bcd08ddba4a649b7642d3804b2f01/?gd_sdk_referrer_url=https://www.my-pal.pages.dev/games", external: false },
-];
+let allGames = []; 
 
-function initGames() {
+async function initGames() {
     const grid = document.getElementById('gamesGrid');
     if (!grid) return;
-    
-    grid.innerHTML = games.map((game, index) => `
-        <div class="game-card" data-title="${game.title.toLowerCase()}" onclick="openGame(${index})">
-            <img src="${game.thumb}" class="game-thumb" alt="${game.title}">
-            <div class="game-info"><h3>${game.title}</h3></div>
-        </div>
-    `).join('');
+
+    grid.innerHTML = '<div class="loader">Loading Arcade...</div>';
+
+    try {
+        const response = await fetch('/assist/games.json');
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        allGames = await response.json();
+        renderGames(allGames);
+
+        const params = new URLSearchParams(window.location.search);
+        const gameId = params.get('game');
+        if (gameId) {
+            const index = allGames.findIndex(g => g.title.toLowerCase().replace(/\s+/g, '-') === gameId);
+            if (index !== -1) openGame(index);
+        }
+
+    } catch (err) {
+        console.error("Arcade Error:", err);
+        grid.innerHTML = `
+            <div class="error-state">
+                <p>Failed to load the arcade. Please check your connection.</p>
+                <button onclick="initGames()">Retry</button>
+            </div>`;
+    }
 }
 
-function openGame(index) {
-    const game = games[index];
-    const frame = document.getElementById('gameFrame');
-    const overlay = document.getElementById('gameOverlay');
-    
-    if (game.external) {
-        window.open(game.url, '_blank');
+function renderGames(gamesList) {
+    const grid = document.getElementById('gamesGrid');
+
+    if (gamesList.length === 0) {
+        grid.innerHTML = '<p class="no-results">No games found. Try a different search!</p>';
         return;
     }
 
+    grid.innerHTML = gamesList.map((game) => {
+
+        const originalIndex = allGames.indexOf(game);
+        return `
+            <article class="game-card" 
+                     role="button" 
+                     tabindex="0" 
+                     aria-label="Play ${game.title}"
+                     onclick="openGame(${originalIndex})"
+                     onkeydown="if(event.key==='Enter') openGame(${originalIndex})">
+                <div class="thumb-container">
+                    <img src="${game.thumb}" 
+                         class="game-thumb" 
+                         alt="" 
+                         loading="lazy" 
+                         onerror="this.src='/assist/default-thumb.jpg'">
+                </div>
+                <div class="game-info">
+                    <h3>${game.title}</h3>
+                </div>
+            </article>
+        `;
+    }).join('');
+}
+
+function openGame(index) {
+    const game = allGames[index];
+    const frame = document.getElementById('gameFrame');
+    const overlay = document.getElementById('gameOverlay');
+
+    if (!game || !frame || !overlay) return;
+
+    if (game.external) {
+        window.open(game.url, '_blank', 'noopener,noreferrer');
+        return;
+    }
+
+    frame.src = game.url;
+    overlay.classList.add('active'); 
+
     overlay.style.display = 'block';
-    frame.src = game.url; 
-    frame.onload = function() {
+
+    document.body.style.overflow = 'hidden';
+
+    frame.onload = () => {
         frame.focus();
-        frame.contentWindow.focus();
     };
 }
 
 function closeGame() {
     const overlay = document.getElementById('gameOverlay');
     const frame = document.getElementById('gameFrame');
-    overlay.style.display = 'none';
-    frame.src = ''; // Stops game audio/processing when closed
-}
 
-function toggleFullScreen() {
-    const frame = document.getElementById('gameFrame');
-    if (frame.requestFullscreen) {
-        frame.requestFullscreen();
-    } else if (frame.webkitRequestFullscreen) {
-        frame.webkitRequestFullscreen();
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.classList.remove('active');
     }
+    if (frame) frame.src = 'about:blank'; 
+
+    document.body.style.overflow = 'auto';
 }
 
 function filterGames() {
-    const query = document.getElementById('gameSearch').value.toLowerCase();
-    const cards = document.querySelectorAll('.game-card');
-    
-    cards.forEach(card => {
-        const title = card.getAttribute('data-title');
-        card.style.display = title.includes(query) ? 'block' : 'none';
-    });
+    const query = document.getElementById('gameSearch').value.toLowerCase().trim();
+
+    const filtered = allGames.filter(game => 
+        game.title.toLowerCase().includes(query)
+    );
+
+    renderGames(filtered);
 }
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") closeGame();
+});
+
 document.addEventListener('DOMContentLoaded', initGames);
