@@ -64,58 +64,83 @@
     text-overflow: ellipsis;
 }
 
-/* --- Post animations (premium) --- */
+/* --- Base Requirement --- */
 .compact-post-row[class*="post-anim-"] {
-    will-change: transform, filter;
+    will-change: transform, filter, box-shadow;
     position: relative;
-    z-index: 1; 
+    z-index: 1;
 }
 
-.compact-post-row.post-anim-float { animation: post-float 4.5s ease-in-out infinite !important; }
-.compact-post-row.post-anim-pulse { animation: post-pulse 2.4s ease-in-out infinite !important; }
-.compact-post-row.post-anim-shimmer { animation: post-shimmer 3.8s ease-in-out infinite !important; }
-.compact-post-row.post-anim-bounce { animation: post-bounce 1.6s ease-in-out infinite !important; }
-.compact-post-row.post-anim-tilt { animation: post-tilt 3.2s ease-in-out infinite !important; }
-.compact-post-row.post-anim-glitch { animation: post-glitch 2.8s steps(2, end) infinite !important; }
+/* --- TIER 1: BASIC (0 - 5,000) --- */
+.post-anim-float  { animation: p-float 3s ease-in-out infinite; }
+.post-anim-pulse  { animation: p-pulse 2s ease-in-out infinite; }
+.post-anim-shimmer{ animation: p-shimmer 2s linear infinite; }
+.post-anim-wiggle { animation: p-wiggle 0.5s ease-in-out infinite; }
+.post-anim-stretch{ animation: p-stretch 2s ease-in-out infinite; }
+.post-anim-bounce { animation: p-bounce 1s infinite; }
 
-.post-body-inline {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    overflow: visible; 
-}
-@keyframes post-float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
+/* --- TIER 2: ADVANCED (7,500 - 40,000) --- */
+.post-anim-swing  { transform-origin: top center; animation: p-swing 3s ease-in-out infinite; }
+.post-anim-tilt   { animation: p-tilt 3s ease-in-out infinite; }
+.post-anim-spin   { animation: p-spin 4s linear infinite; }
+.post-anim-blur   { animation: p-blur 3s ease-in-out infinite; }
+.post-anim-glitch { animation: p-glitch 0.4s steps(2, end) infinite; }
+.post-anim-jello  { animation: p-jello 0.9s both infinite; }
+
+/* --- TIER 3: ELITE (55,000 - 160,000) --- */
+.post-anim-ghosting { animation: p-ghost 2s ease-in-out infinite; }
+.post-anim-rainbow  { animation: p-rainbow 5s linear infinite; }
+.post-anim-neon     { animation: p-neon 1.5s ease-in-out infinite alternate; }
+.post-anim-earthquake { animation: p-shake 0.1s linear infinite; }
+.post-anim-squeeze  { animation: p-squeeze 1.5s ease-in-out infinite; }
+.post-anim-heartbeat{ animation: p-heartbeat 1.5s ease-in-out infinite; }
+
+/* --- TIER 4: LEGENDARY (200,000+) --- */
+.post-anim-fire   { animation: p-fire 2s ease-in-out infinite; }
+.post-anim-gold   { animation: p-gold 3s linear infinite; }
+.post-anim-matrix { animation: p-matrix 1s linear infinite; }
+.post-anim-vortex { animation: p-vortex 4s ease-in-out infinite; }
+.post-anim-godly  { animation: p-godly 3s ease-in-out infinite; }
+
+/* --- KEYFRAMES --- */
+
+@keyframes p-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes p-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+@keyframes p-shimmer { 0% { filter: brightness(1); } 50% { filter: brightness(1.3); } 100% { filter: brightness(1); } }
+@keyframes p-wiggle { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg); } }
+@keyframes p-stretch { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(1.05); } }
+@keyframes p-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes p-swing { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes p-tilt { 0%, 100% { transform: rotateY(0); } 50% { transform: rotateY(15deg); } }
+@keyframes p-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes p-blur { 0%, 100% { filter: blur(0px); } 50% { filter: blur(2px); } }
+@keyframes p-glitch { 0% { transform: translate(2px, 1px); filter: hue-rotate(90deg); } 50% { transform: translate(-1px, -2px); filter: hue-rotate(180deg); } 100% { transform: translate(1px, -1px); filter: hue-rotate(0deg); } }
+@keyframes p-jello { 11.1% { transform: none; } 22.2% { transform: skewX(-12.5deg) skewY(-12.5deg); } 33.3% { transform: skewX(6.25deg) skewY(6.25deg); } 44.4% { transform: skewX(-3.125deg) skewY(-3.125deg); } 55.5% { transform: skewX(1.5625deg) skewY(1.5625deg); } 66.6% { transform: skewX(-0.78125deg) skewY(-0.78125deg); } 77.7% { transform: skewX(0.390625deg) skewY(0.390625deg); } 88.8% { transform: skewX(-0.1953125deg) skewY(-0.1953125deg); } 100% { transform: none; } }
+@keyframes p-ghost { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); filter: contrast(150%); } }
+@keyframes p-rainbow { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+@keyframes p-neon { from { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px var(--premium-forum-color)); } to { filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 15px var(--premium-forum-color)); } }
+@keyframes p-shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 50% { transform: translate(-1px, -2px) rotate(-1deg); } 100% { transform: translate(1px, -1px) rotate(1deg); } }
+@keyframes p-squeeze { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.1, 0.8); } }
+@keyframes p-heartbeat { 0% { transform: scale(1); } 14% { transform: scale(1.1); } 28% { transform: scale(1); } 42% { transform: scale(1.1); } 70% { transform: scale(1); } }
+
+/* --- THE GODLY TIER --- */
+@keyframes p-fire { 0%, 100% { filter: drop-shadow(0 -2px 4px orange); transform: skewX(-1deg); } 50% { filter: drop-shadow(0 -5px 10px red); transform: skewX(1deg); } }
+@keyframes p-gold { 0% { background-position: 0% 50%; filter: brightness(1) drop-shadow(0 0 2px gold); } 50% { filter: brightness(1.5) drop-shadow(0 0 8px yellow); } 100% { background-position: 100% 50%; filter: brightness(1) drop-shadow(0 0 2px gold); } }
+@keyframes p-matrix { 0% { text-shadow: 0 0 0px #0f0; } 50% { text-shadow: 0 2px 10px #0f0, 0 -2px 10px #0f0; filter: contrast(2); } 100% { text-shadow: 0 0 0px #0f0; } }
+@keyframes p-vortex { 0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); } 50% { transform: rotate(2deg) scale(0.98); filter: hue-rotate(180deg); } 100% { transform: rotate(0deg) scale(1); filter: hue-rotate(360deg); } }
+@keyframes p-godly { 0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 10px gold) contrast(1.2); } 50% { transform: scale(1.02) translateY(-5px); filter: drop-shadow(0 0 25px white) brightness(1.2); } }
+
+.post-anim-gold .content {
+    background: linear-gradient(90deg, #d4af37, #f7ef8a, #d4af37);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
 }
 
-@keyframes post-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.01); }
-}
-
-@keyframes post-shimmer {
-    0% { filter: brightness(1); }
-    50% { filter: brightness(1.06); }
-    100% { filter: brightness(1); }
-}
-
-@keyframes post-bounce {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-3px); }
-}
-
-@keyframes post-tilt {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(-0.25deg); }
-}
-
-@keyframes post-glitch {
-    0% { transform: translateX(0px); filter: hue-rotate(0deg); }
-    50% { transform: translateX(1px); filter: hue-rotate(8deg); }
-    100% { transform: translateX(0px); filter: hue-rotate(0deg); }
+.post-anim-matrix .content {
+    font-family: 'Courier New', monospace;
+    color: #00ff41 !important;
 }
 
 .author-area { 

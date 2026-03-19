@@ -36,25 +36,22 @@ async function loadThread(append = false) {
         const container = document.getElementById('posts-container');
 
         const postsHTML = (data.posts || []).map(post => {
-    // 1. Separate the base theme color from the premium "forum color"
-    // We'll use themeColor for the Rank Tag specifically.
     const baseThemeColor = post.themeColor || "#2563eb"; 
-    
-    // 2. Keep forumColor for the name glow/premium effects
     const forumColor = post.forumColor || baseThemeColor;
     const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
+    // The class name to be applied
     const animClass = post.isPremium && post.postAnimation && post.postAnimation !== 'none'
         ? `post-anim-${post.postAnimation}`
         : '';
 
     return `
-        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''} ${animClass}"
+        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''}"
              ${post.isPremium ? `style="--premium-forum-color: ${forumColor};"` : ''}>
             
             <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
             
-            <div class="post-body-inline">
+            <div class="post-body-inline ${animClass}">
                 <span class="author-area">
                     ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
                     <a href="/users?id=${post.username}"
