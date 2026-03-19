@@ -76,3 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     observer.observe(document.body, { childList: true, subtree: true });
 });
+
+function checkPremium() {
+    if (window.currentUserData && window.currentUserData.isPremium === true) {
+        return true;
+    }
+    return false;
+}
