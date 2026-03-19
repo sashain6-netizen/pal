@@ -155,7 +155,7 @@ function renderDeleteButton(user, authorUsername) {
                 if (window.showToast) showToast(err.message || "Bump failed");
                 else alert(err.message || "Bump failed");
             } finally {
-                bumpBtn.disabled = false;
+                bumpBtn.disabled = false; 
                 bumpBtn.innerText = "Bump Thread";
             }
         };
