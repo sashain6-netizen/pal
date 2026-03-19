@@ -71,6 +71,7 @@ export async function onRequestGet(context) {
         const profileData = {
             username: user.username,
             displayName: user.displayName || user.username,
+            bio: user.bio || "",
             rank: user.rank || "Member",
             isPremium: isPremiumUser, 
             avatar: user.avatarUrl || "/default-avatar.png",
