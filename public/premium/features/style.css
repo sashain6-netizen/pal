@@ -1,258 +1,176 @@
-/* Specific styles for the Features Dashboard */
+/* ===========================
+   PREMIUM DASHBOARD CORE
+   =========================== */
 
-.feature-emoji {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    display: block;
-}
-
-.status-group {
-    margin: 15px 0;
-}
-
-.status-badge {
-    display: inline-block;
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    background: #e2e8f0;
-    color: #64748b;
-    letter-spacing: 0.5px;
-}
-
-.status-active {
-    background: #dcfce7;
-    color: #166534;
-}
-
-/* Secondary Feature Button (Blue) */
-.feature-btn {
-    background: var(--blue-primary);
-    color: white;
-    border: none;
-    padding: 14px 25px;
-    border-radius: 14px;
+.premium-container {
+    max-width: 1200px;
+    margin: 100px auto 60px;
+    padding: 0 20px;
     font-family: 'Varela Round', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 100%;
-    margin-top: auto;
-    transition: all 0.3s ease;
 }
 
-.feature-btn:hover:not(.btn-locked) {
-    background: var(--blue-deep);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+.premium-header {
+    text-align: center;
+    margin-bottom: 50px;
 }
 
-.btn-locked {
-    background: #cbd5e1;
-    color: #94a3b8;
-    cursor: not-allowed;
-}
-
-/* Ensure cards in the grid align nicely */
-.tier-card {
-    min-height: 420px;
-}
-
-/* Jackpot Card Specific Styles */
-.jackpot-card {
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    background: linear-gradient(to bottom, #ffffff, #f0fff4); /* Very subtle green fade */
-}
-
-/* Status badge for the live draw */
-.status-active {
-    background: #dcfce7;
-    color: #15803d;
-    animation: pulse-green 2s infinite;
-}
-
-@keyframes pulse-green {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-
-/* Unique Button for Jackpot */
-.jackpot-btn {
-    background: #22c55e !important; /* Green */
-    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
-}
-
-.jackpot-btn:hover {
-    background: #16a34a !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-}
-
-.premium-style-controls {
-    margin-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.control-label {
-    font-size: 0.95rem;
-    font-weight: 800;
+.premium-header h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem;
     color: var(--blue-deep);
+    margin-bottom: 10px;
 }
 
-.premium-style-controls input[type="color"] {
-    width: 100%;
-    height: 48px;
-    padding: 0;
-    border-radius: 12px;
-    border: 1px solid rgba(37, 99, 235, 0.25);
-    background: white;
-    cursor: pointer;
-}
-
-.premium-style-controls input[type="text"],
-.premium-style-controls input[type="number"] {
-    width: 100%;
-    height: 44px;
-    padding: 0 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(37, 99, 235, 0.25);
-    background: white;
-}
-
-.premium-style-controls select {
-    width: 100%;
-    height: 44px;
-    padding: 0 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(37, 99, 235, 0.25);
-    background: white;
-    font-weight: 700;
-}
-
-.animation-shop {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 6px;
-}
-
-.animation-shop-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(2, 6, 23, 0.08);
-    background: rgba(255,255,255,0.75);
-}
-
-.animation-shop-item .left {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.animation-shop-item .name {
-    font-weight: 900;
-    color: var(--blue-deep);
-}
-
-.animation-shop-item .price {
-    font-weight: 700;
+.premium-header p {
     color: var(--blue-soft);
-    font-size: 0.85rem;
-}
-
-.buy-btn {
-    border: none;
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-weight: 900;
-    cursor: pointer;
-    background: #0ea5e9;
-    color: white;
-}
-
-.buy-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.range-row input[type="range"] {
-    width: 100%;
-}
-
-.jackpot-status {
-    margin: 15px 0 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.jackpot-row {
-    font-weight: 800;
-    color: var(--blue-deep);
-}
-
-.jackpot-row.subtle {
-    font-weight: 600;
-    color: var(--blue-soft);
-    opacity: 0.95;
-}
-
-.status-line {
-    margin-top: 10px;
-    font-weight: 700;
-    color: var(--blue-deep);
-    min-height: 20px;
+    font-size: 1.1rem;
 }
 
 .premium-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 25px;
-    align-items: start; 
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 30px;
+    align-items: stretch;
 }
 
-/* Don't mess with Simon. While he's jellyfishing... While he's jellyfishing. Mess around and catch a sting,
-while he's jellyfishing. */
-
 .tier-card {
-    min-height: auto; 
-    height: 100%;
+    background: white;
+    border-radius: 24px;
+    padding: 35px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
-    padding: 30px;
-    box-sizing: border-box;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.tier-card:hover {
+    transform: translateY(-5px);
+}
+
+.tier-card h3 {
+    color: var(--blue-deep);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.tier-card p {
+    color: var(--blue-soft);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--blue-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group select {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8faff;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--blue-deep);
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--blue-primary);
+}
+
+.premium-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.action-btn {
+    background: var(--blue-primary);
+    color: white;
+}
+
+.action-btn:hover {
+    background: var(--blue-deep);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+}
+
+.feature-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #dcfce7;
+    color: #166534;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 900;
 }
 
 .animation-shop {
+    max-height: 160px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f1f5f9;
+    border-radius: 12px;
+}
+
+.status-line {
+    font-size: 0.85rem;
+    margin-top: 8px;
+    font-weight: 600;
+    color: var(--blue-primary);
+    text-align: center;
+}
+
+.jackpot-display {
+    background: #f0fff4;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px dashed #22c55e;
+}
+
+.jackpot-main-val {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #15803d;
+}
+
+.button-stack {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 10px;
-    max-height: 200px; 
-    overflow-y: auto;  
-    padding-right: 5px;
-    border: 1px inset rgba(0,0,0,0.05);
-    border-radius: 8px;
-    background: rgba(0,0,0,0.02);
-}
-
-.animation-shop::-webkit-scrollbar {
-    width: 6px;
-}
-.animation-shop::-webkit-scrollbar-thumb {
-    background: var(--blue-soft);
-    border-radius: 10px;
-}
-
-.premium-style-controls {
-    flex-grow: 1; 
+    margin-top: auto; 
 }

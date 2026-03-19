@@ -75,18 +75,16 @@
                 <span class="feature-emoji">🎰</span>
                 <h3>Community Jackpot</h3>
                 <p>Every spin adds to the pot. One lucky winner takes it all!</p>
-                <div class="status-group">
-                    <span class="status-badge status-active">LIVE DRAW</span>
-                </div>
                 
                 <div class="jackpot-display">
-                    <div class="jackpot-main-val">Pot: <span id="jackpotPotAmount">$0</span></div>
-                    <p class="subtle">Cost: 50 coins per spin</p>
+                    <span class="status-badge status-active">LIVE DRAW</span>
+                    <div class="jackpot-main-val"><span id="jackpotPotAmount">$0</span></div>
+                    <p class="subtle" style="font-size: 0.8rem; margin: 0; color: #64748b;">Cost: 50 coins / spin</p>
                 </div>
 
                 <div class="button-stack">
-                    <button id="jackpotRefreshBtn" class="feature-btn secondary" type="button">Refresh Pot</button>
-                    <button id="jackpotSpinBtn" class="feature-btn jackpot-btn" type="button">Spin to Win</button>
+                    <button id="jackpotSpinBtn" class="premium-btn" style="background: #22c55e; color: white;">Spin to Win</button>
+                    <button id="jackpotRefreshBtn" class="premium-btn" style="background: #e2e8f0; color: #64748b; font-size: 0.8rem;">Refresh Pot</button>
                 </div>
                 <div id="jackpotResult" class="status-line"></div>
             </section>
