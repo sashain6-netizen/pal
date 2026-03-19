@@ -38,23 +38,23 @@ const SHOP = {
   swing: { id: "swing", name: "Swing", price: 7500 },
   tilt: { id: "tilt", name: "Tilt", price: 10000 },
   
-  spin: { id: "spin", name: "Slow Spin", price: 15000 },
-  blur: { id: "blur", name: "Focus Fade", price: 20000 },
+  spin: { id: "spin", name: "Spin", price: 15000 },
+  blur: { id: "blur", name: "Blur", price: 20000 },
   glitch: { id: "glitch", name: "Glitch", price: 30000 },
-  jello: { id: "jello", name: "Jello Whip", price: 40000 },
-  ghost: { id: "ghost", name: "Ghosting", price: 55000 },
+  jello: { id: "jello", name: "Jello", price: 40000 },
+  ghost: { id: "ghosting", name: "Ghosting", price: 55000 },
 
-  rainbow: { id: "rainbow", name: "Rainbow Flow", price: 75000 },
-  neon: { id: "neon", name: "Neon Flicker", price: 90000 },
-  shake: { id: "shake", name: "Earthquake", price: 110000 },
-  squeeze: { id: "squeeze", name: "Squeeze Pop", price: 135000 },
+  rainbow: { id: "rainbow", name: "Rainbow", price: 75000 },
+  neon: { id: "neon", name: "Neon", price: 90000 },
+  shake: { id: "earthquake", name: "Earthquake", price: 110000 },
+  squeeze: { id: "squeeze", name: "Squeeze", price: 135000 },
   heartbeat: { id: "heartbeat", name: "Heartbeat", price: 160000 },
 
-  fire: { id: "fire", name: "Flame Aura", price: 200000 },
-  gold: { id: "gold", name: "Midas Touch", price: 225000 },
-  matrix: { id: "matrix", name: "Digital Rain", price: 250000 },
-  vortex: { id: "vortex", name: "The Vortex", price: 275000 },
-  godly: { id: "godly", name: "Divine Light", price: 300000 }
+  fire: { id: "fire", name: "Fire", price: 200000 },
+  gold: { id: "gold", name: "Gold", price: 225000 },
+  matrix: { id: "matrix", name: "Matrix", price: 250000 },
+  vortex: { id: "vortex", name: "Vortex", price: 275000 },
+  godly: { id: "godly", name: "GOdly", price: 300000 }
 };
 
 const PREMIUM_DEFAULTS = ["none", "float", "pulse", "shimmer"];
