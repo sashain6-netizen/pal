@@ -64,104 +64,501 @@
     text-overflow: ellipsis;
 }
 
-/* --- Base Requirement & Safety --- */
+/* ============================================================
+   POST ROW ANIMATIONS — TIERED PRESTIGE SYSTEM
+   ============================================================ */
+
+/* --- Base Safety --- */
 .compact-post-row[class*="post-anim-"] {
     will-change: transform, filter;
     position: relative;
     z-index: 1;
-    /* Prevent rows from physically moving into each other */
-    contain: layout; 
+    contain: layout;
 }
 
-/* --- TIER 1: BASIC (Clean & Subtle) --- */
-.post-anim-float   { animation: p-float 3s ease-in-out infinite; }
-.post-anim-pulse   { animation: p-pulse 2s ease-in-out infinite; }
-.post-anim-shimmer { animation: p-shimmer 2s linear infinite; }
-.post-anim-wiggle  .rank-tag { animation: p-wiggle 0.5s ease-in-out infinite; }
-.post-anim-stretch { animation: p-stretch 2s ease-in-out infinite; }
-.post-anim-bounce  { animation: p-bounce 1.2s ease-in-out infinite; }
+/* ============================================================
+   TIER 1: BASIC — Polished & Satisfying
+   Each one feels clearly alive. Clean, never distracting.
+   ============================================================ */
 
-/* --- TIER 2: ADVANCED (Interactive & Polished) --- */
-/* Tilt and Swing now use 3D perspective for a 'neat' depth effect */
-.post-anim-tilt    { perspective: 1000px; animation: p-tilt 3.2s ease-in-out infinite; }
-.post-anim-swing   { transform-origin: top center; animation: p-swing 3s ease-in-out infinite; }
-.post-anim-blur    { animation: p-blur 4s ease-in-out infinite; }
-.post-anim-glitch  { animation: p-glitch 0.4s steps(2, end) infinite; }
-.post-anim-jello   { animation: p-jello 1.5s infinite; }
-/* Spin only affects the Rank Tag to avoid breaking the row layout */
-.post-anim-spin .rank-tag { animation: p-spin 3s linear infinite; }
+/* FLOAT: Casts a soft shadow that moves with the element — feels physically suspended */
+.post-anim-float {
+    animation: p-float 3s ease-in-out infinite;
+}
+@keyframes p-float {
+    0%, 100% { transform: translateY(0px);   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+    50%       { transform: translateY(-6px);  filter: drop-shadow(0 10px 12px rgba(0,0,0,0.25)); }
+}
 
-/* --- TIER 3: ELITE (Vibrant & Expressive) --- */
-.post-anim-ghosting  { animation: p-ghost 2.5s ease-in-out infinite; }
-.post-anim-rainbow   { animation: p-rainbow 6s linear infinite; }
-.post-anim-neon      { animation: p-neon 1.5s ease-in-out infinite alternate; }
-.post-anim-earthquake{ animation: p-shake 0.2s linear infinite; }
-.post-anim-squeeze   { animation: p-squeeze 2s ease-in-out infinite; }
-.post-anim-heartbeat .rank-tag { animation: p-heartbeat 1.2s ease-in-out infinite; }
+/* PULSE: Breathes with a soft glow — feels alive */
+.post-anim-pulse {
+    animation: p-pulse 2.2s ease-in-out infinite;
+}
+@keyframes p-pulse {
+    0%, 100% { transform: scale(1);     box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+    50%       { transform: scale(1.015); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+}
 
-/* --- TIER 4: LEGENDARY (Complex & Multi-layered) --- */
-.post-anim-fire   { animation: p-fire 2s ease-in-out infinite; }
-.post-anim-vortex { animation: p-vortex 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
-.post-anim-godly  { animation: p-godly 3s ease-in-out infinite; }
+/* SHIMMER: A real light sweep across the row, not just brightness */
+.post-anim-shimmer {
+    overflow: hidden;
+}
+.post-anim-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
+    background-size: 200% 100%;
+    animation: p-shimmer-sweep 2.2s linear infinite;
+    pointer-events: none;
+}
+@keyframes p-shimmer-sweep {
+    0%   { background-position: -100% 0; }
+    100% { background-position: 200% 0; }
+}
 
-/* Special Text-Based Styles */
+/* WIGGLE: Spring-physics snap — more satisfying than a simple rotate */
+.post-anim-wiggle .rank-tag {
+    animation: p-wiggle 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+    transform-origin: center bottom;
+}
+@keyframes p-wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    20%       { transform: rotate(-5deg); }
+    40%       { transform: rotate(5deg); }
+    60%       { transform: rotate(-3deg); }
+    80%       { transform: rotate(3deg); }
+}
+
+/* STRETCH: Squash-and-stretch with proper volume preservation */
+.post-anim-stretch {
+    animation: p-stretch 2s ease-in-out infinite;
+    transform-origin: left center;
+}
+@keyframes p-stretch {
+    0%, 100% { transform: scaleX(1)    scaleY(1); }
+    30%       { transform: scaleX(1.04) scaleY(0.97); }
+    60%       { transform: scaleX(0.97) scaleY(1.02); }
+}
+
+/* BOUNCE: Real squash on impact — feels weighty */
+.post-anim-bounce {
+    animation: p-bounce 1.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+}
+@keyframes p-bounce {
+    0%        { transform: translateY(0)    scaleX(1)    scaleY(1); }
+    40%        { transform: translateY(-8px) scaleX(0.96) scaleY(1.04); }
+    60%        { transform: translateY(-6px) scaleX(0.96) scaleY(1.04); }
+    80%        { transform: translateY(0)    scaleX(1.05) scaleY(0.95); }
+    90%        { transform: translateY(0)    scaleX(0.98) scaleY(1.01); }
+    100%       { transform: translateY(0)    scaleX(1)    scaleY(1); }
+}
+
+
+/* ============================================================
+   TIER 2: ADVANCED — Clearly Impressive
+   Real depth, real physics, real personality.
+   ============================================================ */
+
+/* TILT: Full 3D card perspective — you see the back edge */
+.post-anim-tilt {
+    perspective: 800px;
+    animation: p-tilt 3.5s ease-in-out infinite;
+    transform-style: preserve-3d;
+}
+@keyframes p-tilt {
+    0%, 100% { transform: perspective(800px) rotateY(0deg)   rotateX(0deg); }
+    30%       { transform: perspective(800px) rotateY(8deg)   rotateX(1deg); filter: drop-shadow(-6px 4px 10px rgba(0,0,0,0.3)); }
+    70%       { transform: perspective(800px) rotateY(-8deg)  rotateX(-1deg); filter: drop-shadow(6px 4px 10px rgba(0,0,0,0.3)); }
+}
+
+/* SWING: Pendulum with momentum — overshoots and settles */
+.post-anim-swing {
+    transform-origin: top center;
+    animation: p-swing 2.8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+@keyframes p-swing {
+    0%, 100% { transform: rotate(0deg); }
+    20%       { transform: rotate(-4deg); }
+    50%       { transform: rotate(3deg); }
+    75%       { transform: rotate(-1.5deg); }
+    90%       { transform: rotate(1deg); }
+}
+
+/* BLUR: Focus pulls in and out like a camera lens, slight zoom */
+.post-anim-blur {
+    animation: p-blur 3.5s ease-in-out infinite;
+}
+@keyframes p-blur {
+    0%, 100% { filter: blur(0px)  brightness(1);    transform: scale(1); }
+    45%       { filter: blur(2px)  brightness(1.05); transform: scale(1.01); }
+    55%       { filter: blur(2px)  brightness(1.05); transform: scale(1.01); }
+}
+
+/* GLITCH: True RGB channel split — red and cyan channels offset independently */
+.post-anim-glitch {
+    animation: p-glitch-base 3s infinite;
+}
+.post-anim-glitch::before,
+.post-anim-glitch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+}
+.post-anim-glitch::before {
+    background: inherit;
+    mix-blend-mode: screen;
+    animation: p-glitch-r 3s infinite;
+}
+.post-anim-glitch::after {
+    background: inherit;
+    mix-blend-mode: screen;
+    animation: p-glitch-b 3s infinite;
+}
+@keyframes p-glitch-base {
+    0%, 89%     { transform: translate(0); filter: none; }
+    90%          { transform: translate(-2px, 0); filter: hue-rotate(20deg) saturate(1.5); }
+    92%          { transform: translate(2px, 0); clip-path: inset(20% 0 40% 0); }
+    94%          { transform: translate(0, 1px); clip-path: inset(60% 0 10% 0); }
+    96%          { transform: translate(-1px, 0); }
+    98%, 100%    { transform: translate(0); filter: none; }
+}
+@keyframes p-glitch-r {
+    0%, 89%  { opacity: 0; }
+    90%       { opacity: 0.4; transform: translate(3px, 0); filter: saturate(10) hue-rotate(-60deg) brightness(2); clip-path: inset(10% 0 60% 0); }
+    93%       { opacity: 0; transform: translate(0); }
+    100%      { opacity: 0; }
+}
+@keyframes p-glitch-b {
+    0%, 91%  { opacity: 0; }
+    92%       { opacity: 0.4; transform: translate(-3px, 0); filter: saturate(10) hue-rotate(180deg) brightness(2); clip-path: inset(50% 0 20% 0); }
+    95%       { opacity: 0; }
+    100%      { opacity: 0; }
+}
+
+/* JELLO: Exaggerated wobbly physics — more stages, overshoots */
+.post-anim-jello {
+    animation: p-jello 1.8s ease-in-out infinite;
+    transform-origin: center center;
+}
+@keyframes p-jello {
+    0%, 100% { transform: scale3d(1, 1, 1); }
+    15%       { transform: scale3d(1.08, 0.94, 1); }
+    30%       { transform: scale3d(0.94, 1.06, 1); }
+    45%       { transform: scale3d(1.04, 0.97, 1); }
+    60%       { transform: scale3d(0.98, 1.02, 1); }
+    75%       { transform: scale3d(1.01, 0.99, 1); }
+}
+
+/* SPIN: Rank tag spins with a magnetic slow-fast-slow feel */
+.post-anim-spin .rank-tag {
+    animation: p-spin 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    display: inline-block;
+}
+@keyframes p-spin {
+    0%   { transform: rotate(0deg)   scale(1); }
+    50%  { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+
+/* ============================================================
+   TIER 3: ELITE — Eye-Catching & Covetable
+   People in the thread WILL ask "what animation is that?"
+   ============================================================ */
+
+/* GHOSTING: Real afterimage — a faded clone trails behind */
+.post-anim-ghosting {
+    animation: p-ghost-main 2.5s ease-in-out infinite;
+}
+.post-anim-ghosting::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    border-radius: inherit;
+    opacity: 0;
+    animation: p-ghost-trail 2.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+@keyframes p-ghost-main {
+    0%, 100% { transform: translateX(0);   opacity: 1; }
+    50%       { transform: translateX(3px); opacity: 0.9; }
+}
+@keyframes p-ghost-trail {
+    0%, 100% { transform: translateX(0px); opacity: 0; filter: blur(3px); }
+    40%       { transform: translateX(0px); opacity: 0.35; filter: blur(4px) hue-rotate(30deg); }
+    50%       { transform: translateX(-5px); opacity: 0.2; filter: blur(6px); }
+}
+
+/* RAINBOW: Prismatic — full hue rotation with saturation and brightness boost */
+.post-anim-rainbow {
+    animation: p-rainbow 4s linear infinite;
+}
+@keyframes p-rainbow {
+    0%   { filter: hue-rotate(0deg)   saturate(1.4) brightness(1.05); }
+    50%  { filter: hue-rotate(180deg) saturate(1.8) brightness(1.1); }
+    100% { filter: hue-rotate(360deg) saturate(1.4) brightness(1.05); }
+}
+
+/* NEON: Flickering neon sign — real flicker timing, color cycling, multi-layer glow */
+.post-anim-neon {
+    animation: p-neon-flicker 4s ease-in-out infinite;
+    border-left: 3px solid var(--premium-forum-color, #b96ef5) !important;
+}
+.post-anim-neon .content {
+    animation: p-neon-text 4s ease-in-out infinite;
+}
+@keyframes p-neon-flicker {
+    0%, 100% { filter: drop-shadow(0 0 3px var(--premium-forum-color, #b96ef5)) drop-shadow(0 0 10px var(--premium-forum-color, #b96ef5)); }
+    3%        { filter: none; }
+    6%        { filter: drop-shadow(0 0 3px var(--premium-forum-color, #b96ef5)) drop-shadow(0 0 10px var(--premium-forum-color, #b96ef5)); }
+    50%       { filter: drop-shadow(0 0 5px #ff6ef5) drop-shadow(0 0 20px #b96ef5) drop-shadow(0 0 40px #7700ff); }
+    75%       { filter: drop-shadow(0 0 3px #6ef5ff) drop-shadow(0 0 12px #00cfff); }
+    76%        { filter: none; }
+    78%       { filter: drop-shadow(0 0 3px #6ef5ff) drop-shadow(0 0 12px #00cfff); }
+}
+@keyframes p-neon-text {
+    0%, 100% { color: var(--premium-forum-color, #b96ef5); text-shadow: 0 0 6px var(--premium-forum-color, #b96ef5); }
+    50%       { color: #ff6ef5; text-shadow: 0 0 12px #ff6ef5, 0 0 24px #b96ef5; }
+    75%       { color: #6ef5ff; text-shadow: 0 0 8px #00cfff; }
+}
+
+/* EARTHQUAKE: Chaotic multi-axis shake — feels dangerous */
+.post-anim-earthquake {
+    animation: p-quake 0.15s linear infinite;
+}
+@keyframes p-quake {
+    0%   { transform: translate(0px, 0px)    rotate(0deg); }
+    15%  { transform: translate(-2px, 1px)   rotate(-0.3deg); }
+    30%  { transform: translate(2px, -1px)   rotate(0.3deg); }
+    45%  { transform: translate(-1px, 2px)   rotate(-0.2deg); }
+    60%  { transform: translate(3px, 0px)    rotate(0.4deg); }
+    75%  { transform: translate(-2px, -2px)  rotate(0deg); }
+    90%  { transform: translate(1px, 1px)    rotate(-0.3deg); }
+    100% { transform: translate(0px, 0px)    rotate(0deg); }
+}
+
+/* SQUEEZE: Accordion inhale/exhale — feels like it's breathing hard */
+.post-anim-squeeze {
+    animation: p-squeeze 1.8s ease-in-out infinite;
+    transform-origin: center center;
+}
+@keyframes p-squeeze {
+    0%, 100% { transform: scaleX(1)    scaleY(1); }
+    25%       { transform: scaleX(1.06) scaleY(0.93); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2)); }
+    50%       { transform: scaleX(0.94) scaleY(1.07); filter: drop-shadow(0 -2px 6px rgba(0,0,0,0.15)); }
+    75%       { transform: scaleX(1.03) scaleY(0.97); }
+}
+
+/* HEARTBEAT: Double-pump like a real heart — systole + diastole */
+.post-anim-heartbeat .rank-tag {
+    animation: p-heartbeat 1.1s ease-in-out infinite;
+    display: inline-block;
+}
+@keyframes p-heartbeat {
+    0%   { transform: scale(1); }
+    14%  { transform: scale(1.2); }
+    28%  { transform: scale(1.05); }
+    42%  { transform: scale(1.25); filter: drop-shadow(0 0 6px #ff4060); }
+    70%  { transform: scale(1); filter: none; }
+    100% { transform: scale(1); }
+}
+
+
+/* ============================================================
+   TIER 4: LEGENDARY — Unmistakable. Jaw-dropping. Coveted.
+   ============================================================ */
+
+/* FIRE: Layered inferno — multiple flame drops, color-shifting heat distortion */
+.post-anim-fire {
+    animation: p-fire 1.8s ease-in-out infinite;
+    border-left: 3px solid #ff4400 !important;
+}
+.post-anim-fire::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(255,60,0,0.08) 0%, transparent 60%);
+    animation: p-fire-glow 1.8s ease-in-out infinite;
+    pointer-events: none;
+    border-radius: inherit;
+}
+@keyframes p-fire {
+    0%, 100% {
+        filter: drop-shadow(0 -1px 2px rgba(255,140,0,0.7))
+                drop-shadow(0 -3px 6px rgba(255,60,0,0.5))
+                drop-shadow(0 -6px 12px rgba(200,0,0,0.3));
+        transform: skewX(-0.5deg) scaleY(1);
+    }
+    25% {
+        filter: drop-shadow(0 -1px 4px rgba(255,200,0,0.9))
+                drop-shadow(0 -4px 10px rgba(255,100,0,0.6))
+                drop-shadow(0 -8px 18px rgba(255,0,0,0.4));
+        transform: skewX(0.8deg) scaleY(1.005);
+    }
+    50% {
+        filter: drop-shadow(0 -2px 6px rgba(255,220,0,1))
+                drop-shadow(0 -5px 14px rgba(255,80,0,0.7))
+                drop-shadow(0 -10px 22px rgba(180,0,0,0.5));
+        transform: skewX(-1deg) scaleY(0.998);
+    }
+    75% {
+        filter: drop-shadow(0 -1px 3px rgba(255,160,0,0.8))
+                drop-shadow(0 -3px 8px rgba(255,50,0,0.5))
+                drop-shadow(0 -7px 14px rgba(160,0,0,0.3));
+        transform: skewX(0.5deg) scaleY(1.003);
+    }
+}
+@keyframes p-fire-glow {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+}
+
+/* VORTEX: Spiral pull — hue cycle + scale breathe + subtle warp */
+.post-anim-vortex {
+    animation: p-vortex 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+.post-anim-vortex::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: conic-gradient(
+        from 0deg,
+        rgba(120,0,255,0.15),
+        rgba(0,200,255,0.15),
+        rgba(255,0,120,0.15),
+        rgba(120,0,255,0.15)
+    );
+    border-radius: inherit;
+    animation: p-vortex-border 5s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.7;
+}
+@keyframes p-vortex {
+    0%   { transform: rotate(0deg)    scale(1);     filter: hue-rotate(0deg)   saturate(1.2); }
+    33%  { transform: rotate(0.8deg)  scale(1.015); filter: hue-rotate(120deg) saturate(1.5); }
+    66%  { transform: rotate(-0.8deg) scale(1.02);  filter: hue-rotate(240deg) saturate(1.5); }
+    100% { transform: rotate(0deg)    scale(1);     filter: hue-rotate(360deg) saturate(1.2); }
+}
+@keyframes p-vortex-border {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* GODLY: Ascension aura — levitates, radiates prismatic light, golden crown glow */
+.post-anim-godly {
+    animation: p-godly-float 3s ease-in-out infinite;
+    border-left: 3px solid gold !important;
+}
+.post-anim-godly::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(90deg, #d4af37, #fff7a0, #d4af37, #ffe566, #d4af37);
+    background-size: 300% 100%;
+    border-radius: inherit;
+    z-index: -1;
+    animation: p-godly-aura 3s linear infinite;
+    opacity: 0.4;
+    filter: blur(4px);
+}
+.post-anim-godly::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,240,120,0.12) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: p-godly-sheen 3s ease-in-out infinite;
+    pointer-events: none;
+    border-radius: inherit;
+}
+@keyframes p-godly-float {
+    0%, 100% { transform: translateY(0px);   filter: drop-shadow(0 0 4px rgba(255,215,0,0.6))  drop-shadow(0 0 12px rgba(255,215,0,0.3)); }
+    50%       { transform: translateY(-5px);  filter: drop-shadow(0 0 8px rgba(255,215,0,0.9))  drop-shadow(0 0 24px rgba(255,215,0,0.5)) drop-shadow(0 0 40px rgba(255,255,200,0.3)); }
+}
+@keyframes p-godly-aura {
+    0%   { background-position: 0% center;   opacity: 0.3; }
+    50%  { background-position: 100% center; opacity: 0.6; }
+    100% { background-position: 200% center; opacity: 0.3; }
+}
+@keyframes p-godly-sheen {
+    0%   { background-position: -100% 0; }
+    60%  { background-position: 200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ============================================================
+   SPECIAL TEXT EFFECTS
+   ============================================================ */
+
+/* GOLD: Liquid metal — deep gloss with hot-spot highlights */
 .post-anim-gold .content {
-    background: linear-gradient(90deg, #d4af37, #f7ef8a, #d4af37);
-    background-size: 200% auto;
+    background: linear-gradient(
+        90deg,
+        #7d5a00 0%,
+        #d4af37 20%,
+        #fff0a0 38%,
+        #ffe566 50%,
+        #fff0a0 62%,
+        #d4af37 80%,
+        #7d5a00 100%
+    );
+    background-size: 250% auto;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
-    filter: drop-shadow(0 0 1px rgba(212, 175, 55, 0.5));
-    animation: p-gold-shine 3s linear infinite;
+    letter-spacing: 0.01em;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.4));
+    animation: p-gold-sweep 3.5s ease-in-out infinite;
+}
+@keyframes p-gold-sweep {
+    0%   { background-position: 0% center; }
+    50%  { background-position: 125% center; }
+    100% { background-position: 0% center; }
 }
 
+/* MATRIX: Digital rain — cascading flicker, scan-line, phosphor glow */
 .post-anim-matrix {
     border-left: 3px solid #00ff41 !important;
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 65, 0.015) 2px,
+        rgba(0, 255, 65, 0.015) 4px
+    ) !important;
+    animation: p-matrix-scan 8s linear infinite;
 }
 .post-anim-matrix .content {
-    font-family: 'Courier New', monospace;
+    font-family: 'Courier New', Courier, monospace;
     color: #00ff41 !important;
-    text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
-    animation: p-matrix-flicker 2s infinite;
+    text-shadow:
+        0 0 4px rgba(0, 255, 65, 0.9),
+        0 0 10px rgba(0, 255, 65, 0.5),
+        0 0 20px rgba(0, 200, 50, 0.2);
+    animation: p-matrix-flicker 3s steps(1, end) infinite;
+    letter-spacing: 0.04em;
 }
-
-
-@keyframes p-float   { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-@keyframes p-pulse   { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.01); } }
-@keyframes p-shimmer { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.2); } }
-@keyframes p-wiggle  { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-@keyframes p-stretch { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(1.03); } }
-@keyframes p-bounce  { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-@keyframes p-swing   { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-@keyframes p-tilt    { 0%, 100% { transform: rotateY(0deg); } 50% { transform: rotateY(10deg); } }
-@keyframes p-spin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes p-blur    { 0%, 100% { filter: blur(0); } 50% { filter: blur(1.5px); } }
-@keyframes p-glitch  { 0% { transform: translate(1px, 0); filter: hue-rotate(45deg); } 50% { transform: translate(-1px, 0); filter: hue-rotate(90deg); } }
-@keyframes p-jello   { 0%, 100% { transform: scale(1,1); } 25% { transform: scale(1.1, 0.9); } 50% { transform: scale(0.9, 1.1); } }
-@keyframes p-ghost   { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.02); } }
-@keyframes p-rainbow { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
-@keyframes p-neon    { from { filter: drop-shadow(0 0 2px var(--premium-forum-color)); } to { filter: drop-shadow(0 0 8px var(--premium-forum-color)); } }
-@keyframes p-shake   { 0% { transform: translate(1px, 0); } 50% { transform: translate(-1px, 0); } }
-@keyframes p-squeeze { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.05, 0.95); } }
-@keyframes p-heartbeat{ 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-
-/* --- THE GODLY TIER KEYFRAMES --- */
-@keyframes p-fire    { 0%, 100% { filter: drop-shadow(0 -2px 3px orange); transform: skewX(-1deg); } 50% { filter: drop-shadow(0 -4px 8px red); transform: skewX(1deg); } }
-@keyframes p-gold-shine { to { background-position: 200% center; } }
-@keyframes p-matrix-flicker { 0%, 100% { opacity: 1; } 95% { opacity: 1; } 97% { opacity: 0.7; } }
-@keyframes p-vortex  { 0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); } 50% { transform: rotate(1deg) scale(1.02); filter: hue-rotate(180deg); } 100% { transform: rotate(0deg) scale(1); filter: hue-rotate(360deg); } }
-@keyframes p-godly   { 0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 5px gold); } 50% { transform: translateY(-3px); filter: drop-shadow(0 0 15px white) brightness(1.1); } }
-.post-anim-gold .content {
-    background: linear-gradient(90deg, #d4af37, #f7ef8a, #d4af37);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
+@keyframes p-matrix-scan {
+    0%, 100% { box-shadow: none; }
+    50%       { box-shadow: inset 0 0 40px rgba(0,255,65,0.05); }
 }
-
-.post-anim-matrix .content {
-    font-family: 'Courier New', monospace;
-    color: #00ff41 !important;
+@keyframes p-matrix-flicker {
+    0%, 100% { opacity: 1;   text-shadow: 0 0 4px rgba(0,255,65,0.9), 0 0 10px rgba(0,255,65,0.5); }
+    7%        { opacity: 0.85; text-shadow: 0 0 2px rgba(0,255,65,0.6); }
+    8%        { opacity: 1;   text-shadow: 0 0 8px rgba(0,255,65,1), 0 0 20px rgba(0,200,50,0.5); }
+    70%        { opacity: 1;   }
+    72%        { opacity: 0.7; text-shadow: none; }
+    73%        { opacity: 1;   text-shadow: 0 0 4px rgba(0,255,65,0.9), 0 0 10px rgba(0,255,65,0.5); }
+    92%        { opacity: 1; }
+    94%        { opacity: 0.88; text-shadow: 0 0 3px rgba(0,255,65,0.7); }
+    96%        { opacity: 1; }
 }
 
 .author-area { 
