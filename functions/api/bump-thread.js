@@ -20,13 +20,19 @@ export async function onRequestPost(context) {
     const username = String(payload.username || "").toLowerCase();
     if (!username) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
 
-    // --- PREMIUM CHECK ---
-    // Fetch the user from the DB to verify premium status
-    const user = await env.DB.prepare("SELECT isPremium FROM users WHERE LOWER(username) = ?")
-      .bind(username)
-      .first();
+    // --- NEW PREMIUM CHECK (KV BASED) ---
+    // Fetch your specific KV key that holds the list of premium users
+    // Adjust "premium_users_list" to match whatever key name you actually use
+    const premiumListRaw = await env.USERS_KV.get("pal_premium");
+    let isPremium = false;
 
-    if (!user || !user.isPremium) {
+    if (premiumListRaw) {
+      const premiumUsers = JSON.parse(premiumListRaw);
+      // Check if current username is in the list
+      isPremium = Array.isArray(premiumUsers) && premiumUsers.includes(username);
+    }
+
+    if (!isPremium) {
       return new Response(JSON.stringify({ error: "Thread bumping is a Premium-only feature." }), { 
         status: 403, 
         headers: { "Content-Type": "application/json" } 
@@ -37,7 +43,7 @@ export async function onRequestPost(context) {
     const threadId = Number(body.threadId);
     if (!Number.isFinite(threadId)) return new Response(JSON.stringify({ error: "Invalid threadId" }), { status: 400, headers: { "Content-Type": "application/json" } });
 
-    // Must be the thread creator
+    // Must be the thread creator (SQL check for thread authorship is still correct)
     const thread = await env.DB.prepare("SELECT id, creator_username FROM threads WHERE id = ?").bind(threadId).first();
     if (!thread) return new Response(JSON.stringify({ error: "Thread not found" }), { status: 404, headers: { "Content-Type": "application/json" } });
     if (String(thread.creator_username || "").toLowerCase() !== username) {
@@ -54,7 +60,7 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Too soon", cooldownMsRemaining: remaining }), { status: 429, headers: { "Content-Type": "application/json" } });
     }
 
-    // Ensure bumps table exists
+    // Ensure bumps table exists in DB
     await env.DB.prepare(`
       CREATE TABLE IF NOT EXISTS thread_bumps (
         thread_id INTEGER PRIMARY KEY,
@@ -63,7 +69,6 @@ export async function onRequestPost(context) {
       )
     `).run();
 
-    // Upsert bump timestamp
     await env.DB.prepare(`
       INSERT INTO thread_bumps (thread_id, bumped_at, bumped_by)
       VALUES (?, CURRENT_TIMESTAMP, ?)
