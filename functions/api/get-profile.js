@@ -76,6 +76,8 @@ export async function onRequestGet(context) {
             isPremium: isPremiumUser, 
             avatar: user.avatarUrl || "/default-avatar.png",
             xp: user.xp || 0,
+            followersCount: user.followersCount ?? (Array.isArray(user.followers) ? user.followers.length : 0),
+            followingCount: user.followingCount ?? (Array.isArray(user.following) ? user.following.length : 0),
             currency: user.currency || 0,
             themeColor: user.themeColor || "#2563eb",
             forumColor: user.forumColor || user.themeColor || "#2563eb",
