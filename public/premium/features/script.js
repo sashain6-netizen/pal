@@ -1,9 +1,14 @@
+/* =========================================
+   PREMIUM DASHBOARD - LOGIC
+   ========================================= */
+
 function formatNumber(n) {
     const num = Number(n || 0);
     return num.toLocaleString();
 }
 
 async function initPremiumFeatures() {
+    // 1. Initial Access Check
     const accessRes = await fetch('/api/get-profile');
     if (!accessRes.ok) {
         window.location.replace('/');
@@ -20,86 +25,23 @@ async function initPremiumFeatures() {
 
     document.body.classList.add('authorized');
 
-    // --- Post caption + animations ---
+    // --- Selectors ---
     const postCaptionInput = document.getElementById('postCaptionInput');
     const postAnimationSelect = document.getElementById('postAnimationSelect');
     const animationShop = document.getElementById('animationShop');
-
-    async function loadAnimations() {
-        const res = await fetch('/api/animations', { credentials: 'include' });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || 'Failed to load animations');
-
-        if (postCaptionInput) {
-            postCaptionInput.value = data.postCaption || '';
-        }
-
-        const owned = Array.isArray(data.ownedAnimations) ? data.ownedAnimations : ['none'];
-        const current = data.currentAnimation || 'none';
-
-        if (postAnimationSelect) {
-            postAnimationSelect.innerHTML = owned.map(id => {
-                const label = id === 'none' ? 'None' : id[0].toUpperCase() + id.slice(1);
-                return `<option value="${id}">${label}</option>`;
-            }).join('');
-            postAnimationSelect.value = owned.includes(current) ? current : 'none';
-        }
-
-        const shop = Array.isArray(data.shop) ? data.shop : [];
-        const purchasables = shop.filter(i => i.price > 0);
-
-        if (animationShop) {
-            animationShop.innerHTML = purchasables.map(item => {
-                const isOwned = owned.includes(item.id);
-                return `
-                    <div class="animation-shop-item">
-                        <div class="left">
-                            <div class="name">${item.name}</div>
-                            <div class="price">${item.price.toLocaleString()} coins</div>
-                        </div>
-                        <button class="buy-btn" data-item-id="${item.id}" ${isOwned ? 'disabled' : ''}>
-                            ${isOwned ? 'Owned' : 'Buy'}
-                        </button>
-                    </div>
-                `;
-            }).join('');
-
-            animationShop.querySelectorAll('.buy-btn').forEach(btn => {
-                btn.onclick = async () => {
-                    const itemId = btn.getAttribute('data-item-id');
-                    if (!itemId) return;
-                    try {
-                        btn.disabled = true;
-                        btn.textContent = 'Buying...';
-                        const res = await fetch('/api/animations', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({ action: 'purchase', itemId })
-                        });
-                        const data = await res.json().catch(() => ({}));
-                        if (!res.ok) throw new Error(data.error || 'Purchase failed');
-                        await loadAnimations();
-                    } catch (err) {
-                        console.error(err);
-                        alert(err.message || 'Purchase failed');
-                        btn.disabled = false;
-                        btn.textContent = 'Buy';
-                    }
-                };
-            });
-        }
-    }
-
-    // --- Golden Glow: forum color + glow intensity ---
     const forumColorPicker = document.getElementById('forumColorPicker');
     const glowIntensity = document.getElementById('glowIntensity');
     const glowIntensityLabel = document.getElementById('glowIntensityLabel');
-    const saveForumStyleBtn = document.getElementById('saveForumStyleBtn');
-    const forumStyleStatus = document.getElementById('forumStyleStatus');
 
+    // New Split Action Buttons
+    const saveCaptionBtn = document.getElementById('saveCaptionBtn');
+    const saveGlowBtn = document.getElementById('saveGlowBtn');
+    const saveAnimBtn = document.getElementById('saveAnimBtn');
+
+    // --- 2. Identity & Style Initialization ---
     if (forumColorPicker) {
-        forumColorPicker.value = myData.forumColor || '#b8860b';
+        // Matches the "Visual Effects" card
+        forumColorPicker.value = myData.forumColor || '#2563eb';
     }
 
     if (glowIntensity && glowIntensityLabel) {
@@ -107,70 +49,121 @@ async function initPremiumFeatures() {
         const pct = Math.round(alpha * 100);
         glowIntensity.value = String(pct);
         glowIntensityLabel.textContent = `${pct}%`;
+        
         glowIntensity.addEventListener('input', () => {
             glowIntensityLabel.textContent = `${glowIntensity.value}%`;
         });
     }
 
-    // Initialize inputs with current user settings if available
-    if (postCaptionInput && typeof myData.forumColor !== 'undefined') {
-        // caption/animation are loaded from /api/animations, but this prevents empty flash
-        postCaptionInput.value = postCaptionInput.value || '';
-    }
+    // --- 3. Animation Lab & Shop ---
+    async function loadAnimations() {
+        try {
+            const res = await fetch('/api/animations', { credentials: 'include' });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Failed to load animations');
 
-    if (saveForumStyleBtn) {
-        saveForumStyleBtn.onclick = async () => {
-            try {
-                saveForumStyleBtn.disabled = true;
-                saveForumStyleBtn.textContent = 'Saving...';
-                if (forumStyleStatus) forumStyleStatus.textContent = '';
+            if (postCaptionInput) postCaptionInput.value = data.postCaption || '';
 
-                const postCaption = postCaptionInput?.value ?? '';
-                const postAnimation = postAnimationSelect?.value ?? 'none';
+            const owned = Array.isArray(data.ownedAnimations) ? data.ownedAnimations : ['none'];
+            const current = data.currentAnimation || 'none';
 
-                const forumColor = forumColorPicker?.value;
-                const glowAlpha = glowIntensity ? Number(glowIntensity.value) / 100 : null;
-
-                const [styleRes, animRes] = await Promise.all([
-                    fetch('/api/update-premium-forum-style', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ forumColor, glowAlpha })
-                    }),
-                    fetch('/api/animations', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ action: 'set', postCaption, postAnimation })
-                    })
-                ]);
-
-                const styleData = await styleRes.json().catch(() => ({}));
-                if (!styleRes.ok) throw new Error(styleData.error || 'Save failed');
-
-                const animData = await animRes.json().catch(() => ({}));
-                if (!animRes.ok) throw new Error(animData.error || 'Save failed');
-
-                if (forumStyleStatus) {
-                    forumStyleStatus.textContent = 'Saved! Your forum style, caption, and animation are updated.';
-                }
-            } catch (err) {
-                console.error(err);
-                if (forumStyleStatus) forumStyleStatus.textContent = err.message || 'Save failed';
-            } finally {
-                saveForumStyleBtn.disabled = false;
-                saveForumStyleBtn.textContent = 'Save';
+            // Populate Dropdown
+            if (postAnimationSelect) {
+                postAnimationSelect.innerHTML = owned.map(id => {
+                    const label = id === 'none' ? 'None' : id[0].toUpperCase() + id.slice(1);
+                    return `<option value="${id}">${label}</option>`;
+                }).join('');
+                postAnimationSelect.value = owned.includes(current) ? current : 'none';
             }
-        };
+
+            // Render Shop Items
+            const shop = Array.isArray(data.shop) ? data.shop : [];
+            const purchasables = shop.filter(i => i.price > 0);
+
+            if (animationShop && purchasables.length > 0) {
+                animationShop.innerHTML = purchasables.map(item => {
+                    const isOwned = owned.includes(item.id);
+                    return `
+                        <div class="shop-item" style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px; padding:0 5px;">
+                            <span style="font-size:0.75rem; font-weight:700;">${item.name}</span>
+                            <button class="buy-btn" data-item-id="${item.id}" ${isOwned ? 'disabled' : ''} 
+                                    style="background:none; border:none; color:var(--primary); font-weight:900; cursor:pointer; font-size:0.7rem;">
+                                ${isOwned ? 'OWNED' : `${item.price} 🪙`}
+                            </button>
+                        </div>`;
+                }).join('');
+
+                animationShop.querySelectorAll('.buy-btn').forEach(btn => {
+                    btn.onclick = async () => {
+                        const itemId = btn.getAttribute('data-item-id');
+                        btn.disabled = true;
+                        btn.textContent = '...';
+                        await fetch('/api/animations', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ action: 'purchase', itemId })
+                        });
+                        await loadAnimations();
+                    };
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
     }
 
-    // Keep this after Save is wired so it can use inputs safely
-    await loadAnimations();
+    // --- 4. Unified Save Handler ---
+    // Since you have 3 separate save buttons, this helper handles the API calls for any of them.
+    async function handlePremiumSave(btn) {
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
 
-    // --- Jackpot: pot view + spin ---
+        try {
+            const postCaption = postCaptionInput?.value ?? '';
+            const postAnimation = postAnimationSelect?.value ?? 'none';
+            const forumColor = forumColorPicker?.value;
+            const glowAlpha = glowIntensity ? Number(glowIntensity.value) / 100 : 0.8;
+
+            const [styleRes, animRes] = await Promise.all([
+                fetch('/api/update-premium-forum-style', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ forumColor, glowAlpha })
+                }),
+                fetch('/api/animations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ action: 'set', postCaption, postAnimation })
+                })
+            ]);
+
+            if (!styleRes.ok || !animRes.ok) throw new Error('Save failed');
+
+            btn.textContent = 'Saved!';
+            btn.style.background = '#22c55e'; // Green feedback
+        } catch (err) {
+            btn.textContent = 'Error';
+            btn.style.background = '#ef4444'; // Red feedback
+        } finally {
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                btn.style.background = ''; // Revert to CSS default
+            }, 2000);
+        }
+    }
+
+    // Attach Save Listeners
+    [saveCaptionBtn, saveGlowBtn, saveAnimBtn].forEach(btn => {
+        if (btn) btn.onclick = () => handlePremiumSave(btn);
+    });
+
+    // --- 5. Jackpot Logic ---
     const jackpotPotAmount = document.getElementById('jackpotPotAmount');
-    const jackpotResult = document.getElementById('jackpotResult');
     const jackpotRefreshBtn = document.getElementById('jackpotRefreshBtn');
     const jackpotSpinBtn = document.getElementById('jackpotSpinBtn');
 
@@ -178,107 +171,76 @@ async function initPremiumFeatures() {
         try {
             const res = await fetch('/api/jackpot');
             const data = await res.json();
-            const pot = Number(data.pot || 0);
-            if (jackpotPotAmount) jackpotPotAmount.textContent = `$${formatNumber(pot)}`;
-        } catch (err) {
-            console.error('Failed to load pot:', err);
-        }
+            if (jackpotPotAmount) jackpotPotAmount.textContent = `$${formatNumber(data.pot)}`;
+        } catch (e) { console.error('Pot error', e); }
     }
 
-    if (jackpotRefreshBtn) {
-        jackpotRefreshBtn.onclick = () => loadPot();
-    }
+    if (jackpotRefreshBtn) jackpotRefreshBtn.onclick = () => loadPot();
 
     if (jackpotSpinBtn) {
         jackpotSpinBtn.onclick = async () => {
-            try {
-                jackpotSpinBtn.disabled = true;
-                jackpotSpinBtn.textContent = 'Spinning...';
-                if (jackpotResult) jackpotResult.textContent = '';
+            const originalText = jackpotSpinBtn.textContent;
+            jackpotSpinBtn.disabled = true;
+            jackpotSpinBtn.textContent = 'Spinning...';
 
+            try {
                 const res = await fetch('/api/jackpot', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'
                 });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
 
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) throw new Error(data.error || 'Spin failed');
-
-                if (jackpotResult) {
-                    if (data.didWin) {
-                        jackpotResult.textContent = `Winner! You won ${data.winAmount} currency units.`;
-                    } else {
-                        jackpotResult.textContent = `No win this time. Pot is now ${data.potAfter}.`;
-                    }
-                }
-
+                alert(data.didWin ? `Winner! You won ${data.winAmount}!` : `Better luck next time!`);
                 await loadPot();
             } catch (err) {
-                console.error(err);
-                if (jackpotResult) jackpotResult.textContent = err.message || 'Spin failed';
+                alert(err.message);
             } finally {
                 jackpotSpinBtn.disabled = false;
-                jackpotSpinBtn.textContent = 'Spin Jackpot';
+                jackpotSpinBtn.textContent = originalText;
             }
         };
     }
 
-    await loadPot();
-
-    // --- Gift XP + Coins ---
-    const giftRecipientUsername = document.getElementById('giftRecipientUsername');
-    const giftCurrencyAmount = document.getElementById('giftCurrencyAmount');
-    const giftXpAmount = document.getElementById('giftXpAmount');
+    // --- 6. Peer Gifting ---
     const sendGiftBtn = document.getElementById('sendGiftBtn');
-    const giftResult = document.getElementById('giftResult');
-
     if (sendGiftBtn) {
         sendGiftBtn.onclick = async () => {
+            const originalText = sendGiftBtn.textContent;
+            const recipient = document.getElementById('giftRecipientUsername')?.value.trim();
+            const coins = Number(document.getElementById('giftCurrencyAmount')?.value || 0);
+            const xp = Number(document.getElementById('giftXpAmount')?.value || 0);
+
+            if (!recipient) return alert('Enter a username');
+
+            sendGiftBtn.disabled = true;
+            sendGiftBtn.textContent = 'Sending...';
+
             try {
-                sendGiftBtn.disabled = true;
-                const originalText = sendGiftBtn.textContent;
-                sendGiftBtn.textContent = 'Sending...';
-                if (giftResult) giftResult.textContent = '';
-
-                const recipientUsername = giftRecipientUsername?.value?.trim();
-                const currencyAmount = Number(giftCurrencyAmount?.value ?? 0);
-                const xpAmount = Number(giftXpAmount?.value ?? 0);
-
-                if (!recipientUsername) throw new Error('Recipient username required.');
-                if (!Number.isFinite(currencyAmount) || currencyAmount < 0) throw new Error('Coins to gift must be >= 0.');
-                if (!Number.isFinite(xpAmount) || xpAmount < 0) throw new Error('XP to gift must be >= 0.');
-                if (currencyAmount === 0 && xpAmount === 0) throw new Error('Gift at least one of coins or XP.');
-
                 const res = await fetch('/api/premium-gift', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({
-                        recipientUsername,
-                        currencyAmount,
-                        xpAmount
-                    })
+                    body: JSON.stringify({ recipientUsername: recipient, currencyAmount: coins, xpAmount: xp })
                 });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
 
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) throw new Error(data.error || 'Gift failed.');
-
-                if (giftResult) {
-                    giftResult.textContent = `Gift sent to @${data.recipientUsername}. Recipient now has ${data.recipientCurrency} coins and ${data.recipientXp} XP.`;
-                }
-
-                // Optional: keep the forms, but set the button back.
-                sendGiftBtn.textContent = originalText;
+                alert('Gift sent successfully!');
             } catch (err) {
-                console.error(err);
-                if (giftResult) giftResult.textContent = err.message || 'Gift failed.';
+                alert(err.message);
             } finally {
                 sendGiftBtn.disabled = false;
-                sendGiftBtn.textContent = 'Send Gift';
+                sendGiftBtn.textContent = originalText;
             }
         };
     }
+
+    // Initial Loads
+    await loadAnimations();
+    await loadPot();
 }
 
+// Start
 initPremiumFeatures();
