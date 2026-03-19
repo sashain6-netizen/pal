@@ -65,500 +65,290 @@
 }
 
 /* ============================================================
-   POST ROW ANIMATIONS — TIERED PRESTIGE SYSTEM
+   POST ANIMATIONS v3  —  Amplified box effects
+   More visible · Still contained · Text never moves
+   Effects: box-shadow · background · border · outline
    ============================================================ */
 
 /* --- Base Safety --- */
 .compact-post-row[class*="post-anim-"] {
-    will-change: transform, filter;
+    will-change: box-shadow, background-color, border-color, outline;
     position: relative;
     z-index: 1;
     contain: layout;
 }
 
-/* ============================================================
-   TIER 1: BASIC — Polished & Satisfying
-   Each one feels clearly alive. Clean, never distracting.
-   ============================================================ */
 
-/* FLOAT: Casts a soft shadow that moves with the element — feels physically suspended */
-.post-anim-float {
-    animation: p-float 3s ease-in-out infinite;
-}
+/* ══════════════════════════════════════════════════════════
+   TIER 1: BASIC
+   ══════════════════════════════════════════════════════════ */
+
+.post-anim-float { animation: p-float 3s ease-in-out infinite; }
 @keyframes p-float {
-    0%, 100% { transform: translateY(0px);   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
-    50%       { transform: translateY(-6px);  filter: drop-shadow(0 10px 12px rgba(0,0,0,0.25)); }
+    0%, 100% { box-shadow: 0 1px 3px rgba(37, 99, 235, 0.06); }
+    50%       { box-shadow: 0 8px 32px rgba(37, 99, 235, 0.22),
+                            0 2px 8px  rgba(37, 99, 235, 0.12); }
 }
 
-/* PULSE: Breathes with a soft glow — feels alive */
-.post-anim-pulse {
-    animation: p-pulse 2.2s ease-in-out infinite;
-}
+.post-anim-pulse { animation: p-pulse 2.8s ease-in-out infinite; }
 @keyframes p-pulse {
-    0%, 100% { transform: scale(1);     box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
-    50%       { transform: scale(1.015); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+    0%, 100% { background-color: transparent; }
+    50%       { background-color: rgba(37, 99, 235, 0.08); }
 }
 
-/* SHIMMER: A real light sweep across the row, not just brightness */
-.post-anim-shimmer {
-    overflow: hidden;
-}
-.post-anim-shimmer::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
-    background-size: 200% 100%;
-    animation: p-shimmer-sweep 2.2s linear infinite;
-    pointer-events: none;
-}
-@keyframes p-shimmer-sweep {
-    0%   { background-position: -100% 0; }
-    100% { background-position: 200% 0; }
+.post-anim-shimmer { animation: p-shimmer 2s linear infinite; }
+@keyframes p-shimmer {
+    0%   { box-shadow: inset -400px 0 100px -80px rgba(255, 255, 255, 0.0); }
+    45%  { box-shadow: inset    0px 0 120px  30px rgba(255, 255, 255, 0.55); }
+    100% { box-shadow: inset  400px 0 100px -80px rgba(255, 255, 255, 0.0); }
 }
 
-/* WIGGLE: Spring-physics snap — more satisfying than a simple rotate */
 .post-anim-wiggle .rank-tag {
-    animation: p-wiggle 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-    transform-origin: center bottom;
-}
-@keyframes p-wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    20%       { transform: rotate(-5deg); }
-    40%       { transform: rotate(5deg); }
-    60%       { transform: rotate(-3deg); }
-    80%       { transform: rotate(3deg); }
-}
-
-/* STRETCH: Squash-and-stretch with proper volume preservation */
-.post-anim-stretch {
-    animation: p-stretch 2s ease-in-out infinite;
-    transform-origin: left center;
-}
-@keyframes p-stretch {
-    0%, 100% { transform: scaleX(1)    scaleY(1); }
-    30%       { transform: scaleX(1.04) scaleY(0.97); }
-    60%       { transform: scaleX(0.97) scaleY(1.02); }
-}
-
-/* BOUNCE: Real squash on impact — feels weighty */
-.post-anim-bounce {
-    animation: p-bounce 1.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
-}
-@keyframes p-bounce {
-    0%        { transform: translateY(0)    scaleX(1)    scaleY(1); }
-    40%        { transform: translateY(-8px) scaleX(0.96) scaleY(1.04); }
-    60%        { transform: translateY(-6px) scaleX(0.96) scaleY(1.04); }
-    80%        { transform: translateY(0)    scaleX(1.05) scaleY(0.95); }
-    90%        { transform: translateY(0)    scaleX(0.98) scaleY(1.01); }
-    100%       { transform: translateY(0)    scaleX(1)    scaleY(1); }
-}
-
-
-/* ============================================================
-   TIER 2: ADVANCED — Clearly Impressive
-   Real depth, real physics, real personality.
-   ============================================================ */
-
-/* TILT: Full 3D card perspective — you see the back edge */
-.post-anim-tilt {
-    perspective: 800px;
-    animation: p-tilt 3.5s ease-in-out infinite;
-    transform-style: preserve-3d;
-}
-@keyframes p-tilt {
-    0%, 100% { transform: perspective(800px) rotateY(0deg)   rotateX(0deg); }
-    30%       { transform: perspective(800px) rotateY(8deg)   rotateX(1deg); filter: drop-shadow(-6px 4px 10px rgba(0,0,0,0.3)); }
-    70%       { transform: perspective(800px) rotateY(-8deg)  rotateX(-1deg); filter: drop-shadow(6px 4px 10px rgba(0,0,0,0.3)); }
-}
-
-/* SWING: Pendulum with momentum — overshoots and settles */
-.post-anim-swing {
-    transform-origin: top center;
-    animation: p-swing 2.8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-}
-@keyframes p-swing {
-    0%, 100% { transform: rotate(0deg); }
-    20%       { transform: rotate(-4deg); }
-    50%       { transform: rotate(3deg); }
-    75%       { transform: rotate(-1.5deg); }
-    90%       { transform: rotate(1deg); }
-}
-
-/* BLUR: Focus pulls in and out like a camera lens, slight zoom */
-.post-anim-blur {
-    animation: p-blur 3.5s ease-in-out infinite;
-}
-@keyframes p-blur {
-    0%, 100% { filter: blur(0px)  brightness(1);    transform: scale(1); }
-    45%       { filter: blur(2px)  brightness(1.05); transform: scale(1.01); }
-    55%       { filter: blur(2px)  brightness(1.05); transform: scale(1.01); }
-}
-
-/* GLITCH: True RGB channel split — red and cyan channels offset independently */
-.post-anim-glitch {
-    animation: p-glitch-base 3s infinite;
-}
-.post-anim-glitch::before,
-.post-anim-glitch::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0;
-}
-.post-anim-glitch::before {
-    background: inherit;
-    mix-blend-mode: screen;
-    animation: p-glitch-r 3s infinite;
-}
-.post-anim-glitch::after {
-    background: inherit;
-    mix-blend-mode: screen;
-    animation: p-glitch-b 3s infinite;
-}
-@keyframes p-glitch-base {
-    0%, 89%     { transform: translate(0); filter: none; }
-    90%          { transform: translate(-2px, 0); filter: hue-rotate(20deg) saturate(1.5); }
-    92%          { transform: translate(2px, 0); clip-path: inset(20% 0 40% 0); }
-    94%          { transform: translate(0, 1px); clip-path: inset(60% 0 10% 0); }
-    96%          { transform: translate(-1px, 0); }
-    98%, 100%    { transform: translate(0); filter: none; }
-}
-@keyframes p-glitch-r {
-    0%, 89%  { opacity: 0; }
-    90%       { opacity: 0.4; transform: translate(3px, 0); filter: saturate(10) hue-rotate(-60deg) brightness(2); clip-path: inset(10% 0 60% 0); }
-    93%       { opacity: 0; transform: translate(0); }
-    100%      { opacity: 0; }
-}
-@keyframes p-glitch-b {
-    0%, 91%  { opacity: 0; }
-    92%       { opacity: 0.4; transform: translate(-3px, 0); filter: saturate(10) hue-rotate(180deg) brightness(2); clip-path: inset(50% 0 20% 0); }
-    95%       { opacity: 0; }
-    100%      { opacity: 0; }
-}
-
-/* JELLO: Exaggerated wobbly physics — more stages, overshoots */
-.post-anim-jello {
-    animation: p-jello 1.8s ease-in-out infinite;
-    transform-origin: center center;
-}
-@keyframes p-jello {
-    0%, 100% { transform: scale3d(1, 1, 1); }
-    15%       { transform: scale3d(1.08, 0.94, 1); }
-    30%       { transform: scale3d(0.94, 1.06, 1); }
-    45%       { transform: scale3d(1.04, 0.97, 1); }
-    60%       { transform: scale3d(0.98, 1.02, 1); }
-    75%       { transform: scale3d(1.01, 0.99, 1); }
-}
-
-/* SPIN: Rank tag spins with a magnetic slow-fast-slow feel */
-.post-anim-spin .rank-tag {
-    animation: p-spin 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: p-wiggle 0.7s ease-in-out infinite;
     display: inline-block;
 }
-@keyframes p-spin {
-    0%   { transform: rotate(0deg)   scale(1); }
-    50%  { transform: rotate(180deg) scale(1.1); }
-    100% { transform: rotate(360deg) scale(1); }
+@keyframes p-wiggle {
+    0%, 100% { box-shadow: none; transform: scale(1); }
+    50%       { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28); transform: scale(1.1); }
+}
+
+.post-anim-stretch { animation: p-stretch 2.2s ease-in-out infinite; }
+@keyframes p-stretch {
+    0%, 100% { outline: 2px solid rgba(37, 99, 235, 0.0);  outline-offset: 0px; }
+    50%       { outline: 2px solid rgba(37, 99, 235, 0.45); outline-offset: 3px; }
+}
+
+.post-anim-bounce {
+    border-left: 3px solid rgba(37, 99, 235, 0.25) !important;
+    animation: p-bounce 1.6s ease-in-out infinite;
+}
+@keyframes p-bounce {
+    0%, 100% { border-left-color: rgba(37, 99, 235, 0.25); box-shadow: none; }
+    50%       { border-left-color: #2563eb;
+                box-shadow: inset 6px 0 30px rgba(37, 99, 235, 0.14),
+                            inset 0  0  0   1px rgba(37, 99, 235, 0.08); }
 }
 
 
-/* ============================================================
-   TIER 3: ELITE — Eye-Catching & Covetable
-   People in the thread WILL ask "what animation is that?"
-   ============================================================ */
+/* ══════════════════════════════════════════════════════════
+   TIER 2: ADVANCED
+   ══════════════════════════════════════════════════════════ */
 
-/* GHOSTING: Real afterimage — a faded clone trails behind */
-.post-anim-ghosting {
-    animation: p-ghost-main 2.5s ease-in-out infinite;
-}
-.post-anim-ghosting::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: inherit;
-    border-radius: inherit;
-    opacity: 0;
-    animation: p-ghost-trail 2.5s ease-in-out infinite;
-    pointer-events: none;
-    z-index: -1;
-}
-@keyframes p-ghost-main {
-    0%, 100% { transform: translateX(0);   opacity: 1; }
-    50%       { transform: translateX(3px); opacity: 0.9; }
-}
-@keyframes p-ghost-trail {
-    0%, 100% { transform: translateX(0px); opacity: 0; filter: blur(3px); }
-    40%       { transform: translateX(0px); opacity: 0.35; filter: blur(4px) hue-rotate(30deg); }
-    50%       { transform: translateX(-5px); opacity: 0.2; filter: blur(6px); }
+.post-anim-tilt { animation: p-tilt 3.2s ease-in-out infinite; }
+@keyframes p-tilt {
+    0%, 100% { box-shadow: -10px 4px 28px rgba(37, 99, 235, 0.12),
+                            inset 0 0 0 1px rgba(37, 99, 235, 0.05); }
+    50%       { box-shadow:  10px 4px 28px rgba(37, 99, 235, 0.16),
+                            inset 0 0 0 1px rgba(37, 99, 235, 0.08); }
 }
 
-/* RAINBOW: Prismatic — full hue rotation with saturation and brightness boost */
+.post-anim-swing {
+    border-left: 4px solid rgba(99, 102, 241, 0.7) !important;
+    animation: p-swing 3s ease-in-out infinite;
+}
+@keyframes p-swing {
+    0%, 100% { border-left-color: rgba(99, 102, 241, 0.9);
+               box-shadow: inset 5px 0 24px rgba(99, 102, 241, 0.12); }
+    50%       { border-left-color: rgba(14, 165, 233, 0.9);
+               box-shadow: inset 5px 0 24px rgba(14, 165, 233, 0.12); }
+}
+
+.post-anim-blur { animation: p-blur 4s ease-in-out infinite; }
+@keyframes p-blur {
+    0%, 100% { background-color: transparent; filter: none; }
+    50%       { background-color: rgba(100, 116, 139, 0.07); filter: brightness(0.93); }
+}
+
+.post-anim-glitch { animation: p-glitch 0.35s steps(2, end) infinite; }
+@keyframes p-glitch {
+    0%  { box-shadow: inset  4px 0 0 rgba(239, 68, 68,  0.7),
+                      inset -4px 0 0 rgba(16, 185, 129, 0.7);
+          background-color: transparent; }
+    50% { box-shadow: inset -4px 0 0 rgba(239, 68, 68,  0.7),
+                      inset  4px 0 0 rgba(16, 185, 129, 0.7);
+          background-color: rgba(239, 68, 68, 0.04); }
+}
+
+.post-anim-jello { animation: p-jello 2.2s ease-in-out infinite; }
+@keyframes p-jello {
+    0%, 100% { border-radius: 0; box-shadow: none; }
+    25%       { border-radius: 10px 0 0 10px;
+               box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
+    75%       { border-radius: 0 10px 10px 0;
+               box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
+}
+
+.post-anim-spin .rank-tag {
+    display: inline-block;
+    animation: p-spin 3s linear infinite;
+}
+@keyframes p-spin { to { transform: rotate(360deg); } }
+
+
+/* ══════════════════════════════════════════════════════════
+   TIER 3: ELITE
+   ══════════════════════════════════════════════════════════ */
+
+.post-anim-ghosting { animation: p-ghost 2.6s ease-in-out infinite; }
+@keyframes p-ghost {
+    0%, 100% { opacity: 1; box-shadow: none; background-color: transparent; }
+    50%       { opacity: 0.55;
+                box-shadow: 0 0 32px rgba(148, 163, 184, 0.30);
+                background-color: rgba(148, 163, 184, 0.07); }
+}
+
 .post-anim-rainbow {
+    border-left: 4px solid hsl(0, 80%, 60%) !important;
     animation: p-rainbow 4s linear infinite;
 }
 @keyframes p-rainbow {
-    0%   { filter: hue-rotate(0deg)   saturate(1.4) brightness(1.05); }
-    50%  { filter: hue-rotate(180deg) saturate(1.8) brightness(1.1); }
-    100% { filter: hue-rotate(360deg) saturate(1.4) brightness(1.05); }
+    0%   { filter: hue-rotate(0deg);   background-color: hsla(0,   80%, 60%, 0.05); }
+    50%  { filter: hue-rotate(180deg); background-color: hsla(180, 80%, 50%, 0.05); }
+    100% { filter: hue-rotate(360deg); background-color: hsla(360, 80%, 60%, 0.05); }
 }
 
-/* NEON: Flickering neon sign — real flicker timing, color cycling, multi-layer glow */
 .post-anim-neon {
-    animation: p-neon-flicker 4s ease-in-out infinite;
-    border-left: 3px solid var(--premium-forum-color, #b96ef5) !important;
+    border-left: 4px solid var(--premium-forum-color, #2563eb) !important;
+    animation: p-neon 1.4s ease-in-out infinite alternate;
 }
-.post-anim-neon .content {
-    animation: p-neon-text 4s ease-in-out infinite;
-}
-@keyframes p-neon-flicker {
-    0%, 100% { filter: drop-shadow(0 0 3px var(--premium-forum-color, #b96ef5)) drop-shadow(0 0 10px var(--premium-forum-color, #b96ef5)); }
-    3%        { filter: none; }
-    6%        { filter: drop-shadow(0 0 3px var(--premium-forum-color, #b96ef5)) drop-shadow(0 0 10px var(--premium-forum-color, #b96ef5)); }
-    50%       { filter: drop-shadow(0 0 5px #ff6ef5) drop-shadow(0 0 20px #b96ef5) drop-shadow(0 0 40px #7700ff); }
-    75%       { filter: drop-shadow(0 0 3px #6ef5ff) drop-shadow(0 0 12px #00cfff); }
-    76%        { filter: none; }
-    78%       { filter: drop-shadow(0 0 3px #6ef5ff) drop-shadow(0 0 12px #00cfff); }
-}
-@keyframes p-neon-text {
-    0%, 100% { color: var(--premium-forum-color, #b96ef5); text-shadow: 0 0 6px var(--premium-forum-color, #b96ef5); }
-    50%       { color: #ff6ef5; text-shadow: 0 0 12px #ff6ef5, 0 0 24px #b96ef5; }
-    75%       { color: #6ef5ff; text-shadow: 0 0 8px #00cfff; }
+@keyframes p-neon {
+    from { box-shadow: inset 5px 0 12px rgba(37, 99, 235, 0.05),
+                       0 0  0px rgba(37, 99, 235, 0.0);
+           background-color: transparent; }
+    to   { box-shadow: inset 5px 0 40px var(--premium-forum-color, rgba(37, 99, 235, 0.25)),
+                       0 0 20px rgba(37, 99, 235, 0.18);
+           background-color: rgba(37, 99, 235, 0.04); }
 }
 
-/* EARTHQUAKE: Chaotic multi-axis shake — feels dangerous */
-.post-anim-earthquake {
-    animation: p-quake 0.15s linear infinite;
-}
-@keyframes p-quake {
-    0%   { transform: translate(0px, 0px)    rotate(0deg); }
-    15%  { transform: translate(-2px, 1px)   rotate(-0.3deg); }
-    30%  { transform: translate(2px, -1px)   rotate(0.3deg); }
-    45%  { transform: translate(-1px, 2px)   rotate(-0.2deg); }
-    60%  { transform: translate(3px, 0px)    rotate(0.4deg); }
-    75%  { transform: translate(-2px, -2px)  rotate(0deg); }
-    90%  { transform: translate(1px, 1px)    rotate(-0.3deg); }
-    100% { transform: translate(0px, 0px)    rotate(0deg); }
+.post-anim-earthquake { animation: p-shake 0.16s linear infinite; }
+@keyframes p-shake {
+    0%  { box-shadow: -4px 0 14px rgba(239, 68, 68, 0.30);
+          background-color: transparent; }
+    50% { box-shadow:  4px 0 14px rgba(239, 68, 68, 0.30);
+          background-color: rgba(239, 68, 68, 0.04); }
 }
 
-/* SQUEEZE: Accordion inhale/exhale — feels like it's breathing hard */
-.post-anim-squeeze {
-    animation: p-squeeze 1.8s ease-in-out infinite;
-    transform-origin: center center;
-}
+.post-anim-squeeze { animation: p-squeeze 2s ease-in-out infinite; }
 @keyframes p-squeeze {
-    0%, 100% { transform: scaleX(1)    scaleY(1); }
-    25%       { transform: scaleX(1.06) scaleY(0.93); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2)); }
-    50%       { transform: scaleX(0.94) scaleY(1.07); filter: drop-shadow(0 -2px 6px rgba(0,0,0,0.15)); }
-    75%       { transform: scaleX(1.03) scaleY(0.97); }
+    0%, 100% { box-shadow: inset 0 0  0px rgba(37, 99, 235, 0.0); }
+    50%       { box-shadow: inset 0 0 50px rgba(37, 99, 235, 0.16),
+                            inset 0 0  0  3px rgba(37, 99, 235, 0.18); }
 }
 
-/* HEARTBEAT: Double-pump like a real heart — systole + diastole */
 .post-anim-heartbeat .rank-tag {
-    animation: p-heartbeat 1.1s ease-in-out infinite;
     display: inline-block;
+    animation: p-heartbeat 1s ease-in-out infinite;
 }
 @keyframes p-heartbeat {
-    0%   { transform: scale(1); }
-    14%  { transform: scale(1.2); }
-    28%  { transform: scale(1.05); }
-    42%  { transform: scale(1.25); filter: drop-shadow(0 0 6px #ff4060); }
-    70%  { transform: scale(1); filter: none; }
-    100% { transform: scale(1); }
+    0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(239, 68, 68, 0.0); }
+    50%       { transform: scale(1.14); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.28); }
 }
 
 
-/* ============================================================
-   TIER 4: LEGENDARY — Unmistakable. Jaw-dropping. Coveted.
-   ============================================================ */
+/* ══════════════════════════════════════════════════════════
+   TIER 4: LEGENDARY
+   ══════════════════════════════════════════════════════════ */
 
-/* FIRE: Layered inferno — multiple flame drops, color-shifting heat distortion */
 .post-anim-fire {
+    border-left: 4px solid #f97316 !important;
     animation: p-fire 1.8s ease-in-out infinite;
-    border-left: 3px solid #ff4400 !important;
-}
-.post-anim-fire::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(0deg, rgba(255,60,0,0.08) 0%, transparent 60%);
-    animation: p-fire-glow 1.8s ease-in-out infinite;
-    pointer-events: none;
-    border-radius: inherit;
 }
 @keyframes p-fire {
-    0%, 100% {
-        filter: drop-shadow(0 -1px 2px rgba(255,140,0,0.7))
-                drop-shadow(0 -3px 6px rgba(255,60,0,0.5))
-                drop-shadow(0 -6px 12px rgba(200,0,0,0.3));
-        transform: skewX(-0.5deg) scaleY(1);
-    }
-    25% {
-        filter: drop-shadow(0 -1px 4px rgba(255,200,0,0.9))
-                drop-shadow(0 -4px 10px rgba(255,100,0,0.6))
-                drop-shadow(0 -8px 18px rgba(255,0,0,0.4));
-        transform: skewX(0.8deg) scaleY(1.005);
-    }
-    50% {
-        filter: drop-shadow(0 -2px 6px rgba(255,220,0,1))
-                drop-shadow(0 -5px 14px rgba(255,80,0,0.7))
-                drop-shadow(0 -10px 22px rgba(180,0,0,0.5));
-        transform: skewX(-1deg) scaleY(0.998);
-    }
-    75% {
-        filter: drop-shadow(0 -1px 3px rgba(255,160,0,0.8))
-                drop-shadow(0 -3px 8px rgba(255,50,0,0.5))
-                drop-shadow(0 -7px 14px rgba(160,0,0,0.3));
-        transform: skewX(0.5deg) scaleY(1.003);
-    }
-}
-@keyframes p-fire-glow {
-    0%, 100% { opacity: 0.5; }
-    50%       { opacity: 1; }
+    0%, 100% { border-left-color: #f97316;
+               box-shadow: inset 8px 0 50px rgba(249, 115, 22, 0.18),
+                           0 0 16px rgba(249, 115, 22, 0.14);
+               background-color: rgba(249, 115, 22, 0.03); }
+    50%       { border-left-color: #dc2626;
+               box-shadow: inset 8px 0 70px rgba(220, 38,  38, 0.24),
+                           0 0 28px rgba(220, 38,  38, 0.18);
+               background-color: rgba(220, 38, 38, 0.04); }
 }
 
-/* VORTEX: Spiral pull — hue cycle + scale breathe + subtle warp */
+@property --vortex-a {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
 .post-anim-vortex {
-    animation: p-vortex 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    animation: p-vortex-a 2s linear infinite;
+    background-image:
+        linear-gradient(white, white),
+        conic-gradient(from var(--vortex-a),
+            #6366f1, #06b6d4, #22c55e, #f59e0b, #ef4444, #6366f1);
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+    border: 3px solid transparent !important;
 }
-.post-anim-vortex::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: conic-gradient(
-        from 0deg,
-        rgba(120,0,255,0.15),
-        rgba(0,200,255,0.15),
-        rgba(255,0,120,0.15),
-        rgba(120,0,255,0.15)
-    );
-    border-radius: inherit;
-    animation: p-vortex-border 5s linear infinite;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.7;
-}
-@keyframes p-vortex {
-    0%   { transform: rotate(0deg)    scale(1);     filter: hue-rotate(0deg)   saturate(1.2); }
-    33%  { transform: rotate(0.8deg)  scale(1.015); filter: hue-rotate(120deg) saturate(1.5); }
-    66%  { transform: rotate(-0.8deg) scale(1.02);  filter: hue-rotate(240deg) saturate(1.5); }
-    100% { transform: rotate(0deg)    scale(1);     filter: hue-rotate(360deg) saturate(1.2); }
-}
-@keyframes p-vortex-border {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
+@keyframes p-vortex-a { to { --vortex-a: 360deg; } }
 
-/* GODLY: Ascension aura — levitates, radiates prismatic light, golden crown glow */
 .post-anim-godly {
-    animation: p-godly-float 3s ease-in-out infinite;
-    border-left: 3px solid gold !important;
+    border-left: 4px solid #d4af37 !important;
+    animation: p-godly 3s ease-in-out infinite;
 }
-.post-anim-godly::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    background: linear-gradient(90deg, #d4af37, #fff7a0, #d4af37, #ffe566, #d4af37);
-    background-size: 300% 100%;
-    border-radius: inherit;
-    z-index: -1;
-    animation: p-godly-aura 3s linear infinite;
-    opacity: 0.4;
-    filter: blur(4px);
-}
-.post-anim-godly::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg, transparent 30%, rgba(255,240,120,0.12) 50%, transparent 70%);
-    background-size: 200% 100%;
-    animation: p-godly-sheen 3s ease-in-out infinite;
-    pointer-events: none;
-    border-radius: inherit;
-}
-@keyframes p-godly-float {
-    0%, 100% { transform: translateY(0px);   filter: drop-shadow(0 0 4px rgba(255,215,0,0.6))  drop-shadow(0 0 12px rgba(255,215,0,0.3)); }
-    50%       { transform: translateY(-5px);  filter: drop-shadow(0 0 8px rgba(255,215,0,0.9))  drop-shadow(0 0 24px rgba(255,215,0,0.5)) drop-shadow(0 0 40px rgba(255,255,200,0.3)); }
-}
-@keyframes p-godly-aura {
-    0%   { background-position: 0% center;   opacity: 0.3; }
-    50%  { background-position: 100% center; opacity: 0.6; }
-    100% { background-position: 200% center; opacity: 0.3; }
-}
-@keyframes p-godly-sheen {
-    0%   { background-position: -100% 0; }
-    60%  { background-position: 200% 0; }
-    100% { background-position: 200% 0; }
+@keyframes p-godly {
+    0%, 100% { border-left-color: #c9a227;
+               box-shadow: inset 8px 0 40px rgba(212, 175, 55, 0.15),
+                           0 3px 18px rgba(212, 175, 55, 0.14);
+               background-color: rgba(212, 175, 55, 0.03); }
+    50%       { border-left-color: #f7ef8a;
+               box-shadow: inset 8px 0 80px rgba(247, 239, 138, 0.28),
+                           0 6px 36px rgba(212, 175, 55, 0.26),
+                           0 0  60px rgba(212, 175, 55, 0.10);
+               background-color: rgba(212, 175, 55, 0.06); }
 }
 
-/* ============================================================
-   SPECIAL TEXT EFFECTS
-   ============================================================ */
 
-/* GOLD: Liquid metal — deep gloss with hot-spot highlights */
+/* ══════════════════════════════════════════════════════════
+   SPECIAL STYLES
+   ══════════════════════════════════════════════════════════ */
+
+.post-anim-gold {
+    border-left: 4px solid #d4af37 !important;
+    animation: p-gold-row 3s linear infinite;
+}
 .post-anim-gold .content {
-    background: linear-gradient(
-        90deg,
-        #7d5a00 0%,
-        #d4af37 20%,
-        #fff0a0 38%,
-        #ffe566 50%,
-        #fff0a0 62%,
-        #d4af37 80%,
-        #7d5a00 100%
-    );
-    background-size: 250% auto;
+    background: linear-gradient(90deg, #b8860b, #f7ef8a, #d4af37, #f7ef8a, #b8860b);
+    background-size: 300% auto;
     -webkit-background-clip: text;
-    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
-    letter-spacing: 0.01em;
-    filter: drop-shadow(0 1px 0 rgba(0,0,0,0.4));
-    animation: p-gold-sweep 3.5s ease-in-out infinite;
+    animation: p-gold-shine 3s linear infinite;
 }
-@keyframes p-gold-sweep {
-    0%   { background-position: 0% center; }
-    50%  { background-position: 125% center; }
-    100% { background-position: 0% center; }
+@keyframes p-gold-shine { to { background-position: 300% center; } }
+@keyframes p-gold-row {
+    0%, 100% { box-shadow: inset 8px 0 30px rgba(212, 175, 55, 0.12);
+               background-color: rgba(212, 175, 55, 0.03); }
+    50%       { box-shadow: inset 8px 0 60px rgba(247, 239, 138, 0.24),
+                            0 0 16px rgba(212, 175, 55, 0.14);
+               background-color: rgba(212, 175, 55, 0.06); }
 }
 
-/* MATRIX: Digital rain — cascading flicker, scan-line, phosphor glow */
 .post-anim-matrix {
-    border-left: 3px solid #00ff41 !important;
-    background-image: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 255, 65, 0.015) 2px,
-        rgba(0, 255, 65, 0.015) 4px
-    ) !important;
-    animation: p-matrix-scan 8s linear infinite;
+    border-left: 4px solid #00ff41 !important;
+    animation: p-matrix-row 3s infinite;
+    background-color: rgba(0, 255, 65, 0.03);
 }
 .post-anim-matrix .content {
-    font-family: 'Courier New', Courier, monospace;
-    color: #00ff41 !important;
-    text-shadow:
-        0 0 4px rgba(0, 255, 65, 0.9),
-        0 0 10px rgba(0, 255, 65, 0.5),
-        0 0 20px rgba(0, 200, 50, 0.2);
-    animation: p-matrix-flicker 3s steps(1, end) infinite;
-    letter-spacing: 0.04em;
+    font-family: 'Courier New', monospace;
+    color: #00cc33 !important;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.6);
+    animation: p-matrix-flicker 2.5s infinite;
 }
-@keyframes p-matrix-scan {
-    0%, 100% { box-shadow: none; }
-    50%       { box-shadow: inset 0 0 40px rgba(0,255,65,0.05); }
+@keyframes p-matrix-row {
+    0%, 90%  { box-shadow: inset 6px 0 28px rgba(0, 255, 65, 0.10);
+               background-color: rgba(0, 255, 65, 0.03); }
+    94%       { box-shadow: inset 6px 0 55px rgba(0, 255, 65, 0.25);
+               background-color: rgba(0, 255, 65, 0.08); }
+    97%       { box-shadow: inset 6px 0 10px rgba(0, 255, 65, 0.04);
+               background-color: transparent; }
+    100%      { box-shadow: inset 6px 0 28px rgba(0, 255, 65, 0.10);
+               background-color: rgba(0, 255, 65, 0.03); }
 }
 @keyframes p-matrix-flicker {
-    0%, 100% { opacity: 1;   text-shadow: 0 0 4px rgba(0,255,65,0.9), 0 0 10px rgba(0,255,65,0.5); }
-    7%        { opacity: 0.85; text-shadow: 0 0 2px rgba(0,255,65,0.6); }
-    8%        { opacity: 1;   text-shadow: 0 0 8px rgba(0,255,65,1), 0 0 20px rgba(0,200,50,0.5); }
-    70%        { opacity: 1;   }
-    72%        { opacity: 0.7; text-shadow: none; }
-    73%        { opacity: 1;   text-shadow: 0 0 4px rgba(0,255,65,0.9), 0 0 10px rgba(0,255,65,0.5); }
-    92%        { opacity: 1; }
-    94%        { opacity: 0.88; text-shadow: 0 0 3px rgba(0,255,65,0.7); }
-    96%        { opacity: 1; }
+    0%, 91%, 100% { opacity: 1; }
+    93%            { opacity: 0.4; }
+    95%            { opacity: 1; }
+    97%            { opacity: 0.7; }
 }
 
 .author-area { 
