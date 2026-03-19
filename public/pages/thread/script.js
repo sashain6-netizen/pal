@@ -9,7 +9,6 @@ let currentUser = null;
 async function loadThread(append = false) {
     if (!threadId) return window.location.href = '/pages';
 
-    // If we aren't appending (e.g., initial load or fresh reply), reset
     if (!append) {
         currentOffset = 0;
         const container = document.getElementById('posts-container');
@@ -17,7 +16,6 @@ async function loadThread(append = false) {
     }
 
     try {
-        // Efficiency: Only fetch 'me' if we don't have it yet
         const fetchTasks = [
             fetch(`/api/thread?id=${threadId}&limit=${limit}&offset=${currentOffset}`)
         ];
@@ -31,27 +29,27 @@ async function loadThread(append = false) {
         
         if (userData) currentUser = userData;
 
-        // Update UI
         document.getElementById('thread-title').innerText = data.title;
         const container = document.getElementById('posts-container');
 
         const postsHTML = (data.posts || []).map(post => {
-    const baseThemeColor = post.themeColor || "#2563eb"; 
-    const forumColor = post.forumColor || baseThemeColor;
-    const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
+            const baseThemeColor = post.themeColor || "#2563eb"; 
+            const forumColor = post.forumColor || baseThemeColor;
+            const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
-    // The class name to be applied
-    const animClass = post.isPremium && post.postAnimation && post.postAnimation !== 'none'
-        ? `post-anim-${post.postAnimation}`
-        : '';
+            // FIX: animClass belongs on .compact-post-row, not .post-body-inline.
+            // All CSS selectors target .compact-post-row[class*="post-anim-"].
+            const animClass = post.isPremium && post.postAnimation && post.postAnimation !== 'none'
+                ? `post-anim-${post.postAnimation}`
+                : '';
 
-    return `
-        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''}"
+            return `
+        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''} ${animClass}"
              ${post.isPremium ? `style="--premium-forum-color: ${forumColor};"` : ''}>
             
             <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
             
-            <div class="post-body-inline ${animClass}">
+            <div class="post-body-inline">
                 <span class="author-area">
                     ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
                     <a href="/users?id=${post.username}"
@@ -69,18 +67,12 @@ async function loadThread(append = false) {
             <span class="timestamp">${formatTimestamp(post.created_at)}</span>
         </div>
     `;
-}).join('');
+        }).join('');
 
-        // Append to container
         container.insertAdjacentHTML('beforeend', postsHTML);
-
-        // Update tracking
         currentOffset += (data.posts || []).length;
-
-        // Manage Load More button
         toggleLoadMoreButton(data.hasMore);
 
-        // Permission check for delete button (only needs to run on initial load)
         if (!append) {
             renderDeleteButton(currentUser, data.author_username);
         }
@@ -90,7 +82,7 @@ async function loadThread(append = false) {
     }
 }
 
-// --- NEW UI HELPERS ---
+// --- UI HELPERS ---
 
 function toggleLoadMoreButton(hasMore) {
     let btn = document.getElementById('load-more-btn');
@@ -100,7 +92,6 @@ function toggleLoadMoreButton(hasMore) {
         btn.className = 'load-more-btn';
         btn.innerText = "Load More";
         btn.onclick = () => loadThread(true);
-        // Inserts after the posts container
         document.getElementById('posts-container').after(btn);
     }
     btn.style.display = hasMore ? 'block' : 'none';
@@ -114,7 +105,6 @@ function renderDeleteButton(user, authorUsername) {
 
     const isAuthor = user.username === authorUsername;
     const isOwner = ["Owner", "Admin", "Moderator"].includes(user.rank);
-    // New check for Premium status
     const isPremium = !!user.isPremium;
 
     if (isAuthor || isOwner) {
@@ -125,7 +115,6 @@ function renderDeleteButton(user, authorUsername) {
         document.querySelector('.thread-header').appendChild(deleteBtn);
     }
 
-    // Bump is only for the thread author WHO IS ALSO premium
     if (isAuthor && isPremium) {
         const bumpBtn = document.createElement('button');
         bumpBtn.innerText = "Bump Thread";
@@ -142,11 +131,8 @@ function renderDeleteButton(user, authorUsername) {
                 });
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(data.error || 'Bump failed');
-                
-                // Use alert if showToast isn't defined
                 if (window.showToast) showToast("Thread bumped to the top!");
                 else alert("Thread bumped to the top!");
-                
             } catch (err) {
                 console.error(err);
                 if (window.showToast) showToast(err.message || "Bump failed");
@@ -167,7 +153,7 @@ function renderDeleteButton(user, authorUsername) {
     }
 }
 
-// --- MODAL FUNCTIONS (KEEPING YOURS) ---
+// --- MODAL ---
 
 function openDeleteModal(id) {
     const modal = document.getElementById('deleteModal');
@@ -192,7 +178,6 @@ async function executeDelete(id) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ threadId: id })
         });
-        
         const data = await res.json();
         if (data.success) {
             window.location.href = "/pages";
@@ -209,7 +194,7 @@ async function executeDelete(id) {
     }
 }
 
-// --- HELPERS (KEEPING YOURS) ---
+// --- HELPERS ---
 
 function escapeHTML(str) {
     if (!str) return "";
@@ -254,7 +239,6 @@ async function postReply() {
 
     if (res.ok) {
         document.getElementById('replyText').value = '';
-        // Load fresh (false) to see the new reply at the end
         loadThread(false); 
     } else {
         showToast("Failed to post reply.");
