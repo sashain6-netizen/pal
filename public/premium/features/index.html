@@ -22,34 +22,32 @@
         </header>
 
         <main class="premium-grid">
-            
-            <section class="tier-card premium-featured">
+            <section class="tier-card">
                 <div class="badge">ENABLED</div>
-                <span class="feature-emoji">✨</span>
-                <h3>Profile Aesthetics</h3>
-                <p>Customize your presence on the Pal forums with unique colors and effects.</p>
+                <span class="feature-emoji">🏷️</span>
+                <h3>Custom Identity</h3>
+                <p>Stand out in the crowd with a unique status and enhanced chat limits.</p>
                 
                 <div class="benefit-list" style="margin-bottom: 20px;">
-                    <div class="status-line" style="text-align: left;">💎 Daily Claim: <strong>1.3x Rewards</strong></div>
-                    <div class="status-line" style="text-align: left;">💬 Chat Limit: <strong>5,000 chars</strong></div>
+                    <div class="status-line">💬 Chat Limit: <strong>5,000 chars</strong></div>
+                    <div class="status-line">💎 Daily Claim: <strong>1.3x Rewards</strong></div>
                 </div>
 
                 <div class="premium-style-controls">
                     <div class="input-group">
-                        <label for="postCaptionInput" class="control-label">Custom Caption</label>
+                        <label for="postCaptionInput" class="control-label">Forum Caption</label>
                         <input type="text" id="postCaptionInput" maxlength="100" placeholder="e.g. Founder • Adventurer">
                     </div>
+                    <button id="saveCaptionBtn" class="premium-btn action-btn">Save Identity</button>
+                </div>
+            </section>
 
-                    <div class="input-group">
-                        <label for="postAnimationSelect" class="control-label">Active Animation</label>
-                        <select id="postAnimationSelect">
-                            <option value="none">None</option>
-                        </select>
-                    </div>
+            <section class="tier-card premium-featured">
+                <span class="feature-emoji">🌈</span>
+                <h3>Visual Effects</h3>
+                <p>Apply a high-end glow to your username and choose your signature color.</p>
 
-                    <div id="animationShop" class="animation-shop">
-                        </div>
-
+                <div class="premium-style-controls">
                     <div class="input-group">
                         <label for="forumColorPicker" class="control-label">Name Glow Color</label>
                         <input type="color" id="forumColorPicker" value="#2563eb">
@@ -59,11 +57,31 @@
                         <label for="glowIntensity" class="control-label">
                             Glow Intensity: <span id="glowIntensityLabel">80%</span>
                         </label>
-                        <input type="range" id="glowIntensity" min="0" max="100" value="80" style="width: 100%;">
+                        <input type="range" id="glowIntensity" min="0" max="100" value="80">
+                    </div>
+                    <button id="saveGlowBtn" class="premium-btn action-btn">Apply Glow</button>
+                </div>
+            </section>
+
+            <section class="tier-card">
+                <span class="feature-emoji">✨</span>
+                <h3>Animation Lab</h3>
+                <p>Choose dynamic motion effects for your profile card and posts.</p>
+
+                <div class="premium-style-controls">
+                    <div class="input-group">
+                        <label for="postAnimationSelect" class="control-label">Active Animation</label>
+                        <select id="postAnimationSelect">
+                            <option value="none">None</option>
+                            <option value="pulse">Pulse Glow</option>
+                            <option value="rainbow">Rainbow Wave</option>
+                        </select>
                     </div>
 
-                    <button id="saveForumStyleBtn" class="premium-btn action-btn" type="button">Update Profile</button>
-                    <div id="forumStyleStatus" class="status-line"></div>
+                    <div id="animationShop" class="animation-shop">
+                        <p style="font-size: 0.7rem; color: var(--text-muted); text-align: center;">Unlocked Animations appear here</p>
+                    </div>
+                    <button id="saveAnimBtn" class="premium-btn action-btn">Sync Motion</button>
                 </div>
             </section>
 
@@ -74,21 +92,16 @@
                 
                 <div class="jackpot-display">
                     <span class="status-badge status-active">LIVE DRAW</span>
-                    <div class="jackpot-main-val"><span id="jackpotPotAmount">$0</span></div>
+                    <div class="jackpot-main-val"><span id="jackpotPotAmount">$12,500</span></div>
                     <p class="subtle" style="font-size: 0.8rem; margin: 5px 0 0; color: #64748b; font-weight: 700;">
                         COST: 50 COINS / SPIN
                     </p>
                 </div>
 
                 <div class="button-stack">
-                    <button id="jackpotSpinBtn" class="premium-btn" style="background: #22c55e; color: white; margin-bottom: 5px;">
-                        Spin to Win
-                    </button>
-                    <button id="jackpotRefreshBtn" class="premium-btn" style="background: #e2e8f0; color: #64748b; font-size: 0.8rem; margin-top: 0;">
-                        Refresh Pot
-                    </button>
+                    <button id="jackpotSpinBtn" class="premium-btn" style="background: #22c55e; color: white;">Spin to Win</button>
+                    <button id="jackpotRefreshBtn" class="premium-btn" style="background: #e2e8f0; color: #64748b;">Refresh Pot</button>
                 </div>
-                <div id="jackpotResult" class="status-line"></div>
             </section>
 
             <section class="tier-card">
@@ -113,13 +126,12 @@
                         </div>
                     </div>
 
-                    <button id="sendGiftBtn" class="premium-btn action-btn" type="button">Send Gift</button>
-                    <div id="giftResult" class="status-line"></div>
+                    <button id="sendGiftBtn" class="premium-btn action-btn">Send Gift</button>
                 </div>
             </section>
 
-        </main>
-    </div>
+        </main>    
+</div>
 
     <script src="/global-settings.js"></script>
     <script src="/global-auth.js"></script>
