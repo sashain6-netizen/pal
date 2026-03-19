@@ -1,69 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Premium Dashboard • Pal</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Montserrat:wght@600&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="/style.css" />
-  <link rel="stylesheet" href="/premium/features/style.css" /> 
-  <link rel="icon" href="/favicon.png" type="image/png">
-
-  <style>
-    body { opacity: 0; background-color: #f8faff; transition: opacity 0.3s ease; }
-    body.authorized { opacity: 1; }
-    /* Ensure the container doesn't explode on 4k monitors */
-    .premium-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Premium Dashboard • Pal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Montserrat:wght@600;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/premium/features/style.css" /> 
+    <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body>
 
     <div class="premium-container">
         <header class="premium-header">
             <h1>Premium Dashboard</h1>
-            <p>Exclusive perks for our supported members.</p>
+            <p>Exclusive perks and customization for our supporters.</p>
         </header>
 
-        <div class="premium-grid">
+        <main class="premium-grid">
             
             <section class="tier-card premium-featured">
                 <div class="badge">ENABLED</div>
                 <span class="feature-emoji">✨</span>
                 <h3>Profile Aesthetics</h3>
-                <p>Customize how you appear across the Pal forums.</p>
+                <p>Customize your presence on the Pal forums with unique colors and effects.</p>
                 
-                <div class="benefit-list">
-                    <div class="status-line">Daily Claim: <strong>1.3x Rewards</strong></div>
-                    <div class="status-line">Chat Limit: <strong>5,000 chars</strong></div>
+                <div class="benefit-list" style="margin-bottom: 20px;">
+                    <div class="status-line" style="text-align: left;">💎 Daily Claim: <strong>1.3x Rewards</strong></div>
+                    <div class="status-line" style="text-align: left;">💬 Chat Limit: <strong>5,000 chars</strong></div>
                 </div>
 
                 <div class="premium-style-controls">
                     <div class="input-group">
-                        <label for="postCaptionInput" class="control-label">Post Caption</label>
-                        <input type="text" id="postCaptionInput" maxlength="100" placeholder="e.g. Founder • Be kind">
+                        <label for="postCaptionInput" class="control-label">Custom Caption</label>
+                        <input type="text" id="postCaptionInput" maxlength="100" placeholder="e.g. Founder • Adventurer">
                     </div>
 
                     <div class="input-group">
-                        <label for="postAnimationSelect" class="control-label">Post Animation</label>
-                        <select id="postAnimationSelect"></select>
+                        <label for="postAnimationSelect" class="control-label">Active Animation</label>
+                        <select id="postAnimationSelect">
+                            <option value="none">None</option>
+                        </select>
                     </div>
 
-                    <div id="animationShop" class="animation-shop"></div>
+                    <div id="animationShop" class="animation-shop">
+                        </div>
 
                     <div class="input-group">
                         <label for="forumColorPicker" class="control-label">Name Glow Color</label>
-                        <input type="color" id="forumColorPicker" value="#b8860b">
+                        <input type="color" id="forumColorPicker" value="#2563eb">
                     </div>
 
                     <div class="input-group">
                         <label for="glowIntensity" class="control-label">
-                            Intensity: <span id="glowIntensityLabel">80%</span>
+                            Glow Intensity: <span id="glowIntensityLabel">80%</span>
                         </label>
-                        <input type="range" id="glowIntensity" min="0" max="100" value="80">
+                        <input type="range" id="glowIntensity" min="0" max="100" value="80" style="width: 100%;">
                     </div>
 
                     <button id="saveForumStyleBtn" class="premium-btn action-btn" type="button">Update Profile</button>
@@ -74,17 +70,23 @@
             <section class="tier-card jackpot-card">
                 <span class="feature-emoji">🎰</span>
                 <h3>Community Jackpot</h3>
-                <p>Every spin adds to the pot. One lucky winner takes it all!</p>
+                <p>A portion of every spin goes into the pot. Will you be the next winner?</p>
                 
                 <div class="jackpot-display">
                     <span class="status-badge status-active">LIVE DRAW</span>
                     <div class="jackpot-main-val"><span id="jackpotPotAmount">$0</span></div>
-                    <p class="subtle" style="font-size: 0.8rem; margin: 0; color: #64748b;">Cost: 50 coins / spin</p>
+                    <p class="subtle" style="font-size: 0.8rem; margin: 5px 0 0; color: #64748b; font-weight: 700;">
+                        COST: 50 COINS / SPIN
+                    </p>
                 </div>
 
                 <div class="button-stack">
-                    <button id="jackpotSpinBtn" class="premium-btn" style="background: #22c55e; color: white;">Spin to Win</button>
-                    <button id="jackpotRefreshBtn" class="premium-btn" style="background: #e2e8f0; color: #64748b; font-size: 0.8rem;">Refresh Pot</button>
+                    <button id="jackpotSpinBtn" class="premium-btn" style="background: #22c55e; color: white; margin-bottom: 5px;">
+                        Spin to Win
+                    </button>
+                    <button id="jackpotRefreshBtn" class="premium-btn" style="background: #e2e8f0; color: #64748b; font-size: 0.8rem; margin-top: 0;">
+                        Refresh Pot
+                    </button>
                 </div>
                 <div id="jackpotResult" class="status-line"></div>
             </section>
@@ -92,20 +94,23 @@
             <section class="tier-card">
                 <span class="feature-emoji">🎁</span>
                 <h3>Peer Gifting</h3>
-                <p>Share the wealth! Send coins or XP to your friends.</p>
+                <p>Spread the love! Send coins or XP directly to your friends on Pal.</p>
 
                 <div class="premium-style-controls">
                     <div class="input-group">
-                        <label for="giftRecipientUsername" class="control-label">Recipient</label>
-                        <input type="text" id="giftRecipientUsername" placeholder="Username...">
+                        <label for="giftRecipientUsername" class="control-label">Recipient Username</label>
+                        <input type="text" id="giftRecipientUsername" placeholder="Enter username...">
                     </div>
-                    <div class="input-group">
-                        <label for="giftCurrencyAmount" class="control-label">Coins</label>
-                        <input type="number" id="giftCurrencyAmount" min="0" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label for="giftXpAmount" class="control-label">XP</label>
-                        <input type="number" id="giftXpAmount" min="0" value="0">
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <div class="input-group" style="flex: 1;">
+                            <label for="giftCurrencyAmount" class="control-label">Coins</label>
+                            <input type="number" id="giftCurrencyAmount" min="0" value="0">
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <label for="giftXpAmount" class="control-label">XP</label>
+                            <input type="number" id="giftXpAmount" min="0" value="0">
+                        </div>
                     </div>
 
                     <button id="sendGiftBtn" class="premium-btn action-btn" type="button">Send Gift</button>
@@ -113,7 +118,7 @@
                 </div>
             </section>
 
-        </div>
+        </main>
     </div>
 
     <script src="/global-settings.js"></script>
@@ -121,4 +126,4 @@
     <script src="/navbar.js"></script>
     <script src="/premium/features/script.js"></script>
 </body>
-</html> 
+</html>
