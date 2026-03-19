@@ -35,13 +35,20 @@ async function loadThread(append = false) {
         document.getElementById('thread-title').innerText = data.title;
         const container = document.getElementById('posts-container');
 
-        const postsHTML = (data.posts || []).map(post => `
-        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''}">
-            <span class="rank-tag" style="background: ${post.themeColor}">${post.rank}</span>
+        const postsHTML = (data.posts || []).map(post => {
+            const forumColor = post.forumColor || post.themeColor || "#2563eb";
+            const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
+
+            return `
+        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''}"
+             ${post.isPremium ? `style="--premium-forum-color: ${forumColor};"` : ''}>
+            <span class="rank-tag" style="background: ${forumColor}">${post.rank}</span>
             <div class="post-body-inline">
                 <span class="author-area">
                     ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
-                    <a href="/users?id=${post.username}" class="author-name ${post.isPremium ? 'premium-user-text' : ''}">
+                    <a href="/users?id=${post.username}"
+                       class="author-name ${post.isPremium ? 'premium-user-text' : ''}"
+                       ${post.isPremium ? `style="--premium-forum-color: ${forumColor}; --premium-glow-alpha: ${glowAlpha}; --premium-glow-color: ${forumColor};"` : ''}>
                         ${post.displayName} ${post.isPremium ? '⭐' : ''}
                     </a>
                 </span>
@@ -50,7 +57,8 @@ async function loadThread(append = false) {
             </div>
             <span class="timestamp">${formatTimestamp(post.created_at)}</span>
         </div>
-    `).join('');
+    `;
+        }).join('');
 
         // Append to container
         container.insertAdjacentHTML('beforeend', postsHTML);

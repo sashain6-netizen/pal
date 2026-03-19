@@ -50,7 +50,8 @@ async function loadPublicThreads(append = false) {
                     </button>
                 </div>
                 <div class="meta-info" onclick="location.href='/pages/thread?id=${t.id}'">
-                    By <span class="user-mention ${t.isPremium ? 'premium-user-text' : ''}">
+                    By <span class="user-mention ${t.isPremium ? 'premium-user-text' : ''}"
+                        ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
                         @${t.creator_username} ${t.isPremium ? '⭐' : ''}
                     </span> 
                     • ${new Date(t.created_at).toLocaleDateString()}
@@ -244,7 +245,8 @@ async function handleSearch() {
                     <a href="/pages/thread?id=${t.id}" class="search-item">
                         <span class="search-title">${t.title}</span>
                         <span class="search-meta">
-                            By <span class="${t.isPremium ? 'premium-user-text' : ''}">
+                            By <span class="${t.isPremium ? 'premium-user-text' : ''}"
+                                ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
                                 @${t.creator_username} ${t.isPremium ? '⭐' : ''}
                             </span>
                         </span>

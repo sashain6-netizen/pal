@@ -23,6 +23,9 @@ export async function onRequest(context) {
 
             const premiumData = await env.USERS_KV.get("pal_premium");
             const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
+            const premiumSet = new Set(
+                Array.isArray(premiumUsers) ? premiumUsers.map(u => String(u).toLowerCase()) : []
+            );
 
             const sql = `
                 SELECT 
@@ -46,10 +49,22 @@ export async function onRequest(context) {
                 .bind(currentUsername, currentUsername, limit + 1, offset)
                 .all();
 
-            const threads = rawThreads.map(t => ({
-                ...t,
-                isPremium: premiumUsers.includes(t.creator_username.toLowerCase())
-            }));
+            const threads = await Promise.all(
+                rawThreads.map(async (t) => {
+                    const creatorUsername = String(t.creator_username || "").toLowerCase();
+                    const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`);
+                    const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
+
+                    return {
+                        ...t,
+                        isPremium: premiumSet.has(creatorUsername),
+                        forumColor: premiumSet.has(creatorUsername)
+                            ? (userData.forumColor || userData.themeColor || "#2563eb")
+                            : "#2563eb",
+                        premiumGlowAlpha: typeof userData.premiumGlowAlpha === "number" ? userData.premiumGlowAlpha : 0.8
+                    };
+                })
+            );
 
             const hasMore = threads.length > limit;
             return new Response(JSON.stringify({

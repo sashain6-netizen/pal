@@ -10,6 +10,9 @@ export async function onRequestGet(context) {
     try {
         const premiumData = await env.USERS_KV.get("pal_premium");
         const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
+        const premiumSet = new Set(
+            Array.isArray(premiumUsers) ? premiumUsers.map(u => String(u).toLowerCase()) : []
+        );
 
         const searchTerm = `%${query}%`;
 
@@ -27,10 +30,22 @@ export async function onRequestGet(context) {
             LIMIT 15
         `).bind(searchTerm, searchTerm, searchTerm).all();
 
-        const results = rawResults.map(t => ({
-            ...t,
-            isPremium: premiumUsers.includes(t.creator_username.toLowerCase())
-        }));
+        const results = await Promise.all(
+            rawResults.map(async (t) => {
+                const creatorUsername = String(t.creator_username || "").toLowerCase();
+                const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`);
+                const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
+
+                return {
+                    ...t,
+                    isPremium: premiumSet.has(creatorUsername),
+                    forumColor: premiumSet.has(creatorUsername)
+                        ? (userData.forumColor || userData.themeColor || "#2563eb")
+                        : "#2563eb",
+                    premiumGlowAlpha: typeof userData.premiumGlowAlpha === "number" ? userData.premiumGlowAlpha : 0.8
+                };
+            })
+        );
 
         return new Response(JSON.stringify(results), {
             headers: { "Content-Type": "application/json" }

@@ -75,7 +75,10 @@ export async function onRequestGet(context) {
             isPremium: isPremiumUser, 
             avatar: user.avatarUrl || "/default-avatar.png",
             xp: user.xp || 0,
-            currency: user.currency || 0
+            currency: user.currency || 0,
+            themeColor: user.themeColor || "#2563eb",
+            forumColor: user.forumColor || user.themeColor || "#2563eb",
+            premiumGlowAlpha: typeof user.premiumGlowAlpha === "number" ? user.premiumGlowAlpha : 0.8
         };
 
         return new Response(JSON.stringify(profileData), {

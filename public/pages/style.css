@@ -426,7 +426,7 @@
 /* --- PREMIUM USER NAME PULSE --- */
 
 .user-mention.premium-user-text {
-    color: #b8860b !important; 
+    color: var(--premium-forum-color, #b8860b) !important; 
     font-weight: 800;
     position: relative;
     display: inline-flex;
@@ -441,8 +441,8 @@
         transform: scale(1);
     }
     50% { 
-        text-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
-        color: #ffd700 !important; 
+        text-shadow: 0 0 12px rgba(255, 215, 0, var(--premium-glow-alpha, 0.8));
+        color: var(--premium-glow-color, var(--premium-forum-color, #ffd700)) !important; 
         transform: scale(1.02); 
     }
     100% { 

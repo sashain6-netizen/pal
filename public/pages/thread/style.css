@@ -264,7 +264,7 @@
 
 .compact-post-row.premium-post {
     position: relative;
-    border-left: 3px solid #ffd700 !important;
+    border-left: 3px solid var(--premium-forum-color, #ffd700) !important;
     background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
     transition: all 0.3s ease;
 }
@@ -280,7 +280,7 @@
 }
 
 .author-name.premium-user-text {
-    color: #b8860b !important;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    color: var(--premium-forum-color, #b8860b) !important;
+    text-shadow: 0 0 5px rgba(255, 215, 0, var(--premium-glow-alpha, 0.3));
     font-weight: 800;
 }

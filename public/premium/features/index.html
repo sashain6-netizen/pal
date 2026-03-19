@@ -32,8 +32,22 @@
                 <div class="badge">ENABLED</div>
                 <span class="feature-emoji">✨</span>
                 <h3>Golden Glow</h3>
-                <p>Your name currently has the legendary golden aura. You can adjust the intensity or toggle it off here.</p>
-                <button class="premium-btn" style="margin-top: 20px;">Adjust Glow</button>
+                <p>Make your premium name stand out in forums.</p>
+
+                <div class="premium-style-controls">
+                    <label for="forumColorPicker" class="control-label">Forum Color</label>
+                    <input type="color" id="forumColorPicker" value="#b8860b" />
+
+                    <div class="range-row">
+                        <label for="glowIntensity" class="control-label">
+                            Glow Intensity: <span id="glowIntensityLabel">80%</span>
+                        </label>
+                        <input type="range" id="glowIntensity" min="0" max="100" value="80" />
+                    </div>
+
+                    <button id="saveForumStyleBtn" class="premium-btn" style="margin-top: 20px;">Save</button>
+                    <div id="forumStyleStatus" class="status-line" aria-live="polite"></div>
+                </div>
             </div>
             <div class="tier-card jackpot-card">
                 <span class="feature-emoji">🎰</span>
@@ -42,7 +56,17 @@
                 <div class="status-group">
                     <span class="status-badge status-active">LIVE DRAW</span>
                 </div>
-                <button class="feature-btn jackpot-btn">View Current Pot</button>
+                <div class="jackpot-status">
+                    <div class="jackpot-row">
+                        Current Pot: <span id="jackpotPotAmount">$0</span>
+                    </div>
+                    <div class="jackpot-row subtle">
+                        Premium-only spins. Cost: <span>50</span> currency units.
+                    </div>
+                </div>
+                <button id="jackpotRefreshBtn" class="feature-btn" type="button">Refresh Pot</button>
+                <button id="jackpotSpinBtn" class="feature-btn jackpot-btn" type="button">Spin Jackpot</button>
+                <div id="jackpotResult" class="status-line" aria-live="polite"></div>
             </div>
         </div>
     </div>
