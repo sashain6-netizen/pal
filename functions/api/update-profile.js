@@ -10,6 +10,23 @@ export async function onRequestPost(context) {
     try {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
         const username = payload.username;
+
+        const baseBioMaxLen = 200;
+        const premiumBioMaxLen = baseBioMaxLen * 5;
+        const premiumData = await env.USERS_KV.get("pal_premium");
+        let isPremium = false;
+        if (premiumData) {
+            try {
+                const premiumUsers = JSON.parse(premiumData);
+                const uname = String(username || "").toLowerCase();
+                if (Array.isArray(premiumUsers)) {
+                    isPremium = premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
+                } else if (premiumUsers && typeof premiumUsers === "object") {
+                    isPremium = !!premiumUsers[uname];
+                }
+            } catch {}
+        }
+        const bioMaxLen = isPremium ? premiumBioMaxLen : baseBioMaxLen;
         
         // --- THE FIX: Use the prefixed key ---
         const kvKey = `user:${username}`; 
@@ -29,6 +46,14 @@ export async function onRequestPost(context) {
 
         // 2. Update fields
         // 2. Update fields
+        const bioStr = String(updates.bio || "");
+        if (bioStr.length > bioMaxLen) {
+            return new Response(JSON.stringify({ error: `Bio exceeds ${bioMaxLen} characters` }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
         const updatedUser = {
             ...user, // This preserves your XP, Currency, and Followers!
             avatarUrl: user.avatarUrl || "/default-avatar.png",
@@ -36,7 +61,7 @@ export async function onRequestPost(context) {
             // Limits displayName to 16 characters
             displayName: (updates.displayName || "").trim().substring(0, 16),
             
-            bio: (updates.bio || "").substring(0, 160),
+            bio: bioStr,
             themeColor: updates.themeColor || "#2563eb"
         };
 

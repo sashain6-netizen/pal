@@ -33,6 +33,12 @@
                 <span class="feature-emoji">✨</span>
                 <h3>Golden Glow</h3>
                 <p>Make your premium name stand out in forums.</p>
+                <div class="status-line" style="margin-top: 6px;">
+                    Daily Claim buff: <strong>1.3x</strong> rewards (XP + coins)
+                </div>
+                <div class="status-line" style="margin-top: 6px;">
+                    Premium text limits: <strong>5,000</strong> for chat/forums, <strong>1,000</strong> for bios
+                </div>
 
                 <div class="premium-style-controls">
                     <label for="forumColorPicker" class="control-label">Forum Color</label>
@@ -67,6 +73,26 @@
                 <button id="jackpotRefreshBtn" class="feature-btn" type="button">Refresh Pot</button>
                 <button id="jackpotSpinBtn" class="feature-btn jackpot-btn" type="button">Spin Jackpot</button>
                 <div id="jackpotResult" class="status-line" aria-live="polite"></div>
+            </div>
+            <div class="tier-card premium-featured">
+                <div class="badge">PREMIUM ONLY</div>
+                <span class="feature-emoji">🎁</span>
+                <h3>Gift XP + Coins</h3>
+                <p>Send currency and XP to another player from your own balance.</p>
+
+                <div class="premium-style-controls">
+                    <label for="giftRecipientUsername" class="control-label">Recipient Username</label>
+                    <input type="text" id="giftRecipientUsername" placeholder="e.g. pal_player" />
+
+                    <label for="giftCurrencyAmount" class="control-label">Coins to Gift</label>
+                    <input type="number" id="giftCurrencyAmount" min="0" step="1" value="0" />
+
+                    <label for="giftXpAmount" class="control-label">XP to Gift</label>
+                    <input type="number" id="giftXpAmount" min="0" step="1" value="0" />
+
+                    <button id="sendGiftBtn" class="premium-btn" style="margin-top: 20px;" type="button">Send Gift</button>
+                    <div id="giftResult" class="status-line" aria-live="polite"></div>
+                </div>
             </div>
         </div>
     </div>

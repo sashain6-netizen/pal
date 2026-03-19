@@ -15,10 +15,36 @@ export async function onRequestPost(context) {
         // Use 'invitedUsers' (the array from your new frontend)
         const { roomName, invitedUsers } = await request.json();
 
+        const roomNameStr = String(roomName || "");
+        const baseMaxLen = 1000;
+        const premiumMaxLen = baseMaxLen * 5;
+
+        const premiumData = await env.USERS_KV.get("pal_premium");
+        let isPremium = false;
+        if (premiumData) {
+            try {
+                const premiumUsers = JSON.parse(premiumData);
+                const uname = String(myUsername || "").toLowerCase();
+                if (Array.isArray(premiumUsers)) {
+                    isPremium = premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
+                } else if (premiumUsers && typeof premiumUsers === "object") {
+                    isPremium = !!premiumUsers[uname];
+                }
+            } catch {}
+        }
+
+        const maxLen = isPremium ? premiumMaxLen : baseMaxLen;
+        if (roomNameStr.trim() && roomNameStr.trim().length > maxLen) {
+            return new Response(JSON.stringify({ error: `Max ${maxLen} characters for private chat room name.` }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
         // 1. Create the Room
         const roomResult = await env.DB.prepare(
             "INSERT INTO chat_rooms (room_name, creator_username) VALUES (?, ?)"
-        ).bind(roomName || "New Chat", myUsername).run();
+        ).bind(roomNameStr.trim() || "New Chat", myUsername).run();
 
         const roomId = roomResult.meta.last_row_id;
 

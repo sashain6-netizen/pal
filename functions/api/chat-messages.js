@@ -69,8 +69,31 @@ export async function onRequest(context) {
         if (method === "POST") {
             const { chatId, content } = await request.json();
             
-            if (!content || content.trim().length === 0) {
+            const contentStr = String(content || "");
+            if (!contentStr.trim()) {
                 return new Response(JSON.stringify({ error: "Empty message" }), { status: 400 });
+            }
+
+            const baseMaxLen = 1000;
+            const premiumMaxLen = baseMaxLen * 5;
+
+            const premiumData = await env.USERS_KV.get("pal_premium");
+            let isPremium = false;
+            if (premiumData) {
+                try {
+                    const premiumUsers = JSON.parse(premiumData);
+                    const uname = String(username || "").toLowerCase();
+                    if (Array.isArray(premiumUsers)) {
+                        isPremium = premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
+                    } else if (premiumUsers && typeof premiumUsers === "object") {
+                        isPremium = !!premiumUsers[uname];
+                    }
+                } catch {}
+            }
+
+            const maxLen = isPremium ? premiumMaxLen : baseMaxLen;
+            if (contentStr.trim().length > maxLen) {
+                return new Response(JSON.stringify({ error: `Max ${maxLen} characters for private chat messages.` }), { status: 400 });
             }
 
             const membership = await env.DB.prepare(
@@ -81,7 +104,7 @@ export async function onRequest(context) {
             
             await env.DB.prepare(
                 "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
-            ).bind(chatId, username, content).run();
+            ).bind(chatId, username, contentStr.trim()).run();
 
             return new Response(JSON.stringify({ success: true }), {
                 headers: { "Content-Type": "application/json" }

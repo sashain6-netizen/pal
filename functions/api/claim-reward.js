@@ -64,16 +64,36 @@ export async function onRequestPost(context) {
         }
 
         // 1. Calculate Reward Currency (Existing)
-const reward = 100 + (user.streak * 25);
-user.currency = (user.currency || 0) + reward;
+        const baseReward = 100 + (user.streak * 25);
 
-// 2. NEW: Calculate XP based on Followers
-// Logic: 10 XP base + 2 XP per follower
-const followerCount = user.followers || 0;
-const xpReward = 10 + Math.floor(Math.log10(followerCount + 1) * 20);
+        // Premium buff: 1.3x currency + 1.3x XP on daily claim
+        const premiumData = await env.USERS_KV.get("pal_premium");
+        let isPremium = false;
+        if (premiumData) {
+            try {
+                const premiumUsers = JSON.parse(premiumData);
+                const uname = String(user.username || username || "").toLowerCase();
+                if (Array.isArray(premiumUsers)) {
+                    isPremium = premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
+                } else if (premiumUsers && typeof premiumUsers === "object") {
+                    isPremium = !!premiumUsers[uname];
+                }
+            } catch {}
+        }
 
-user.xp = (user.xp || 0) + xpReward;
-user.lastClaim = now;
+        const multiplier = isPremium ? 1.3 : 1;
+        const reward = Math.floor(baseReward * multiplier);
+        user.currency = (user.currency || 0) + reward;
+
+        // 2. NEW: Calculate XP based on Followers
+        // Logic: 10 XP base + 2 XP per follower
+        const followerCount = user.followers || 0;
+        const baseXpReward = 10 + Math.floor(Math.log10(followerCount + 1) * 20);
+
+        const xpReward = Math.floor(baseXpReward * multiplier);
+        user.xp = (user.xp || 0) + xpReward;
+
+        user.lastClaim = now;
 
 // 3. SAVE UPDATED USER
 await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));

@@ -90,10 +90,39 @@ export async function onRequest(context) {
             }
 
             const { title, content } = data;
-            if (!title || !content) return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
-            const info = await env.DB.prepare("INSERT INTO threads (title, creator_username) VALUES (?, ?)").bind(title, user.username).run();
+
+            const titleStr = String(title || "");
+            const contentStr = String(content || "");
+
+            if (!titleStr.trim() || !contentStr.trim()) {
+                return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
+            }
+
+            const baseMaxLen = 1000;
+            const premiumMaxLen = baseMaxLen * 5;
+
+            const premiumData = await env.USERS_KV.get("pal_premium");
+            let isPremium = false;
+            if (premiumData) {
+                try {
+                    const premiumUsers = JSON.parse(premiumData);
+                    const uname = String(user.username || "").toLowerCase();
+                    if (Array.isArray(premiumUsers)) {
+                        isPremium = premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
+                    } else if (premiumUsers && typeof premiumUsers === "object") {
+                        isPremium = !!premiumUsers[uname];
+                    }
+                } catch {}
+            }
+
+            const maxLen = isPremium ? premiumMaxLen : baseMaxLen;
+            if (titleStr.trim().length > maxLen || contentStr.trim().length > maxLen) {
+                return new Response(JSON.stringify({ error: `Max ${maxLen} characters for title/content.` }), { status: 400 });
+            }
+
+            const info = await env.DB.prepare("INSERT INTO threads (title, creator_username) VALUES (?, ?)").bind(titleStr.trim(), user.username).run();
             const threadId = info.meta.last_row_id;
-            await env.DB.prepare("INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)").bind(threadId, user.username, content).run();
+            await env.DB.prepare("INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)").bind(threadId, user.username, contentStr.trim()).run();
             return new Response(JSON.stringify({ success: true, threadId }));
         }
 

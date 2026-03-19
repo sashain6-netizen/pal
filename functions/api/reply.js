@@ -16,8 +16,32 @@ export async function onRequestPost(context) {
         const { threadId, content } = await request.json();
 
         // --- 2. VALIDATION ---
-        if (!threadId || !content || content.trim() === "") {
+        const contentStr = String(content || "");
+        if (!threadId || !contentStr.trim()) {
             return new Response(JSON.stringify({ error: "Reply cannot be empty." }), { status: 400 });
+        }
+
+        const baseMaxLen = 1000;
+        const premiumMaxLen = baseMaxLen * 5;
+
+        // Premium determines the max message length
+        const premiumData = await env.USERS_KV.get("pal_premium");
+        let isPremium = false;
+        if (premiumData) {
+            try {
+                const premiumUsers = JSON.parse(premiumData);
+                const uname = String(user.username || "").toLowerCase();
+                if (Array.isArray(premiumUsers)) {
+                    isPremium = premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
+                } else if (premiumUsers && typeof premiumUsers === "object") {
+                    isPremium = !!premiumUsers[uname];
+                }
+            } catch {}
+        }
+
+        const maxLen = isPremium ? premiumMaxLen : baseMaxLen;
+        if (contentStr.trim().length > maxLen) {
+            return new Response(JSON.stringify({ error: `Max ${maxLen} characters for replies.` }), { status: 400 });
         }
 
         // Optional: Check if the thread actually exists
@@ -31,7 +55,7 @@ export async function onRequestPost(context) {
         // --- 3. INSERT REPLY ---
         await env.DB.prepare(
             "INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)"
-        ).bind(threadId, user.username, content).run();
+        ).bind(threadId, user.username, contentStr.trim()).run();
 
         return new Response(JSON.stringify({ success: true }), {
             headers: { "Content-Type": "application/json" }

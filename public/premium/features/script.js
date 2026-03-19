@@ -131,6 +131,60 @@ async function initPremiumFeatures() {
     }
 
     await loadPot();
+
+    // --- Gift XP + Coins ---
+    const giftRecipientUsername = document.getElementById('giftRecipientUsername');
+    const giftCurrencyAmount = document.getElementById('giftCurrencyAmount');
+    const giftXpAmount = document.getElementById('giftXpAmount');
+    const sendGiftBtn = document.getElementById('sendGiftBtn');
+    const giftResult = document.getElementById('giftResult');
+
+    if (sendGiftBtn) {
+        sendGiftBtn.onclick = async () => {
+            try {
+                sendGiftBtn.disabled = true;
+                const originalText = sendGiftBtn.textContent;
+                sendGiftBtn.textContent = 'Sending...';
+                if (giftResult) giftResult.textContent = '';
+
+                const recipientUsername = giftRecipientUsername?.value?.trim();
+                const currencyAmount = Number(giftCurrencyAmount?.value ?? 0);
+                const xpAmount = Number(giftXpAmount?.value ?? 0);
+
+                if (!recipientUsername) throw new Error('Recipient username required.');
+                if (!Number.isFinite(currencyAmount) || currencyAmount < 0) throw new Error('Coins to gift must be >= 0.');
+                if (!Number.isFinite(xpAmount) || xpAmount < 0) throw new Error('XP to gift must be >= 0.');
+                if (currencyAmount === 0 && xpAmount === 0) throw new Error('Gift at least one of coins or XP.');
+
+                const res = await fetch('/api/premium-gift', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        recipientUsername,
+                        currencyAmount,
+                        xpAmount
+                    })
+                });
+
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.error || 'Gift failed.');
+
+                if (giftResult) {
+                    giftResult.textContent = `Gift sent to @${data.recipientUsername}. Recipient now has ${data.recipientCurrency} coins and ${data.recipientXp} XP.`;
+                }
+
+                // Optional: keep the forms, but set the button back.
+                sendGiftBtn.textContent = originalText;
+            } catch (err) {
+                console.error(err);
+                if (giftResult) giftResult.textContent = err.message || 'Gift failed.';
+            } finally {
+                sendGiftBtn.disabled = false;
+                sendGiftBtn.textContent = 'Send Gift';
+            }
+        };
+    }
 }
 
 initPremiumFeatures();
