@@ -1,9 +1,11 @@
 /* ============================================================
    THREAD PAGE — Full Stylesheet
-   Layout + Animations merged. All conflicts resolved.
+   Layout + Animations. Deduplicated and conflict-free.
    ============================================================ */
 
-/* --- Thread Layout Container --- */
+
+/* ── Layout Container ───────────────────────────────────────── */
+
 .container {
     max-width: 1000px;
     margin: 120px auto 100px auto;
@@ -17,19 +19,13 @@
     border: 1px solid #f1f5f9;
 }
 
-#posts-container .compact-post-row:first-child {
-    border-radius: 11px 11px 0 0;
-}
-#posts-container .compact-post-row:last-child {
-    border-radius: 0 0 11px 11px;
-    border-bottom: none;
-}
-#posts-container .compact-post-row:only-child {
-    border-radius: 11px;
-    border-bottom: none;
-}
+#posts-container .compact-post-row:first-child  { border-radius: 11px 11px 0 0; }
+#posts-container .compact-post-row:last-child   { border-radius: 0 0 11px 11px; border-bottom: none; }
+#posts-container .compact-post-row:only-child   { border-radius: 11px; border-bottom: none; }
 
-/* --- The Ultra-Compact Row --- */
+
+/* ── Compact Post Row ───────────────────────────────────────── */
+
 .compact-post-row {
     display: flex;
     align-items: center;
@@ -37,12 +33,21 @@
     border-bottom: 1px solid #f1f5f9;
     gap: 12px;
     font-size: 0.95rem;
-    transition: background-color 0.2s; /* background-color only — never 'background' shorthand,
-                                          which would reset background-image on shimmer/scanner */
+    background-color: white;
+    position: relative;
+    overflow: hidden;
+    /* background-color only — never the 'background' shorthand, which would
+       reset background-image and break shimmer/scanner/vortex on hover */
+    transition: background-color 0.2s;
+    will-change: box-shadow, background-color, border-color, filter;
+    z-index: 1;
+    contain: layout;
 }
 
-/* background-color only so shimmer/scanner background-image survives hover */
 .compact-post-row:hover { background-color: #f8faff; }
+
+
+/* ── Row Sub-Elements ───────────────────────────────────────── */
 
 .rank-tag {
     font-size: 0.65rem;
@@ -89,7 +94,11 @@
     white-space: nowrap;
 }
 
-.author-name { font-weight: 700; color: var(--blue-deep); text-decoration: none; }
+.author-name {
+    font-weight: 700;
+    color: var(--blue-deep);
+    text-decoration: none;
+}
 .author-name:hover { text-decoration: underline; }
 
 .prefix {
@@ -115,7 +124,64 @@
     margin-left: auto;
 }
 
-/* --- The "Always There" Sticky Reply Bar --- */
+
+/* ── Thread Header ──────────────────────────────────────────── */
+
+.thread-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: var(--blue-soft);
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.delete-thread-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    transition: 0.2s;
+    z-index: 10;
+}
+.delete-thread-btn:hover { background: #ff6b81; transform: scale(1.05); }
+
+.bump-thread-btn {
+    position: absolute;
+    top: 64px;
+    right: 20px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    transition: 0.2s;
+    z-index: 10;
+}
+.bump-thread-btn:hover    { background: #0284c7; transform: scale(1.05); }
+.bump-thread-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+
+/* ── Sticky Reply Bar ───────────────────────────────────────── */
+
 .reply-box {
     position: fixed;
     bottom: 0;
@@ -127,7 +193,7 @@
     display: flex;
     justify-content: center;
     z-index: 1000;
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);
 }
 
 .reply-inner {
@@ -151,10 +217,8 @@
     outline: none;
     transition: all 0.2s;
 }
-
 .reply-box textarea:focus { border-color: var(--blue-primary); background: white; }
 
-/* --- Post Button --- */
 .reply-btn {
     background: var(--blue-primary);
     color: white;
@@ -170,69 +234,33 @@
     display: inline-flex;
     align-items: center;
 }
-
-.reply-btn:hover { background: var(--blue-deep); transform: translateY(-1px); }
+.reply-btn:hover    { background: var(--blue-deep); transform: translateY(-1px); }
 .reply-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
 
-.back-link {
-    text-decoration: none;
-    color: var(--blue-soft);
-    font-size: 0.9rem;
-    display: inline-block;
-    margin-bottom: 15px;
-}
 
-.thread-header {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    position: relative;
-    padding: 20px;
-    margin-bottom: 20px;
-}
+/* ── Load More ──────────────────────────────────────────────── */
 
-.delete-thread-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: #ff4757;
+.load-more-btn {
+    padding: 10px 25px;
+    background: #2563eb;
     color: white;
     border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
+    border-radius: 20px;
     font-family: 'Varela Round', sans-serif;
-    transition: 0.2s;
-    z-index: 10;
-}
-
-.delete-thread-btn:hover { background: #ff6b81; transform: scale(1.05); }
-
-.bump-thread-btn {
-    position: absolute;
-    top: 64px;
-    right: 20px;
-    background: #0ea5e9;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-weight: 900;
     cursor: pointer;
-    font-family: 'Varela Round', sans-serif;
-    transition: 0.2s;
-    z-index: 10;
+    transition: opacity 0.2s;
 }
+.load-more-btn:hover { opacity: 0.8; }
 
-.bump-thread-btn:hover { background: #0284c7; transform: scale(1.05); }
-.bump-thread-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-/* --- Delete Modal --- */
+/* ── Delete Modal ───────────────────────────────────────────── */
+
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     display: none;
@@ -240,6 +268,8 @@
     align-items: center;
     z-index: 10000;
 }
+.modal-overlay.active            { display: flex; }
+.modal-overlay.active .modal-content { transform: scale(1); }
 
 .modal-content {
     background: #1e293b;
@@ -255,9 +285,6 @@
     transition: transform 0.2s ease;
 }
 
-.modal-overlay.active { display: flex; }
-.modal-overlay.active .modal-content { transform: scale(1); }
-
 .modal-icon { font-size: 3rem; margin-bottom: 10px; }
 
 .modal-actions {
@@ -265,7 +292,6 @@
     gap: 10px;
     margin-top: 25px;
 }
-
 .modal-actions button {
     flex: 1;
     padding: 12px;
@@ -276,37 +302,23 @@
     font-family: inherit;
 }
 
-.btn-secondary { background: #475569; color: white; }
-.btn-danger    { background: #ff4757; color: white; }
-.btn-secondary:hover { background: #64748b; }
-.btn-danger:hover    { background: #ff6b81; }
+.btn-secondary         { background: #475569; color: white; }
+.btn-secondary:hover   { background: #64748b; }
+.btn-danger            { background: #ff4757; color: white; }
+.btn-danger:hover      { background: #ff6b81; }
 
-/* --- Load More --- */
-.load-more-btn {
-    padding: 10px 25px;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    font-family: 'Varela Round', sans-serif;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-.load-more-btn:hover { opacity: 0.8; }
 
-/* --- Premium Row --- */
+/* ── Premium Row ────────────────────────────────────────────── */
+
 .compact-post-row.premium-post {
-    position: relative;
     border-left: 3px solid var(--premium-forum-color, #ffd700) !important;
     background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
+    animation: premium-row-shimmer 4s infinite ease-in-out;
 }
 
-.premium-post { animation: premium-row-shimmer 4s infinite ease-in-out; }
-
 @keyframes premium-row-shimmer {
-    0%   { box-shadow: inset 5px 0 10px rgba(255, 215, 0, 0);    }
-    50%  { box-shadow: inset 5px 0 15px rgba(255, 215, 0, 0.10); }
-    100% { box-shadow: inset 5px 0 10px rgba(255, 215, 0, 0);    }
+    0%,100% { box-shadow: inset 5px 0 10px rgba(255, 215, 0, 0);    }
+    50%      { box-shadow: inset 5px 0 15px rgba(255, 215, 0, 0.10); }
 }
 
 .author-name.premium-user-text {
@@ -316,30 +328,29 @@
 }
 
 
+/* ══════════════════════════════════════════════════════════════
+   POST ANIMATIONS
+   ══════════════════════════════════════════════════════════════
 
-.compact-post-row[class*="post-anim-"] {
-    will-change: box-shadow, background-color, border-color, filter;
-    position: relative;
-    z-index: 1;
-    contain: layout;
-}
+   Note: shimmer, scanner, and vortex animate background-image/
+   background-position. The hover rule above uses background-color
+   only, so they coexist safely without fighting each other.
+   ══════════════════════════════════════════════════════════════ */
 
 
-/* ══════════════════════════════════════════════════════════
-   TIER 1: STARTER  (free – 5,000)
-   ══════════════════════════════════════════════════════════ */
+/* ── Tier 1 · Starter  (free – 5,000) ──────────────────────── */
 
 .post-anim-float { animation: p-float 3s ease-in-out infinite; }
 @keyframes p-float {
-    0%, 100% { box-shadow: 0 1px 3px rgba(37, 99, 235, 0.05); }
-    50%       { box-shadow: 0 8px 28px rgba(37, 99, 235, 0.18),
-                            0 2px 6px  rgba(37, 99, 235, 0.10); }
+    0%,100% { box-shadow: 0 1px 3px rgba(37, 99, 235, 0.05); }
+    50%     { box-shadow: 0 8px 28px rgba(37, 99, 235, 0.18),
+                          0 2px  6px rgba(37, 99, 235, 0.10); }
 }
 
 .post-anim-pulse { animation: p-pulse 2.8s ease-in-out infinite; }
 @keyframes p-pulse {
-    0%, 100% { background-color: transparent; }
-    50%       { background-color: rgba(37, 99, 235, 0.07); }
+    0%,100% { background-color: transparent; }
+    50%     { background-color: rgba(37, 99, 235, 0.07); }
 }
 
 .post-anim-wiggle .rank-tag {
@@ -347,14 +358,14 @@
     animation: p-wiggle 0.8s ease-in-out infinite;
 }
 @keyframes p-wiggle {
-    0%, 100% { transform: scale(1);    box-shadow: none; }
-    50%       { transform: scale(1.11); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
+    0%,100% { transform: scale(1);    box-shadow: none; }
+    50%     { transform: scale(1.11); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
 }
 
 .post-anim-stretch { animation: p-stretch 2.2s ease-in-out infinite; }
 @keyframes p-stretch {
-    0%, 100% { outline: 2px solid rgba(37, 99, 235, 0.0);  outline-offset: 0px; }
-    50%       { outline: 2px solid rgba(37, 99, 235, 0.40); outline-offset: 3px; }
+    0%,100% { outline: 2px solid rgba(37, 99, 235, 0.0);  outline-offset: 0px; }
+    50%     { outline: 2px solid rgba(37, 99, 235, 0.40); outline-offset: 3px; }
 }
 
 .post-anim-bounce {
@@ -362,26 +373,23 @@
     animation: p-bounce 1.6s ease-in-out infinite;
 }
 @keyframes p-bounce {
-    0%, 100% { border-left-color: rgba(37, 99, 235, 0.20); box-shadow: none; }
-    50%       { border-left-color: #2563eb;
-                box-shadow: inset 6px 0 28px rgba(37, 99, 235, 0.13); }
+    0%,100% { border-left-color: rgba(37, 99, 235, 0.20); box-shadow: none; }
+    50%     { border-left-color: #2563eb;
+              box-shadow: inset 6px 0 28px rgba(37, 99, 235, 0.13); }
 }
 
 
-/* ══════════════════════════════════════════════════════════
-   TIER 2: ADVANCED  (7,500 – 25,000)
-   ══════════════════════════════════════════════════════════ */
+/* ── Tier 2 · Advanced  (7,500 – 25,000) ───────────────────── */
 
 .post-anim-tilt { animation: p-tilt 3s ease-in-out infinite; }
 @keyframes p-tilt {
-    0%, 100% { box-shadow: -10px 3px 26px rgba(37, 99, 235, 0.11),
-                            inset 0 0 0 1px rgba(37, 99, 235, 0.04); }
-    50%       { box-shadow:  10px 3px 26px rgba(37, 99, 235, 0.15),
-                            inset 0 0 0 1px rgba(37, 99, 235, 0.07); }
+    0%,100% { box-shadow: -10px 3px 26px rgba(37, 99, 235, 0.11),
+                           inset 0 0 0 1px rgba(37, 99, 235, 0.04); }
+    50%     { box-shadow:  10px 3px 26px rgba(37, 99, 235, 0.15),
+                           inset 0 0 0 1px rgba(37, 99, 235, 0.07); }
 }
 
-/* Shimmer uses background-image for the sweep.
-   The hover rule above uses background-color only, so they coexist safely. */
+/* Animates background-position of a background-image sweep. */
 .post-anim-shimmer {
     background-image: linear-gradient(
         90deg, transparent, rgba(255, 255, 255, 0.6) 50%, transparent
@@ -397,11 +405,12 @@
 
 .post-anim-blur { animation: p-blur 4s ease-in-out infinite; }
 @keyframes p-blur {
-    0%, 100% { background-color: transparent; filter: none; }
-    50%       { background-color: rgba(100, 116, 139, 0.07); filter: brightness(0.92) saturate(0.8); }
+    0%,100% { background-color: transparent; filter: none; }
+    50%     { background-color: rgba(100, 116, 139, 0.07);
+              filter: brightness(0.92) saturate(0.8); }
 }
 
-/* Scanner uses background-image for the sweep — same safe pattern as shimmer. */
+/* Animates background-position of a background-image sweep. */
 .post-anim-scanner {
     border-left: 3px solid rgba(14, 165, 233, 0.55) !important;
     background-image: linear-gradient(
@@ -420,9 +429,7 @@
 }
 
 
-/* ══════════════════════════════════════════════════════════
-   TIER 3: ELITE  (35,000 – 75,000)
-   ══════════════════════════════════════════════════════════ */
+/* ── Tier 3 · Elite  (35,000 – 75,000) ─────────────────────── */
 
 .post-anim-glitch { animation: p-glitch 0.35s steps(2, end) infinite; }
 @keyframes p-glitch {
@@ -434,24 +441,23 @@
           background-color: rgba(239, 68, 68, 0.035); }
 }
 
+/* Note: border-radius is intentionally overridden for first/last-child rows —
+   the container corner clips win and that's correct behaviour. */
 .post-anim-jello { animation: p-jello 2.2s ease-in-out infinite; }
 @keyframes p-jello {
-    0%, 100% { border-radius: 0; box-shadow: none; }
-    25%       { border-radius: 10px 0 0 10px;
-               box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
-    75%       { border-radius: 0 10px 10px 0;
-               box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
+    0%,100% { border-radius: 0; box-shadow: none; }
+    25%     { border-radius: 10px 0 0 10px;
+              box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
+    75%     { border-radius: 0 10px 10px 0;
+              box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
 }
-
-/* Note: jello's border-radius is overridden for first/last child — that's intentional.
-   The corner clips win since they apply to the row element directly. */
 
 .post-anim-ghosting { animation: p-ghost 2.8s ease-in-out infinite; }
 @keyframes p-ghost {
-    0%, 100% { opacity: 1; box-shadow: none; background-color: transparent; }
-    50%       { opacity: 0.50;
-                box-shadow: 0 0 36px rgba(148, 163, 184, 0.32);
-                background-color: rgba(148, 163, 184, 0.06); }
+    0%,100% { opacity: 1; box-shadow: none; background-color: transparent; }
+    50%     { opacity: 0.50;
+              box-shadow: 0 0 36px rgba(148, 163, 184, 0.32);
+              background-color: rgba(148, 163, 184, 0.06); }
 }
 
 .post-anim-neon {
@@ -468,9 +474,7 @@
 }
 
 
-/* ══════════════════════════════════════════════════════════
-   TIER 4: LEGENDARY  (90,000 – 175,000)
-   ══════════════════════════════════════════════════════════ */
+/* ── Tier 4 · Legendary  (90,000 – 175,000) ────────────────── */
 
 .post-anim-rainbow {
     border-left: 4px solid hsl(0, 80%, 60%) !important;
@@ -490,30 +494,32 @@
           background-color: rgba(239, 68, 68, 0.04); }
 }
 
-/* Vortex: background-image technique — rows are on a white (#fff) container,
-   so linear-gradient(white, white) correctly masks the border layer.
-   If your global --color-bg changes, update the first gradient stop to match. */
+/* Vortex: conic-gradient spins via a registered custom property.
+   linear-gradient(white, white) masks the content area so only the
+   rotating border is visible. Update the first stop if --color-bg changes. */
 @property --vortex-a {
     syntax: '<angle>';
     initial-value: 0deg;
     inherits: false;
 }
+
 .post-anim-vortex {
-    animation: p-vortex-a 2s linear infinite;
+    border: 3px solid transparent !important;
     background-image:
         linear-gradient(white, white),
         conic-gradient(from var(--vortex-a),
             #6366f1, #06b6d4, #22c55e, #f59e0b, #ef4444, #6366f1);
     background-origin: padding-box, border-box;
-    background-clip: padding-box, border-box;
-    border: 3px solid transparent !important;
+    background-clip:   padding-box, border-box;
+    animation: p-vortex-a 2s linear infinite;
 }
 @keyframes p-vortex-a { to { --vortex-a: 360deg; } }
 
 .post-anim-plasma {
     border-left: 4px solid #818cf8 !important;
-    animation: p-plasma-pulse 0.6s ease-in-out infinite alternate,
-               p-plasma-hue   3.5s linear infinite;
+    animation:
+        p-plasma-pulse 0.6s ease-in-out infinite alternate,
+        p-plasma-hue   3.5s linear infinite;
 }
 @keyframes p-plasma-pulse {
     from { box-shadow: inset 8px 0 55px rgba(129, 140, 248, 0.17),
@@ -527,9 +533,7 @@
 @keyframes p-plasma-hue { 100% { filter: hue-rotate(360deg); } }
 
 
-/* ══════════════════════════════════════════════════════════
-   TIER 5: MYTHIC  (220,000 – 300,000)
-   ══════════════════════════════════════════════════════════ */
+/* ── Tier 5 · Mythic  (220,000 – 300,000) ──────────────────── */
 
 .post-anim-gold {
     border-left: 4px solid #d4af37 !important;
@@ -539,23 +543,24 @@
     background: linear-gradient(90deg, #b8860b, #f7ef8a, #d4af37, #f7ef8a, #b8860b);
     background-size: 300% auto;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
     animation: p-gold-shine 3s linear infinite;
 }
 @keyframes p-gold-shine { to { background-position: 300% center; } }
 @keyframes p-gold-row {
-    0%, 100% { box-shadow: inset 8px 0 32px rgba(212, 175, 55, 0.12);
+    0%,100% { box-shadow: inset 8px 0 32px rgba(212, 175, 55, 0.12);
                background-color: rgba(212, 175, 55, 0.025); }
-    50%       { box-shadow: inset 8px 0 65px rgba(247, 239, 138, 0.24),
-                            0 0 18px rgba(212, 175, 55, 0.14);
+    50%     { box-shadow: inset 8px 0 65px rgba(247, 239, 138, 0.24),
+                          0 0 18px rgba(212, 175, 55, 0.14);
                background-color: rgba(212, 175, 55, 0.055); }
 }
 
 .post-anim-matrix {
     border-left: 4px solid #00ff41 !important;
-    animation: p-matrix-row 3s infinite;
     background-color: rgba(0, 255, 65, 0.025);
+    animation: p-matrix-row 3s infinite;
 }
 .post-anim-matrix .content {
     font-family: 'Courier New', monospace;
@@ -564,20 +569,20 @@
     animation: p-matrix-flicker 2.5s infinite;
 }
 @keyframes p-matrix-row {
-    0%, 88%  { box-shadow: inset 6px 0 30px rgba(0, 255, 65, 0.10);
-               background-color: rgba(0, 255, 65, 0.025); }
-    92%       { box-shadow: inset 6px 0 60px rgba(0, 255, 65, 0.26);
-               background-color: rgba(0, 255, 65, 0.08); }
-    96%       { box-shadow: inset 6px 0 8px  rgba(0, 255, 65, 0.04);
-               background-color: transparent; }
-    100%      { box-shadow: inset 6px 0 30px rgba(0, 255, 65, 0.10);
-               background-color: rgba(0, 255, 65, 0.025); }
+    0%,88% { box-shadow: inset 6px 0 30px rgba(0, 255, 65, 0.10);
+              background-color: rgba(0, 255, 65, 0.025); }
+    92%    { box-shadow: inset 6px 0 60px rgba(0, 255, 65, 0.26);
+              background-color: rgba(0, 255, 65, 0.08); }
+    96%    { box-shadow: inset 6px 0  8px rgba(0, 255, 65, 0.04);
+              background-color: transparent; }
+    100%   { box-shadow: inset 6px 0 30px rgba(0, 255, 65, 0.10);
+              background-color: rgba(0, 255, 65, 0.025); }
 }
 @keyframes p-matrix-flicker {
-    0%, 90%, 100% { opacity: 1; }
-    92%            { opacity: 0.38; }
-    94%            { opacity: 1; }
-    97%            { opacity: 0.72; }
+    0%,90%,100% { opacity: 1;    }
+    92%         { opacity: 0.38; }
+    94%         { opacity: 1;    }
+    97%         { opacity: 0.72; }
 }
 
 .post-anim-godly {
@@ -585,304 +590,13 @@
     animation: p-godly 3.5s ease-in-out infinite;
 }
 @keyframes p-godly {
-    0%, 100% { border-left-color: #c9a227;
+    0%,100% { border-left-color: #c9a227;
                box-shadow: inset 8px 0 44px rgba(212, 175, 55, 0.14),
                            0 3px 20px rgba(212, 175, 55, 0.12);
                background-color: rgba(212, 175, 55, 0.025); }
-    50%       { border-left-color: #f7ef8a;
+    50%     { border-left-color: #f7ef8a;
                box-shadow: inset 8px 0 90px rgba(247, 239, 138, 0.30),
                            0 6px 40px rgba(212, 175, 55, 0.28),
                            0 0  65px rgba(212, 175, 55, 0.10);
                background-color: rgba(212, 175, 55, 0.06); }
 }
-
-.author-area { 
-    display: flex; 
-    align-items: center;
-    gap: 4px; 
-    white-space: nowrap; 
-}
-
-.author-name { font-weight: 700; color: var(--blue-deep); text-decoration: none; }
-.author-name:hover { text-decoration: underline; }
-
-.prefix { 
-    color: #64748b; 
-    font-weight: 500; 
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-}
-
-.separator { color: #cbd5e1; font-weight: bold; }
-
-.content { 
-    color: #334155; 
-    word-break: break-word; 
-    line-height: 1.4;  
-}
-
-.timestamp {
-    font-size: 0.7rem;
-    color: #94a3b8;
-    white-space: nowrap;
-    margin-left: auto;
-}
-
-/* --- The "Always There" Sticky Reply Bar --- */
-.reply-box {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 1px solid #e2e8f0;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: center;
-    z-index: 1000;
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.03);
-}
-
-.reply-inner {
-    width: 100%;
-    max-width: 1000px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.reply-box textarea {
-    flex: 1;
-    height: 42px;
-    min-height: 42px !important;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    background: #f8faff;
-    padding: 10px 15px;
-    font-family: 'Varela Round', sans-serif;
-    resize: none;
-    outline: none;
-    transition: all 0.2s;
-}
-
-.reply-box textarea:focus { border-color: var(--blue-primary); background: white; }
-
-/* --- The Styled Post Button --- */
-.reply-btn {
-    background: var(--blue-primary);
-    color: white;
-    border: none;
-    padding: 0 25px;
-    height: 42px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-family: 'Varela Round', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-}
-
-.reply-btn:hover { background: var(--blue-deep); transform: translateY(-1px); }
-.reply-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
-
-.back-link {
-    text-decoration: none;
-    color: var(--blue-soft);
-    font-size: 0.9rem;
-    display: inline-block;
-    margin-bottom: 15px;
-}
-
-.delete-thread-btn {
-    background: #fee2e2;
-    color: #dc2626;
-    border: 1px solid #fecaca;
-    padding: 5px 12px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-.delete-thread-btn:hover {
-    background: #dc2626;
-    color: white;
-}
-
-.thread-header {
-    display: flex;
-    flex-direction: column; /* Stack back-link and title */
-    gap: 10px;
-    position: relative;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-/* This is the magic for the button */
-.delete-thread-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: #ff4757;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Varela Round', sans-serif;
-    transition: 0.2s;
-    z-index: 10;
-}
-
-.delete-thread-btn:hover {
-    background: #ff6b81;
-    transform: scale(1.05);
-}
-
-.bump-thread-btn {
-    position: absolute;
-    top: 64px;
-    right: 20px;
-    background: #0ea5e9;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-weight: 900;
-    cursor: pointer;
-    font-family: 'Varela Round', sans-serif;
-    transition: 0.2s;
-    z-index: 10;
-}
-
-.bump-thread-btn:hover {
-    background: #0284c7;
-    transform: scale(1.05);
-}
-
-.bump-thread-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-}
-
-.modal-content {
-    background: #1e293b;
-    color: white;
-    padding: 30px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    font-family: 'Varela Round', sans-serif;
-    border: 1px solid #334155;
-    transform: scale(0.9);
-    transition: transform 0.2s ease;
-}
-
-.modal-overlay.active { display: flex; }
-.modal-overlay.active .modal-content { transform: scale(1); }
-
-.modal-icon { font-size: 3rem; margin-bottom: 10px; }
-
-.modal-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 25px;
-}
-
-.modal-actions button {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.btn-secondary { background: #475569; color: white; }
-.btn-danger { background: #ff4757; color: white; }
-
-.btn-secondary:hover { background: #64748b; }
-.btn-danger:hover { background: #ff6b81; }
-
-.load-more-btn {
-    padding: 10px 25px;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    font-family: 'Varela Round', sans-serif;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.load-more-btn:hover {
-    opacity: 0.8;
-}
-
-.compact-post-row.premium-post {
-    position: relative;
-    border-left: 3px solid var(--premium-forum-color, #ffd700) !important;
-    background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
-    transition: all 0.3s ease;
-}
-
-.premium-post {
-    animation: premium-row-shimmer 4s infinite ease-in-out;
-}
-
-@keyframes premium-row-shimmer {
-    0% { box-shadow: inset 5px 0 10px rgba(255, 215, 0, 0); }
-    50% { box-shadow: inset 5px 0 15px rgba(255, 215, 0, 0.1); }
-    100% { box-shadow: inset 5px 0 10px rgba(255, 215, 0, 0); }
-}
-
-.author-name.premium-user-text {
-    color: var(--premium-forum-color, #b8860b) !important;
-    text-shadow: 0 0 5px rgba(255, 215, 0, var(--premium-glow-alpha, 0.3));
-    font-weight: 800;
-}
-
-.compact-post-row[class*="post-anim-"] {
-    background-color: rgba(255, 255, 255, 0.9) !important; 
-    position: relative;
-    overflow: hidden; 
-}
-
-.post-anim-shimmer, .post-anim-scanner {
-    background-repeat: no-repeat !important;
-}
-
-.post-anim-gold .content, .post-anim-godly .content {
-    background: linear-gradient(90deg, #b8860b, #f7ef8a, #d4af37, #f7ef8a, #b8860b);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 800;
-}
-
-@property --vortex-a {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-} 
-
