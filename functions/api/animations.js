@@ -28,25 +28,35 @@ function isPremium(premiumUsersRaw, username) {
 }
 
 const SHOP = {
+  // TIER 1: STARTER (0 - 5k)
+  none: { id: "none", name: "None", price: 0 },
   float: { id: "float", name: "Float", price: 0 },
   pulse: { id: "pulse", name: "Pulse", price: 0 },
   wiggle: { id: "wiggle", name: "Wiggle", price: 1500 },
-  stretch: { id: "stretch", name: "Stretch", price: 2500 },
+  stretch: { id: "stretch", name: "Stretch", price: 3000 },
   bounce: { id: "bounce", name: "Bounce", price: 5000 },
-  swing: { id: "swing", name: "Swing", price: 7500 },
-  tilt: { id: "tilt", name: "Tilt", price: 10000 },
-  blur: { id: "blur", name: "Blur", price: 20000 },
-  glitch: { id: "glitch", name: "Glitch", price: 30000 },
-  jello: { id: "jello", name: "Jello", price: 40000 },
-  ghosting: { id: "ghosting", name: "Ghosting", price: 55000 },
-  rainbow: { id: "rainbow", name: "Rainbow", price: 75000 },
-  neon: { id: "neon", name: "Neon", price: 90000 },
-  earthquake: { id: "earthquake", name: "Earthquake", price: 110000 },
-  squeeze: { id: "squeeze", name: "Squeeze", price: 135000 },
-  fire: { id: "fire", name: "Fire", price: 200000 },
-  gold: { id: "gold", name: "Gold", price: 225000 },
-  matrix: { id: "matrix", name: "Matrix", price: 250000 },
-  vortex: { id: "vortex", name: "Vortex", price: 275000 },
+
+  // TIER 2: ADVANCED (7k - 25k)
+  tilt: { id: "tilt", name: "Tilt", price: 7500 },
+  shimmer: { id: "shimmer", name: "Shimmer", price: 12000 },
+  blur: { id: "blur", name: "Haze", price: 18000 },
+  scanner: { id: "scanner", name: "Scanner", price: 25000 },
+
+  // TIER 3: ELITE (35k - 75k)
+  glitch: { id: "glitch", name: "Glitch", price: 35000 },
+  jello: { id: "jello", name: "Jello", price: 45000 },
+  ghosting: { id: "ghosting", name: "Ghosting", price: 60000 },
+  neon: { id: "neon", name: "Neon", price: 75000 },
+
+  // TIER 4: LEGENDARY (90k - 175k)
+  rainbow: { id: "rainbow", name: "Rainbow", price: 90000 },
+  earthquake: { id: "earthquake", name: "Earthquake", price: 115000 },
+  vortex: { id: "vortex", name: "Vortex", price: 140000 },
+  plasma: { id: "plasma", name: "Plasma", price: 175000 },
+
+  // TIER 5: MYTHIC (200k - 300k)
+  gold: { id: "gold", name: "Gold", price: 220000 },
+  matrix: { id: "matrix", name: "Matrix", price: 260000 },
   godly: { id: "godly", name: "Godly", price: 300000 }
 };
 

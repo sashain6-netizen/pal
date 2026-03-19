@@ -65,14 +65,12 @@
 }
 
 /* ============================================================
-   POST ANIMATIONS v3  —  Amplified box effects
-   More visible · Still contained · Text never moves
-   Effects: box-shadow · background · border · outline
+   POST ANIMATIONS — Full Shop CSS
+   Box-contained · Text never moves · Scales with tier
    ============================================================ */
 
-/* --- Base Safety --- */
 .compact-post-row[class*="post-anim-"] {
-    will-change: box-shadow, background-color, border-color, outline;
+    will-change: box-shadow, background-color, border-color, filter;
     position: relative;
     z-index: 1;
     contain: layout;
@@ -80,95 +78,125 @@
 
 
 /* ══════════════════════════════════════════════════════════
-   TIER 1: BASIC
+   TIER 1: STARTER  (free – 5,000)
+   Gentle. Noticeable. Makes you want the next one.
    ══════════════════════════════════════════════════════════ */
 
+/* float — free. Soft elevation shadow that breathes. */
 .post-anim-float { animation: p-float 3s ease-in-out infinite; }
 @keyframes p-float {
-    0%, 100% { box-shadow: 0 1px 3px rgba(37, 99, 235, 0.06); }
-    50%       { box-shadow: 0 8px 32px rgba(37, 99, 235, 0.22),
-                            0 2px 8px  rgba(37, 99, 235, 0.12); }
+    0%, 100% { box-shadow: 0 1px 3px rgba(37, 99, 235, 0.05); }
+    50%       { box-shadow: 0 8px 28px rgba(37, 99, 235, 0.18),
+                            0 2px 6px  rgba(37, 99, 235, 0.10); }
 }
 
+/* pulse — free. Background breathes a gentle blue tint. */
 .post-anim-pulse { animation: p-pulse 2.8s ease-in-out infinite; }
 @keyframes p-pulse {
     0%, 100% { background-color: transparent; }
-    50%       { background-color: rgba(37, 99, 235, 0.08); }
+    50%       { background-color: rgba(37, 99, 235, 0.07); }
 }
 
-.post-anim-shimmer { animation: p-shimmer 2s linear infinite; }
-@keyframes p-shimmer {
-    0%   { box-shadow: inset -400px 0 100px -80px rgba(255, 255, 255, 0.0); }
-    45%  { box-shadow: inset    0px 0 120px  30px rgba(255, 255, 255, 0.55); }
-    100% { box-shadow: inset  400px 0 100px -80px rgba(255, 255, 255, 0.0); }
-}
-
+/* wiggle — 1,500. Rank tag pops with a shadow flick. */
 .post-anim-wiggle .rank-tag {
-    animation: p-wiggle 0.7s ease-in-out infinite;
     display: inline-block;
+    animation: p-wiggle 0.8s ease-in-out infinite;
 }
 @keyframes p-wiggle {
-    0%, 100% { box-shadow: none; transform: scale(1); }
-    50%       { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28); transform: scale(1.1); }
+    0%, 100% { transform: scale(1);    box-shadow: none; }
+    50%       { transform: scale(1.11); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
 }
 
+/* stretch — 3,000. A crisp outline ring pulses outward. */
 .post-anim-stretch { animation: p-stretch 2.2s ease-in-out infinite; }
 @keyframes p-stretch {
     0%, 100% { outline: 2px solid rgba(37, 99, 235, 0.0);  outline-offset: 0px; }
-    50%       { outline: 2px solid rgba(37, 99, 235, 0.45); outline-offset: 3px; }
+    50%       { outline: 2px solid rgba(37, 99, 235, 0.40); outline-offset: 3px; }
 }
 
+/* bounce — 5,000. Left border pulses from dim to full color. */
 .post-anim-bounce {
-    border-left: 3px solid rgba(37, 99, 235, 0.25) !important;
+    border-left: 3px solid rgba(37, 99, 235, 0.20) !important;
     animation: p-bounce 1.6s ease-in-out infinite;
 }
 @keyframes p-bounce {
-    0%, 100% { border-left-color: rgba(37, 99, 235, 0.25); box-shadow: none; }
+    0%, 100% { border-left-color: rgba(37, 99, 235, 0.20); box-shadow: none; }
     50%       { border-left-color: #2563eb;
-                box-shadow: inset 6px 0 30px rgba(37, 99, 235, 0.14),
-                            inset 0  0  0   1px rgba(37, 99, 235, 0.08); }
+                box-shadow: inset 6px 0 28px rgba(37, 99, 235, 0.13); }
 }
 
 
 /* ══════════════════════════════════════════════════════════
-   TIER 2: ADVANCED
+   TIER 2: ADVANCED  (7,500 – 25,000)
+   Clearly cool. Conversation starters.
    ══════════════════════════════════════════════════════════ */
 
-.post-anim-tilt { animation: p-tilt 3.2s ease-in-out infinite; }
+/* tilt — 7,500. Shadow swings left and right like the row is leaning. */
+.post-anim-tilt { animation: p-tilt 3s ease-in-out infinite; }
 @keyframes p-tilt {
-    0%, 100% { box-shadow: -10px 4px 28px rgba(37, 99, 235, 0.12),
-                            inset 0 0 0 1px rgba(37, 99, 235, 0.05); }
-    50%       { box-shadow:  10px 4px 28px rgba(37, 99, 235, 0.16),
-                            inset 0 0 0 1px rgba(37, 99, 235, 0.08); }
+    0%, 100% { box-shadow: -10px 3px 26px rgba(37, 99, 235, 0.11),
+                            inset 0 0 0 1px rgba(37, 99, 235, 0.04); }
+    50%       { box-shadow:  10px 3px 26px rgba(37, 99, 235, 0.15),
+                            inset 0 0 0 1px rgba(37, 99, 235, 0.07); }
 }
 
-.post-anim-swing {
-    border-left: 4px solid rgba(99, 102, 241, 0.7) !important;
-    animation: p-swing 3s ease-in-out infinite;
+/* shimmer — 12,000. A beam of light sweeps across the entire row. */
+.post-anim-shimmer {
+    background-image: linear-gradient(
+        90deg, transparent, rgba(255, 255, 255, 0.6) 50%, transparent
+    );
+    background-size: 120px 100%;
+    background-repeat: no-repeat;
+    animation: p-shimmer 2.2s ease-in-out infinite;
 }
-@keyframes p-swing {
-    0%, 100% { border-left-color: rgba(99, 102, 241, 0.9);
-               box-shadow: inset 5px 0 24px rgba(99, 102, 241, 0.12); }
-    50%       { border-left-color: rgba(14, 165, 233, 0.9);
-               box-shadow: inset 5px 0 24px rgba(14, 165, 233, 0.12); }
+@keyframes p-shimmer {
+    0%   { background-position: -120px center; }
+    100% { background-position: calc(100% + 120px) center; }
 }
 
+/* blur/haze — 18,000. Row dims and cools like it's fading out. */
 .post-anim-blur { animation: p-blur 4s ease-in-out infinite; }
 @keyframes p-blur {
     0%, 100% { background-color: transparent; filter: none; }
-    50%       { background-color: rgba(100, 116, 139, 0.07); filter: brightness(0.93); }
+    50%       { background-color: rgba(100, 116, 139, 0.07); filter: brightness(0.92) saturate(0.8); }
 }
 
+/* scanner — 25,000. A crisp cyan scan line sweeps left to right. */
+.post-anim-scanner {
+    border-left: 3px solid rgba(14, 165, 233, 0.55) !important;
+    background-image: linear-gradient(
+        90deg, transparent 0%, rgba(14, 165, 233, 0.18) 50%, transparent 100%
+    );
+    background-size: 100px 100%;
+    background-repeat: no-repeat;
+    animation: p-scanner 2.4s linear infinite;
+}
+@keyframes p-scanner {
+    0%   { background-position: -100px center;
+           border-left-color: rgba(14, 165, 233, 0.3); }
+    50%  { border-left-color: rgba(14, 165, 233, 0.8); }
+    100% { background-position: calc(100% + 100px) center;
+           border-left-color: rgba(14, 165, 233, 0.3); }
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   TIER 3: ELITE  (35,000 – 75,000)
+   People will notice and ask.
+   ══════════════════════════════════════════════════════════ */
+
+/* glitch — 35,000. Vivid RGB channel-split bars flash. */
 .post-anim-glitch { animation: p-glitch 0.35s steps(2, end) infinite; }
 @keyframes p-glitch {
-    0%  { box-shadow: inset  4px 0 0 rgba(239, 68, 68,  0.7),
-                      inset -4px 0 0 rgba(16, 185, 129, 0.7);
+    0%  { box-shadow: inset  4px 0 0 rgba(239, 68,  68,  0.65),
+                      inset -4px 0 0 rgba(16,  185, 129, 0.65);
           background-color: transparent; }
-    50% { box-shadow: inset -4px 0 0 rgba(239, 68, 68,  0.7),
-                      inset  4px 0 0 rgba(16, 185, 129, 0.7);
-          background-color: rgba(239, 68, 68, 0.04); }
+    50% { box-shadow: inset -4px 0 0 rgba(239, 68,  68,  0.65),
+                      inset  4px 0 0 rgba(16,  185, 129, 0.65);
+          background-color: rgba(239, 68, 68, 0.035); }
 }
 
+/* jello — 45,000. Border radius morphs between opposite corners. */
 .post-anim-jello { animation: p-jello 2.2s ease-in-out infinite; }
 @keyframes p-jello {
     0%, 100% { border-radius: 0; box-shadow: none; }
@@ -178,92 +206,56 @@
                box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
 }
 
-.post-anim-spin .rank-tag {
-    display: inline-block;
-    animation: p-spin 3s linear infinite;
-}
-@keyframes p-spin { to { transform: rotate(360deg); } }
-
-
-/* ══════════════════════════════════════════════════════════
-   TIER 3: ELITE
-   ══════════════════════════════════════════════════════════ */
-
-.post-anim-ghosting { animation: p-ghost 2.6s ease-in-out infinite; }
+/* ghosting — 60,000. Row fades to near-invisible, leaving a cool halo. */
+.post-anim-ghosting { animation: p-ghost 2.8s ease-in-out infinite; }
 @keyframes p-ghost {
     0%, 100% { opacity: 1; box-shadow: none; background-color: transparent; }
-    50%       { opacity: 0.55;
-                box-shadow: 0 0 32px rgba(148, 163, 184, 0.30);
-                background-color: rgba(148, 163, 184, 0.07); }
+    50%       { opacity: 0.50;
+                box-shadow: 0 0 36px rgba(148, 163, 184, 0.32);
+                background-color: rgba(148, 163, 184, 0.06); }
 }
 
-.post-anim-rainbow {
-    border-left: 4px solid hsl(0, 80%, 60%) !important;
-    animation: p-rainbow 4s linear infinite;
-}
-@keyframes p-rainbow {
-    0%   { filter: hue-rotate(0deg);   background-color: hsla(0,   80%, 60%, 0.05); }
-    50%  { filter: hue-rotate(180deg); background-color: hsla(180, 80%, 50%, 0.05); }
-    100% { filter: hue-rotate(360deg); background-color: hsla(360, 80%, 60%, 0.05); }
-}
-
+/* neon — 75,000. Border blazes with the user's premium color. */
 .post-anim-neon {
     border-left: 4px solid var(--premium-forum-color, #2563eb) !important;
     animation: p-neon 1.4s ease-in-out infinite alternate;
 }
 @keyframes p-neon {
-    from { box-shadow: inset 5px 0 12px rgba(37, 99, 235, 0.05),
-                       0 0  0px rgba(37, 99, 235, 0.0);
+    from { box-shadow: inset 5px 0 14px rgba(37, 99, 235, 0.04),
+                       0 0  0px rgba(37, 99, 235, 0.00);
            background-color: transparent; }
-    to   { box-shadow: inset 5px 0 40px var(--premium-forum-color, rgba(37, 99, 235, 0.25)),
-                       0 0 20px rgba(37, 99, 235, 0.18);
-           background-color: rgba(37, 99, 235, 0.04); }
-}
-
-.post-anim-earthquake { animation: p-shake 0.16s linear infinite; }
-@keyframes p-shake {
-    0%  { box-shadow: -4px 0 14px rgba(239, 68, 68, 0.30);
-          background-color: transparent; }
-    50% { box-shadow:  4px 0 14px rgba(239, 68, 68, 0.30);
-          background-color: rgba(239, 68, 68, 0.04); }
-}
-
-.post-anim-squeeze { animation: p-squeeze 2s ease-in-out infinite; }
-@keyframes p-squeeze {
-    0%, 100% { box-shadow: inset 0 0  0px rgba(37, 99, 235, 0.0); }
-    50%       { box-shadow: inset 0 0 50px rgba(37, 99, 235, 0.16),
-                            inset 0 0  0  3px rgba(37, 99, 235, 0.18); }
-}
-
-.post-anim-heartbeat .rank-tag {
-    display: inline-block;
-    animation: p-heartbeat 1s ease-in-out infinite;
-}
-@keyframes p-heartbeat {
-    0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(239, 68, 68, 0.0); }
-    50%       { transform: scale(1.14); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.28); }
+    to   { box-shadow: inset 5px 0 44px var(--premium-forum-color, rgba(37, 99, 235, 0.28)),
+                       0 0 22px rgba(37, 99, 235, 0.17);
+           background-color: rgba(37, 99, 235, 0.035); }
 }
 
 
 /* ══════════════════════════════════════════════════════════
-   TIER 4: LEGENDARY
+   TIER 4: LEGENDARY  (90,000 – 175,000)
+   Genuinely impressive. Rare to see in the wild.
    ══════════════════════════════════════════════════════════ */
 
-.post-anim-fire {
-    border-left: 4px solid #f97316 !important;
-    animation: p-fire 1.8s ease-in-out infinite;
+/* rainbow — 90,000. Full hue rotation on the border + background tint. */
+.post-anim-rainbow {
+    border-left: 4px solid hsl(0, 80%, 60%) !important;
+    animation: p-rainbow 4s linear infinite;
 }
-@keyframes p-fire {
-    0%, 100% { border-left-color: #f97316;
-               box-shadow: inset 8px 0 50px rgba(249, 115, 22, 0.18),
-                           0 0 16px rgba(249, 115, 22, 0.14);
-               background-color: rgba(249, 115, 22, 0.03); }
-    50%       { border-left-color: #dc2626;
-               box-shadow: inset 8px 0 70px rgba(220, 38,  38, 0.24),
-                           0 0 28px rgba(220, 38,  38, 0.18);
-               background-color: rgba(220, 38, 38, 0.04); }
+@keyframes p-rainbow {
+    0%   { filter: hue-rotate(0deg);   background-color: hsla(0,   80%, 60%, 0.04); }
+    50%  { filter: hue-rotate(180deg); background-color: hsla(180, 80%, 50%, 0.04); }
+    100% { filter: hue-rotate(360deg); background-color: hsla(360, 80%, 60%, 0.04); }
 }
 
+/* earthquake — 115,000. Rapid shadow thrash. Red heat flashes. */
+.post-anim-earthquake { animation: p-shake 0.15s linear infinite; }
+@keyframes p-shake {
+    0%  { box-shadow: -5px 0 16px rgba(239, 68, 68, 0.28);
+          background-color: transparent; }
+    50% { box-shadow:  5px 0 16px rgba(239, 68, 68, 0.28);
+          background-color: rgba(239, 68, 68, 0.04); }
+}
+
+/* vortex — 140,000. Spinning conic-gradient border. */
 @property --vortex-a {
     syntax: '<angle>';
     initial-value: 0deg;
@@ -281,27 +273,30 @@
 }
 @keyframes p-vortex-a { to { --vortex-a: 360deg; } }
 
-.post-anim-godly {
-    border-left: 4px solid #d4af37 !important;
-    animation: p-godly 3s ease-in-out infinite;
+/* plasma — 175,000. Crackling electric energy. Hue shifts + fast glow pulse. */
+.post-anim-plasma {
+    border-left: 4px solid #818cf8 !important;
+    animation: p-plasma-pulse 0.6s ease-in-out infinite alternate,
+               p-plasma-hue   3.5s linear infinite;
 }
-@keyframes p-godly {
-    0%, 100% { border-left-color: #c9a227;
-               box-shadow: inset 8px 0 40px rgba(212, 175, 55, 0.15),
-                           0 3px 18px rgba(212, 175, 55, 0.14);
-               background-color: rgba(212, 175, 55, 0.03); }
-    50%       { border-left-color: #f7ef8a;
-               box-shadow: inset 8px 0 80px rgba(247, 239, 138, 0.28),
-                           0 6px 36px rgba(212, 175, 55, 0.26),
-                           0 0  60px rgba(212, 175, 55, 0.10);
-               background-color: rgba(212, 175, 55, 0.06); }
+@keyframes p-plasma-pulse {
+    from { box-shadow: inset 8px 0 55px rgba(129, 140, 248, 0.17),
+                       0 0 18px rgba(129, 140, 248, 0.12);
+           background-color: rgba(129, 140, 248, 0.03); }
+    to   { box-shadow: inset 8px 0 95px rgba(34, 211, 238, 0.26),
+                       0 0 36px rgba(34, 211, 238, 0.20),
+                       inset 0 0 0 1px rgba(34, 211, 238, 0.10);
+           background-color: rgba(34, 211, 238, 0.055); }
 }
+@keyframes p-plasma-hue { 100% { filter: hue-rotate(360deg); } }
 
 
 /* ══════════════════════════════════════════════════════════
-   SPECIAL STYLES
+   TIER 5: MYTHIC  (220,000 – 300,000)
+   Status symbols. You know one when you see one.
    ══════════════════════════════════════════════════════════ */
 
+/* gold — 220,000. Shimmering gradient text + warm pulsing row glow. */
 .post-anim-gold {
     border-left: 4px solid #d4af37 !important;
     animation: p-gold-row 3s linear infinite;
@@ -316,39 +311,57 @@
 }
 @keyframes p-gold-shine { to { background-position: 300% center; } }
 @keyframes p-gold-row {
-    0%, 100% { box-shadow: inset 8px 0 30px rgba(212, 175, 55, 0.12);
-               background-color: rgba(212, 175, 55, 0.03); }
-    50%       { box-shadow: inset 8px 0 60px rgba(247, 239, 138, 0.24),
-                            0 0 16px rgba(212, 175, 55, 0.14);
-               background-color: rgba(212, 175, 55, 0.06); }
+    0%, 100% { box-shadow: inset 8px 0 32px rgba(212, 175, 55, 0.12);
+               background-color: rgba(212, 175, 55, 0.025); }
+    50%       { box-shadow: inset 8px 0 65px rgba(247, 239, 138, 0.24),
+                            0 0 18px rgba(212, 175, 55, 0.14);
+               background-color: rgba(212, 175, 55, 0.055); }
 }
 
+/* matrix — 260,000. Terminal green border, background flicker, monospace text. */
 .post-anim-matrix {
     border-left: 4px solid #00ff41 !important;
     animation: p-matrix-row 3s infinite;
-    background-color: rgba(0, 255, 65, 0.03);
+    background-color: rgba(0, 255, 65, 0.025);
 }
 .post-anim-matrix .content {
     font-family: 'Courier New', monospace;
     color: #00cc33 !important;
-    text-shadow: 0 0 10px rgba(0, 255, 65, 0.6);
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.55);
     animation: p-matrix-flicker 2.5s infinite;
 }
 @keyframes p-matrix-row {
-    0%, 90%  { box-shadow: inset 6px 0 28px rgba(0, 255, 65, 0.10);
-               background-color: rgba(0, 255, 65, 0.03); }
-    94%       { box-shadow: inset 6px 0 55px rgba(0, 255, 65, 0.25);
+    0%, 88%  { box-shadow: inset 6px 0 30px rgba(0, 255, 65, 0.10);
+               background-color: rgba(0, 255, 65, 0.025); }
+    92%       { box-shadow: inset 6px 0 60px rgba(0, 255, 65, 0.26);
                background-color: rgba(0, 255, 65, 0.08); }
-    97%       { box-shadow: inset 6px 0 10px rgba(0, 255, 65, 0.04);
+    96%       { box-shadow: inset 6px 0 8px  rgba(0, 255, 65, 0.04);
                background-color: transparent; }
-    100%      { box-shadow: inset 6px 0 28px rgba(0, 255, 65, 0.10);
-               background-color: rgba(0, 255, 65, 0.03); }
+    100%      { box-shadow: inset 6px 0 30px rgba(0, 255, 65, 0.10);
+               background-color: rgba(0, 255, 65, 0.025); }
 }
 @keyframes p-matrix-flicker {
-    0%, 91%, 100% { opacity: 1; }
-    93%            { opacity: 0.4; }
-    95%            { opacity: 1; }
-    97%            { opacity: 0.7; }
+    0%, 90%, 100% { opacity: 1; }
+    92%            { opacity: 0.38; }
+    94%            { opacity: 1; }
+    97%            { opacity: 0.72; }
+}
+
+/* godly — 300,000. A slow, majestic gold bloom. Unmistakable. */
+.post-anim-godly {
+    border-left: 4px solid #d4af37 !important;
+    animation: p-godly 3.5s ease-in-out infinite;
+}
+@keyframes p-godly {
+    0%, 100% { border-left-color: #c9a227;
+               box-shadow: inset 8px 0 44px rgba(212, 175, 55, 0.14),
+                           0 3px 20px rgba(212, 175, 55, 0.12);
+               background-color: rgba(212, 175, 55, 0.025); }
+    50%       { border-left-color: #f7ef8a;
+               box-shadow: inset 8px 0 90px rgba(247, 239, 138, 0.30),
+                           0 6px 40px rgba(212, 175, 55, 0.28),
+                           0 0  65px rgba(212, 175, 55, 0.10);
+               background-color: rgba(212, 175, 55, 0.06); }
 }
 
 .author-area { 
