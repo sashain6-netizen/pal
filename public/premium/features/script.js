@@ -122,7 +122,7 @@ async function initPremiumFeatures() {
 
         try {
             const postCaption = postCaptionInput?.value ?? '';
-            const postAnimation = postAnimationSelect?.value ?? 'none';
+            const postAnimation = (postAnimationSelect && postAnimationSelect.value) ? postAnimationSelect.value : 'none';
             const forumColor = forumColorPicker?.value;
             const glowAlpha = glowIntensity ? Number(glowIntensity.value) / 100 : 0.8;
 

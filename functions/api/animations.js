@@ -78,15 +78,15 @@ export async function onRequest(context) {
     const premiumData = await env.USERS_KV.get("pal_premium");
     const premium = isPremium(premiumData, uname);
 
-    // Lazy-initialize premium defaults once a user becomes premium.
-    if (premium) {
-      const owned = Array.isArray(user.ownedAnimations) ? user.ownedAnimations : [];
-      const nextOwned = Array.from(new Set([...owned, ...PREMIUM_DEFAULTS]));
-      if (nextOwned.length !== owned.length) {
-        user.ownedAnimations = nextOwned;
-        if (!user.postAnimation) user.postAnimation = "none";
-        await env.USERS_KV.put(userKey, JSON.stringify(user));
-      }
+    const owned = Array.isArray(user.ownedAnimations) ? user.ownedAnimations : [];
+    const validAnimations = new Set([...owned, ...PREMIUM_DEFAULTS, "none"]);
+
+    if (animation !== undefined) {
+        const anim = String(animation || "none");
+        if (!validAnimations.has(anim)) {
+            return new Response(JSON.stringify({ error: `Animation '${anim}' not owned.` }), { status: 400 });
+        }
+        user.postAnimation = anim;
     }
 
     if (method === "GET") {
