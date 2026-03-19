@@ -114,55 +114,62 @@ async function initPremiumFeatures() {
     }
 
     // --- 4. Unified Save Handler ---
-    // Since you have 3 separate save buttons, this helper handles the API calls for any of them.
     async function handlePremiumSave(btn) {
         const originalText = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Saving...';
 
         try {
-            const postCaption = postCaptionInput?.value ?? '';
-            const postAnimation = (postAnimationSelect && postAnimationSelect.value) ? postAnimationSelect.value : 'none';
-            const forumColor = forumColorPicker?.value;
-            const glowAlpha = glowIntensity ? Number(glowIntensity.value) / 100 : 0.8;
+            let res;
 
-            const [styleRes, animRes] = await Promise.all([
-                fetch('/api/update-premium-forum-style', {
+            // 1. If user clicked the GLOW/COLOR save button
+            if (btn.id === 'saveGlowBtn') {
+                const forumColor = forumColorPicker?.value;
+                const glowAlpha = glowIntensity ? Number(glowIntensity.value) / 100 : 0.8;
+                
+                res = await fetch('/api/update-premium-forum-style', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({ forumColor, glowAlpha })
-                }),
-                fetch('/api/animations', {
+                });
+            } 
+            
+            // 2. If user clicked the CAPTION or ANIMATION save button
+            else {
+                const postCaption = postCaptionInput?.value || '';
+                const postAnimation = (postAnimationSelect && postAnimationSelect.value) ? postAnimationSelect.value : 'none';
+
+                res = await fetch('/api/animations', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({ action: 'set', postCaption, postAnimation })
-                })
-            ]);
+                });
+            }
 
-            if (!styleRes.ok || !animRes.ok) throw new Error('Save failed');
+            if (!res || !res.ok) throw new Error('Save failed');
 
             btn.textContent = 'Saved!';
-            btn.style.background = '#22c55e'; // Green feedback
+            btn.style.backgroundColor = '#22c55e'; // Green feedback
         } catch (err) {
+            console.error("Save Error:", err);
             btn.textContent = 'Error';
-            btn.style.background = '#ef4444'; // Red feedback
+            btn.style.backgroundColor = '#ef4444'; // Red feedback
         } finally {
             setTimeout(() => {
                 btn.disabled = false;
                 btn.textContent = originalText;
-                btn.style.background = ''; // Revert to CSS default
+                btn.style.backgroundColor = ''; 
             }, 2000);
         }
     }
 
-    // Attach Save Listeners
     [saveCaptionBtn, saveGlowBtn, saveAnimBtn].forEach(btn => {
         if (btn) btn.onclick = () => handlePremiumSave(btn);
     });
 
-    // --- 5. Jackpot Logic ---
+    // --- 5. Jackpot ---
     const jackpotPotAmount = document.getElementById('jackpotPotAmount');
     const jackpotRefreshBtn = document.getElementById('jackpotRefreshBtn');
     const jackpotSpinBtn = document.getElementById('jackpotSpinBtn');
