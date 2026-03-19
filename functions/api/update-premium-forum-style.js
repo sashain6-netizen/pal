@@ -38,7 +38,7 @@ function isPremiumUser(premiumUsersRaw, username) {
 function normalizeHexColor(hex) {
   if (typeof hex !== "string") return null;
   const v = hex.trim();
-  if (!/^#([0-9a-fA-F]{6})$/.test(v)) return null;
+  if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(v)) return null;
   return v;
 }
 
