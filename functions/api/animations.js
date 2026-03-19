@@ -30,7 +30,6 @@ function isPremium(premiumUsersRaw, username) {
 const SHOP = {
   float: { id: "float", name: "Float", price: 0 },
   pulse: { id: "pulse", name: "Pulse", price: 0 },
-  shimmer: { id: "shimmer", name: "Shimmer", price: 0 },
 
   wiggle: { id: "wiggle", name: "Wiggle", price: 1500 },
   stretch: { id: "stretch", name: "Stretch", price: 2500 },
@@ -47,7 +46,6 @@ const SHOP = {
   neon: { id: "neon", name: "Neon", price: 90000 },
   earthquake: { id: "earthquake", name: "Earthquake", price: 110000 },
   squeeze: { id: "squeeze", name: "Squeeze", price: 135000 },
-  heartbeat: { id: "heartbeat", name: "Heartbeat", price: 160000 },
 
   fire: { id: "fire", name: "Fire", price: 200000 },
   gold: { id: "gold", name: "Gold", price: 225000 },
@@ -56,7 +54,7 @@ const SHOP = {
   godly: { id: "godly", name: "Godly", price: 300000 }
 };
 
-const PREMIUM_DEFAULTS = ["none", "float", "pulse", "shimmer"];
+const PREMIUM_DEFAULTS = ["none", "float", "pulse"];
 
 export async function onRequest(context) {
   const { request, env } = context;
