@@ -38,7 +38,6 @@ const SHOP = {
   swing: { id: "swing", name: "Swing", price: 7500 },
   tilt: { id: "tilt", name: "Tilt", price: 10000 },
   
-  spin: { id: "spin", name: "Spin", price: 15000 },
   blur: { id: "blur", name: "Blur", price: 20000 },
   glitch: { id: "glitch", name: "Glitch", price: 30000 },
   jello: { id: "jello", name: "Jello", price: 40000 },
