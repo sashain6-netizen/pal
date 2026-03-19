@@ -212,3 +212,47 @@
     color: var(--blue-deep);
     min-height: 20px;
 }
+
+.premium-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+    align-items: start; 
+}
+
+/* Don't mess with Simon. While he's jellyfishing... While he's jellyfishing. Mess around and catch a sting,
+while he's jellyfishing. */
+
+.tier-card {
+    min-height: auto; 
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.animation-shop {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    max-height: 200px; 
+    overflow-y: auto;  
+    padding-right: 5px;
+    border: 1px inset rgba(0,0,0,0.05);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.02);
+}
+
+.animation-shop::-webkit-scrollbar {
+    width: 6px;
+}
+.animation-shop::-webkit-scrollbar-thumb {
+    background: var(--blue-soft);
+    border-radius: 10px;
+}
+
+.premium-style-controls {
+    flex-grow: 1; 
+}
