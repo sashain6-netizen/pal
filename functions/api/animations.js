@@ -106,53 +106,73 @@ export async function onRequest(context) {
       const body = await request.json();
       const action = body.action;
 
+      // 1. ACTION: SET (Saving selected animation and caption)
       if (action === "set") {
-        if (!premium) return new Response(JSON.stringify({ error: "Premium required" }), { status: 403, headers: { "Content-Type": "application/json" } });
+        if (!premium) return new Response(JSON.stringify({ error: "Premium required" }), { status: 403 });
 
         const caption = body.postCaption;
         const animation = body.postAnimation;
 
+        // Update Caption if provided
         if (caption !== undefined) {
           const captionStr = String(caption || "");
           if (captionStr.length > 100) {
-            return new Response(JSON.stringify({ error: "Caption max is 100 characters." }), { status: 400, headers: { "Content-Type": "application/json" } });
+            return new Response(JSON.stringify({ error: "Caption max is 100 characters." }), { status: 400 });
           }
           user.postCaption = captionStr;
         }
 
+        // Update Animation if provided
         if (animation !== undefined) {
-          const anim = String(animation || "none");
-          const owned = Array.isArray(user.ownedAnimations) ? user.ownedAnimations : ["none"];
-          if (!owned.includes(anim)) {
-            return new Response(JSON.stringify({ error: "Animation not owned." }), { status: 400, headers: { "Content-Type": "application/json" } });
+          const anim = String(animation || "none").toLowerCase();
+          
+          // Combine everything the user is ALLOWED to use
+          const owned = Array.isArray(user.ownedAnimations) ? user.ownedAnimations : [];
+          const validSet = new Set([...owned, ...PREMIUM_DEFAULTS, "none"]);
+
+          if (!validSet.has(anim)) {
+            return new Response(JSON.stringify({ error: `Animation '${anim}' not owned.` }), { status: 400 });
           }
           user.postAnimation = anim;
         }
 
         await env.USERS_KV.put(userKey, JSON.stringify(user));
-        return new Response(JSON.stringify({ success: true }), { headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ success: true }));
       }
 
+      // 2. ACTION: PURCHASE (Buying from the shop)
       if (action === "purchase") {
-        if (!premium) return new Response(JSON.stringify({ error: "Premium required" }), { status: 403, headers: { "Content-Type": "application/json" } });
-        const itemId = String(body.itemId || "");
+        if (!premium) return new Response(JSON.stringify({ error: "Premium required" }), { status: 403 });
+        
+        const itemId = String(body.itemId || "").toLowerCase();
         const item = SHOP[itemId];
-        if (!item) return new Response(JSON.stringify({ error: "Invalid item" }), { status: 400, headers: { "Content-Type": "application/json" } });
-        if (item.price <= 0) return new Response(JSON.stringify({ error: "Already unlocked" }), { status: 400, headers: { "Content-Type": "application/json" } });
-
+        
+        if (!item) return new Response(JSON.stringify({ error: "Invalid item" }), { status: 400 });
+        
+        // Check if already owned or free
         const owned = Array.isArray(user.ownedAnimations) ? user.ownedAnimations : ["none"];
-        if (owned.includes(itemId)) return new Response(JSON.stringify({ error: "Already owned" }), { status: 400, headers: { "Content-Type": "application/json" } });
+        if (owned.includes(itemId) || PREMIUM_DEFAULTS.includes(itemId)) {
+            return new Response(JSON.stringify({ error: "Already owned" }), { status: 400 });
+        }
 
         const balance = Number(user.currency || 0);
-        if (balance < item.price) return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400, headers: { "Content-Type": "application/json" } });
+        if (balance < item.price) {
+            return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
+        }
 
+        // Deduct money and add to owned list
         user.currency = balance - item.price;
         user.ownedAnimations = [...owned, itemId];
+        
         await env.USERS_KV.put(userKey, JSON.stringify(user));
-        return new Response(JSON.stringify({ success: true, currency: user.currency, ownedAnimations: user.ownedAnimations }), { headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ 
+            success: true, 
+            currency: user.currency, 
+            ownedAnimations: user.ownedAnimations 
+        }));
       }
 
-      return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: "Invalid action" }), { status: 400 });
     }
 
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: { "Content-Type": "application/json" } });
