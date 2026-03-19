@@ -227,9 +227,9 @@ async function initPremiumFeatures() {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
 
-                ShowToast('Gift sent successfully!');
+                showToast('Gift sent successfully!');
             } catch (err) {
-                ShowToast(err.message);
+                showToast(err.message);
             } finally {
                 sendGiftBtn.disabled = false;
                 sendGiftBtn.textContent = originalText;
