@@ -67,15 +67,24 @@
 /* --- Post animations (premium) --- */
 .compact-post-row[class*="post-anim-"] {
     will-change: transform, filter;
+    position: relative;
+    z-index: 1; 
 }
 
-.post-anim-float { animation: post-float 4.5s ease-in-out infinite; }
-.post-anim-pulse { animation: post-pulse 2.4s ease-in-out infinite; }
-.post-anim-shimmer { animation: post-shimmer 3.8s ease-in-out infinite; }
-.post-anim-bounce { animation: post-bounce 1.6s ease-in-out infinite; }
-.post-anim-tilt { animation: post-tilt 3.2s ease-in-out infinite; }
-.post-anim-glitch { animation: post-glitch 2.8s steps(2, end) infinite; }
+.compact-post-row.post-anim-float { animation: post-float 4.5s ease-in-out infinite !important; }
+.compact-post-row.post-anim-pulse { animation: post-pulse 2.4s ease-in-out infinite !important; }
+.compact-post-row.post-anim-shimmer { animation: post-shimmer 3.8s ease-in-out infinite !important; }
+.compact-post-row.post-anim-bounce { animation: post-bounce 1.6s ease-in-out infinite !important; }
+.compact-post-row.post-anim-tilt { animation: post-tilt 3.2s ease-in-out infinite !important; }
+.compact-post-row.post-anim-glitch { animation: post-glitch 2.8s steps(2, end) infinite !important; }
 
+.post-body-inline {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: visible; 
+}
 @keyframes post-float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-2px); }
