@@ -28,15 +28,33 @@ function isPremium(premiumUsersRaw, username) {
 }
 
 const SHOP = {
-  // Free defaults for premium
   float: { id: "float", name: "Float", price: 0 },
   pulse: { id: "pulse", name: "Pulse", price: 0 },
   shimmer: { id: "shimmer", name: "Shimmer", price: 0 },
 
-  // Purchasable via currency
-  bounce: { id: "bounce", name: "Bounce", price: 2500 },
-  tilt: { id: "tilt", name: "Tilt", price: 3500 },
-  glitch: { id: "glitch", name: "Glitch", price: 5000 }
+  wiggle: { id: "wiggle", name: "Wiggle", price: 1500 },
+  stretch: { id: "stretch", name: "Stretch", price: 2500 },
+  bounce: { id: "bounce", name: "Bounce", price: 5000 },
+  swing: { id: "swing", name: "Swing", price: 7500 },
+  tilt: { id: "tilt", name: "Tilt", price: 10000 },
+  
+  spin: { id: "spin", name: "Slow Spin", price: 15000 },
+  blur: { id: "blur", name: "Focus Fade", price: 20000 },
+  glitch: { id: "glitch", name: "Glitch", price: 30000 },
+  jello: { id: "jello", name: "Jello Whip", price: 40000 },
+  ghost: { id: "ghost", name: "Ghosting", price: 55000 },
+
+  rainbow: { id: "rainbow", name: "Rainbow Flow", price: 75000 },
+  neon: { id: "neon", name: "Neon Flicker", price: 90000 },
+  shake: { id: "shake", name: "Earthquake", price: 110000 },
+  squeeze: { id: "squeeze", name: "Squeeze Pop", price: 135000 },
+  heartbeat: { id: "heartbeat", name: "Heartbeat", price: 160000 },
+
+  fire: { id: "fire", name: "Flame Aura", price: 200000 },
+  gold: { id: "gold", name: "Midas Touch", price: 225000 },
+  matrix: { id: "matrix", name: "Digital Rain", price: 250000 },
+  vortex: { id: "vortex", name: "The Vortex", price: 275000 },
+  godly: { id: "godly", name: "Divine Light", price: 300000 }
 };
 
 const PREMIUM_DEFAULTS = ["none", "float", "pulse", "shimmer"];
