@@ -65,7 +65,329 @@
 }
 
 /* ============================================================
-   POST ANIMATIONS — Full Shop CSS
+   THREAD PAGE — Full Stylesheet
+   Layout + Animations merged. All conflicts resolved.
+   ============================================================ */
+
+/* --- Thread Layout Container --- */
+.container {
+    max-width: 1000px;
+    margin: 120px auto 100px auto;
+    padding: 0 20px;
+    text-align: left;
+}
+
+#posts-container {
+    background: white;
+    border-radius: 12px;
+    /* overflow: hidden is intentionally removed.
+       It was clipping external box-shadows from float, tilt, fire, plasma, godly, etc.
+       First/last child border-radius below handles the visual corner clipping instead. */
+    border: 1px solid #f1f5f9;
+}
+
+/* Clip row backgrounds to the container's rounded corners */
+#posts-container .compact-post-row:first-child {
+    border-radius: 11px 11px 0 0;
+}
+#posts-container .compact-post-row:last-child {
+    border-radius: 0 0 11px 11px;
+    border-bottom: none;
+}
+#posts-container .compact-post-row:only-child {
+    border-radius: 11px;
+    border-bottom: none;
+}
+
+/* --- The Ultra-Compact Row --- */
+.compact-post-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 12px;
+    font-size: 0.95rem;
+    transition: background-color 0.2s; /* background-color only — never 'background' shorthand,
+                                          which would reset background-image on shimmer/scanner */
+}
+
+/* background-color only so shimmer/scanner background-image survives hover */
+.compact-post-row:hover { background-color: #f8faff; }
+
+.rank-tag {
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    min-width: 75px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.post-body-inline {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+}
+
+.content-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.post-caption {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    line-height: 1.2;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.author-area {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.author-name { font-weight: 700; color: var(--blue-deep); text-decoration: none; }
+.author-name:hover { text-decoration: underline; }
+
+.prefix {
+    color: #64748b;
+    font-weight: 500;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
+
+.separator { color: #cbd5e1; font-weight: bold; }
+
+.content {
+    color: #334155;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.timestamp {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+/* --- The "Always There" Sticky Reply Bar --- */
+.reply-box {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.03);
+}
+
+.reply-inner {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.reply-box textarea {
+    flex: 1;
+    height: 42px;
+    min-height: 42px !important;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #f8faff;
+    padding: 10px 15px;
+    font-family: 'Varela Round', sans-serif;
+    resize: none;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.reply-box textarea:focus { border-color: var(--blue-primary); background: white; }
+
+/* --- Post Button --- */
+.reply-btn {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    padding: 0 25px;
+    height: 42px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-family: 'Varela Round', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+
+.reply-btn:hover { background: var(--blue-deep); transform: translateY(-1px); }
+.reply-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+
+.back-link {
+    text-decoration: none;
+    color: var(--blue-soft);
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.thread-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.delete-thread-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    transition: 0.2s;
+    z-index: 10;
+}
+
+.delete-thread-btn:hover { background: #ff6b81; transform: scale(1.05); }
+
+.bump-thread-btn {
+    position: absolute;
+    top: 64px;
+    right: 20px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    transition: 0.2s;
+    z-index: 10;
+}
+
+.bump-thread-btn:hover { background: #0284c7; transform: scale(1.05); }
+.bump-thread-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* --- Delete Modal --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: #1e293b;
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    font-family: 'Varela Round', sans-serif;
+    border: 1px solid #334155;
+    transform: scale(0.9);
+    transition: transform 0.2s ease;
+}
+
+.modal-overlay.active { display: flex; }
+.modal-overlay.active .modal-content { transform: scale(1); }
+
+.modal-icon { font-size: 3rem; margin-bottom: 10px; }
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-secondary { background: #475569; color: white; }
+.btn-danger    { background: #ff4757; color: white; }
+.btn-secondary:hover { background: #64748b; }
+.btn-danger:hover    { background: #ff6b81; }
+
+/* --- Load More --- */
+.load-more-btn {
+    padding: 10px 25px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-family: 'Varela Round', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.load-more-btn:hover { opacity: 0.8; }
+
+/* --- Premium Row --- */
+.compact-post-row.premium-post {
+    position: relative;
+    border-left: 3px solid var(--premium-forum-color, #ffd700) !important;
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, transparent 100%);
+}
+
+.premium-post { animation: premium-row-shimmer 4s infinite ease-in-out; }
+
+@keyframes premium-row-shimmer {
+    0%   { box-shadow: inset 5px 0 10px rgba(255, 215, 0, 0);    }
+    50%  { box-shadow: inset 5px 0 15px rgba(255, 215, 0, 0.10); }
+    100% { box-shadow: inset 5px 0 10px rgba(255, 215, 0, 0);    }
+}
+
+.author-name.premium-user-text {
+    color: var(--premium-forum-color, #b8860b) !important;
+    text-shadow: 0 0 5px rgba(255, 215, 0, var(--premium-glow-alpha, 0.3));
+    font-weight: 800;
+}
+
+
+/* ============================================================
+   POST ANIMATIONS — Shop CSS
    Box-contained · Text never moves · Scales with tier
    ============================================================ */
 
@@ -79,10 +401,8 @@
 
 /* ══════════════════════════════════════════════════════════
    TIER 1: STARTER  (free – 5,000)
-   Gentle. Noticeable. Makes you want the next one.
    ══════════════════════════════════════════════════════════ */
 
-/* float — free. Soft elevation shadow that breathes. */
 .post-anim-float { animation: p-float 3s ease-in-out infinite; }
 @keyframes p-float {
     0%, 100% { box-shadow: 0 1px 3px rgba(37, 99, 235, 0.05); }
@@ -90,14 +410,12 @@
                             0 2px 6px  rgba(37, 99, 235, 0.10); }
 }
 
-/* pulse — free. Background breathes a gentle blue tint. */
 .post-anim-pulse { animation: p-pulse 2.8s ease-in-out infinite; }
 @keyframes p-pulse {
     0%, 100% { background-color: transparent; }
     50%       { background-color: rgba(37, 99, 235, 0.07); }
 }
 
-/* wiggle — 1,500. Rank tag pops with a shadow flick. */
 .post-anim-wiggle .rank-tag {
     display: inline-block;
     animation: p-wiggle 0.8s ease-in-out infinite;
@@ -107,14 +425,12 @@
     50%       { transform: scale(1.11); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
 }
 
-/* stretch — 3,000. A crisp outline ring pulses outward. */
 .post-anim-stretch { animation: p-stretch 2.2s ease-in-out infinite; }
 @keyframes p-stretch {
     0%, 100% { outline: 2px solid rgba(37, 99, 235, 0.0);  outline-offset: 0px; }
     50%       { outline: 2px solid rgba(37, 99, 235, 0.40); outline-offset: 3px; }
 }
 
-/* bounce — 5,000. Left border pulses from dim to full color. */
 .post-anim-bounce {
     border-left: 3px solid rgba(37, 99, 235, 0.20) !important;
     animation: p-bounce 1.6s ease-in-out infinite;
@@ -128,10 +444,8 @@
 
 /* ══════════════════════════════════════════════════════════
    TIER 2: ADVANCED  (7,500 – 25,000)
-   Clearly cool. Conversation starters.
    ══════════════════════════════════════════════════════════ */
 
-/* tilt — 7,500. Shadow swings left and right like the row is leaning. */
 .post-anim-tilt { animation: p-tilt 3s ease-in-out infinite; }
 @keyframes p-tilt {
     0%, 100% { box-shadow: -10px 3px 26px rgba(37, 99, 235, 0.11),
@@ -140,7 +454,8 @@
                             inset 0 0 0 1px rgba(37, 99, 235, 0.07); }
 }
 
-/* shimmer — 12,000. A beam of light sweeps across the entire row. */
+/* Shimmer uses background-image for the sweep.
+   The hover rule above uses background-color only, so they coexist safely. */
 .post-anim-shimmer {
     background-image: linear-gradient(
         90deg, transparent, rgba(255, 255, 255, 0.6) 50%, transparent
@@ -154,14 +469,13 @@
     100% { background-position: calc(100% + 120px) center; }
 }
 
-/* blur/haze — 18,000. Row dims and cools like it's fading out. */
 .post-anim-blur { animation: p-blur 4s ease-in-out infinite; }
 @keyframes p-blur {
     0%, 100% { background-color: transparent; filter: none; }
     50%       { background-color: rgba(100, 116, 139, 0.07); filter: brightness(0.92) saturate(0.8); }
 }
 
-/* scanner — 25,000. A crisp cyan scan line sweeps left to right. */
+/* Scanner uses background-image for the sweep — same safe pattern as shimmer. */
 .post-anim-scanner {
     border-left: 3px solid rgba(14, 165, 233, 0.55) !important;
     background-image: linear-gradient(
@@ -182,10 +496,8 @@
 
 /* ══════════════════════════════════════════════════════════
    TIER 3: ELITE  (35,000 – 75,000)
-   People will notice and ask.
    ══════════════════════════════════════════════════════════ */
 
-/* glitch — 35,000. Vivid RGB channel-split bars flash. */
 .post-anim-glitch { animation: p-glitch 0.35s steps(2, end) infinite; }
 @keyframes p-glitch {
     0%  { box-shadow: inset  4px 0 0 rgba(239, 68,  68,  0.65),
@@ -196,7 +508,6 @@
           background-color: rgba(239, 68, 68, 0.035); }
 }
 
-/* jello — 45,000. Border radius morphs between opposite corners. */
 .post-anim-jello { animation: p-jello 2.2s ease-in-out infinite; }
 @keyframes p-jello {
     0%, 100% { border-radius: 0; box-shadow: none; }
@@ -206,7 +517,9 @@
                box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.18); }
 }
 
-/* ghosting — 60,000. Row fades to near-invisible, leaving a cool halo. */
+/* Note: jello's border-radius is overridden for first/last child — that's intentional.
+   The corner clips win since they apply to the row element directly. */
+
 .post-anim-ghosting { animation: p-ghost 2.8s ease-in-out infinite; }
 @keyframes p-ghost {
     0%, 100% { opacity: 1; box-shadow: none; background-color: transparent; }
@@ -215,7 +528,6 @@
                 background-color: rgba(148, 163, 184, 0.06); }
 }
 
-/* neon — 75,000. Border blazes with the user's premium color. */
 .post-anim-neon {
     border-left: 4px solid var(--premium-forum-color, #2563eb) !important;
     animation: p-neon 1.4s ease-in-out infinite alternate;
@@ -232,10 +544,8 @@
 
 /* ══════════════════════════════════════════════════════════
    TIER 4: LEGENDARY  (90,000 – 175,000)
-   Genuinely impressive. Rare to see in the wild.
    ══════════════════════════════════════════════════════════ */
 
-/* rainbow — 90,000. Full hue rotation on the border + background tint. */
 .post-anim-rainbow {
     border-left: 4px solid hsl(0, 80%, 60%) !important;
     animation: p-rainbow 4s linear infinite;
@@ -246,7 +556,6 @@
     100% { filter: hue-rotate(360deg); background-color: hsla(360, 80%, 60%, 0.04); }
 }
 
-/* earthquake — 115,000. Rapid shadow thrash. Red heat flashes. */
 .post-anim-earthquake { animation: p-shake 0.15s linear infinite; }
 @keyframes p-shake {
     0%  { box-shadow: -5px 0 16px rgba(239, 68, 68, 0.28);
@@ -255,7 +564,9 @@
           background-color: rgba(239, 68, 68, 0.04); }
 }
 
-/* vortex — 140,000. Spinning conic-gradient border. */
+/* Vortex: background-image technique — rows are on a white (#fff) container,
+   so linear-gradient(white, white) correctly masks the border layer.
+   If your global --color-bg changes, update the first gradient stop to match. */
 @property --vortex-a {
     syntax: '<angle>';
     initial-value: 0deg;
@@ -273,7 +584,6 @@
 }
 @keyframes p-vortex-a { to { --vortex-a: 360deg; } }
 
-/* plasma — 175,000. Crackling electric energy. Hue shifts + fast glow pulse. */
 .post-anim-plasma {
     border-left: 4px solid #818cf8 !important;
     animation: p-plasma-pulse 0.6s ease-in-out infinite alternate,
@@ -293,10 +603,8 @@
 
 /* ══════════════════════════════════════════════════════════
    TIER 5: MYTHIC  (220,000 – 300,000)
-   Status symbols. You know one when you see one.
    ══════════════════════════════════════════════════════════ */
 
-/* gold — 220,000. Shimmering gradient text + warm pulsing row glow. */
 .post-anim-gold {
     border-left: 4px solid #d4af37 !important;
     animation: p-gold-row 3s linear infinite;
@@ -318,7 +626,6 @@
                background-color: rgba(212, 175, 55, 0.055); }
 }
 
-/* matrix — 260,000. Terminal green border, background flicker, monospace text. */
 .post-anim-matrix {
     border-left: 4px solid #00ff41 !important;
     animation: p-matrix-row 3s infinite;
@@ -347,7 +654,6 @@
     97%            { opacity: 0.72; }
 }
 
-/* godly — 300,000. A slow, majestic gold bloom. Unmistakable. */
 .post-anim-godly {
     border-left: 4px solid #d4af37 !important;
     animation: p-godly 3.5s ease-in-out infinite;
