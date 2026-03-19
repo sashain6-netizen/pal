@@ -42,11 +42,11 @@ const SHOP = {
   blur: { id: "blur", name: "Blur", price: 20000 },
   glitch: { id: "glitch", name: "Glitch", price: 30000 },
   jello: { id: "jello", name: "Jello", price: 40000 },
-  ghost: { id: "ghosting", name: "Ghosting", price: 55000 },
+  ghosting: { id: "ghosting", name: "Ghosting", price: 55000 },
 
   rainbow: { id: "rainbow", name: "Rainbow", price: 75000 },
   neon: { id: "neon", name: "Neon", price: 90000 },
-  shake: { id: "earthquake", name: "Earthquake", price: 110000 },
+  earthquake: { id: "earthquake", name: "Earthquake", price: 110000 },
   squeeze: { id: "squeeze", name: "Squeeze", price: 135000 },
   heartbeat: { id: "heartbeat", name: "Heartbeat", price: 160000 },
 
