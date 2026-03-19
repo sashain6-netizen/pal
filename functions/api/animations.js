@@ -54,7 +54,7 @@ const SHOP = {
   gold: { id: "gold", name: "Gold", price: 225000 },
   matrix: { id: "matrix", name: "Matrix", price: 250000 },
   vortex: { id: "vortex", name: "Vortex", price: 275000 },
-  godly: { id: "godly", name: "GOdly", price: 300000 }
+  godly: { id: "godly", name: "Godly", price: 300000 }
 };
 
 const PREMIUM_DEFAULTS = ["none", "float", "pulse", "shimmer"];

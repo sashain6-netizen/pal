@@ -254,9 +254,25 @@ input[type="color"]::-webkit-color-swatch {
     border-radius: 18px;
     border: 1px solid var(--border-color);
     margin-top: 10px;
-    /* This allows the container to grow with the items */
-    height: auto; 
-    min-height: 50px;
+    
+    max-height: 280px; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.animation-shop::-webkit-scrollbar {
+    width: 6px;
+}
+.animation-shop::-webkit-scrollbar-track {
+    background: transparent;
+}
+.animation-shop::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+.animation-shop::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
 }
 
 /* Individual Shop Row */
@@ -265,11 +281,12 @@ input[type="color"]::-webkit-color-swatch {
     justify-content: space-between;
     align-items: center;
     background: white;
-    padding: 10px 14px;
+    padding: 12px 14px;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     border: 1px solid transparent;
     transition: all 0.2s ease;
+    flex-shrink: 0; 
 }
 
 .animation-shop-item:hover {
