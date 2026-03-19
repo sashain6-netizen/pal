@@ -37,12 +37,13 @@ async function loadThread(append = false) {
             const forumColor = post.forumColor || baseThemeColor;
             const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
-            // REMOVED post.isPremium check here so shop items work for everyone
-            const hasAnim = post.postAnimation && post.postAnimation !== 'none';
-            const animClass = hasAnim ? `post-anim-${post.postAnimation}` : '';
+            const hasAnim = post.postAnimation && post.postAnimation.toLowerCase() !== 'none';
+            const animClass = hasAnim ? `post-anim-${post.postAnimation.toLowerCase()}` : '';
+
+            const showPremiumBg = post.isPremium && !hasAnim;
 
             return `
-        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''} ${animClass}"
+        <div class="compact-post-row ${showPremiumBg ? 'premium-post' : ''} ${animClass}"
             style="--premium-forum-color: ${forumColor};" 
             data-animation="${post.postAnimation || 'none'}">
             
