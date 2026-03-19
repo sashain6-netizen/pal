@@ -1,250 +1,520 @@
 /* ===========================
-   PREMIUM DASHBOARD CORE
+   PAL Logo — Clean Hero Style
+   Bullet-Proof Stacking & Layout
    =========================== */
 
-/* 1. Layout Container */
-.premium-container {
-    max-width: 1200px;
-    margin: 120px auto 60px; /* Space for fixed navbar */
-    padding: 0 25px;
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.premium-header {
-    text-align: center;
-    margin-bottom: 50px;
+:root {
+  --blue-primary: #2563eb;
+  --blue-deep:    #1e40af;
+  --blue-soft:    #64748b;
+  --white:        #ffffff;
+  --off-white:    #f8faff;
 }
 
-.premium-header h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 2.8rem;
-    color: var(--blue-deep);
-    margin-bottom: 10px;
-    letter-spacing: -1px;
+html, body {
+  width: 100%;
+  height: auto;
+  overflow-y: auto;
+  overflow-x: hidden; /* Hide horizontal scroll but allow vertical */
+  background: var(--off-white);
+  font-family: 'Varela Round', sans-serif;
+  scroll-behavior: smooth;
 }
 
-.premium-header p {
-    color: var(--blue-soft);
-    font-size: 1.1rem;
+/* ===========================
+   1. NAVIGATION BAR
+   Z-Index: 1000 (Always on top)
+   =========================== */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(248, 250, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.05);
+  pointer-events: auto;
 }
 
-/* 2. Grid & Cards */
-.premium-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 30px;
-    align-items: stretch;
+.nav-logo {
+  font-weight: 900;
+  color: var(--blue-primary);
+  font-size: 1.5rem;
+  letter-spacing: -1px;
+  cursor: pointer;
 }
 
-.tier-card {
-    background: white;
-    border-radius: 24px;
-    padding: 35px;
-    border: 1px solid rgba(37, 99, 235, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  align-items: center;
 }
 
-.tier-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.08);
+.nav-links a {
+  text-decoration: none;
+  color: var(--blue-soft);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.3s;
 }
 
-.tier-card h3 {
-    color: var(--blue-deep);
-    font-size: 1.5rem;
-    margin-bottom: 12px;
+.nav-links a:hover {
+  color: var(--blue-primary);
 }
 
-.tier-card p {
-    color: var(--blue-soft);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-/* 3. Feature Elements */
-.feature-emoji {
-    font-size: 2.8rem;
-    margin-bottom: 15px;
-    display: block;
+.nav-btn {
+  background: var(--blue-primary);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.badge {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    background: #dcfce7;
-    color: #166534;
-    padding: 5px 14px;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 900;
-    letter-spacing: 0.5px;
+.nav-btn:hover {
+  background: var(--blue-deep);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
-/* 4. Form Controls */
-.premium-style-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex-grow: 1; /* Pushes button to bottom */
+/* ===========================
+   2. PROFILE DROPDOWN
+   =========================== */
+/* ===========================
+   2. PROFILE DROPDOWN
+   =========================== */
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--blue-primary); /* This will be overridden by JS */
+  background: var(--white);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.control-label {
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: var(--blue-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.profile-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.input-group input[type="text"],
-.input-group input[type="number"],
-.input-group select {
-    width: 100%;
-    height: 48px;
-    padding: 0 15px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background: #f8faff;
-    font-family: inherit;
-    font-weight: 600;
-    color: var(--blue-deep);
-    transition: border-color 0.2s;
+.profile-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
 }
 
-.input-group input:focus, 
-.input-group select:focus {
-    outline: none;
-    border-color: var(--blue-primary);
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%; /* Changed from top: calc(100% + 10px) to prevent flickering */
+  padding-top: 10px; /* This creates the visual gap safely */
+  width: 200px;
+  z-index: 2000;
+  animation: slideDown 0.2s ease-out forwards;
 }
 
-.input-group input[type="color"] {
-    width: 100%;
-    height: 50px;
-    padding: 5px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background: #f8faff;
-    cursor: pointer;
+.profile-dropdown:hover .dropdown-menu {
+  display: block;
 }
 
-/* 5. Buttons */
-.premium-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 14px;
-    border: none;
-    font-family: 'Varela Round', sans-serif;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
+.menu-content {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column; /* Forces vertical stacking */
+  overflow: hidden;
 }
 
-.action-btn {
-    background: var(--blue-primary);
-    color: white;
+/* THE STYLE ENFORCER: Targets links inside your dynamic containers */
+.menu-content a,
+#loggedInLinks a,
+#loggedOutLinks a {
+  color: var(--blue-soft);
+  padding: 12px 18px;
+  text-decoration: none;
+  display: block; /* Force them to be full-width rows */
+  width: 100%;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
 }
 
-.action-btn:hover {
-    background: var(--blue-deep);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+/* Ensure dynamic containers themselves don't break the layout */
+#loggedInLinks, #loggedOutLinks {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-/* 6. Specific Components */
-.animation-shop {
-    max-height: 160px;
-    overflow-y: auto;
-    margin-bottom: 5px;
-    padding: 12px;
-    background: #f1f5f9;
-    border-radius: 12px;
-    border: 1px inset rgba(0,0,0,0.05);
+.menu-content a:hover,
+#loggedInLinks a:hover,
+#loggedOutLinks a:hover {
+  background: var(--off-white);
+  color: var(--blue-primary);
+  padding-left: 22px;
 }
 
-.status-line {
-    font-size: 0.85rem;
-    margin-top: 10px;
-    font-weight: 700;
-    color: var(--blue-primary);
-    min-height: 1.2rem;
+.logout-btn {
+  color: #ef4444 !important;
 }
 
-/* Jackpot Styling */
-.jackpot-card {
-    border: 2px solid rgba(34, 197, 94, 0.2);
-    background: linear-gradient(180deg, #ffffff 0%, #f0fff4 100%);
+.premium-text {
+  color: #FFD700 !important;
 }
 
-.jackpot-display {
-    background: white;
-    padding: 25px;
-    border-radius: 18px;
-    text-align: center;
-    margin-bottom: 25px;
-    border: 2px dashed #22c55e;
-    box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+/* ===========================
+   3. HERO SCENE & DECORATIONS
+   Z-Index: 1 (Behind everything)
+   pointer-events: none (Ghost mode)
+   =========================== */
+.scene {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
+  overflow: hidden;
+  padding-top: 80px;
+  pointer-events: none; /* Let clicks pass through the background */
 }
 
-.jackpot-main-val {
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: #15803d;
-    margin: 10px 0;
+.bg-circle {
+  position: absolute;
+  z-index: -1; 
+  pointer-events: none; 
 }
 
-.status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-size: 0.7rem;
-    font-weight: 900;
-    text-transform: uppercase;
+/* ===========================
+   4. LOGO ANIMATION
+   =========================== */
+.logo-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.2s;
 }
 
-.status-active {
-    background: #dcfce7;
-    color: #15803d;
-    animation: pulse 2s infinite;
+.logo-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  pointer-events: auto; /* Re-enable clicks specifically for the logo */
 }
 
-.button-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: auto;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Animations */
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.6; }
-    100% { opacity: 1; }
+.pal-text {
+  width: 600px;
+  max-width: 90vw;
+  height: auto;
+  display: block;
+  transform-origin: 50% 95%; 
+  will-change: transform;
+  transform: skewX(-7deg);
+  stroke: none !important;
+  paint-order: fill; 
 }
 
-/* Scrollbar Style for Shop */
-.animation-shop::-webkit-scrollbar {
-    width: 6px;
-}
-.animation-shop::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
+.smile-svg {
+  width: 450px;
+  max-width: 80vw;
+  height: auto;
+  display: block;
+  margin-top: -30px;
+  overflow: visible;
 }
 
-/* Mobile Adjustments */
+#smilePath {
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.tagline {
+  margin-top: 40px;
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--blue-soft);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tagline.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes squeeze {
+  0%   { transform: skewX(-7deg) scale(1, 1); }
+  20%  { transform: skewX(-7deg) scale(1.15, 0.85); }
+  40%  { transform: skewX(-7deg) scale(0.95, 1.05); }
+  60%  { transform: skewX(-7deg) scale(1.05, 0.95); }
+  80%  { transform: skewX(-7deg) scale(0.98, 1.02); }
+  100% { transform: skewX(-7deg) scale(1, 1); }
+}
+
+.pal-text.squeezing {
+  animation: squeeze 1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+.shine-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 180px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5;
+}
+
+@keyframes shine {
+  0%   { opacity: 0; transform: translateX(-150%) skewX(-15deg); }
+  50%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(250%) skewX(-15deg); }
+}
+
+.shine-overlay.shining {
+  animation: shine 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ===========================
+   5. CONTENT AREA & CARDS
+   Z-Index: 20 (Above Hero Scene)
+   =========================== */
+.content-area {
+  position: relative;
+  z-index: 20;
+  background: #ffffff;
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+  pointer-events: auto; /* Forces everything inside to be clickable */
+}
+
+.container {
+  max-width: 1000px;
+  width: 100%;
+  text-align: center;
+}
+
+.content-area h2 {
+  font-size: 2.5rem;
+  color: var(--blue-deep);
+  margin-bottom: 20px;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--blue-soft);
+  max-width: 700px;
+  margin: 0 auto 60px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  position: relative;
+  z-index: 30; /* Extra security to keep cards on top */
+}
+
+.feature-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block !important;
+  position: relative; /* Required for z-index to work */
+  z-index: 40; /* Guarantees the link catches the mouse */
+  transition: transform 0.2s ease;
+}
+
+.feature-card-link:hover {
+  transform: translateY(-5px);
+}
+
+.feature-card {
+  box-sizing: border-box; /* Prevents padding from breaking the grid */
+  padding: 40px;
+  background: var(--off-white);
+  border-radius: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  cursor: pointer;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px); /* Adjusted to not double-stack with the link hover */
+  box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
+  background: #ffffff;
+}
+
+.feature-card h3 {
+  color: var(--blue-primary);
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+}
+
+.feature-card p {
+  color: var(--blue-soft);
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+/* ===========================
+   6. FOOTER
+   =========================== */
+.main-footer {
+  position: relative;
+  z-index: 20;
+  background: var(--white);
+  padding: 60px 20px;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.main-footer p {
+  color: var(--blue-soft);
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
-    .premium-container { margin-top: 100px; }
-    .premium-header h1 { font-size: 2.2rem; }
+  .navbar {
+    padding: 15px 20px;
+  }
+  
+  .nav-links {
+    display: none; 
+  }
+
+  .dropdown-menu { 
+    right: -10px; 
+  }
+
+  .pal-text {
+    width: 85vw;
+  }
+
+  .smile-svg {
+    width: 65vw;
+  }
+}
+
+/* ===========================
+   7. TOAST SYSTEM
+   Bullet-proof stacking (Z-index higher than Navbar)
+   =========================== */
+#toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999; /* Higher than your navbar (1000) */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none; /* Allow clicking through empty space */
+}
+
+.game-toast {
+    background: #1e293b; /* Dark slate for contrast */
+    color: #ffffff;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-left: 5px solid var(--blue-primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    min-width: 280px;
+    max-width: 400px;
+    pointer-events: auto; /* Make the toast itself clickable */
+    cursor: pointer;
+    
+    /* Animation */
+    animation: toast-slide-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-toast:hover {
+    transform: scale(1.02);
+    background: #2a374a;
+}
+
+@keyframes toast-slide-in {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.game-toast {
+    /* ... existing styles ... */
+    word-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.toast-hint {
+    font-size: 0.75rem; 
+    color: var(--blue-primary); 
+    font-weight: 700; 
+    border-top: 1px solid rgba(255,255,255,0.1); 
+    padding-top: 4px; 
+    margin-top: 4px;
 }
