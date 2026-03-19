@@ -44,8 +44,12 @@ async function loadThread(append = false) {
     const forumColor = post.forumColor || baseThemeColor;
     const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
+    const animClass = post.isPremium && post.postAnimation && post.postAnimation !== 'none'
+        ? `post-anim-${post.postAnimation}`
+        : '';
+
     return `
-        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''}"
+        <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''} ${animClass}"
              ${post.isPremium ? `style="--premium-forum-color: ${forumColor};"` : ''}>
             
             <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
@@ -60,7 +64,10 @@ async function loadThread(append = false) {
                     </a>
                 </span>
                 <span class="separator">:</span>
-                <span class="content">${escapeHTML(post.content)}</span>
+                <span class="content-wrap">
+                    <span class="content">${escapeHTML(post.content)}</span>
+                    ${post.isPremium && post.postCaption ? `<span class="post-caption">${escapeHTML(post.postCaption)}</span>` : ''}
+                </span>
             </div>
             <span class="timestamp">${formatTimestamp(post.created_at)}</span>
         </div>
@@ -105,9 +112,13 @@ function toggleLoadMoreButton(hasMore) {
 function renderDeleteButton(user, authorUsername) {
     const oldBtn = document.querySelector('.delete-thread-btn');
     if (oldBtn) oldBtn.remove();
+    const oldBumpBtn = document.querySelector('.bump-thread-btn');
+    if (oldBumpBtn) oldBumpBtn.remove();
 
     const isAuthor = user.username === authorUsername;
     const isOwner = ["Owner", "Admin", "Moderator"].includes(user.rank);
+    // New check for Premium status
+    const isPremium = !!user.isPremium;
 
     if (isAuthor || isOwner) {
         const deleteBtn = document.createElement('button');
@@ -115,6 +126,47 @@ function renderDeleteButton(user, authorUsername) {
         deleteBtn.className = "delete-thread-btn";
         deleteBtn.onclick = () => openDeleteModal(threadId);
         document.querySelector('.thread-header').appendChild(deleteBtn);
+    }
+
+    // Bump is only for the thread author WHO IS ALSO premium
+    if (isAuthor && isPremium) {
+        const bumpBtn = document.createElement('button');
+        bumpBtn.innerText = "Bump Thread";
+        bumpBtn.className = "bump-thread-btn";
+        bumpBtn.onclick = async () => {
+            try {
+                bumpBtn.disabled = true;
+                bumpBtn.innerText = "Bumping...";
+                const res = await fetch('/api/bump-thread', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ threadId })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.error || 'Bump failed');
+                
+                // Use alert if showToast isn't defined
+                if (window.showToast) showToast("Thread bumped to the top!");
+                else alert("Thread bumped to the top!");
+                
+            } catch (err) {
+                console.error(err);
+                if (window.showToast) showToast(err.message || "Bump failed");
+                else alert(err.message || "Bump failed");
+            } finally {
+                bumpBtn.disabled = false;
+                bumpBtn.innerText = "Bump Thread";
+            }
+        };
+        document.querySelector('.thread-header').appendChild(bumpBtn);
+    } else if (isAuthor && !isPremium) {
+        const promoBtn = document.createElement('button');
+        promoBtn.innerText = "Bump (Premium Only)";
+        promoBtn.className = "bump-thread-btn promo-gray";
+        promoBtn.style.opacity = "0.6";
+        promoBtn.onclick = () => window.location.href = '/premium';
+        document.querySelector('.thread-header').appendChild(promoBtn);
     }
 }
 

@@ -71,6 +71,8 @@ export async function onRequestGet(context) {
                 rank: user.rank || "Member",
                 prefix: user.currentPrefix || user.prefix || "",
                 premiumGlowAlpha: typeof user.premiumGlowAlpha === "number" ? user.premiumGlowAlpha : 0.8,
+                postCaption: isPremium ? String(user.postCaption || "") : "",
+                postAnimation: isPremium ? String(user.postAnimation || "none") : "none",
                 isPremium: isPremium
             };
         }));

@@ -17,6 +17,15 @@ export async function onRequest(context) {
 
     try {
         if (method === "GET") {
+            // Ensure bumps table exists so the JOIN + ORDER BY works on fresh DBs
+            await env.DB.prepare(`
+                CREATE TABLE IF NOT EXISTS thread_bumps (
+                    thread_id INTEGER PRIMARY KEY,
+                    bumped_at TEXT NOT NULL,
+                    bumped_by TEXT NOT NULL
+                )
+            `).run();
+
             const limit = parseInt(url.searchParams.get("limit")) || 50;
             const offset = parseInt(url.searchParams.get("offset")) || 0;
             const currentUsername = user?.username || "";
@@ -30,6 +39,7 @@ export async function onRequest(context) {
             const sql = `
                 SELECT 
                     t.id, t.title, t.creator_username, t.created_at,
+                    tb.bumped_at,
                     CASE WHEN p.thread_id IS NOT NULL THEN 1 ELSE 0 END as is_pinned,
                     CASE 
                         WHEN p.thread_id IS NOT NULL AND (
@@ -41,7 +51,8 @@ export async function onRequest(context) {
                 FROM threads t
                 LEFT JOIN pinned_threads p ON t.id = p.thread_id AND p.user_username = ?
                 LEFT JOIN last_read lr ON t.id = lr.item_id AND lr.user_username = ? AND lr.item_type = 'thread'
-                ORDER BY is_pinned DESC, t.created_at DESC 
+                LEFT JOIN thread_bumps tb ON t.id = tb.thread_id
+                ORDER BY is_pinned DESC, (tb.bumped_at IS NOT NULL) DESC, tb.bumped_at DESC, t.created_at DESC 
                 LIMIT ? OFFSET ?
             `;
 

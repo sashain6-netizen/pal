@@ -20,6 +20,77 @@ async function initPremiumFeatures() {
 
     document.body.classList.add('authorized');
 
+    // --- Post caption + animations ---
+    const postCaptionInput = document.getElementById('postCaptionInput');
+    const postAnimationSelect = document.getElementById('postAnimationSelect');
+    const animationShop = document.getElementById('animationShop');
+
+    async function loadAnimations() {
+        const res = await fetch('/api/animations', { credentials: 'include' });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to load animations');
+
+        if (postCaptionInput) {
+            postCaptionInput.value = data.postCaption || '';
+        }
+
+        const owned = Array.isArray(data.ownedAnimations) ? data.ownedAnimations : ['none'];
+        const current = data.currentAnimation || 'none';
+
+        if (postAnimationSelect) {
+            postAnimationSelect.innerHTML = owned.map(id => {
+                const label = id === 'none' ? 'None' : id[0].toUpperCase() + id.slice(1);
+                return `<option value="${id}">${label}</option>`;
+            }).join('');
+            postAnimationSelect.value = owned.includes(current) ? current : 'none';
+        }
+
+        const shop = Array.isArray(data.shop) ? data.shop : [];
+        const purchasables = shop.filter(i => i.price > 0);
+
+        if (animationShop) {
+            animationShop.innerHTML = purchasables.map(item => {
+                const isOwned = owned.includes(item.id);
+                return `
+                    <div class="animation-shop-item">
+                        <div class="left">
+                            <div class="name">${item.name}</div>
+                            <div class="price">${item.price.toLocaleString()} coins</div>
+                        </div>
+                        <button class="buy-btn" data-item-id="${item.id}" ${isOwned ? 'disabled' : ''}>
+                            ${isOwned ? 'Owned' : 'Buy'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            animationShop.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    const itemId = btn.getAttribute('data-item-id');
+                    if (!itemId) return;
+                    try {
+                        btn.disabled = true;
+                        btn.textContent = 'Buying...';
+                        const res = await fetch('/api/animations', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ action: 'purchase', itemId })
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) throw new Error(data.error || 'Purchase failed');
+                        await loadAnimations();
+                    } catch (err) {
+                        console.error(err);
+                        alert(err.message || 'Purchase failed');
+                        btn.disabled = false;
+                        btn.textContent = 'Buy';
+                    }
+                };
+            });
+        }
+    }
+
     // --- Golden Glow: forum color + glow intensity ---
     const forumColorPicker = document.getElementById('forumColorPicker');
     const glowIntensity = document.getElementById('glowIntensity');
@@ -41,6 +112,12 @@ async function initPremiumFeatures() {
         });
     }
 
+    // Initialize inputs with current user settings if available
+    if (postCaptionInput && typeof myData.forumColor !== 'undefined') {
+        // caption/animation are loaded from /api/animations, but this prevents empty flash
+        postCaptionInput.value = postCaptionInput.value || '';
+    }
+
     if (saveForumStyleBtn) {
         saveForumStyleBtn.onclick = async () => {
             try {
@@ -48,21 +125,35 @@ async function initPremiumFeatures() {
                 saveForumStyleBtn.textContent = 'Saving...';
                 if (forumStyleStatus) forumStyleStatus.textContent = '';
 
+                const postCaption = postCaptionInput?.value ?? '';
+                const postAnimation = postAnimationSelect?.value ?? 'none';
+
                 const forumColor = forumColorPicker?.value;
                 const glowAlpha = glowIntensity ? Number(glowIntensity.value) / 100 : null;
 
-                const res = await fetch('/api/update-premium-forum-style', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ forumColor, glowAlpha })
-                });
+                const [styleRes, animRes] = await Promise.all([
+                    fetch('/api/update-premium-forum-style', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ forumColor, glowAlpha })
+                    }),
+                    fetch('/api/animations', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ action: 'set', postCaption, postAnimation })
+                    })
+                ]);
 
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) throw new Error(data.error || 'Save failed');
+                const styleData = await styleRes.json().catch(() => ({}));
+                if (!styleRes.ok) throw new Error(styleData.error || 'Save failed');
+
+                const animData = await animRes.json().catch(() => ({}));
+                if (!animRes.ok) throw new Error(animData.error || 'Save failed');
 
                 if (forumStyleStatus) {
-                    forumStyleStatus.textContent = 'Saved! Your forum color is updated.';
+                    forumStyleStatus.textContent = 'Saved! Your forum style, caption, and animation are updated.';
                 }
             } catch (err) {
                 console.error(err);
@@ -73,6 +164,9 @@ async function initPremiumFeatures() {
             }
         };
     }
+
+    // Keep this after Save is wired so it can use inputs safely
+    await loadAnimations();
 
     // --- Jackpot: pot view + spin ---
     const jackpotPotAmount = document.getElementById('jackpotPotAmount');

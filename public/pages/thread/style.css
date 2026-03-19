@@ -46,6 +46,69 @@
     overflow: hidden;
 }
 
+.content-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.post-caption {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    line-height: 1.2;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Post animations (premium) --- */
+.compact-post-row[class*="post-anim-"] {
+    will-change: transform, filter;
+}
+
+.post-anim-float { animation: post-float 4.5s ease-in-out infinite; }
+.post-anim-pulse { animation: post-pulse 2.4s ease-in-out infinite; }
+.post-anim-shimmer { animation: post-shimmer 3.8s ease-in-out infinite; }
+.post-anim-bounce { animation: post-bounce 1.6s ease-in-out infinite; }
+.post-anim-tilt { animation: post-tilt 3.2s ease-in-out infinite; }
+.post-anim-glitch { animation: post-glitch 2.8s steps(2, end) infinite; }
+
+@keyframes post-float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-2px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes post-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.01); }
+}
+
+@keyframes post-shimmer {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.06); }
+    100% { filter: brightness(1); }
+}
+
+@keyframes post-bounce {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes post-tilt {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-0.25deg); }
+}
+
+@keyframes post-glitch {
+    0% { transform: translateX(0px); filter: hue-rotate(0deg); }
+    50% { transform: translateX(1px); filter: hue-rotate(8deg); }
+    100% { transform: translateX(0px); filter: hue-rotate(0deg); }
+}
+
 .author-area { 
     display: flex; 
     align-items: center;
@@ -192,6 +255,33 @@
 .delete-thread-btn:hover {
     background: #ff6b81;
     transform: scale(1.05);
+}
+
+.bump-thread-btn {
+    position: absolute;
+    top: 64px;
+    right: 20px;
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    transition: 0.2s;
+    z-index: 10;
+}
+
+.bump-thread-btn:hover {
+    background: #0284c7;
+    transform: scale(1.05);
+}
+
+.bump-thread-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .modal-overlay {
