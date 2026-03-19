@@ -192,10 +192,10 @@ async function initPremiumFeatures() {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
 
-                alert(data.didWin ? `Winner! You won ${data.winAmount}!` : `Better luck next time!`);
+                showToast(data.didWin ? `Winner! You won ${data.winAmount}!` : `Better luck next time!`);
                 await loadPot();
             } catch (err) {
-                alert(err.message);
+                showToast(err.message);
             } finally {
                 jackpotSpinBtn.disabled = false;
                 jackpotSpinBtn.textContent = originalText;
@@ -212,7 +212,7 @@ async function initPremiumFeatures() {
             const coins = Number(document.getElementById('giftCurrencyAmount')?.value || 0);
             const xp = Number(document.getElementById('giftXpAmount')?.value || 0);
 
-            if (!recipient) return alert('Enter a username');
+            if (!recipient) return showToast('Enter a username');
 
             sendGiftBtn.disabled = true;
             sendGiftBtn.textContent = 'Sending...';
@@ -227,9 +227,9 @@ async function initPremiumFeatures() {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
 
-                alert('Gift sent successfully!');
+                ShowToast('Gift sent successfully!');
             } catch (err) {
-                alert(err.message);
+                ShowToast(err.message);
             } finally {
                 sendGiftBtn.disabled = false;
                 sendGiftBtn.textContent = originalText;
