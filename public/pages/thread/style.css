@@ -14,13 +14,9 @@
 #posts-container {
     background: white;
     border-radius: 12px;
-    /* overflow: hidden is intentionally removed.
-       It was clipping external box-shadows from float, tilt, fire, plasma, godly, etc.
-       First/last child border-radius below handles the visual corner clipping instead. */
     border: 1px solid #f1f5f9;
 }
 
-/* Clip row backgrounds to the container's rounded corners */
 #posts-container .compact-post-row:first-child {
     border-radius: 11px 11px 0 0;
 }
@@ -320,10 +316,6 @@
 }
 
 
-/* ============================================================
-   POST ANIMATIONS — Shop CSS
-   Box-contained · Text never moves · Scales with tier
-   ============================================================ */
 
 .compact-post-row[class*="post-anim-"] {
     will-change: box-shadow, background-color, border-color, filter;
@@ -869,3 +861,28 @@
     text-shadow: 0 0 5px rgba(255, 215, 0, var(--premium-glow-alpha, 0.3));
     font-weight: 800;
 }
+
+.compact-post-row[class*="post-anim-"] {
+    background-color: rgba(255, 255, 255, 0.9) !important; 
+    position: relative;
+    overflow: hidden; 
+}
+
+.post-anim-shimmer, .post-anim-scanner {
+    background-repeat: no-repeat !important;
+}
+
+.post-anim-gold .content, .post-anim-godly .content {
+    background: linear-gradient(90deg, #b8860b, #f7ef8a, #d4af37, #f7ef8a, #b8860b);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+@property --vortex-a {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+} 
+

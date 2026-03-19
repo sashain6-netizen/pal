@@ -37,15 +37,14 @@ async function loadThread(append = false) {
             const forumColor = post.forumColor || baseThemeColor;
             const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
-            // FIX: animClass belongs on .compact-post-row, not .post-body-inline.
-            // All CSS selectors target .compact-post-row[class*="post-anim-"].
-            const animClass = post.isPremium && post.postAnimation && post.postAnimation !== 'none'
-                ? `post-anim-${post.postAnimation}`
-                : '';
+            // REMOVED post.isPremium check here so shop items work for everyone
+            const hasAnim = post.postAnimation && post.postAnimation !== 'none';
+            const animClass = hasAnim ? `post-anim-${post.postAnimation}` : '';
 
             return `
         <div class="compact-post-row ${post.isPremium ? 'premium-post' : ''} ${animClass}"
-             ${post.isPremium ? `style="--premium-forum-color: ${forumColor};"` : ''}>
+            style="--premium-forum-color: ${forumColor};" 
+            data-animation="${post.postAnimation || 'none'}">
             
             <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
             
@@ -53,20 +52,19 @@ async function loadThread(append = false) {
                 <span class="author-area">
                     ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
                     <a href="/users?id=${post.username}"
-                       class="author-name ${post.isPremium ? 'premium-user-text' : ''}"
-                       ${post.isPremium ? `style="--premium-forum-color: ${forumColor}; --premium-glow-alpha: ${glowAlpha}; --premium-glow-color: ${forumColor};"` : ''}>
+                    class="author-name ${post.isPremium ? 'premium-user-text' : ''}"
+                    style="--premium-forum-color: ${forumColor}; --premium-glow-alpha: ${glowAlpha};">
                         ${post.displayName} ${post.isPremium ? '⭐' : ''}
                     </a>
                 </span>
                 <span class="separator">:</span>
                 <span class="content-wrap">
                     <span class="content">${escapeHTML(post.content)}</span>
-                    ${post.isPremium && post.postCaption ? `<span class="post-caption">${escapeHTML(post.postCaption)}</span>` : ''}
+                    ${post.postCaption ? `<span class="post-caption">${escapeHTML(post.postCaption)}</span>` : ''}
                 </span>
             </div>
             <span class="timestamp">${formatTimestamp(post.created_at)}</span>
-        </div>
-    `;
+        </div>`;
         }).join('');
 
         container.insertAdjacentHTML('beforeend', postsHTML);
