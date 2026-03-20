@@ -33,7 +33,7 @@ export async function onRequestPost(context) {
     }
 
     // 2. Cooldown Check (24 Hours)
-    const cooldownMs = 24 * 60 * 60 * 1000;
+    const cooldownMs = 60 * 60 * 1000;
     const now = Date.now();
     const lastRaw = await env.USERS_KV.get(`pal_thread_bump_last:${username}`);
     const remaining = lastRaw ? Math.max(0, cooldownMs - (now - Number(lastRaw))) : 0;
