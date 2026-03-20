@@ -600,3 +600,87 @@
                            0 0  65px rgba(212, 175, 55, 0.10);
                background-color: rgba(212, 175, 55, 0.06); }
 }
+
+.post-anim-divine {
+    border-left: 4px solid #5b8dee !important;
+    animation: p-divine-row 4s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-anim-divine::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 300%;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.92) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.65) 1px, transparent 1px),
+        radial-gradient(circle, rgba(200,222,255,0.75) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(255,255,255,0.50) 1px, transparent 1px);
+    background-size: 71px 43px, 107px 79px, 163px 109px, 53px 67px;
+    background-position: 11px 7px, 39px 24px, 81px 43px, 27px 53px;
+    animation: p-divine-stars-slow 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.post-anim-divine::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 300%;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.88) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(180,210,255,0.70) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.55) 2px, transparent 2px),
+        radial-gradient(circle, rgba(220,235,255,0.60) 1px, transparent 1px);
+    background-size: 97px 59px, 149px 101px, 211px 131px, 73px 89px;
+    background-position: 23px 17px, 63px 45px, 107px 69px, 47px 31px;
+    animation: p-divine-stars-fast 11s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.post-anim-divine .content {
+    background: linear-gradient(90deg,
+        #0d1f6e, #4d7fe8, #a8c8ff, #ffffff, #c4ddff, #4d7fe8, #0d1f6e
+    );
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+    font-family: 'Cinzel', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    animation: p-divine-shine 3.5s linear infinite;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.04em;
+}
+
+@keyframes p-divine-shine { to { background-position: 300% center; } }
+
+@keyframes p-divine-row {
+    0%, 100% {
+        box-shadow: inset 8px 0 32px rgba(91, 141, 238, 0.13);
+        background-color: rgba(12, 28, 100, 0.045);
+    }
+    50% {
+        box-shadow: inset 8px 0 65px rgba(108, 160, 247, 0.28),
+                    0 0 22px rgba(91, 141, 238, 0.16);
+        background-color: rgba(12, 28, 100, 0.10);
+    }
+}
+
+@keyframes p-divine-stars-slow {
+    from { transform: translateY(0); }
+    to   { transform: translateY(33.33%); }
+}
+@keyframes p-divine-stars-fast {
+    from { transform: translateY(0); }
+    to   { transform: translateY(33.33%); }
+}
