@@ -146,7 +146,6 @@ async function loadProfile() {
                     followBtn.style.setProperty('color', '#64748b', 'important');
                 } else {
                     followBtn.textContent = "Follow";
-                    // Use the profile's theme color or the default blue
                     followBtn.style.setProperty('background-color', data.themeColor || '#2563eb', 'important');
                     followBtn.style.setProperty('color', 'white', 'important');
                 }
