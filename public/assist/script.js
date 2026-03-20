@@ -146,12 +146,9 @@ document.addEventListener('keydown', (e) => {
     if (e.key === "Escape") closeGame();
 });
 
-// Handle the "Back" button automatically if user exits fullscreen via browser
 document.addEventListener('fullscreenchange', () => {
-    // Optional: If you want the overlay to stay open when exiting fullscreen, 
-    // remove the closeGame() call here and just handle UI adjustments.
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        console.log("Exited Fullscreen");
+        closeGame(); 
     }
 });
 

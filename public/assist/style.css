@@ -92,3 +92,41 @@
     border: none;
     background: white;
 }
+
+/* 1. Hide the nav bar ONLY when the overlay is in fullscreen mode */
+#gameOverlay:fullscreen .overlay-nav,
+#gameOverlay:-webkit-full-screen .overlay-nav {
+    display: none;
+}
+
+/* 2. Ensure the iframe fills 100% of the screen in fullscreen */
+#gameOverlay:fullscreen #gameFrame,
+#gameOverlay:-webkit-full-screen #gameFrame {
+    width: 100vw;
+    height: 100vh;
+    border: none;
+}
+
+/* 3. Smooth transition for the overlay */
+.game-overlay {
+    display: none; /* Controlled by JS */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #000; /* Pure black for immersion */
+    z-index: 10000;
+}
+
+/* 4. Fix for the back button styling */
+.overlay-nav button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    transition: opacity 0.2s;
+}
+
+.overlay-nav button:hover {
+    opacity: 0.8;
+}
