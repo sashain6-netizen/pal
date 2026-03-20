@@ -75,6 +75,7 @@ export async function onRequestGet(context) {
             rank: user.rank || "Member",
             isPremium: isPremiumUser, 
             avatar: user.avatarUrl || "/default-avatar.png",
+            following: user.following || [],
             xp: user.xp || 0,
             followersCount: user.followers || "",
             followingCount: user.followingCount ?? (Array.isArray(user.following) ? user.following.length : 0),
