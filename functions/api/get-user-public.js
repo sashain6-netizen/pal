@@ -26,7 +26,7 @@ export async function onRequestGet(context) {
         currency: user.currency || 0,
         followers: user.followers || 0, 
         following: user.following || [],
-        isPremium: isPremium // <--- Add this flag
+        isPremium: isPremium
     };
 
     return new Response(JSON.stringify(publicData), {

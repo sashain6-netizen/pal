@@ -1,13 +1,13 @@
 [
   { 
     "title": "Polytrack", 
-    "thumb": "/assist/polytrack.jpg", 
+    "thumb": "/assist/games/polytrack.jpg", 
     "url": "https://stuffed18.github.io/polytrack-0.4.1/", 
     "external": false 
   },
   { 
     "title": "Minecraft", 
-    "thumb": "/assist/minecraft.jpg", 
+    "thumb": "/assist/games/minecraft.jpg", 
     "url": "/assist/eagtek/eaglercraft.1.5.2.html", 
     "external": false 
   },

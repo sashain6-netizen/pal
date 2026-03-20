@@ -135,7 +135,9 @@ async function loadProfile() {
         } else {
             // --- FOLLOW LOGIC ---
             const myFollowing = Array.isArray(myData.following) ? myData.following : [];
-            let currentlyFollowing = myFollowing.some(id => id.toLowerCase() === userId);
+
+            // FIX: Convert both the stored ID and the URL ID to lowercase for the check
+            let currentlyFollowing = myFollowing.some(id => String(id).toLowerCase() === userId.toLowerCase());
 
             const updateUI = (isFollowing) => {
                 if (isFollowing) {
@@ -144,10 +146,13 @@ async function loadProfile() {
                     followBtn.style.setProperty('color', '#64748b', 'important');
                 } else {
                     followBtn.textContent = "Follow";
-                    followBtn.style.setProperty('background-color', '#2563eb', 'important');
+                    // Use the profile's theme color or the default blue
+                    followBtn.style.setProperty('background-color', data.themeColor || '#2563eb', 'important');
                     followBtn.style.setProperty('color', 'white', 'important');
                 }
             };
+
+            updateUI(currentlyFollowing);
 
             updateUI(currentlyFollowing);
 
