@@ -39,7 +39,6 @@ async function loadThread(append = false) {
 
             const hasAnim = post.postAnimation && post.postAnimation.toLowerCase() !== 'none';
             const animClass = hasAnim ? `post-anim-${post.postAnimation.toLowerCase()}` : '';
-
             const showPremiumBg = post.isPremium && !hasAnim;
 
             return `
@@ -91,7 +90,8 @@ function toggleLoadMoreButton(hasMore) {
         btn.className = 'load-more-btn';
         btn.innerText = "Load More";
         btn.onclick = () => loadThread(true);
-        document.getElementById('posts-container').after(btn);
+        const container = document.getElementById('posts-container');
+        if (container) container.after(btn);
     }
     btn.style.display = hasMore ? 'block' : 'none';
 }
@@ -102,16 +102,20 @@ function renderDeleteButton(user, authorUsername) {
     const oldBumpBtn = document.querySelector('.bump-thread-btn');
     if (oldBumpBtn) oldBumpBtn.remove();
 
+    if (!user) return;
+
     const isAuthor = user.username === authorUsername;
     const isOwner = ["Owner", "Admin", "Moderator"].includes(user.rank);
     const isPremium = !!user.isPremium;
+
+    const header = document.querySelector('.thread-header');
 
     if (isAuthor || isOwner) {
         const deleteBtn = document.createElement('button');
         deleteBtn.innerText = "Delete Thread";
         deleteBtn.className = "delete-thread-btn";
         deleteBtn.onclick = () => openDeleteModal(threadId);
-        document.querySelector('.thread-header').appendChild(deleteBtn);
+        header.appendChild(deleteBtn);
     }
 
     if (isAuthor && isPremium) {
@@ -125,71 +129,57 @@ function renderDeleteButton(user, authorUsername) {
                 const res = await fetch('/api/bump-thread', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
                     body: JSON.stringify({ threadId })
                 });
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(data.error || 'Bump failed');
-                if (window.showToast) showToast("Thread bumped to the top!");
-                else alert("Thread bumped to the top!");
+                
+                if (window.showToast) showToast("Thread bumped! Redirecting...");
+                // FIX: Redirect after bump so they see it at the top
+                setTimeout(() => window.location.href = '/pages', 1000);
             } catch (err) {
-                console.error(err);
-                if (window.showToast) showToast(err.message || "Bump failed");
-                else alert(err.message || "Bump failed");
-            } finally {
-                bumpBtn.disabled = false; 
+                alert(err.message || "Bump failed");
+                bumpBtn.disabled = false;
                 bumpBtn.innerText = "Bump Thread";
             }
         };
-        document.querySelector('.thread-header').appendChild(bumpBtn);
+        header.appendChild(bumpBtn);
     } else if (isAuthor && !isPremium) {
         const promoBtn = document.createElement('button');
         promoBtn.innerText = "Bump (Premium Only)";
         promoBtn.className = "bump-thread-btn promo-gray";
         promoBtn.style.opacity = "0.6";
         promoBtn.onclick = () => window.location.href = '/premium';
-        document.querySelector('.thread-header').appendChild(promoBtn);
+        header.appendChild(promoBtn);
     }
 }
 
-// --- MODAL ---
+// --- MODAL & REPLIES ---
 
-function openDeleteModal(id) {
-    const modal = document.getElementById('deleteModal');
-    const confirmBtn = document.getElementById('confirmDeleteBtn');
-    modal.classList.add('active');
+async function postReply() {
+    const replyInput = document.getElementById('replyText');
+    const content = replyInput.value;
+    if (!content.trim()) return;
 
-    confirmBtn.onclick = async () => {
-        confirmBtn.innerText = "Deleting...";
-        confirmBtn.disabled = true;
-        await executeDelete(id);
-    };
-}
-
-function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.remove('active');
-}
-
-async function executeDelete(id) {
     try {
-        const res = await fetch('/api/delete-thread', {
+        const res = await fetch('/api/reply', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ threadId: id })
+            body: JSON.stringify({ threadId, content }),
+            credentials: 'include'
         });
-        const data = await res.json();
-        if (data.success) {
-            window.location.href = "/pages";
+
+        if (res.ok) {
+            replyInput.value = ''; // Clear input
+            if (window.showToast) showToast("Reply posted!");
+            // FIX: Don't redirect. Just reload the thread posts.
+            loadThread(false); 
         } else {
-            showToast(data.error);
-            const confirmBtn = document.getElementById('confirmDeleteBtn');
-            confirmBtn.innerText = "Yes, Delete It";
-            confirmBtn.disabled = false;
-            closeDeleteModal();
+            const errData = await res.json();
+            alert(errData.error || "Failed to post reply.");
         }
-    } catch (err) {
-        console.error(err);
-        closeDeleteModal();
+    } catch (e) {
+        console.error(e);
     }
 }
 
@@ -205,42 +195,12 @@ function escapeHTML(str) {
 function formatTimestamp(dateString) {
     const postDate = new Date(dateString);
     const now = new Date();
-
-    const isToday = postDate.getUTCFullYear() === now.getUTCFullYear() &&
-                    postDate.getUTCMonth() === now.getUTCMonth() &&
-                    postDate.getUTCDate() === now.getUTCDate();
+    const isToday = postDate.toDateString() === now.toDateString();
 
     if (isToday) {
-        return postDate.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true 
-        });
+        return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else {
-        return postDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        });
-    }
-}
-
-async function postReply() {
-    const content = document.getElementById('replyText').value;
-    if (!content.trim()) return;
-
-    const res = await fetch('/api/reply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ threadId, content }),
-        credentials: 'include'
-    });
-
-    if (res.ok) {
-        if (window.showToast) showToast("Thread bumped!");
-        setTimeout(() => {
-            window.location.href = "/pages"; 
-        }, 800);
+        return postDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
     }
 }
 
