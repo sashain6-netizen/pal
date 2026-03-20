@@ -237,10 +237,10 @@ async function postReply() {
     });
 
     if (res.ok) {
-        document.getElementById('replyText').value = '';
-        loadThread(false); 
-    } else {
-        showToast("Failed to post reply.");
+        if (window.showToast) showToast("Thread bumped!");
+        setTimeout(() => {
+            window.location.href = "/pages"; 
+        }, 800);
     }
 }
 

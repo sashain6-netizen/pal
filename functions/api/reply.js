@@ -24,7 +24,6 @@ export async function onRequestPost(context) {
         const baseMaxLen = 1000;
         const premiumMaxLen = baseMaxLen * 5;
 
-        // Premium determines the max message length
         const premiumData = await env.USERS_KV.get("pal_premium");
         let isPremium = false;
         if (premiumData) {
@@ -44,7 +43,6 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: `Max ${maxLen} characters for replies.` }), { status: 400 });
         }
 
-        // Optional: Check if the thread actually exists
         const threadCheck = await env.DB.prepare("SELECT id FROM threads WHERE id = ?")
             .bind(threadId).first();
             
@@ -52,10 +50,16 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Thread not found." }), { status: 404 });
         }
 
-        // --- 3. INSERT REPLY ---
-        await env.DB.prepare(
-            "INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)"
-        ).bind(threadId, user.username, contentStr.trim()).run();
+        // --- 3. INSERT REPLY & JUMP TO TOP ---
+        await env.DB.batch([
+            env.DB.prepare(
+                "INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)"
+            ).bind(threadId, user.username, contentStr.trim()),
+            
+            env.DB.prepare(
+                "UPDATE threads SET last_activity_at = CURRENT_TIMESTAMP WHERE id = ?"
+            ).bind(threadId)
+        ]);
 
         return new Response(JSON.stringify({ success: true }), {
             headers: { "Content-Type": "application/json" }
