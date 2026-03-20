@@ -57,7 +57,7 @@ const SHOP = {
   // TIER 5: MYTHIC (200k - 300k)
   gold: { id: "gold", name: "Gold", price: 220000 },
   matrix: { id: "matrix", name: "Matrix", price: 260000 },
-  godly: { id: "godly", name: "Godly", price: 300000 }
+  divine: { id: "divine", name: "Divine", price: 300000 }
 };
 
 const PREMIUM_DEFAULTS = ["none", "float", "pulse"];
