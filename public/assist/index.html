@@ -5,31 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games • Pal</title>
     <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/assist/style.css">
 </head>
 <body>
     <div class="games-page">
-        <div class="games-header">
+        <header class="games-header">
             <h1>Pal Games</h1>
             <div class="search-container">
-                <input type="text" id="gameSearch" placeholder="Search for a game..." oninput="filterGames()">
+                <input type="text" id="gameSearch" placeholder="Search for a game..." oninput="filterGames()" aria-label="Search games">
             </div>
-        </div>
+        </header>
 
-        <div class="games-grid" id="gamesGrid"></div>
+        <main class="games-grid" id="gamesGrid"></main>
 
-        <div id="gameOverlay" class="game-overlay">
+        <div id="gameOverlay" class="game-overlay" role="dialog" aria-modal="true" style="display: none;">
             <div class="overlay-content">
-                <div class="overlay-nav">
-                    <button onclick="closeGame()">← Back to Pal</button>
+                <nav class="overlay-nav">
+                    <button onclick="closeGame()" aria-label="Close game">← Back to Pal</button>
                     <button onclick="toggleFullScreen()" class="accent-btn">Full Screen</button>
-                </div>
-                <iframe id="gameFrame" src=""></iframe>
+                </nav>
+                <iframe id="gameFrame" src="about:blank" allow="autoplay; fullscreen; keyboard-map"></iframe>
             </div>
         </div>
     </div>
+
     <script src="/global-settings.js"></script> 
     <script src="/global-auth.js"></script>
     <script src="/navbar.js"></script>

@@ -1,4 +1,4 @@
-let allGames = []; 
+let allGames = [];
 
 async function initGames() {
     const grid = document.getElementById('gamesGrid');
@@ -19,7 +19,6 @@ async function initGames() {
             const index = allGames.findIndex(g => g.title.toLowerCase().replace(/\s+/g, '-') === gameId);
             if (index !== -1) openGame(index);
         }
-
     } catch (err) {
         console.error("Arcade Error:", err);
         grid.innerHTML = `
@@ -32,6 +31,7 @@ async function initGames() {
 
 function renderGames(gamesList) {
     const grid = document.getElementById('gamesGrid');
+    if (!grid) return;
 
     if (gamesList.length === 0) {
         grid.innerHTML = '<p class="no-results">No games found. Try a different search!</p>';
@@ -39,7 +39,6 @@ function renderGames(gamesList) {
     }
 
     grid.innerHTML = gamesList.map((game) => {
-
         const originalIndex = allGames.indexOf(game);
         return `
             <article class="game-card" 
@@ -63,7 +62,7 @@ function renderGames(gamesList) {
     }).join('');
 }
 
-function openGame(index) {
+async function openGame(index) {
     const game = allGames[index];
     const frame = document.getElementById('gameFrame');
     const overlay = document.getElementById('gameOverlay');
@@ -75,15 +74,30 @@ function openGame(index) {
         return;
     }
 
+    // 1. Prepare UI
     frame.src = game.url;
-    overlay.classList.add('active'); 
-
     overlay.style.display = 'block';
-
+    overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 
+    // 2. Trigger Fullscreen (Must be inside user-interaction function)
+    try {
+        if (overlay.requestFullscreen) {
+            await overlay.requestFullscreen();
+        } else if (overlay.webkitRequestFullscreen) { /* Safari */
+            await overlay.webkitRequestFullscreen();
+        }
+    } catch (err) {
+        console.warn("Fullscreen blocked or not supported:", err);
+    }
+
+    // 3. Handle Focus with a slight delay to bypass iframe loading quirks
     frame.onload = () => {
-        frame.focus();
+        setTimeout(() => {
+            frame.focus();
+            // Optional: Send focus specifically to the content window
+            if(frame.contentWindow) frame.contentWindow.focus();
+        }, 150);
     };
 }
 
@@ -91,27 +105,43 @@ function closeGame() {
     const overlay = document.getElementById('gameOverlay');
     const frame = document.getElementById('gameFrame');
 
+    // Exit fullscreen if active
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+
     if (overlay) {
         overlay.style.display = 'none';
         overlay.classList.remove('active');
     }
-    if (frame) frame.src = 'about:blank'; 
-
+    
+    if (frame) frame.src = 'about:blank';
     document.body.style.overflow = 'auto';
 }
 
 function filterGames() {
     const query = document.getElementById('gameSearch').value.toLowerCase().trim();
-
     const filtered = allGames.filter(game => 
         game.title.toLowerCase().includes(query)
     );
-
     renderGames(filtered);
 }
 
+// Listen for the "Escape" key on the main document
 document.addEventListener('keydown', (e) => {
     if (e.key === "Escape") closeGame();
+});
+
+// Sync UI if user exits fullscreen via browser button/shortcut
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        // If the user exited fullscreen but the overlay is still up, sync it
+        const overlay = document.getElementById('gameOverlay');
+        if (overlay && overlay.style.display === 'block') {
+            closeGame();
+        }
+    }
 });
 
 document.addEventListener('DOMContentLoaded', initGames);
