@@ -62,7 +62,8 @@ function renderGames(gamesList) {
     }).join('');
 }
 
-async function openGame(index) {
+// Open the game overlay
+function openGame(index) {
     const game = allGames[index];
     const frame = document.getElementById('gameFrame');
     const overlay = document.getElementById('gameOverlay');
@@ -74,38 +75,50 @@ async function openGame(index) {
         return;
     }
 
-    // 1. Prepare UI
+    // Prepare UI
     frame.src = game.url;
     overlay.style.display = 'block';
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // 2. Trigger Fullscreen (Must be inside user-interaction function)
-    try {
-        if (overlay.requestFullscreen) {
-            await overlay.requestFullscreen();
-        } else if (overlay.webkitRequestFullscreen) { /* Safari */
-            await overlay.webkitRequestFullscreen();
-        }
-    } catch (err) {
-        console.warn("Fullscreen blocked or not supported:", err);
-    }
-
-    // 3. Handle Focus with a slight delay to bypass iframe loading quirks
+    // Focus handling
     frame.onload = () => {
         setTimeout(() => {
             frame.focus();
-            // Optional: Send focus specifically to the content window
             if(frame.contentWindow) frame.contentWindow.focus();
         }, 150);
     };
+}
+
+// The function for your "Full Screen" button in the HTML
+async function toggleFullScreen() {
+    const overlay = document.getElementById('gameOverlay');
+    if (!overlay) return;
+
+    try {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            if (overlay.requestFullscreen) {
+                await overlay.requestFullscreen();
+            } else if (overlay.webkitRequestFullscreen) {
+                await overlay.webkitRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                await document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                await document.webkitExitFullscreen();
+            }
+        }
+    } catch (err) {
+        console.error("Fullscreen error:", err);
+    }
 }
 
 function closeGame() {
     const overlay = document.getElementById('gameOverlay');
     const frame = document.getElementById('gameFrame');
 
-    // Exit fullscreen if active
+    // Exit fullscreen if active when closing
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
@@ -128,19 +141,17 @@ function filterGames() {
     renderGames(filtered);
 }
 
-// Listen for the "Escape" key on the main document
+// Global Event Listeners
 document.addEventListener('keydown', (e) => {
     if (e.key === "Escape") closeGame();
 });
 
-// Sync UI if user exits fullscreen via browser button/shortcut
+// Handle the "Back" button automatically if user exits fullscreen via browser
 document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement) {
-        // If the user exited fullscreen but the overlay is still up, sync it
-        const overlay = document.getElementById('gameOverlay');
-        if (overlay && overlay.style.display === 'block') {
-            closeGame();
-        }
+    // Optional: If you want the overlay to stay open when exiting fullscreen, 
+    // remove the closeGame() call here and just handle UI adjustments.
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        console.log("Exited Fullscreen");
     }
 });
 
