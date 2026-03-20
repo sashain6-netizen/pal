@@ -42,6 +42,18 @@ export async function onRequestPost(context) {
       - XP & Levels: Increases via activity and Follower count.
       - Social Actions: Message, follow, and view public stats.
 
+      ## 5. PREMIUM
+      - Premium costs 5 dollars a year
+      - Users can bump threads once every hour and get a golden glow everywhere they go
+      - They can customize their glow color and intensity in forums
+      - They get custom animations in forums
+      - Boosted daily rewards by x1.3
+      - Early access to new features
+      - Access to premium groupchat for priority support
+      - Can gift friends money and xp
+      - They can set a note below their post 
+      - They get increased bio and opst length
+
       # RESPONSE GUIDELINES
       - NEVER speculate.
       - Maximum 2 paragraphs per response.
