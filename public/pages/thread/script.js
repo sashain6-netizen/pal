@@ -43,7 +43,10 @@ async function loadThread(append = false) {
         const showPremiumBg = post.isPremium && !hasAnim;
 
         const divineExtras = animType === 'divine' 
-            ? `<div class="planets"></div><div class="planet-highlights"></div>` 
+            ? `<div class="nebula"></div>
+            <div class="planets"></div>
+            <div class="planet-highlights"></div>
+            <div class="shooting-star"></div>` 
             : '';
 
         return `
