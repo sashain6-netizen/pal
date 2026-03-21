@@ -33,39 +33,44 @@ async function loadThread(append = false) {
         const container = document.getElementById('posts-container');
 
         const postsHTML = (data.posts || []).map(post => {
-            const baseThemeColor = post.themeColor || "#2563eb"; 
-            const forumColor = post.forumColor || baseThemeColor;
-            const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
+        const baseThemeColor = post.themeColor || "#2563eb"; 
+        const forumColor = post.forumColor || baseThemeColor;
+        const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
-            const hasAnim = post.postAnimation && post.postAnimation.toLowerCase() !== 'none';
-            const animClass = hasAnim ? `post-anim-${post.postAnimation.toLowerCase()}` : '';
-            const showPremiumBg = post.isPremium && !hasAnim;
+        const animType = (post.postAnimation || 'none').toLowerCase();
+        const hasAnim = animType !== 'none';
+        const animClass = hasAnim ? `post-anim-${animType}` : '';
+        const showPremiumBg = post.isPremium && !hasAnim;
 
-            return `
-        <div class="compact-post-row ${showPremiumBg ? 'premium-post' : ''} ${animClass}"
-            style="--premium-forum-color: ${forumColor};" 
-            data-animation="${post.postAnimation || 'none'}">
-            
-            <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
-            
-            <div class="post-body-inline">
-                <span class="author-area">
-                    ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
-                    <a href="/users?id=${post.username}"
-                    class="author-name ${post.isPremium ? 'premium-user-text' : ''}"
-                    style="--premium-forum-color: ${forumColor}; --premium-glow-alpha: ${glowAlpha};">
-                        ${post.displayName} ${post.isPremium ? '⭐' : ''}
-                    </a>
-                </span>
-                <span class="separator">:</span>
-                <span class="content-wrap">
-                    <span class="content">${escapeHTML(post.content)}</span>
-                    ${post.postCaption ? `<span class="post-caption">${escapeHTML(post.postCaption)}</span>` : ''}
-                </span>
-            </div>
-            <span class="timestamp">${formatTimestamp(post.created_at)}</span>
-        </div>`;
-        }).join('');
+        const divineExtras = animType === 'divine' 
+            ? `<div class="planets"></div><div class="planet-highlights"></div>` 
+            : '';
+
+        return `
+    <div class="compact-post-row ${showPremiumBg ? 'premium-post' : ''} ${animClass}"
+        style="--premium-forum-color: ${forumColor};" 
+        data-animation="${animType}">
+
+        ${divineExtras} <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
+
+        <div class="post-body-inline">
+            <span class="author-area">
+                ${post.prefix ? `<span class="prefix">${post.prefix}</span>` : ''}
+                <a href="/users?id=${post.username}"
+                class="author-name ${post.isPremium ? 'premium-user-text' : ''}"
+                style="--premium-forum-color: ${forumColor}; --premium-glow-alpha: ${glowAlpha};">
+                    ${post.displayName} ${post.isPremium ? '⭐' : ''}
+                </a>
+            </span>
+            <span class="separator">:</span>
+            <span class="content-wrap">
+                <span class="content">${escapeHTML(post.content)}</span>
+                ${post.postCaption ? `<span class="post-caption">${escapeHTML(post.postCaption)}</span>` : ''}
+            </span>
+        </div>
+        <span class="timestamp">${formatTimestamp(post.created_at)}</span>
+    </div>`;
+    }).join('');
 
         container.insertAdjacentHTML('beforeend', postsHTML);
         currentOffset += (data.posts || []).length;
