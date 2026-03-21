@@ -5,30 +5,25 @@ function parseCookiePalSession(cookieHeader) {
     .split(";")
     .map(s => s.trim())
     .find(row => row.startsWith("pal_session="));
-  if (!tokenPart) return null;
-  return tokenPart.split("=")[1];
+  return tokenPart ? tokenPart.split("=")[1] : null;
 }
 
 function isPremiumUser(premiumUsersRaw, username) {
   if (!premiumUsersRaw) return false;
-  let premiumUsers;
   try {
-    premiumUsers = JSON.parse(premiumUsersRaw);
+    const premiumUsers = JSON.parse(premiumUsersRaw);
+    const uname = (username || "").toLowerCase();
+    if (!uname) return false;
+
+    if (Array.isArray(premiumUsers)) {
+      return premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
+    }
+    if (typeof premiumUsers === "object") {
+      return !!premiumUsers[uname] || !!premiumUsers[username];
+    }
   } catch {
     return false;
   }
-
-  const uname = (username || "").toLowerCase();
-  if (!uname) return false;
-
-  if (Array.isArray(premiumUsers)) {
-    return premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
-  }
-
-  if (premiumUsers && typeof premiumUsers === "object") {
-    return !!premiumUsers[uname] || !!premiumUsers[username];
-  }
-
   return false;
 }
 
@@ -36,8 +31,7 @@ function toNonNegInt(n) {
   const v = typeof n === "string" ? Number(n) : n;
   if (!Number.isFinite(v)) return null;
   const i = Math.floor(v);
-  if (i < 0) return null;
-  return i;
+  return i < 0 ? null : i;
 }
 
 export async function onRequestPost(context) {
@@ -46,120 +40,77 @@ export async function onRequestPost(context) {
   const cookieHeader = request.headers.get("Cookie") || "";
   const token = parseCookiePalSession(cookieHeader);
   if (!token) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" }
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { 
+      status: 401, headers: { "Content-Type": "application/json" } 
     });
   }
 
   try {
     const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
     const senderUsername = payload.username;
-    if (!senderUsername) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
+    if (!senderUsername) throw new Error("Invalid token payload");
 
     const body = await request.json();
-    const recipientUsernameRaw = body.recipientUsername;
-    const xpToGift = toNonNegInt(body.xpAmount);
-    const currencyToGift = toNonNegInt(body.currencyAmount);
+    const recipientUsername = String(body.recipientUsername || "").trim().toLowerCase();
+    const xpVal = toNonNegInt(body.xpAmount) ?? 0;
+    const currencyVal = toNonNegInt(body.currencyAmount) ?? 0;
 
-    const recipientUsername = String(recipientUsernameRaw || "").trim().toLowerCase();
     if (!recipientUsername) {
-      return new Response(JSON.stringify({ error: "Recipient username required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+      return new Response(JSON.stringify({ error: "Recipient required" }), { status: 400 });
     }
 
-    if ((xpToGift ?? 0) === 0 && (currencyToGift ?? 0) === 0) {
-      return new Response(JSON.stringify({ error: "Nice try, scammer. No robbery allowed" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+    if (senderUsername.toLowerCase() === recipientUsername) {
+      return new Response(JSON.stringify({ error: "You cannot gift yourself" }), { status: 400 });
     }
 
-    const xpVal = xpToGift ?? 0;
-    const currencyVal = currencyToGift ?? 0;
-
-    // Basic anti-abuse caps (adjust if you want).
-    if (currencyVal > 100000 || xpVal > 1000000) {
-      return new Response(JSON.stringify({ error: "Gift amounts too large" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+    if (xpVal === 0 && currencyVal === 0) {
+      return new Response(JSON.stringify({ error: "Amount must be greater than 0" }), { status: 400 });
     }
 
     const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
     if (!isPremiumUser(premiumData, senderUsername)) {
-      return new Response(JSON.stringify({ error: "Premium required" }), {
-        status: 403,
-        headers: { "Content-Type": "application/json" }
-      });
+      return new Response(JSON.stringify({ error: "Premium status required to gift" }), { status: 403 });
     }
 
-    const senderKey = `user:${senderUsername}`;
-    const recipientKey = `user:${recipientUsername}`;
+    const result = await env.DB.batch([
 
-    const [rawSender, rawRecipient] = await Promise.all([
-      env.USERS_KV.get(senderKey, { cacheTtl: 1800 }),
-      env.USERS_KV.get(recipientKey, { cacheTtl: 1800 })
+      env.DB.prepare(`
+        UPDATE users 
+        SET currency = currency - ?, xp = xp - ? 
+        WHERE LOWER(username) = LOWER(?) AND currency >= ? AND xp >= ?
+      `).bind(currencyVal, xpVal, senderUsername, currencyVal, xpVal),
+
+      env.DB.prepare(`
+        UPDATE users 
+        SET currency = currency + ?, xp = xp + ? 
+        WHERE LOWER(username) = ?
+      `).bind(currencyVal, xpVal, recipientUsername),
+
+      env.DB.prepare(`SELECT currency, xp FROM users WHERE LOWER(username) = ?`)
+        .bind(recipientUsername)
     ]);
 
-    if (!rawSender) {
-      return new Response(JSON.stringify({ error: "Sender not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-    if (!rawRecipient) {
-      return new Response(JSON.stringify({ error: "Recipient not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" }
-      });
+    if (result[0].meta.rows_written === 0) {
+      return new Response(JSON.stringify({ error: "Insufficient funds or sender not found" }), { status: 400 });
     }
 
-    const senderUser = JSON.parse(rawSender);
-    const recipientUser = JSON.parse(rawRecipient);
+    if (result[1].meta.rows_written === 0) {
 
-    const senderCurrency = Number(senderUser.currency || 0);
-    const senderXp = Number(senderUser.xp || 0);
-
-    if (currencyVal > senderCurrency || xpVal > senderXp) {
-      return new Response(JSON.stringify({ error: "Insufficient funds to gift" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+      return new Response(JSON.stringify({ error: "Recipient not found" }), { status: 404 });
     }
 
-    senderUser.currency = senderCurrency - currencyVal;
-    senderUser.xp = senderXp - xpVal;
+    const updatedRecipient = result[2].results[0];
 
-    recipientUser.currency = Number(recipientUser.currency || 0) + currencyVal;
-    recipientUser.xp = Number(recipientUser.xp || 0) + xpVal;
+    return new Response(JSON.stringify({
+      success: true,
+      recipientUsername,
+      recipientCurrency: updatedRecipient.currency,
+      recipientXp: updatedRecipient.xp
+    }), { headers: { "Content-Type": "application/json" } });
 
-    await Promise.all([
-      env.USERS_KV.put(senderKey, JSON.stringify(senderUser)),
-      env.USERS_KV.put(recipientKey, JSON.stringify(recipientUser))
-    ]);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        recipientUsername,
-        recipientCurrency: recipientUser.currency,
-        recipientXp: recipientUser.xp
-      }),
-      { headers: { "Content-Type": "application/json" } }
-    );
   } catch (err) {
     return new Response(JSON.stringify({ error: "Server error", details: err.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
+      status: 500, headers: { "Content-Type": "application/json" }
     });
   }
 }
-
