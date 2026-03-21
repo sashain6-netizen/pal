@@ -656,43 +656,56 @@
     animation: p-nebula-breathe 18s ease-in-out infinite alternate;
 }
 
-.post-anim-divine .planets {
+.post-anim-divine .planet {
     position: absolute;
-    inset: 0;
+    width: 120px;
+    height: 120px;
     pointer-events: none;
     z-index: 0;
-    background-repeat: repeat; 
-    animation: p-divine-planet-float 1s ease-in-out infinite;
-    background-image:
+}
 
-        radial-gradient(circle 18px at 50% 50%, rgba(255,238,192,1) 0%, rgba(238,178,84,0.98) 26%, rgba(202,124,44,0.90) 50%, rgba(148,74,24,0.52) 70%, transparent 100%),
-        radial-gradient(ellipse 52px 12px at 50% 50%, transparent 62%, rgba(218,172,82,0.32) 63%, rgba(188,138,58,0.20) 78%, transparent 80%),
-        radial-gradient(circle 48px at 50% 50%, rgba(255,208,108,0.10) 0%, transparent 100%),
-        radial-gradient(circle 6px at 38% 38%, rgba(255,252,238,0.85) 0%, transparent 100%),
 
-        radial-gradient(circle 12px at 50% 50%, rgba(200,230,255,1) 0%, rgba(90,155,255,0.97) 24%, rgba(32,84,228,0.87) 52%, rgba(14,32,148,0.46) 74%, transparent 100%),
-        radial-gradient(circle 30px at 50% 50%, rgba(68,128,255,0.10) 0%, transparent 100%),
-        radial-gradient(circle 4px at 38% 38%, rgba(235,248,255,0.90) 0%, transparent 100%),
+.p-orange {
+    background-image: 
+        radial-gradient(circle 18px at 50% 50%, #ffeec0 0%, #eeb254 26%, #ca7c2c 50%, transparent 100%),
+        radial-gradient(ellipse 52px 12px at 50% 50%, transparent 62%, rgba(218,172,82,0.3) 63%, transparent 80%);
+    top: 10%; left: 10%;
+    animation: bounce-1 12s ease-in-out infinite alternate;
+}
 
-        radial-gradient(circle 8px at 50% 50%, rgba(250,185,148,1) 0%, rgba(220,110,68,0.97) 28%, rgba(172,64,32,0.87) 55%, rgba(100,32,15,0.46) 76%, transparent 100%),
-        radial-gradient(circle 18px at 50% 50%, rgba(228,94,54,0.10) 0%, transparent 100%),
-        radial-gradient(circle 2.5px at 38% 38%, rgba(255,230,210,0.82) 0%, transparent 100%),
+.p-blue {
+    background-image: radial-gradient(circle 12px at 50% 50%, #c8e6ff 0%, #5a9bff 24%, #142094 74%, transparent 100%);
+    top: 20%; right: 15%;
+    animation: bounce-2 18s ease-in-out infinite alternate;
+}
 
-        radial-gradient(circle 5px at 50% 50%, rgba(210,255,252,1) 0%, rgba(70,222,200,0.97) 24%, rgba(22,165,148,0.87) 55%, rgba(10,90,80,0.46) 76%, transparent 100%),
-        radial-gradient(circle 12px at 50% 50%, rgba(44,218,198,0.10) 0%, transparent 100%),
-        radial-gradient(circle 1.8px at 38% 38%, rgba(230,255,252,0.88) 0%, transparent 100%);
+.p-red {
+    background-image: radial-gradient(circle 8px at 50% 50%, #fab994 0%, #dc6e44 28%, #64200f 76%, transparent 100%);
+    bottom: 20%; left: 20%;
+    animation: bounce-3 15s ease-in-out infinite alternate;
+}
 
-    background-size:
-        100% 100%, 100% 100%, 100% 100%, 100% 100%,
-        100% 100%, 100% 100%, 100% 100%,
-        100% 100%, 100% 100%, 100% 100%,
-        100% 100%, 100% 100%, 100% 100%;
+.p-teal {
+    background-image: radial-gradient(circle 5px at 50% 50%, #d2fffc 0%, #46dec8 24%, #0a5a50 76%, transparent 100%);
+    bottom: 10%; right: 25%;
+    animation: bounce-4 22s ease-in-out infinite alternate;
+}
 
-    background-position:
-        15% 20%, 15% 20%, 15% 20%, 15% 20%,  
-        80% 30%, 80% 30%, 80% 30%,            
-        30% 80%, 30% 80%, 30% 80%,            
-        85% 85%, 85% 85%, 85% 85%;            
+@keyframes bounce-1 {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(50px, 80px); }
+}
+@keyframes bounce-2 {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(-100px, 40px); }
+}
+@keyframes bounce-3 {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(70px, -60px); }
+}
+@keyframes bounce-4 {
+    0%   { transform: translate(0, 0); }
+    100% { transform: translate(-40px, -90px); }
 }
 
 .post-anim-divine .shooting-star {

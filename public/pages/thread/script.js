@@ -44,9 +44,11 @@ async function loadThread(append = false) {
 
         const divineExtras = animType === 'divine' 
             ? `<div class="nebula"></div>
-            <div class="planets"></div>
-            <div class="planet-highlights"></div>
-            <div class="shooting-star"></div>` 
+            <div class="shooting-star"></div>
+            <div class="planet p-orange"></div>
+            <div class="planet p-blue"></div>
+            <div class="planet p-red"></div>
+            <div class="planet p-teal"></div>` 
             : '';
 
         return `
