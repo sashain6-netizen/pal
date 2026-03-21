@@ -603,7 +603,7 @@
 
 .post-anim-divine {
     border-left: 4px solid #5b8dee !important;
-    animation: p-divine-row 6s ease-in-out infinite;
+    animation: p-divine-row 1s ease-in-out infinite;
     position: relative;
     overflow: hidden;
     background-color: #050a1f;
