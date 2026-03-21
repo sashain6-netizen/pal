@@ -662,7 +662,7 @@
     pointer-events: none;
     z-index: 0;
     background-repeat: repeat; 
-    animation: p-divine-planet-float 90s ease-in-out infinite;
+    animation: p-divine-planet-float 1s ease-in-out infinite;
     background-image:
 
         radial-gradient(circle 18px at 50% 50%, rgba(255,238,192,1) 0%, rgba(238,178,84,0.98) 26%, rgba(202,124,44,0.90) 50%, rgba(148,74,24,0.52) 70%, transparent 100%),
