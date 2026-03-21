@@ -4,7 +4,7 @@ if (event.type === 'checkout.session.completed') {
     const username = session.client_reference_id; // Pass the username here
 
     // Get current premium list
-    const premiumData = await env.USERS_KV.get("pal_premium");
+    const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
     let premiumUsers = JSON.parse(premiumData || "[]");
 
     // Add user if not already there

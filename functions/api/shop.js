@@ -10,7 +10,7 @@ export async function onRequest(context) {
     
     const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
     const userKey = `user:${payload.username}`;
-    let user = JSON.parse(await env.USERS_KV.get(userKey));
+    let user = JSON.parse(await env.USERS_KV.get(userKey, { cacheTtl: 1800 }));
 
     const shopItems = {
     // --- COMMON (500 - 2,000) ---

@@ -4,7 +4,7 @@ export async function onRequestPost(context) {
     const { targetId, from, fromId, text, type } = await request.json();
 
     const userKey = `user:${targetId.toLowerCase()}`;
-    const rawData = await env.USERS_KV.get(userKey);
+    const rawData = await env.USERS_KV.get(userKey, { cacheTtl: 1800 });
     if (!rawData) return new Response("User not found", { status: 404 });
 
     let user = JSON.parse(rawData);

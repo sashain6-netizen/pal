@@ -16,7 +16,7 @@ export async function onRequest(context) {
             const payload = await verifyAndDecodeToken(token, secret);
             
             const username = payload.username.toLowerCase();
-            const kvData = await env.USERS_KV.get(`user:${username}`);
+            const kvData = await env.USERS_KV.get(`user:${username}`, { cacheTtl: 1800 });
             
             if (!kvData) return null;
 

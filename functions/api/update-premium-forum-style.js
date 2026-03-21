@@ -73,7 +73,7 @@ export async function onRequestPost(context) {
       });
     }
 
-    const premiumData = await env.USERS_KV.get("pal_premium");
+    const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
     if (!isPremiumUser(premiumData, username)) {
       return new Response(JSON.stringify({ error: "Premium required" }), {
         status: 403,
@@ -93,7 +93,7 @@ export async function onRequestPost(context) {
     }
 
     const userKey = `user:${username}`;
-    const rawUser = await env.USERS_KV.get(userKey);
+    const rawUser = await env.USERS_KV.get(userKey, { cacheTtl: 1800 });
     if (!rawUser) {
       return new Response(JSON.stringify({ error: "User not found" }), {
         status: 404,

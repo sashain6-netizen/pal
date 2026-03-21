@@ -10,7 +10,7 @@ export async function onRequest(context) {
         const payload = JSON.parse(atob(token.split(".")[1]));
         const userKey = `user:${payload.username.toLowerCase()}`;
         
-        const rawData = await env.USERS_KV.get(userKey);
+        const rawData = await env.USERS_KV.get(userKey, { cacheTtl: 1800 });
         if (!rawData) return new Response(JSON.stringify([]), { status: 404 });
 
         let user = JSON.parse(rawData);

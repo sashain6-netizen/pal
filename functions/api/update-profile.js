@@ -13,7 +13,7 @@ export async function onRequestPost(context) {
 
         const baseBioMaxLen = 200;
         const premiumBioMaxLen = baseBioMaxLen * 5;
-        const premiumData = await env.USERS_KV.get("pal_premium");
+        const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
         let isPremium = false;
         if (premiumData) {
             try {
@@ -34,7 +34,7 @@ export async function onRequestPost(context) {
         const updates = await request.json();
 
         // 1. Get old data using the CORRECT key
-        const rawData = await env.USERS_KV.get(kvKey);
+        const rawData = await env.USERS_KV.get(kvKey, { cacheTtl: 1800 });
         
         // FALLBACK: If rawData is null, initialize with proper structure
         const user = rawData ? JSON.parse(rawData) : { 

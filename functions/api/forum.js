@@ -30,7 +30,7 @@ export async function onRequest(context) {
             const offset = parseInt(url.searchParams.get("offset")) || 0;
             const currentUsername = user?.username || "";
 
-            const premiumData = await env.USERS_KV.get("pal_premium");
+            const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
             const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
             const premiumSet = new Set(
                 Array.isArray(premiumUsers) ? premiumUsers.map(u => String(u).toLowerCase()) : []
@@ -63,7 +63,7 @@ export async function onRequest(context) {
             const threads = await Promise.all(
                 rawThreads.map(async (t) => {
                     const creatorUsername = String(t.creator_username || "").toLowerCase();
-                    const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`);
+                    const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`, { cacheTtl: 1800 });
                     const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
 
                     return {
@@ -112,7 +112,7 @@ export async function onRequest(context) {
             const baseMaxLen = 1000;
             const premiumMaxLen = baseMaxLen * 5;
 
-            const premiumData = await env.USERS_KV.get("pal_premium");
+            const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
             let isPremium = false;
             if (premiumData) {
                 try {

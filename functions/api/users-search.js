@@ -21,8 +21,8 @@ export async function onRequestGet(context) {
         }
 
         // 2. Fetch the index
-        const allUsers = await env.USERS_KV.get("all_users_index", { type: "json" });
-        if (!allUsers) return new Response("[]");
+        const allUsers = JSON.parse(await env.USERS_KV.get("all_users_index", { cacheTtl: 3600 }) || "[]");
+        if (!allUsers.length) return new Response("[]");
 
         // 3. Filter: Match query AND NOT current user
         const matches = allUsers

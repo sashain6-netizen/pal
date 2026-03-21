@@ -67,7 +67,7 @@ export async function onRequestPost(context) {
             if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
 
             // Check if user exists globally
-            const allUsersJson = await env.USERS_KV.get("all_users_index");
+            const allUsersJson = await env.USERS_KV.get("all_users_index", { cacheTtl: 3600 });
             const userList = JSON.parse(allUsersJson || "[]");
             if (!userList.some(u => u.toLowerCase() === targetUsername.toLowerCase())) {
                 return new Response(JSON.stringify({ error: "User does not exist" }), { status: 404 });

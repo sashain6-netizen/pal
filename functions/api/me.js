@@ -14,7 +14,7 @@ export async function onRequestGet(context) {
     const username = payload.username?.toLowerCase();
 
     const userKey = `user:${username}`;
-    const rawData = await env.USERS_KV.get(userKey);
+    const rawData = await env.USERS_KV.get(userKey, { cacheTtl: 1800 });
     const user = rawData ? JSON.parse(rawData) : null;
 
     if (!user) {
@@ -24,7 +24,7 @@ export async function onRequestGet(context) {
     }
 
     // --- NEW PREMIUM CHECK ---
-    const premiumData = await env.USERS_KV.get("pal_premium");
+    const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
     const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
     const isPremium = Array.isArray(premiumUsers) && premiumUsers.includes(user.username);
 

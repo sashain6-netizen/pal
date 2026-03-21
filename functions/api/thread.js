@@ -47,7 +47,7 @@ export async function onRequestGet(context) {
         const postsToSend = hasMore ? posts.slice(0, limit) : posts;
 
         // 4. OPTIMIZED USER LOOKUP
-        const premiumData = await env.USERS_KV.get("pal_premium");
+        const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
         const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
         
         // Get unique usernames to avoid duplicate KV hits
@@ -55,7 +55,7 @@ export async function onRequestGet(context) {
         const userMap = {};
 
         await Promise.all(uniqueUsernames.map(async (uname) => {
-            const data = await env.USERS_KV.get(`user:${uname}`);
+            const data = await env.USERS_KV.get(`user:${uname}`, { cacheTtl: 1800 });
             userMap[uname] = data ? JSON.parse(data) : {};
         }));
 

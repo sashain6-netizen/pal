@@ -93,7 +93,7 @@ export async function onRequestPost(context) {
       });
     }
 
-    const premiumData = await env.USERS_KV.get("pal_premium");
+    const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
     if (!isPremiumUser(premiumData, senderUsername)) {
       return new Response(JSON.stringify({ error: "Premium required" }), {
         status: 403,
@@ -105,8 +105,8 @@ export async function onRequestPost(context) {
     const recipientKey = `user:${recipientUsername}`;
 
     const [rawSender, rawRecipient] = await Promise.all([
-      env.USERS_KV.get(senderKey),
-      env.USERS_KV.get(recipientKey)
+      env.USERS_KV.get(senderKey, { cacheTtl: 1800 }),
+      env.USERS_KV.get(recipientKey, { cacheTtl: 1800 })
     ]);
 
     if (!rawSender) {

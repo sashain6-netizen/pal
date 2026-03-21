@@ -24,7 +24,7 @@ export async function onRequestPost(context) {
         const baseMaxLen = 1000;
         const premiumMaxLen = baseMaxLen * 5;
 
-        const premiumData = await env.USERS_KV.get("pal_premium");
+        const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
         let isPremium = false;
         if (premiumData) {
             try {

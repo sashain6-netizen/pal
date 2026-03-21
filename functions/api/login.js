@@ -36,7 +36,7 @@ export async function onRequestPost(context) {
     }
 
     // 3. FETCH PROFILE
-    const userData = await env.USERS_KV.get(userKey);
+    const userData = await env.USERS_KV.get(userKey, { cacheTtl: 1800 });
     if (!userData) {
       return new Response("Invalid credentials", { status: 401 });
     }

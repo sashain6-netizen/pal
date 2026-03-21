@@ -11,7 +11,7 @@ export async function onRequestGet(context) {
         // Fetch Master List AND Premium List
         const [allUsersRaw, premiumRaw] = await Promise.all([
             env.USERS_KV.get("all_users_index"),
-            env.USERS_KV.get("pal_premium")
+            env.USERS_KV.get("pal_premium", { cacheTtl: 3600 })
         ]);
 
         const allUsers = JSON.parse(allUsersRaw || "[]");
@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
         const matches = allUsers.filter(username => username.toLowerCase() === query);
 
         const results = await Promise.all(matches.map(async (username) => {
-            const userData = await env.USERS_KV.get(`user:${username}`);
+            const userData = await env.USERS_KV.get(`user:${username}`, { cacheTtl: 1800 });
             if (!userData) return null;
             const user = JSON.parse(userData);
             
