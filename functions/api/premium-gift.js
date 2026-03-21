@@ -76,7 +76,7 @@ export async function onRequestPost(context) {
     }
 
     if ((xpToGift ?? 0) === 0 && (currencyToGift ?? 0) === 0) {
-      return new Response(JSON.stringify({ error: "Provide xpAmount and/or currencyAmount (> 0)" }), {
+      return new Response(JSON.stringify({ error: "Nice try, scammer. No robbery allowed" }), {
         status: 400,
         headers: { "Content-Type": "application/json" }
       });
