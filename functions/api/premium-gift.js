@@ -1,6 +1,5 @@
 import { verifyAndDecodeToken } from "./_jwt.js";
 
-// --- Helpers (No changes here) ---
 function parseCookiePalSession(cookieHeader) {
   const tokenPart = (cookieHeader || "").split(";").map(s => s.trim()).find(row => row.startsWith("pal_session="));
   return tokenPart ? tokenPart.split("=")[1] : null;
@@ -27,31 +26,32 @@ function toNonNegInt(n) {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  try {
-    const cookieHeader = request.headers.get("Cookie") || "";
-    const token = parseCookiePalSession(cookieHeader);
-    if (!token) return new Response(JSON.stringify({ error: "Unauthorized: No Token" }), { status: 401 });
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const token = parseCookiePalSession(cookieHeader);
+  if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
 
+  try {
     const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
     const senderUsername = (payload.username || "").toLowerCase();
-    
+    if (!senderUsername) return new Response(JSON.stringify({ error: "Invalid Token" }), { status: 401 });
+
     const body = await request.json();
     const recipientUsername = String(body.recipientUsername || "").trim().toLowerCase();
     const xpVal = toNonNegInt(body.xpAmount) ?? 0;
     const currencyVal = toNonNegInt(body.currencyAmount) ?? 0;
 
-    // 1. Guards
     if (!recipientUsername || senderUsername === recipientUsername) {
       return new Response(JSON.stringify({ error: "Invalid recipient" }), { status: 400 });
     }
+    if (xpVal === 0 && currencyVal === 0) {
+      return new Response(JSON.stringify({ error: "No zero-value gifts" }), { status: 400 });
+    }
 
-    // 2. Sender Cooldown (KV)
     const senderCooldownKey = `cooldown:send:${senderUsername}`;
-    const senderLock = await env.USERS_KV.get(senderCooldownKey);
-    if (senderLock) return new Response(JSON.stringify({ error: "Wait 10s" }), { status: 429 });
+    if (await env.USERS_KV.get(senderCooldownKey)) {
+      return new Response(JSON.stringify({ error: "Sender cooldown: Wait 10s" }), { status: 429 });
+    }
 
-    // 3. Recipient Lock (SQL)
-    // Simplified to ensure it doesn't crash if meta is weird
     const dbResult = await env.DB.prepare(`
       INSERT INTO gift_locks (recipient, last_received) 
       VALUES (?, CURRENT_TIMESTAMP)
@@ -59,62 +59,50 @@ export async function onRequestPost(context) {
       WHERE (strftime('%s', 'now') - strftime('%s', last_received)) > 30
     `).bind(recipientUsername).run();
 
-    if (!dbResult.meta || dbResult.meta.changes === 0) {
-      return new Response(JSON.stringify({ error: "Recipient busy (30s)" }), { status: 429 });
+    if (dbResult.meta.changes === 0) {
+      return new Response(JSON.stringify({ error: "Recipient busy: Try again in 30s" }), { status: 429 });
     }
 
-    // 4. Premium Check
-    const premiumData = await env.USERS_KV.get("pal_premium");
+    const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
     if (!isPremiumUser(premiumData, senderUsername)) {
       return new Response(JSON.stringify({ error: "Premium status required" }), { status: 403 });
     }
 
-    // 5. KV Fetch
     const senderKey = `user:${senderUsername}`;
     const recipientKey = `user:${recipientUsername}`;
-    const [rawS, rawR] = await Promise.all([
+    const [rawSender, rawRecipient] = await Promise.all([
       env.USERS_KV.get(senderKey),
       env.USERS_KV.get(recipientKey)
     ]);
 
-    if (!rawS || !rawR) return new Response(JSON.stringify({ error: "User profile missing" }), { status: 404 });
+    if (!rawSender || !rawRecipient) {
+      return new Response(JSON.stringify({ error: "User data not found" }), { status: 404 });
+    }
 
-    const sObj = JSON.parse(rawS);
-    const rObj = JSON.parse(rawR);
+    const sender = JSON.parse(rawSender);
+    const recipient = JSON.parse(rawRecipient);
 
-    // 6. Math Logic
-    const sCur = Number(sObj.currency ?? 0);
-    const sXp = Number(sObj.xp ?? 0);
-
-    if (currencyVal > sCur || xpVal > sXp) {
+    if (currencyVal > (sender.currency || 0) || xpVal > (sender.xp || 0)) {
       return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
     }
 
-    // Update balances
-    sObj.currency = sCur - currencyVal;
-    sObj.xp = sXp - xpVal;
-    rObj.currency = Number(rObj.currency ?? 0) + currencyVal;
-    rObj.xp = Number(rObj.xp ?? 0) + xpVal;
+    sender.currency = (sender.currency || 0) - currencyVal;
+    sender.xp = (sender.xp || 0) - xpVal;
+    recipient.currency = (recipient.currency || 0) + currencyVal;
+    recipient.xp = (recipient.xp || 0) + xpVal;
 
-    // 7. Commit
     await Promise.all([
-      env.USERS_KV.put(senderKey, JSON.stringify(sObj)),
-      env.USERS_KV.put(recipientKey, JSON.stringify(rObj)),
-      env.USERS_KV.put(senderCooldownKey, "true", { expirationTtl: 10 })
+      env.USERS_KV.put(senderKey, JSON.stringify(sender)),
+      env.USERS_KV.put(recipientKey, JSON.stringify(recipient)),
+      env.USERS_KV.put(senderCooldownKey, "true", { expirationTtl: 60 })
     ]);
 
-    return new Response(JSON.stringify({ success: true }), { 
-      headers: { "Content-Type": "application/json" } 
-    });
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: `Successfully gifted ${recipientUsername}!` 
+    }), { headers: { "Content-Type": "application/json" } });
 
   } catch (err) {
-    // THIS IS THE KEY: Log to wrangler tail so you can see it
-    console.error("Critical Worker Error:", err.message, err.stack);
-    
-    return new Response(JSON.stringify({ 
-      error: "Server Error", 
-      details: err.message,
-      note: "Check wrangler tail for full stack trace"
-    }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Server Error", details: err.message }), { status: 500 });
   }
 }
