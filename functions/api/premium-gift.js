@@ -32,7 +32,8 @@ export async function onRequestPost(context) {
 
   try {
     const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
-    const senderUsername = payload.username.toLowerCase();
+    const senderUsername = (payload.username || "").toLowerCase();
+    if (!senderUsername) return new Response(JSON.stringify({ error: "Invalid Token" }), { status: 401 });
 
     const body = await request.json();
     const recipientUsername = String(body.recipientUsername || "").trim().toLowerCase();
@@ -48,18 +49,18 @@ export async function onRequestPost(context) {
 
     const senderCooldownKey = `cooldown:send:${senderUsername}`;
     if (await env.USERS_KV.get(senderCooldownKey)) {
-      return new Response(JSON.stringify({ error: "Wait 10s between gifts" }), { status: 429 });
+      return new Response(JSON.stringify({ error: "Sender cooldown: Wait 10s" }), { status: 429 });
     }
 
-    const { success: lockSuccess } = await env.DB.prepare(`
+    const dbResult = await env.DB.prepare(`
       INSERT INTO gift_locks (recipient, last_received) 
       VALUES (?, CURRENT_TIMESTAMP)
       ON CONFLICT(recipient) DO UPDATE SET last_received = CURRENT_TIMESTAMP
       WHERE (strftime('%s', 'now') - strftime('%s', last_received)) > 30
     `).bind(recipientUsername).run();
 
-    if (!lockSuccess) {
-      return new Response(JSON.stringify({ error: "Recipient received a gift too recently (30s rule)" }), { status: 429 });
+    if (dbResult.meta.changes === 0) {
+      return new Response(JSON.stringify({ error: "Recipient busy: Try again in 30s" }), { status: 429 });
     }
 
     const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
@@ -85,8 +86,8 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
     }
 
-    sender.currency -= currencyVal;
-    sender.xp -= xpVal;
+    sender.currency = (sender.currency || 0) - currencyVal;
+    sender.xp = (sender.xp || 0) - xpVal;
     recipient.currency = (recipient.currency || 0) + currencyVal;
     recipient.xp = (recipient.xp || 0) + xpVal;
 
@@ -98,11 +99,10 @@ export async function onRequestPost(context) {
 
     return new Response(JSON.stringify({ 
       success: true, 
-      recipientXp: recipient.xp,
-      recipientCurrency: recipient.currency 
+      message: `Successfully gifted ${recipientUsername}!` 
     }), { headers: { "Content-Type": "application/json" } });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Internal Server Error", details: err.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Server Error", details: err.message }), { status: 500 });
   }
 }
