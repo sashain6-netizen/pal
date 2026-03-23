@@ -81,7 +81,11 @@ async function loadPublicThreads(append = false) {
 function formatTimestamp(dateString) {
     const postDate = new Date(dateString);
     const now = new Date();
-    const isToday = postDate.toDateString() === now.toDateString();
+    
+    // Compare using local timezone by getting the date parts in local time
+    const postDateLocal = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
+    const nowLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const isToday = postDateLocal.getTime() === nowLocal.getTime();
 
     if (isToday) {
         return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
