@@ -6,7 +6,13 @@ export async function onRequestPost(context) {
     try {
         // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
-        const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
+        const cookies = {};
+        cookieHeader.split(';').forEach(cookie => {
+            const [name, value] = cookie.trim().split('=');
+            if (name && value) {
+                cookies[name] = value;
+            }
+        });
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
@@ -80,7 +86,13 @@ export async function onRequestPut(context) {
     try {
         // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
-        const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
+        const cookies = {};
+        cookieHeader.split(';').forEach(cookie => {
+            const [name, value] = cookie.trim().split('=');
+            if (name && value) {
+                cookies[name] = value;
+            }
+        });
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
@@ -146,7 +158,13 @@ export async function onRequestGet(context) {
     try {
         // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
-        const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
+        const cookies = {};
+        cookieHeader.split(';').forEach(cookie => {
+            const [name, value] = cookie.trim().split('=');
+            if (name && value) {
+                cookies[name] = value;
+            }
+        });
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
