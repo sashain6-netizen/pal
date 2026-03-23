@@ -102,12 +102,16 @@ export async function onRequestPut(context) {
             return new Response(JSON.stringify({ error: "Report ID and status are required" }), { status: 400 });
         }
 
-        const validStatuses = ["pending", "resolved"];
-        if (!validStatuses.includes(status)) {
+        // 4. Check permissions - only owners can delete, others can only resolve
+        if (status === "deleted") {
+            if (user.rank !== "Owner") {
+                return new Response(JSON.stringify({ error: "Only owners can delete reports" }), { status: 403 });
+            }
+        } else if (!["pending", "resolved"].includes(status)) {
             return new Response(JSON.stringify({ error: "Invalid status" }), { status: 400 });
         }
 
-        // 4. Update report
+        // 5. Update report
         const reportData = await env.USERS_KV.get(`report:${reportId}`);
         if (!reportData) {
             return new Response(JSON.stringify({ error: "Report not found" }), { status: 404 });
@@ -119,6 +123,14 @@ export async function onRequestPut(context) {
         report.resolvedAt = new Date().toISOString();
 
         await env.USERS_KV.put(`report:${reportId}`, JSON.stringify(report));
+
+        // 6. If deleted, remove from reports list
+        if (status === "deleted") {
+            const reportsList = await env.USERS_KV.get("reports_list");
+            const reports = reportsList ? JSON.parse(reportsList) : [];
+            const updatedReports = reports.filter(id => id !== reportId);
+            await env.USERS_KV.put("reports_list", JSON.stringify(updatedReports));
+        }
 
         return new Response(JSON.stringify({ success: true }));
 

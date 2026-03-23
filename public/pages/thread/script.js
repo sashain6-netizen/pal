@@ -45,16 +45,12 @@ async function loadThread(append = false) {
         const divineExtras = animType === 'divine' 
             ? `<div class="nebula"></div>
             <div class="shooting-star"></div>
-            <div class="planet p-orange"></div>
-            <div class="planet p-blue"></div>
-            <div class="planet p-red"></div>
-            <div class="planet p-teal"></div>` 
+            <div class="planet p-orange"></div>` 
             : '';
 
         // Check if current user can delete this post
         const canDeletePost = currentUser && (
             currentUser.username === post.username || 
-            currentUser.username === data.author_username ||
             ["Owner", "Admin", "Moderator"].includes(currentUser.rank)
         );
 

@@ -31,13 +31,12 @@ export async function onRequestPost(context) {
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
 
-        // 5. Security check - allow post author, thread creator, admins, mods, and owners
+        // 5. Security check - allow post author, admins, mods, and owners only
         const isPostAuthor = post.username.toLowerCase() === username;
-        const isThreadCreator = post.thread_creator.toLowerCase() === username;
         const staffRoles = ["Owner", "Admin", "Moderator"];
         const isStaff = staffRoles.includes(user.rank);
 
-        if (!isPostAuthor && !isThreadCreator && !isStaff) {
+        if (!isPostAuthor && !isStaff) {
             return new Response(JSON.stringify({ error: "You do not have permission to delete this post." }), { status: 403 });
         }
 
