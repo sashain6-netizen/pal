@@ -84,18 +84,18 @@ function showAdminControls(username, myRank) {
     const adminFlag = document.getElementById('admin-flag');
     if (!adminFlag) return;
     
-    // Show the red flag icon
+    // Show the red flag icon for all users
     adminFlag.style.display = 'block';
     
     // Add click handler to show dropdown
     adminFlag.onclick = (e) => {
         e.stopPropagation();
-        showAdminDropdown(username, myRank, adminFlag);
+        showUserActionsDropdown(username, myRank, adminFlag);
     };
 }
 
-// Admin Dropdown Function
-function showAdminDropdown(username, myRank, flagElement) {
+// User Actions Dropdown Function
+function showUserActionsDropdown(username, myRank, flagElement) {
     // Remove existing dropdown if any
     const existingDropdown = document.getElementById('admin-dropdown');
     if (existingDropdown) {
@@ -119,29 +119,33 @@ function showAdminDropdown(username, myRank, flagElement) {
     
     let buttonsHTML = '';
     
-    // Report button (always available for staff)
+    // Report button (available to everyone)
     buttonsHTML += `
         <button class="admin-dropdown-btn" onclick="showReportModal('${username}', '${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #1e293b;">
             🚩 Report
         </button>
     `;
     
-    // Ban button for Admin/Moderator/Owner/Manager
-    if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
-        buttonsHTML += `
-            <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
-                ⚡ Ban
-            </button>
-        `;
-    }
-    
-    // Delete button only for Owner
-    if (myRank === "Owner") {
-        buttonsHTML += `
-            <button class="admin-dropdown-btn" onclick="confirmDeleteUser('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #dc2626;">
-                🗑️ Delete
-            </button>
-        `;
+    // Staff-only options
+    const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
+    if (myRank && staffRoles.includes(myRank)) {
+        // Ban button for Admin/Moderator/Owner/Manager
+        if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
+            buttonsHTML += `
+                <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
+                    ⚡ Ban
+                </button>
+            `;
+        }
+        
+        // Delete button only for Owner
+        if (myRank === "Owner") {
+            buttonsHTML += `
+                <button class="admin-dropdown-btn" onclick="confirmDeleteUser('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #dc2626;">
+                    🗑️ Delete
+                </button>
+            `;
+        }
     }
     
     dropdown.innerHTML = buttonsHTML;
@@ -586,10 +590,10 @@ async function loadProfile() {
 
         }
 
-        // --- ADMIN CONTROLS LOGIC ---
-        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
-        if (myData && staffRoles.includes(myData.rank)) {
-            showAdminControls(data.username, myData.rank);
+        // --- USER ACTIONS LOGIC ---
+        // Show red flag for all users (unless viewing own profile)
+        if (!myData || myData.username.toLowerCase() !== userId) {
+            showAdminControls(data.username, myData ? myData.rank : null);
         }
     } catch (err) {
         console.error("Load error:", err);
