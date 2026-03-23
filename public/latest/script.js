@@ -10,23 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let serverHasMore = false;
     const LIMIT = 10;
 
-    // Format timestamp for consistent display across the platform
-    function formatTimestamp(dateString) {
-        const postDate = new Date(dateString);
-        const now = new Date();
-        
-        // Compare using local timezone by getting the date parts in local time
-        const postDateLocal = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
-        const nowLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const isToday = postDateLocal.getTime() === nowLocal.getTime();
-
-        if (isToday) {
-            return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        } else {
-            return postDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-        }
-    }
-
     // Helper: Prevent XSS by escaping HTML entities
     const escapeHTML = (str) => {
         if (!str) return "";

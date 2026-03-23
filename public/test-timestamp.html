@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timestamp Test</title>
+</head>
+<body>
+    <h1>Timestamp Utility Test</h1>
+    <div id="test-results"></div>
+    
+    <script src="/utils/timestamp.js"></script>
+    <script>
+        const testResults = document.getElementById('test-results');
+        
+        // Test cases
+        const testCases = [
+            { date: new Date().toISOString(), label: 'Current time (should show time only)' },
+            { date: new Date(Date.now() - 86400000).toISOString(), label: 'Yesterday (should show date)' },
+            { date: '2023-01-15T10:30:00.000Z', label: 'Fixed past date' },
+            { date: '2024-12-25T14:20:00.000Z', label: 'Future date' }
+        ];
+        
+        testResults.innerHTML = '<h2>Test Results:</h2>';
+        
+        testCases.forEach(test => {
+            const result = formatTimestamp(test.date);
+            testResults.innerHTML += `
+                <div style="margin: 10px 0; padding: 10px; border: 1px solid #ccc;">
+                    <strong>${test.label}:</strong><br>
+                    Input: ${test.date}<br>
+                    Output: ${result}<br>
+                    Local Time: ${new Date(test.date).toLocaleString()}
+                </div>
+            `;
+        });
+        
+        // Test utility availability
+        testResults.innerHTML += `
+            <div style="margin: 20px 0; padding: 10px; background: #f0f0f0;">
+                <strong>Utility Status:</strong><br>
+                formatTimestamp function available: ${typeof formatTimestamp === 'function'}<br>
+                Browser timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+            </div>
+        `;
+    </script>
+</body>
+</html>
