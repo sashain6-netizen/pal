@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard • Pal</title>
+    <script src="/global-settings.js" defer></script>
+    <script src="/utils/modal.js" defer></script>
+    <script src="/admin/index.js" defer></script>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/admin/index.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+</head>
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="admin-dashboard">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <div class="admin-title">
+                <h1>🛡️ Admin Dashboard</h1>
+                <p>Manage reports and banned users</p>
+            </div>
+            <div class="admin-actions">
+                <button onclick="refreshAllData()" class="admin-btn refresh-btn">
+                    🔄 Refresh All
+                </button>
+                <a href="/" class="admin-btn secondary-btn">← Back to Site</a>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-reports">0</div>
+                <div class="stat-label">Total Reports</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pending-reports">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-banned">0</div>
+                <div class="stat-label">Total Banned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="temporary-bans">0</div>
+                <div class="stat-label">Temporary Bans</div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="reports" onclick="switchTab('reports')">
+                🚩 Reports
+            </button>
+            <button class="tab-btn" data-tab="banned" onclick="switchTab('banned')">
+                🚫 Banned Users
+            </button>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports-section" class="tab-content active">
+            <div class="section-header">
+                <h2>User Reports</h2>
+                <div class="section-actions">
+                    <input type="text" id="reports-search" placeholder="Search reports..." class="search-input">
+                    <select id="reports-filter" class="filter-select">
+                        <option value="all">All Reports</option>
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="deleted">Deleted</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="reports-list" class="reports-list">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading reports...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banned Users Section -->
+        <div id="banned-section" class="tab-content">
+            <div class="section-header">
+                <h2>Banned Users</h2>
+                <div class="section-actions">
+                    <input type="text" id="banned-search" placeholder="Search banned users..." class="search-input">
+                    <select id="banned-filter" class="filter-select">
+                        <option value="all">All Bans</option>
+                        <option value="temporary">Temporary</option>
+                        <option value="permanent">Permanent</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="banned-users-list" class="banned-users-list">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading banned users...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Action Modal -->
+    <div id="report-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3 id="report-modal-title">Report Details</h3>
+            <div id="report-modal-content"></div>
+            <div class="modal-buttons">
+                <button id="resolve-report" class="admin-btn success-btn">✅ Mark Resolved</button>
+                <button id="delete-report" class="admin-btn danger-btn">🗑️ Delete Report</button>
+                <button id="close-report-modal" class="admin-btn secondary-btn">❌ Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unban Modal -->
+    <div id="unban-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3>Unban User</h3>
+            <p>Are you sure you want to unban <strong id="unban-username"></strong>?</p>
+            
+            <div class="modal-buttons">
+                <button id="confirm-unban" class="admin-btn success-btn">✅ Unban User</button>
+                <button id="cancel-unban" class="admin-btn secondary-btn">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

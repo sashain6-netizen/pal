@@ -1,5 +1,5 @@
 /* ===========================
-   BANNED USERS ADMIN PAGE
+   UNIFIED ADMIN DASHBOARD
    Consistent with Pal Design System
    =========================== */
 
@@ -25,20 +25,10 @@
   --green-600: #059669;
 }
 
-.admin-page {
+.admin-dashboard {
   background: var(--off-white);
   min-height: 100vh;
   padding: 100px 20px 20px; /* Account for fixed navbar */
-}
-
-.admin-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: var(--white);
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  border: 1px solid var(--gray-100);
 }
 
 .admin-header {
@@ -48,16 +38,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-radius: 20px 20px 0 0;
+  margin-bottom: 30px;
 }
 
-.admin-logo h1 {
+.admin-title h1 {
   margin: 0 0 8px 0;
   font-size: 2.5rem;
   font-weight: 700;
   font-family: 'Varela Round', sans-serif;
 }
 
-.admin-logo p {
+.admin-title p {
   margin: 0;
   opacity: 0.9;
   font-size: 1.1rem;
@@ -69,9 +61,9 @@
 }
 
 .admin-btn {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--blue-primary);
   color: var(--white);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: none;
   padding: 12px 20px;
   border-radius: 50px;
   cursor: pointer;
@@ -81,40 +73,53 @@
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
   font-family: 'Varela Round', sans-serif;
+  border: 2px solid var(--blue-primary);
 }
 
 .admin-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--blue-deep);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .admin-btn.secondary-btn {
+  background: transparent;
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-btn.secondary-btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.admin-btn.success-btn {
+  background: var(--green-500);
+  border-color: var(--green-500);
+}
+
+.admin-btn.success-btn:hover {
+  background: var(--green-600);
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
 }
 
 .admin-btn.danger-btn {
   background: var(--red-500);
   border-color: var(--red-500);
-  color: var(--white);
 }
 
-.admin-btn.unban-btn {
-  background: var(--green-500);
-  border-color: var(--green-500);
-  color: var(--white);
+.admin-btn.danger-btn:hover {
+  background: var(--red-600);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
 }
 
-/* Stats Section */
-.admin-stats {
+/* Quick Stats */
+.quick-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
-  padding: 30px;
-  background: var(--gray-50);
+  margin-bottom: 30px;
 }
 
 .stat-card {
@@ -148,9 +153,52 @@
   letter-spacing: 0.5px;
 }
 
-/* Main Content */
-.banned-users-container {
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  background: var(--white);
+  border-radius: 15px;
+  padding: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--gray-100);
+}
+
+.tab-btn {
+  background: transparent;
+  color: var(--gray-400);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Varela Round', sans-serif;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.tab-btn:hover {
+  background: var(--gray-50);
+  color: var(--gray-600);
+}
+
+.tab-btn.active {
+  background: var(--blue-primary);
+  color: var(--white);
+}
+
+/* Tab Content */
+.tab-content {
+  display: none;
+  background: var(--white);
+  border-radius: 20px;
   padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--gray-100);
+}
+
+.tab-content.active {
+  display: block;
 }
 
 .section-header {
@@ -170,7 +218,7 @@
   font-family: 'Varela Round', sans-serif;
 }
 
-.search-filter {
+.section-actions {
   display: flex;
   gap: 15px;
   align-items: center;
@@ -206,6 +254,114 @@
 .filter-select:focus {
   outline: none;
   border-color: var(--blue-primary);
+}
+
+/* Reports List */
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.report-card {
+  background: var(--white);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-left: 4px solid var(--gray-100);
+  border: 1px solid var(--gray-100);
+  transition: all 0.3s ease;
+}
+
+.report-card.pending {
+  border-left-color: var(--yellow-500);
+}
+
+.report-card.resolved {
+  border-left-color: var(--green-500);
+}
+
+.report-card.deleted {
+  border-left-color: var(--red-500);
+}
+
+.report-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.report-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.report-id {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gray-700);
+  font-family: 'Varela Round', sans-serif;
+}
+
+.report-status {
+  padding: 4px 8px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.report-status.pending {
+  background: var(--yellow-500);
+  color: var(--white);
+}
+
+.report-status.resolved {
+  background: var(--green-500);
+  color: var(--white);
+}
+
+.report-status.deleted {
+  background: var(--red-500);
+  color: var(--white);
+}
+
+.report-date {
+  color: var(--gray-400);
+  font-size: 0.9rem;
+}
+
+.report-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 25px;
+  align-items: start;
+}
+
+.report-details p {
+  margin: 0 0 10px 0;
+  color: var(--gray-600);
+  line-height: 1.5;
+}
+
+.report-details strong {
+  color: var(--gray-700);
+  font-weight: 600;
+}
+
+.report-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
 }
 
 /* Banned Users List */
@@ -347,6 +503,16 @@
   justify-content: center;
 }
 
+/* Report Detail Modal */
+.report-detail {
+  text-align: left;
+  line-height: 1.6;
+}
+
+.report-detail p {
+  margin: 0 0 12px 0;
+}
+
 /* Loading and Empty States */
 .loading-state, .empty-state, .error-state {
   text-align: center;
@@ -404,7 +570,7 @@
   background: var(--white);
   padding: 30px;
   border-radius: 20px;
-  max-width: 500px;
+  max-width: 600px;
   width: 90%;
   text-align: center;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
@@ -429,6 +595,7 @@
   display: flex;
   gap: 15px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* Toast Notifications */
@@ -469,7 +636,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .admin-page {
+  .admin-dashboard {
     padding: 100px 10px 10px;
   }
   
@@ -477,6 +644,7 @@
     flex-direction: column;
     text-align: center;
     gap: 20px;
+    border-radius: 20px;
   }
   
   .section-header {
@@ -484,7 +652,7 @@
     align-items: stretch;
   }
   
-  .search-filter {
+  .section-actions {
     flex-direction: column;
   }
   
@@ -492,6 +660,7 @@
     min-width: 100%;
   }
   
+  .report-content,
   .banned-user-card {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -501,7 +670,16 @@
     flex-direction: row;
   }
   
-  .admin-stats {
-    grid-template-columns: 1fr;
+  .quick-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tab-navigation {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .tab-btn {
+    text-align: center;
   }
 }
