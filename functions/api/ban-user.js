@@ -192,6 +192,14 @@ export async function onRequestDelete(context) {
             await env.USERS_KV.put(`user:${targetUsername.toLowerCase()}`, JSON.stringify(user));
         }
 
+        // 7. Remove from user's ban records list
+        const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
+        if (userBans) {
+            const bans = JSON.parse(userBans);
+            const updatedBans = bans.filter(id => id !== banId);
+            await env.USERS_KV.put(`bans:${targetUsername.toLowerCase()}`, JSON.stringify(updatedBans));
+        }
+
         return new Response(JSON.stringify({ success: true, message: `User ${targetUsername} has been unbanned` }));
 
     } catch (e) {

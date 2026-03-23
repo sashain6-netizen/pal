@@ -132,12 +132,15 @@ export async function onRequestPut(context) {
 
         await env.USERS_KV.put(`report:${reportId}`, JSON.stringify(report));
 
-        // 6. If deleted, remove from reports list
+        // 6. If deleted, remove from reports list and delete KV pair
         if (status === "deleted") {
             const reportsList = await env.USERS_KV.get("reports_list");
             const reports = reportsList ? JSON.parse(reportsList) : [];
             const updatedReports = reports.filter(id => id !== reportId);
             await env.USERS_KV.put("reports_list", JSON.stringify(updatedReports));
+            
+            // Actually delete the report KV pair
+            await env.USERS_KV.delete(`report:${reportId}`);
         }
 
         return new Response(JSON.stringify({ success: true }));

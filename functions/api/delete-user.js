@@ -69,11 +69,67 @@ export async function onRequestPost(context) {
             const userData = await env.USERS_KV.get(key);
             if (userData) {
                 const user = JSON.parse(userData);
+                let updated = false;
+                
+                // Remove from following lists
                 if (user.following && user.following.includes(targetUsername)) {
                     user.following = user.following.filter(u => u !== targetUsername);
+                    updated = true;
+                }
+                
+                // Remove from followers count if it exists
+                if (user.followers && typeof user.followers === 'number' && user.followers > 0) {
+                    user.followers -= 1;
+                    updated = true;
+                }
+                
+                if (updated) {
                     await env.USERS_KV.put(key, JSON.stringify(user));
                 }
             }
+        }
+
+        // 10. Clean up user's ban records
+        const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
+        if (userBans) {
+            const bans = JSON.parse(userBans);
+            // Remove each ban KV pair
+            for (const banId of bans) {
+                await env.USERS_KV.delete(`ban:${banId}`);
+            }
+            // Remove the bans list
+            await env.USERS_KV.delete(`bans:${targetUsername.toLowerCase()}`);
+        }
+
+        // 11. Clean up any reports made by this user
+        const reportsList = await env.USERS_KV.get("reports_list");
+        if (reportsList) {
+            const reports = JSON.parse(reportsList);
+            const reportsToDelete = [];
+            
+            for (const reportId of reports) {
+                const reportData = await env.USERS_KV.get(`report:${reportId}`);
+                if (reportData) {
+                    const report = JSON.parse(reportData);
+                    if (report.reporterUsername === targetUsername.toLowerCase()) {
+                        reportsToDelete.push(reportId);
+                        await env.USERS_KV.delete(`report:${reportId}`);
+                    }
+                }
+            }
+            
+            if (reportsToDelete.length > 0) {
+                const updatedReports = reports.filter(id => !reportsToDelete.includes(id));
+                await env.USERS_KV.put("reports_list", JSON.stringify(updatedReports));
+            }
+        }
+
+        // 12. Remove from all_users_index if it exists
+        const allUsersIndex = await env.USERS_KV.get("all_users_index");
+        if (allUsersIndex) {
+            const index = JSON.parse(allUsersIndex);
+            const updatedIndex = index.filter(username => username !== targetUsername.toLowerCase());
+            await env.USERS_KV.put("all_users_index", JSON.stringify(updatedIndex));
         }
 
         return new Response(JSON.stringify({ success: true, message: `User ${targetUsername} has been deleted` }));
