@@ -61,7 +61,7 @@ async function loadPublicThreads(append = false) {
                         ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
                         @${t.creator_username} ${t.isPremium ? '⭐' : ''}
                     </span> 
-                    • ${new Date(t.created_at).toLocaleDateString()}
+                    • ${formatTimestamp(t.created_at)}
                 </div>
             </div>
         `).join('');
@@ -76,6 +76,20 @@ async function loadPublicThreads(append = false) {
         checkAdminPermissions();
     } catch (e) { console.error(e); }
 }
+
+// Format timestamp for forum display
+function formatTimestamp(dateString) {
+    const postDate = new Date(dateString);
+    const now = new Date();
+    const isToday = postDate.toDateString() === now.toDateString();
+
+    if (isToday) {
+        return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+        return postDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    }
+}
+
 // --- PINNING LOGIC ---
 window.togglePin = async (threadId, event) => {
     event.stopPropagation(); // Prevent opening the thread when clicking the pin

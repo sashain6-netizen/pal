@@ -91,6 +91,23 @@ body {
     opacity: 0.8;
 }
 
+.msg-time {
+    display: block;
+    font-size: 0.7rem;
+    margin-top: 4px;
+    opacity: 0.6;
+}
+
+.my-msg .msg-time {
+    text-align: right;
+    color: #dbeafe;
+}
+
+.their-msg .msg-time {
+    text-align: left;
+    color: #64748b;
+}
+
 /* --- My Messages (Right) --- */
 .my-msg {
     align-self: flex-end;
