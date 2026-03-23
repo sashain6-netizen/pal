@@ -77,7 +77,7 @@ export async function onRequestGet(context) {
             avatar: user.avatarUrl || "/default-avatar.png",
             following: user.following || [],
             xp: user.xp || 0,
-            followersCount: user.followers || "",
+            followersCount: user.followersCount ?? (typeof user.followers === "number" ? user.followers : 0),
             followingCount: user.followingCount ?? (Array.isArray(user.following) ? user.following.length : 0),
             currency: user.currency || 0,
             themeColor: user.themeColor || "#2563eb",

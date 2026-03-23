@@ -38,8 +38,8 @@ export async function onRequestPost(context) {
 
         // 5. Prevent banning higher rank users
         const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
-        if (rankHierarchy[target.rank] > rankHierarchy[banner.rank]) {
-            return new Response(JSON.stringify({ error: "Cannot ban users with higher rank" }), { status: 403 });
+        if (rankHierarchy[target.rank] >= rankHierarchy[banner.rank]) {
+            return new Response(JSON.stringify({ error: "Cannot ban users with equal or higher rank" }), { status: 403 });
         }
 
         // 6. Calculate ban expiration
