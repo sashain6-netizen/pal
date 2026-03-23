@@ -114,6 +114,15 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
         console.error("Failed to fetch user rank:", err);
     }
     
+    // Debug logging
+    console.log("Dropdown Debug:", {
+        username,
+        myRank,
+        targetRank,
+        myRankType: typeof myRank,
+        targetRankType: typeof targetRank
+    });
+    
     // Create dropdown
     const dropdown = document.createElement('div');
     dropdown.id = 'admin-dropdown';
