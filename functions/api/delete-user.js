@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const deleterUsername = payload.username.toLowerCase();
 
         // 2. Get Target Username from Request

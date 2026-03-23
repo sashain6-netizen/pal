@@ -8,7 +8,7 @@ export async function onRequestPost(context) {
     if (!token) return new Response("Unauthorized", { status: 401 });
 
     try {
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env); 
         const username = payload.username;
 
         const baseBioMaxLen = 200;

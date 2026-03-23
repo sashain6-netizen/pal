@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const bannerUsername = payload.username.toLowerCase();
 
         // 2. Get Ban Data from Request
@@ -147,7 +147,7 @@ export async function onRequestDelete(context) {
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const unbannerUsername = payload.username.toLowerCase();
 
         // 2. Get Ban ID from Request
@@ -218,7 +218,7 @@ export async function onRequestGet(context) {
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username.toLowerCase();
 
         // 2. Check if user is staff

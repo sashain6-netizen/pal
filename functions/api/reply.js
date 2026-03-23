@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
     }
 
     try {
-        const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const { threadId, content } = await request.json();
 
         // --- 2. VALIDATION ---

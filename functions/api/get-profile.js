@@ -17,7 +17,7 @@ export async function onRequestGet(context) {
     }
 
     try {
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET); 
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env); 
         const username = payload.username;
 
         const rawUserData = await env.USERS_KV.get(`user:${username}`);

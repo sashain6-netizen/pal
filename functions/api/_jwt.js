@@ -43,7 +43,7 @@ export async function createToken(username, secret) {
     return `${data}.${encodedSignature}`;
 }
 
-export async function verifyAndDecodeToken(token, secret) {
+export async function verifyAndDecodeToken(token, secret, env = null) {
     const parts = token.split(".");
     if (parts.length !== 3) throw new Error("Invalid Token Format");
     
@@ -76,8 +76,39 @@ export async function verifyAndDecodeToken(token, secret) {
             throw new Error("Token Expired");
         }
         
+        // Check if user is banned (if env is provided)
+        if (env && payload.username) {
+            const userData = await env.USERS_KV.get(`user:${payload.username.toLowerCase()}`);
+            if (userData) {
+                const user = JSON.parse(userData);
+                
+                // Check if user is banned
+                if (user.isBanned === true) {
+                    // Check if ban is permanent or expired
+                    if (user.banExpiration) {
+                        const expirationTime = new Date(user.banExpiration).getTime();
+                        if (Date.now() < expirationTime) {
+                            throw new Error("Account Banned");
+                        } else {
+                            // Ban expired, unban the user
+                            user.isBanned = false;
+                            delete user.banReason;
+                            delete user.banExpiration;
+                            await env.USERS_KV.put(`user:${payload.username.toLowerCase()}`, JSON.stringify(user));
+                        }
+                    } else {
+                        // Permanent ban
+                        throw new Error("Account Banned");
+                    }
+                }
+            }
+        }
+        
         return payload;
     } catch (e) {
+        if (e.message === "Account Banned") {
+            throw e; // Re-throw ban error
+        }
         throw new Error("Malformed Token Payload");
     }
 }

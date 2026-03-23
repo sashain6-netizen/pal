@@ -16,7 +16,7 @@ export async function onRequestPost(context) {
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const reporterUsername = payload.username.toLowerCase();
 
         // 2. Get Report Data from Request
@@ -87,7 +87,7 @@ export async function onRequestPut(context) {
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username.toLowerCase();
         
         console.log('JWT decoded:', { username, hasToken: !!token });
@@ -167,7 +167,7 @@ export async function onRequestGet(context) {
         const token = cookies['pal_session'];
         if (!token) return new Response("Unauthorized", { status: 401 });
 
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username.toLowerCase();
         
         console.log('JWT decoded:', { username, hasToken: !!token });
