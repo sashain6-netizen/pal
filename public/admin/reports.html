@@ -7,67 +7,318 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="/favicon.png" type="image/png">
     <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 90px;
+        }
+        
         .reports-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        .report-card {
-            background: white;
+        
+        .reports-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .reports-header h1 {
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .reports-header p {
+            color: #64748b;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-left: 4px solid #f59e0b;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .reports-list {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .report-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #f59e0b;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .report-card:hover::before {
+            opacity: 1;
+        }
+        
+        .report-card.resolved {
+            border-left-color: #10b981;
+            opacity: 0.8;
+        }
+        
         .report-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
+        
         .report-info {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
+        
+        .report-user {
+            font-weight: 600;
+            color: #1e293b;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .report-user:hover {
+            color: #667eea;
+        }
+        
+        .report-meta {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
         .report-status {
-            padding: 4px 12px;
-            border-radius: 20px;
+            padding: 6px 16px;
+            border-radius: 25px;
             font-size: 0.8rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
+        
         .status-pending {
-            background: #fef3c7;
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
             color: #92400e;
+            border: 1px solid #f59e0b;
         }
+        
         .status-resolved {
-            background: #d1fae5;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
             color: #065f46;
+            border: 1px solid #10b981;
         }
+        
         .report-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
+        
         .btn-small {
-            padding: 6px 12px;
+            padding: 8px 16px;
             font-size: 0.9rem;
-            border-radius: 6px;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
+        
         .btn-resolve {
-            background: #10b981;
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
+        
+        .btn-resolve:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+        
         .btn-view {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
+        
+        .btn-view:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+        
+        .report-content {
+            background: rgba(248, 250, 252, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .report-reason {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            text-transform: capitalize;
+        }
+        
+        .report-description {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .report-timestamp {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
         .empty-state {
             text-align: center;
-            padding: 40px;
-            color: #6b7280;
+            padding: 60px 20px;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+        
+        .empty-state h2 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+        
+        .empty-state p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 80px;
+            }
+            
+            .reports-container {
+                padding: 15px;
+            }
+            
+            .reports-header {
+                padding: 20px;
+            }
+            
+            .reports-header h1 {
+                font-size: 2rem;
+            }
+            
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .report-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .btn-small {
+                flex: 1;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -75,9 +326,32 @@
     <div id="navbar-placeholder"></div>
     
     <div class="reports-container">
-        <h1>Reports Management</h1>
-        <div id="reports-list">
-            <p class="empty-state">Loading reports...</p>
+        <div class="reports-header">
+            <h1>Reports Management</h1>
+            <p>Monitor and manage user reports</p>
+        </div>
+        
+        <div class="stats-grid" id="stats-grid" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-number" id="total-reports">0</div>
+                <div class="stat-label">Total Reports</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pending-reports">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="resolved-reports">0</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+        </div>
+        
+        <div class="reports-list" id="reports-list">
+            <div class="empty-state">
+                <div class="loading-spinner"></div>
+                <h2>Loading Reports</h2>
+                <p>Please wait while we fetch the latest reports...</p>
+            </div>
         </div>
     </div>
 
@@ -85,47 +359,105 @@
     <script>
         async function loadReports() {
             const container = document.getElementById('reports-list');
+            const statsGrid = document.getElementById('stats-grid');
             
             try {
                 const res = await fetch('/api/report-user', { credentials: 'include' });
                 
                 if (res.status === 403) {
-                    container.innerHTML = '<p class="empty-state">Access denied. Admin privileges required.</p>';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h2>Access Denied</h2>
+                            <p>You don't have permission to view this page. Admin privileges required.</p>
+                        </div>
+                    `;
                     return;
                 }
                 
                 if (!res.ok) {
-                    container.innerHTML = '<p class="empty-state">Failed to load reports.</p>';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h2>Error Loading Reports</h2>
+                            <p>Failed to load reports. Please try again later.</p>
+                        </div>
+                    `;
                     return;
                 }
                 
                 const data = await res.json();
                 const reports = data.reports || [];
                 
+                // Update stats
+                updateStats(reports);
+                
                 if (reports.length === 0) {
-                    container.innerHTML = '<p class="empty-state">No reports found.</p>';
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h2>No Reports Found</h2>
+                            <p>Great job! There are no pending reports to review.</p>
+                        </div>
+                    `;
                     return;
                 }
                 
+                // Sort reports by timestamp (newest first)
+                reports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
                 const reportsHTML = reports.map(report => `
-                    <div class="report-card">
+                    <div class="report-card ${report.status === 'resolved' ? 'resolved' : ''}">
                         <div class="report-header">
                             <div class="report-info">
-                                <strong>@${report.reportedUsername}</strong>
-                                <span>reported by @${report.reporterUsername}</span>
+                                <a href="/users?id=${report.reportedUsername}" class="report-user">@${report.reportedUsername}</a>
+                                <span class="report-meta">reported by</span>
+                                <a href="/users?id=${report.reporterUsername}" class="report-user">@${report.reporterUsername}</a>
                                 <span class="report-status status-${report.status}">${report.status}</span>
                             </div>
                             <div class="report-actions">
-                                <button class="btn-small btn-view" onclick="viewUser('${report.reportedUsername}')">View User</button>
+                                <button class="btn-small btn-view" onclick="viewUser('${report.reportedUsername}')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    View User
+                                </button>
                                 ${report.status === 'pending' ? `
-                                    <button class="btn-small btn-resolve" onclick="resolveReport('${report.id}')">Mark Resolved</button>
+                                    <button class="btn-small btn-resolve" onclick="resolveReport('${report.id}')">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    Resolve
+                                </button>
                                 ` : ''}
                             </div>
                         </div>
-                        <div>
-                            <strong>Reason:</strong> ${report.reason}
-                            ${report.description ? `<br><strong>Description:</strong> ${report.description}` : ''}
-                            <br><small>Reported: ${new Date(report.timestamp).toLocaleString()}</small>
+                        <div class="report-content">
+                            <div class="report-reason">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                Reason: ${report.reason.replace('_', ' ')}
+                            </div>
+                            ${report.description ? `
+                                <div class="report-description">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14 2 14 8 20 8"/>
+                                    </svg>
+                                    ${report.description}
+                                </div>
+                            ` : ''}
+                            <div class="report-timestamp">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 5px;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 12"/>
+                                </svg>
+                                Reported: ${new Date(report.timestamp).toLocaleString()}
+                                ${report.resolvedAt ? `
+                                    | Resolved: ${new Date(report.resolvedAt).toLocaleString()} by @${report.resolvedBy}
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -134,14 +466,34 @@
                 
             } catch (error) {
                 console.error('Error loading reports:', error);
-                container.innerHTML = '<p class="empty-state">Error loading reports.</p>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>Error Loading Reports</h2>
+                        <p>Something went wrong while loading reports. Please refresh the page.</p>
+                    </div>
+                `;
             }
         }
         
+        function updateStats(reports) {
+            const statsGrid = document.getElementById('stats-grid');
+            const total = reports.length;
+            const pending = reports.filter(r => r.status === 'pending').length;
+            const resolved = reports.filter(r => r.status === 'resolved').length;
+            
+            document.getElementById('total-reports').textContent = total;
+            document.getElementById('pending-reports').textContent = pending;
+            document.getElementById('resolved-reports').textContent = resolved;
+            
+            statsGrid.style.display = 'grid';
+        }
+        
         async function resolveReport(reportId) {
+            if (!confirm('Are you sure you want to mark this report as resolved?')) {
+                return;
+            }
+            
             try {
-                // For now, we'll just refresh the list
-                // In a full implementation, you'd have an API endpoint to update report status
                 const res = await fetch('/api/report-user', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -150,7 +502,31 @@
                 });
                 
                 if (res.ok) {
-                    alert('Report marked as resolved');
+                    // Show success message
+                    const toast = document.createElement('div');
+                    toast.className = 'toast-success';
+                    toast.textContent = 'Report marked as resolved';
+                    toast.style.cssText = `
+                        position: fixed;
+                        top: 100px;
+                        right: 20px;
+                        background: linear-gradient(135deg, #10b981, #059669);
+                        color: white;
+                        padding: 15px 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+                        z-index: 10000;
+                        font-weight: 600;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.style.animation = 'slideOut 0.3s ease';
+                        setTimeout(() => document.body.removeChild(toast), 300);
+                    }, 3000);
+                    
+                    // Reload reports
                     loadReports();
                 } else {
                     alert('Failed to resolve report');
@@ -164,6 +540,20 @@
         function viewUser(username) {
             window.location.href = `/users?id=${username}`;
         }
+        
+        // Add slide animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
         
         // Load reports when page loads
         document.addEventListener('DOMContentLoaded', loadReports);

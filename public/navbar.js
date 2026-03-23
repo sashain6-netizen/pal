@@ -198,6 +198,9 @@ function injectNavbar() {
 
     checkPremium();
 
+    // --- CHECK ADMIN STATUS ---
+    checkAdminStatus();
+
     // --- MOBILE TOGGLE LOGIC ---
     const menuToggle = document.getElementById('mobile-menu-toggle');
     const navLinks = document.getElementById('nav-links');
@@ -237,6 +240,32 @@ function injectNavbar() {
         const forumDot = document.getElementById('forum-notif-dot');
         if (forumDot) forumDot.style.display = e.detail.hasUnread ? 'block' : 'none';
     });
+}
+
+// --- ADMIN STATUS CHECK ---
+async function checkAdminStatus() {
+    try {
+        const res = await fetch('/api/get-profile', { credentials: 'include' });
+        if (res.ok) {
+            const userData = await res.json();
+            const staffRoles = ["Owner", "Admin", "Moderator"];
+            if (staffRoles.includes(userData.rank)) {
+                addAdminButton();
+            }
+        }
+    } catch (e) {
+        console.error("Failed to check admin status:", e);
+    }
+}
+
+// --- ADD ADMIN BUTTON ---
+function addAdminButton() {
+    const navLinks = document.getElementById('nav-links');
+    if (navLinks && !document.getElementById('admin-link')) {
+        const adminLi = document.createElement('li');
+        adminLi.innerHTML = '<a href="/admin/reports.html" id="admin-link" style="color: #dc2626; font-weight: 600;">Admin</a>';
+        navLinks.appendChild(adminLi);
+    }
 }
 
 if (document.readyState === 'loading') {
