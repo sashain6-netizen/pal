@@ -114,15 +114,6 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
         console.error("Failed to fetch user rank:", err);
     }
     
-    // Debug logging
-    console.log("Dropdown Debug:", {
-        username,
-        myRank,
-        targetRank,
-        myRankType: typeof myRank,
-        targetRankType: typeof targetRank
-    });
-    
     // Create dropdown
     const dropdown = document.createElement('div');
     dropdown.id = 'admin-dropdown';
@@ -161,27 +152,13 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
             // Additional check: only staff can ban, XP ranks cannot ban anyone
             const staffRoles = ["Owner", "Admin", "Manager", "Moderator", "Staff"];
             if (!staffRoles.includes(myRank)) {
-                console.log("User is not staff - hiding ban button");
                 return; // Don't show ban button for non-staff
             }
             
-            console.log("Ban Logic Debug:", {
-                myRank,
-                targetRank,
-                rankHierarchy,
-                myRankValue: rankHierarchy[myRank],
-                targetRankValue: rankHierarchy[targetRank],
-                condition1: myRank === "Owner" && targetRank === "Owner",
-                condition2: myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank],
-                condition3: myRank !== "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]
-            });
-            
             // Owners can ban anyone except other Owners
             if (myRank === "Owner" && targetRank === "Owner") {
-                console.log("Condition 1 hit: Owner trying to ban another Owner - hiding button");
                 // Don't show ban button for other Owners
             } else if (myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
-                console.log("Condition 2 hit: Owner can ban lower rank - showing button");
                 // Owners can ban lower ranks
                 buttonsHTML += `
                     <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
@@ -189,15 +166,12 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
                     </button>
                 `;
             } else if (myRank !== "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
-                console.log("Condition 3 hit: Non-Owner can ban lower rank - showing button");
                 // Non-Owners can only ban lower ranks
                 buttonsHTML += `
                     <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
                         ⚡ Ban
                     </button>
                 `;
-            } else {
-                console.log("No ban condition met - hiding button");
             }
         }
         

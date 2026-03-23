@@ -19,11 +19,11 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Target username and reason are required" }), { status: 400 });
         }
 
-        // 3. Check if banner has permission
+        // 3. Check if banner has permission (staff only)
         const bannerData = await env.USERS_KV.get(`user:${bannerUsername}`);
         const banner = bannerData ? JSON.parse(bannerData) : {};
         
-        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator", "Staff"];
         if (!staffRoles.includes(banner.rank)) {
             return new Response(JSON.stringify({ error: "Only staff can ban users" }), { status: 403 });
         }
@@ -35,11 +35,6 @@ export async function onRequestPost(context) {
         }
 
         const target = JSON.parse(targetData);
-
-        // 4. Check if banner has permission (staff only)
-        if (!staffRoles.includes(banner.rank)) {
-            return new Response(JSON.stringify({ error: "Only staff can ban users" }), { status: 403 });
-        }
 
         // 5. Prevent banning higher rank users (Owners can ban anyone except other Owners)
         const rankHierarchy = { 
