@@ -262,9 +262,29 @@ async function checkAdminStatus() {
 function addAdminButton() {
     const navLinks = document.getElementById('nav-links');
     if (navLinks && !document.getElementById('admin-link')) {
-        const adminLi = document.createElement('li');
-        adminLi.innerHTML = '<a href="/admin/reports.html" id="admin-link" style="color: #dc2626; font-weight: 600;">Admin</a>';
-        navLinks.appendChild(adminLi);
+        // Create admin links container
+        const adminContainer = document.createElement('li');
+        adminContainer.style.display = 'flex';
+        adminContainer.style.gap = '8px';
+        adminContainer.style.alignItems = 'center';
+        
+        // Add Admin link
+        const adminLink = document.createElement('a');
+        adminLink.href = '/admin/reports.html';
+        adminLink.id = 'admin-link';
+        adminLink.style.cssText = 'color: #dc2626; font-weight: 600; font-size: 0.9rem;';
+        adminLink.textContent = 'Admin';
+        
+        // Add Stats link
+        const statsLink = document.createElement('a');
+        statsLink.href = '/stats.html';
+        statsLink.id = 'stats-link';
+        statsLink.style.cssText = 'color: #059669; font-weight: 600; font-size: 0.9rem;';
+        statsLink.textContent = 'Stats';
+        
+        adminContainer.appendChild(adminLink);
+        adminContainer.appendChild(statsLink);
+        navLinks.appendChild(adminContainer);
     }
 }
 
