@@ -36,8 +36,17 @@ export async function onRequestPost(context) {
 
         const target = JSON.parse(targetData);
 
+        // 4. Check if banner has permission (staff only)
+        if (!staffRoles.includes(banner.rank)) {
+            return new Response(JSON.stringify({ error: "Only staff can ban users" }), { status: 403 });
+        }
+
         // 5. Prevent banning higher rank users (Owners can ban anyone except other Owners)
-        const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
+        const rankHierarchy = { 
+    "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
+    "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4, 
+    "Supporter": -5, "Active Member": -6, "Member": -7 
+};
         
         // Owners can ban anyone except other Owners
         if (banner.rank === "Owner" && target.rank === "Owner") {

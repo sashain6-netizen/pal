@@ -139,7 +139,11 @@ function renderBannedUsers(myRank) {
         const banStatusClass = user.banStatus === 'Permanent' ? 'permanent' : 'temporary';
         
         // Check if current user can unban this user
-        const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
+        const rankHierarchy = { 
+    "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
+    "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4, 
+    "Supporter": -5, "Active Member": -6, "Member": -7 
+};
         const canUnban = myRank === "Owner" ? 
             (user.rank !== "Owner") : // Owners can unban anyone except other Owners
             (rankHierarchy[user.rank] < rankHierarchy[myRank]); // Non-Owners can only unban lower ranks

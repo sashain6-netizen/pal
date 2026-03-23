@@ -150,10 +150,21 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
     // Staff-only options with rank checking
     const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
     if (myRank && staffRoles.includes(myRank)) {
-        const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
+        const rankHierarchy = { 
+    "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
+    "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4, 
+    "Supporter": -5, "Active Member": -6, "Member": -7 
+};
         
-        // Ban button - only show if target has lower rank (Owners can ban anyone except other Owners)
+        // Ban button - only show if user is staff and target has lower rank (Owners can ban anyone except other Owners)
         if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
+            // Additional check: only staff can ban, XP ranks cannot ban anyone
+            const staffRoles = ["Owner", "Admin", "Manager", "Moderator", "Staff"];
+            if (!staffRoles.includes(myRank)) {
+                console.log("User is not staff - hiding ban button");
+                return; // Don't show ban button for non-staff
+            }
+            
             console.log("Ban Logic Debug:", {
                 myRank,
                 targetRank,
