@@ -248,7 +248,7 @@ async function checkAdminStatus() {
         const res = await fetch('/api/get-profile', { credentials: 'include' });
         if (res.ok) {
             const userData = await res.json();
-            const staffRoles = ["Owner", "Admin", "Moderator"];
+            const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
             if (staffRoles.includes(userData.rank)) {
                 addAdminButton();
             }

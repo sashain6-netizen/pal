@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
         const bannerData = await env.USERS_KV.get(`user:${bannerUsername}`);
         const banner = bannerData ? JSON.parse(bannerData) : {};
         
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(banner.rank)) {
             return new Response(JSON.stringify({ error: "Only staff can ban users" }), { status: 403 });
         }
@@ -37,7 +37,7 @@ export async function onRequestPost(context) {
         const target = JSON.parse(targetData);
 
         // 5. Prevent banning higher rank users
-        const rankHierarchy = { "Owner": 3, "Admin": 2, "Moderator": 1, "Staff": 0 };
+        const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
         if (rankHierarchy[target.rank] > rankHierarchy[banner.rank]) {
             return new Response(JSON.stringify({ error: "Cannot ban users with higher rank" }), { status: 403 });
         }
@@ -51,7 +51,22 @@ export async function onRequestPost(context) {
                 "7days": 7 * 24 * 60 * 60 * 1000,
                 "30days": 30 * 24 * 60 * 60 * 1000
             };
-            const durationMs = durationMap[duration];
+            
+            let durationMs;
+            if (durationMap[duration]) {
+                // Preset duration
+                durationMs = durationMap[duration];
+            } else {
+                // Custom duration (format: "Xdays")
+                const customMatch = duration.match(/^(\d+)days$/);
+                if (customMatch) {
+                    const days = parseInt(customMatch[1]);
+                    if (days >= 1 && days <= 365) {
+                        durationMs = days * 24 * 60 * 60 * 1000;
+                    }
+                }
+            }
+            
             if (durationMs) {
                 banExpiration = new Date(Date.now() + durationMs).toISOString();
             }
@@ -121,7 +136,7 @@ export async function onRequestDelete(context) {
         const unbannerData = await env.USERS_KV.get(`user:${unbannerUsername}`);
         const unbanner = unbannerData ? JSON.parse(unbannerData) : {};
         
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(unbanner.rank)) {
             return new Response(JSON.stringify({ error: "Only staff can unban users" }), { status: 403 });
         }
@@ -178,7 +193,7 @@ export async function onRequestGet(context) {
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
         
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
         }

@@ -81,21 +81,56 @@ function showReportModal(username, displayName) {
 
 // Admin Controls Function
 function showAdminControls(username, myRank) {
-    const profileActions = document.querySelector('.profile-actions');
-    if (!profileActions) return;
+    const adminFlag = document.getElementById('admin-flag');
+    if (!adminFlag) return;
     
-    // Create admin controls container
-    const adminControls = document.createElement('div');
-    adminControls.className = 'admin-controls';
-    adminControls.style.cssText = 'margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;';
+    // Show the red flag icon
+    adminFlag.style.display = 'block';
+    
+    // Add click handler to show dropdown
+    adminFlag.onclick = (e) => {
+        e.stopPropagation();
+        showAdminDropdown(username, myRank, adminFlag);
+    };
+}
+
+// Admin Dropdown Function
+function showAdminDropdown(username, myRank, flagElement) {
+    // Remove existing dropdown if any
+    const existingDropdown = document.getElementById('admin-dropdown');
+    if (existingDropdown) {
+        existingDropdown.remove();
+    }
+    
+    // Create dropdown
+    const dropdown = document.createElement('div');
+    dropdown.id = 'admin-dropdown';
+    dropdown.style.cssText = `
+        position: absolute;
+        top: ${flagElement.getBoundingClientRect().bottom + 5}px;
+        left: ${flagElement.getBoundingClientRect().left - 100}px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        min-width: 120px;
+    `;
     
     let buttonsHTML = '';
     
-    // Ban button for Admin/Moderator/Owner
-    if (["Owner", "Admin", "Moderator"].includes(myRank)) {
+    // Report button (always available for staff)
+    buttonsHTML += `
+        <button class="admin-dropdown-btn" onclick="showReportModal('${username}', '${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #1e293b;">
+            🚩 Report
+        </button>
+    `;
+    
+    // Ban button for Admin/Moderator/Owner/Manager
+    if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
         buttonsHTML += `
-            <button class="auth-btn" onclick="showBanModal('${username}')" style="background: #f59e0b; margin-bottom: 8px;">
-                Ban User
+            <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
+                ⚡ Ban
             </button>
         `;
     }
@@ -103,14 +138,24 @@ function showAdminControls(username, myRank) {
     // Delete button only for Owner
     if (myRank === "Owner") {
         buttonsHTML += `
-            <button class="auth-btn" onclick="confirmDeleteUser('${username}')" style="background: #dc2626; margin-bottom: 8px;">
-                Delete User
+            <button class="admin-dropdown-btn" onclick="confirmDeleteUser('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #dc2626;">
+                🗑️ Delete
             </button>
         `;
     }
     
-    adminControls.innerHTML = buttonsHTML;
-    profileActions.appendChild(adminControls);
+    dropdown.innerHTML = buttonsHTML;
+    document.body.appendChild(dropdown);
+    
+    // Close dropdown when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.remove();
+                document.removeEventListener('click', closeDropdown);
+            }
+        });
+    }, 100);
 }
 
 // Ban Modal Function
@@ -120,19 +165,31 @@ function showBanModal(username) {
     modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;';
     
     modal.innerHTML = `
-        <div class="modal-box" style="background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+        <div class="modal-box" style="background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
             <h3 style="color: var(--blue-deep); margin-bottom: 10px;">Ban User</h3>
             <p style="color: var(--blue-soft); font-size: 0.9rem; margin-bottom: 20px;">Banning @${username}</p>
             
             <div style="margin-bottom: 20px; text-align: left;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600;">Duration:</label>
-                <select id="ban-duration" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <select id="ban-duration-type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
                     <option value="permanent">Permanent</option>
-                    <option value="1hour">1 Hour</option>
-                    <option value="24hours">24 Hours</option>
-                    <option value="7days">7 Days</option>
-                    <option value="30days">30 Days</option>
+                    <option value="preset">Preset Duration</option>
+                    <option value="custom">Custom Duration</option>
                 </select>
+                
+                <div id="preset-options" style="display: none;">
+                    <select id="ban-duration" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <option value="1hour">1 Hour</option>
+                        <option value="24hours">24 Hours</option>
+                        <option value="7days">7 Days</option>
+                        <option value="30days">30 Days</option>
+                    </select>
+                </div>
+                
+                <div id="custom-options" style="display: none;">
+                    <input type="number" id="custom-days" min="1" max="365" placeholder="Number of days (1-365)" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <small style="color: #64748b; font-size: 0.8rem;">Enter a value between 1 and 365 days</small>
+                </div>
             </div>
             
             <div style="margin-bottom: 20px; text-align: left;">
@@ -149,8 +206,39 @@ function showBanModal(username) {
     
     document.body.appendChild(modal);
     
+    // Handle duration type changes
+    const durationType = document.getElementById('ban-duration-type');
+    const presetOptions = document.getElementById('preset-options');
+    const customOptions = document.getElementById('custom-options');
+    
+    durationType.onchange = () => {
+        presetOptions.style.display = 'none';
+        customOptions.style.display = 'none';
+        
+        if (durationType.value === 'preset') {
+            presetOptions.style.display = 'block';
+        } else if (durationType.value === 'custom') {
+            customOptions.style.display = 'block';
+        }
+    };
+    
     document.getElementById('ban-submit').onclick = async () => {
-        const duration = document.getElementById('ban-duration').value;
+        const durationTypeValue = durationType.value;
+        let duration;
+        
+        if (durationTypeValue === 'permanent') {
+            duration = 'permanent';
+        } else if (durationTypeValue === 'preset') {
+            duration = document.getElementById('ban-duration').value;
+        } else if (durationTypeValue === 'custom') {
+            const customDays = parseInt(document.getElementById('custom-days').value);
+            if (!customDays || customDays < 1 || customDays > 365) {
+                showToast('Please enter a valid number of days (1-365)');
+                return;
+            }
+            duration = `${customDays}days`;
+        }
+        
         const reason = document.getElementById('ban-reason').value.trim();
         
         if (!reason) {
@@ -174,15 +262,23 @@ function showBanModal(username) {
                 document.body.removeChild(modal);
             } else {
                 const error = await res.json();
-                showToast(error.error || "Failed to ban user");
+                showToast(error.error || 'Failed to ban user');
             }
         } catch (err) {
-            showToast("Error banning user");
+            console.error('Ban error:', err);
+            showToast('Failed to ban user');
         }
     };
     
     document.getElementById('ban-cancel').onclick = () => {
         document.body.removeChild(modal);
+    };
+    
+    // Close on overlay click
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
     };
 }
 
@@ -433,17 +529,10 @@ async function loadProfile() {
                 sendBtn.textContent = "Send Message";
             };
 
-            // --- REPORT BUTTON LOGIC ---
-            const reportBtn = document.getElementById('report-btn');
-            if (reportBtn) {
-                reportBtn.onclick = () => {
-                    showReportModal(data.username, data.displayName || data.username);
-                };
-            }
         }
 
         // --- ADMIN CONTROLS LOGIC ---
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (myData && staffRoles.includes(myData.rank)) {
             showAdminControls(data.username, myData.rank);
         }

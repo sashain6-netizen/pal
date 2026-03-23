@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
         // 4. THE SECURITY CHECK (FIXED REFERENCE)
         // We check against thread.creator_username now
         const isOP = thread.creator_username.toLowerCase() === username;
-        const staffRoles = ["Owner", "Moderator", "Admin"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         const isStaff = staffRoles.includes(user.rank);
 
         if (!isOP && !isStaff) {

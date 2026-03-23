@@ -33,7 +33,7 @@ export async function onRequestPost(context) {
 
         // 5. Security check - allow post author, admins, mods, and owners only
         const isPostAuthor = post.username.toLowerCase() === username;
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         const isStaff = staffRoles.includes(user.rank);
 
         if (!isPostAuthor && !isStaff) {

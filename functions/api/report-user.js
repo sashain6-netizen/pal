@@ -98,7 +98,7 @@ export async function onRequestPut(context) {
         
         console.log('Report access check (PUT):', { username, userRank: user.rank });
         
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
             console.log('Access denied (PUT) - user rank:', user.rank, 'allowed roles:', staffRoles);
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
@@ -175,7 +175,7 @@ export async function onRequestGet(context) {
         
         console.log('Report access check (GET):', { username, userRank: user.rank });
         
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
             console.log('Access denied (GET) - user rank:', user.rank, 'allowed roles:', staffRoles);
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });

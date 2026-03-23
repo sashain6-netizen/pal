@@ -23,7 +23,7 @@ export async function onRequestGet(context) {
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
         
-        const staffRoles = ["Owner", "Admin", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
         }
