@@ -19,22 +19,13 @@ export async function onRequestPost(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const reporterUsername = payload.username.toLowerCase();
 
-        // 2. Check if user is admin/owner
-        const userData = await env.USERS_KV.get(`user:${reporterUsername}`);
-        const user = userData ? JSON.parse(userData) : {};
-        
-        const adminRoles = ["Owner", "Admin"];
-        if (!adminRoles.includes(user.rank)) {
-            return new Response(JSON.stringify({ error: "Only admins and owners can report users" }), { status: 403 });
-        }
-
-        // 3. Get Report Data from Request
+        // 2. Get Report Data from Request
         const { reportedUsername, reason, description } = await request.json();
         if (!reportedUsername || !reason) {
             return new Response(JSON.stringify({ error: "Reported username and reason are required" }), { status: 400 });
         }
 
-        // 4. Validate input
+        // 3. Validate input
         if (reporterUsername === reportedUsername.toLowerCase()) {
             return new Response(JSON.stringify({ error: "You cannot report yourself" }), { status: 400 });
         }
@@ -44,7 +35,7 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Invalid reason" }), { status: 400 });
         }
 
-        // 5. Check if both users exist
+        // 4. Check if both users exist
         const reporterData = await env.USERS_KV.get(`user:${reporterUsername}`);
         const reportedData = await env.USERS_KV.get(`user:${reportedUsername.toLowerCase()}`);
         
@@ -52,7 +43,7 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         }
 
-        // 6. Create report entry
+        // 5. Create report entry
         const report = {
             id: Date.now().toString(),
             reporterUsername,
@@ -63,10 +54,10 @@ export async function onRequestPost(context) {
             status: "pending"
         };
 
-        // 7. Store report
+        // 6. Store report
         await env.USERS_KV.put(`report:${report.id}`, JSON.stringify(report));
 
-        // 8. Add to reports list for easy retrieval
+        // 7. Add to reports list for easy retrieval
         const reportsList = await env.USERS_KV.get("reports_list");
         const reports = reportsList ? JSON.parse(reportsList) : [];
         reports.push(report.id);
