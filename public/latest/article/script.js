@@ -3,6 +3,19 @@ const id = params.get('id');
 let currentRawContent = ""; 
 let isStaff = false; // Track staff status globally in this script
 
+// Format timestamp for consistent display across the platform
+function formatTimestamp(dateString) {
+    const postDate = new Date(dateString);
+    const now = new Date();
+    const isToday = postDate.toDateString() === now.toDateString();
+
+    if (isToday) {
+        return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+        return postDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    }
+}
+
 /**
  * Advanced Markup Parser
  */
@@ -127,7 +140,7 @@ async function loadArticle() {
         currentRawContent = data.content;
 
         document.getElementById('title').textContent = data.title;
-        const date = new Date(data.created_at).toLocaleDateString();
+        const date = formatTimestamp(data.created_at);
         
         // This line overwrites the meta div. 
         document.getElementById('meta').innerHTML = `By <strong>${data.author_name}</strong> (${data.author_rank}) on ${date}`;

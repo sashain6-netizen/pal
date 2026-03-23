@@ -360,6 +360,19 @@
     <script>
         let currentUser = null;
 
+        // Format timestamp for consistent display across the platform
+        function formatTimestamp(dateString) {
+            const postDate = new Date(dateString);
+            const now = new Date();
+            const isToday = postDate.toDateString() === now.toDateString();
+
+            if (isToday) {
+                return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else {
+                return postDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            }
+        }
+
         async function getCurrentUser() {
             try {
                 const res = await fetch('/api/me', { credentials: 'include' });
@@ -482,9 +495,9 @@
                                     <circle cx="12" cy="12" r="10"/>
                                     <polyline points="12 6 12 12 16 12"/>
                                 </svg>
-                                Reported: ${new Date(report.timestamp).toLocaleString()}
+                                Reported: ${formatTimestamp(report.timestamp)}
                                 ${report.resolvedAt ? `
-                                    | Resolved: ${new Date(report.resolvedAt).toLocaleString()} by @${report.resolvedBy}
+                                    | Resolved: ${formatTimestamp(report.resolvedAt)} by @${report.resolvedBy}
                                 ` : ''}
                             </div>
                         </div>

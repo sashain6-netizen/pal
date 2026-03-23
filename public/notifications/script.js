@@ -1,4 +1,18 @@
 // --- LOAD NOTIFICATIONS ---
+
+// Format timestamp for consistent display across the platform
+function formatTimestamp(dateString) {
+    const postDate = new Date(dateString);
+    const now = new Date();
+    const isToday = postDate.toDateString() === now.toDateString();
+
+    if (isToday) {
+        return postDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+        return postDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    }
+}
+
 async function loadNotifications() {
     const list = document.getElementById('notif-list');
     const clearBtn = document.getElementById('clear-all-btn');
@@ -28,7 +42,7 @@ async function loadNotifications() {
                         ${senderHTML} 
                         <span class="notif-text">${n.text}</span>
                     </p>
-                    <span class="notif-date">${new Date(n.date).toLocaleDateString()}</span>
+                    <span class="notif-date">${formatTimestamp(n.date)}</span>
                 </div>
                 <button class="close-btn" onclick="deleteNotif('${n.id}')">&times;</button>
             </div>
