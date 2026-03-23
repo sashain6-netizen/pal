@@ -655,27 +655,32 @@
         // Load user statistics
         async function loadUserStats() {
             try {
-                // Get total users
+                // Get total users from the users index
                 const usersRes = await fetch('/api/users-search?q=', { credentials: 'include' });
                 const allUsers = usersRes.ok ? await usersRes.json() : [];
                 
                 // Get premium users
-                const premiumData = await fetchPremiumData();
-                const premiumUsers = premiumData ? premiumData.length : 0;
+                const premiumUsers = await fetchPremiumData();
+                const premiumCount = premiumUsers ? premiumUsers.length : 0;
                 
-                // Update UI
+                // Update UI with real data
                 document.getElementById('total-users').textContent = allUsers.length;
-                document.getElementById('premium-users').textContent = premiumUsers;
-                document.getElementById('active-users').textContent = Math.floor(allUsers.length * 0.7); // Estimate
+                document.getElementById('premium-users').textContent = premiumCount;
                 
-                // Update change indicators
-                document.getElementById('users-change').textContent = `+${Math.floor(Math.random() * 10)} today`;
-                document.getElementById('premium-change').textContent = `+${Math.floor(Math.random() * 3)} today`;
-                document.getElementById('active-change').textContent = `+${Math.floor(Math.random() * 15)} today`;
+                // Active users - we can only count total registered users
+                document.getElementById('active-users').textContent = allUsers.length;
+                
+                // Remove change indicators since we don't have historical data
+                document.getElementById('users-change').style.display = 'none';
+                document.getElementById('premium-change').style.display = 'none';
+                document.getElementById('active-change').style.display = 'none';
                 
             } catch (error) {
                 console.error('Error loading user stats:', error);
                 addLog('ERROR', 'Failed to load user statistics');
+                document.getElementById('total-users').textContent = 'Error';
+                document.getElementById('premium-users').textContent = 'Error';
+                document.getElementById('active-users').textContent = 'Error';
             }
         }
 
@@ -688,11 +693,17 @@
                     const threadCount = forumData.threads ? forumData.threads.length : 0;
                     
                     document.getElementById('total-threads').textContent = threadCount;
-                    document.getElementById('threads-change').textContent = `+${Math.floor(Math.random() * 5)} today`;
+                    // Remove change indicator since we don't have historical data
+                    document.getElementById('threads-change').style.display = 'none';
+                } else {
+                    document.getElementById('total-threads').textContent = 'Error';
+                    document.getElementById('threads-change').style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error loading forum stats:', error);
                 addLog('ERROR', 'Failed to load forum statistics');
+                document.getElementById('total-threads').textContent = 'Error';
+                document.getElementById('threads-change').style.display = 'none';
             }
         }
 
@@ -706,22 +717,30 @@
                     const pendingCount = reportsData.reports ? reportsData.reports.filter(r => r.status === 'pending').length : 0;
                     
                     document.getElementById('total-reports').textContent = reportCount;
-                    document.getElementById('reports-change').textContent = `+${pendingCount} pending`;
+                    // Show actual pending count instead of fake change
+                    document.getElementById('reports-change').textContent = pendingCount > 0 ? `${pendingCount} pending` : 'All resolved';
+                    document.getElementById('reports-change').className = pendingCount > 0 ? 'stat-change negative' : 'stat-change positive';
+                } else if (reportsRes.status === 403) {
+                    document.getElementById('total-reports').textContent = 'No access';
+                    document.getElementById('reports-change').style.display = 'none';
+                } else {
+                    document.getElementById('total-reports').textContent = 'Error';
+                    document.getElementById('reports-change').style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error loading report stats:', error);
                 addLog('ERROR', 'Failed to load report statistics');
+                document.getElementById('total-reports').textContent = 'Error';
+                document.getElementById('reports-change').style.display = 'none';
             }
         }
 
         // Load activity data for chart
         async function loadActivityData() {
             try {
-                // Generate mock activity data for the last 7 days
-                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                const activityData = days.map(() => Math.floor(Math.random() * 100) + 20);
-                
-                renderActivityChart(days, activityData);
+                // Since we don't have historical activity data, remove the chart
+                document.querySelector('.section:has(#activity-chart)').style.display = 'none';
+                addLog('INFO', 'Activity chart disabled - no historical data available');
             } catch (error) {
                 console.error('Error loading activity data:', error);
                 addLog('ERROR', 'Failed to load activity data');
@@ -878,12 +897,23 @@
             }
         }
 
-        // Fetch premium data
+        // Fetch premium data from actual API
         async function fetchPremiumData() {
             try {
-                // This would typically be an API call, but for now we'll mock it
+                const res = await fetch('/api/check-premium', { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    // The API might return different formats, handle both array and object
+                    if (Array.isArray(data)) {
+                        return data;
+                    } else if (data && typeof data === 'object') {
+                        // If it's an object with usernames as keys
+                        return Object.keys(data);
+                    }
+                }
                 return [];
             } catch (error) {
+                console.error('Error fetching premium data:', error);
                 return [];
             }
         }
@@ -902,54 +932,78 @@
                 return;
             }
 
-            // Mock activity data
-            const activities = [
-                {
-                    type: 'user',
-                    title: 'New User Registration',
-                    description: 'User "newuser123" joined the platform',
-                    time: '2 minutes ago'
-                },
-                {
-                    type: 'report',
-                    title: 'New Report Filed',
-                    description: 'Report filed against user "problemuser"',
-                    time: '15 minutes ago'
-                },
-                {
-                    type: 'system',
-                    title: 'System Backup Completed',
-                    description: 'Automatic backup completed successfully',
-                    time: '1 hour ago'
-                },
-                {
-                    type: 'user',
-                    title: 'Premium Upgrade',
-                    description: 'User "happyuser" upgraded to premium',
-                    time: '2 hours ago'
-                },
-                {
-                    type: 'forum',
-                    title: 'New Forum Thread',
-                    description: 'Thread "Welcome to Pal!" created in General',
-                    time: '3 hours ago'
+            try {
+                // Get actual reports data for activity feed
+                const reportsRes = await fetch('/api/report-user', { credentials: 'include' });
+                const forumRes = await fetch('/api/forum', { credentials: 'include' });
+                
+                const activities = [];
+                
+                // Add recent reports to activity feed
+                if (reportsRes.ok) {
+                    const reportsData = await reportsRes.json();
+                    if (reportsData.reports) {
+                        reportsData.reports.slice(-5).reverse().forEach(report => {
+                            activities.push({
+                                type: 'report',
+                                title: 'Report Filed',
+                                description: `Report against @${report.reportedUsername} - ${report.reason.replace('_', ' ')}`,
+                                time: formatTimestamp(report.timestamp)
+                            });
+                        });
+                    }
                 }
-            ];
+                
+                // Add recent forum threads to activity feed
+                if (forumRes.ok) {
+                    const forumData = await forumRes.json();
+                    if (forumData.threads) {
+                        forumData.threads.slice(-3).reverse().forEach(thread => {
+                            activities.push({
+                                type: 'forum',
+                                title: 'New Forum Thread',
+                                description: thread.title,
+                                time: formatTimestamp(thread.created_at)
+                            });
+                        });
+                    }
+                }
+                
+                if (activities.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <h2>No Recent Activity</h2>
+                            <p>No recent system activity to display.</p>
+                        </div>
+                    `;
+                    return;
+                }
 
-            const activitiesHTML = activities.map(activity => `
-                <div class="activity-item">
-                    <div class="activity-icon ${activity.type}">
-                        ${getActivityIcon(activity.type)}
+                const activitiesHTML = activities.map(activity => `
+                    <div class="activity-item">
+                        <div class="activity-icon ${activity.type}">
+                            ${getActivityIcon(activity.type)}
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">${activity.title}</div>
+                            <div class="activity-description">${activity.description}</div>
+                            <div class="activity-time">${activity.time}</div>
+                        </div>
                     </div>
-                    <div class="activity-content">
-                        <div class="activity-title">${activity.title}</div>
-                        <div class="activity-description">${activity.description}</div>
-                        <div class="activity-time">${activity.time}</div>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
 
-            container.innerHTML = activitiesHTML;
+                container.innerHTML = activitiesHTML;
+                
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+                addLog('ERROR', 'Failed to load recent activity');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>Error Loading Activity</h2>
+                        <p>Failed to load recent activity data.</p>
+                    </div>
+                `;
+            }
         }
 
         // Get activity icon based on type
@@ -1056,11 +1110,21 @@
                 loadRecentActivity()
             ]);
             
-            // Set server uptime (mock)
-            document.getElementById('server-uptime').textContent = '99.9%';
+            // Set server status based on diagnostic results instead of fake uptime
+            document.getElementById('server-uptime').textContent = 'Checking...';
+            document.getElementById('uptime-status').textContent = 'Running diagnostics...';
             
-            // Run initial diagnostics
-            setTimeout(() => runAllDiagnostics(), 1000);
+            // Update server status after diagnostics
+            setTimeout(async () => {
+                await runAllDiagnostics();
+                const passedTests = document.querySelectorAll('.status-pass').length;
+                const totalTests = document.querySelectorAll('.diagnostic-status').length;
+                const healthPercentage = Math.round((passedTests / totalTests) * 100);
+                
+                document.getElementById('server-uptime').textContent = `${healthPercentage}%`;
+                document.getElementById('uptime-status').textContent = healthPercentage >= 80 ? 'Healthy' : 'Issues Detected';
+                document.getElementById('uptime-status').className = healthPercentage >= 80 ? 'stat-change positive' : 'stat-change negative';
+            }, 1000);
             
             // Add initial log entries
             addLog('INFO', 'Statistics dashboard initialized');
@@ -1082,7 +1146,7 @@
         `;
         document.head.appendChild(style);
 
-        // Auto-refresh every 30 seconds
+        // Auto-refresh every 30 seconds - only refresh real data
         setInterval(() => {
             if (hasAdminPrivileges()) {
                 refreshAllStats();
