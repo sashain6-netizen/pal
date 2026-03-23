@@ -187,12 +187,12 @@ function showBanModal(username) {
 }
 
 // Delete User Confirmation
-function confirmDeleteUser(username) {
-    if (!confirm(`Are you sure you want to permanently delete @${username}? This action cannot be undone.`)) {
+async function confirmDeleteUser(username) {
+    if (!await window.gameConfirm(`Are you sure you want to permanently delete @${username}? This action cannot be undone.`, "Delete User")) {
         return;
     }
     
-    if (!confirm(`This will delete all of @${username}'s data including posts, profile, and account. Are you absolutely sure?`)) {
+    if (!await window.gameConfirm(`This will delete all of @${username}'s data including posts, profile, and account. Are you absolutely sure?`, "Final Confirmation")) {
         return;
     }
     

@@ -45,7 +45,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
     const btn = document.getElementById('submit-btn');
 
     if (!title || !content) {
-        alert("Please fill in both the title and content.");
+        await window.gameAlert("Please fill in both the title and content.", "Validation Error");
         return;
     }
 
@@ -70,16 +70,16 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
         });
 
         if (res.ok) {
-            alert("Article published successfully!");
+            await window.gameAlert("Article published successfully!", "Success");
             window.location.href = '../';
         } else {
             const errorText = await res.text();
-            alert("Error: " + errorText);
+            await window.gameAlert("Error: " + errorText, "Publish Error");
             btn.innerText = "Publish Post";
             btn.disabled = false;
         }
     } catch (err) {
-        alert("Network error. Please try again.");
+        await window.gameAlert("Network error. Please try again.", "Network Error");
         btn.innerText = "Publish Post";
         btn.disabled = false;
     }

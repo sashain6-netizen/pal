@@ -105,12 +105,12 @@ async function saveChanges() {
         if (res.ok) {
             location.reload();
         } else {
-            alert("Failed to save. Check permissions.");
+            await window.gameAlert("Failed to save. Check permissions.", "Permission Error");
             saveBtn.innerText = "Save Changes";
             saveBtn.disabled = false;
         }
     } catch (err) {
-        alert("Error connecting to server.");
+        await window.gameAlert("Error connecting to server.", "Connection Error");
         saveBtn.disabled = false;
     }
 }

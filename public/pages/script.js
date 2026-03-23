@@ -98,7 +98,7 @@ window.togglePin = async (threadId, event) => {
             loadPublicThreads(false);
         } else {
             const data = await res.json();
-            alert(data.error || "Login required to pin threads.");
+            await window.gameAlert(data.error || "Login required to pin threads.", "Permission Error");
             loadPublicThreads(false); // Revert UI
         }
     } catch (e) {
@@ -198,11 +198,11 @@ async function submitPost() {
     if (currentTab === 'public') {
         const title = document.getElementById('newTitle').value;
         const content = document.getElementById('newContent').value;
-        if (!title || !content) return alert("Title and Content required!");
+        if (!title || !content) return await window.gameAlert("Title and Content required!", "Validation Error");
         payload = { title, content };
     } else {
         const roomName = document.getElementById('roomName').value;
-        if (invitedUsers.length === 0) return alert("Invite at least one person!");
+        if (invitedUsers.length === 0) return await window.gameAlert("Invite at least one person!", "Validation Error");
         payload = { roomName, invitedUsers };
     }
 
@@ -219,10 +219,10 @@ async function submitPost() {
             currentTab === 'public' ? loadPublicThreads(false) : loadPrivateChats();
         } else {
             const errData = await res.json();
-            alert(`Error: ${errData.error}`);
+            await window.gameAlert(`Error: ${errData.error}`, "Error");
         }
     } catch (e) { 
-        alert("Server connection failed."); 
+        await window.gameAlert("Server connection failed.", "Connection Error"); 
     }
 }
 
@@ -348,7 +348,7 @@ async function checkAdminPermissions() {
 window.deleteThread = async (threadId, threadTitle, event) => {
     event.stopPropagation();
     
-    if (!confirm(`Are you sure you want to delete the thread "${threadTitle}"? This action cannot be undone.`)) {
+    if (!await window.gameConfirm(`Are you sure you want to delete the thread "${threadTitle}"? This action cannot be undone.`, "Delete Thread")) {
         return;
     }
     

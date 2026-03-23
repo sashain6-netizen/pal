@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = target.closest('.article-card');
             const id = card.dataset.id;
 
-            if (!confirm("Are you sure you want to delete this post?")) return;
+            if (!await window.gameConfirm("Are you sure you want to delete this post?", "Delete Post")) return;
 
             try {
                 const res = await fetch(`/api/news?id=${id}`, { method: 'DELETE' });
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     allArticles = allArticles.filter(a => a.id != id);
                     card.remove(); // Smoothly remove from DOM without full re-render
                 } else {
-                    alert("Failed to delete.");
+                    await window.gameAlert("Failed to delete.", "Delete Error");
                 }
             } catch (err) {
                 console.error("Delete error:", err);

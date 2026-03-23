@@ -160,7 +160,7 @@ function renderDeleteButton(user, authorUsername) {
                 // FIX: Redirect after bump so they see it at the top
                 setTimeout(() => window.location.href = '/pages', 1000);
             } catch (err) {
-                alert(err.message || "Bump failed");
+                await window.gameAlert(err.message || "Bump failed", "Error");
                 bumpBtn.disabled = false;
                 bumpBtn.innerText = "Bump Thread";
             }
@@ -179,7 +179,7 @@ function renderDeleteButton(user, authorUsername) {
 // --- MODAL & REPLIES ---
 
 async function deletePost(postId) {
-    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+    if (!await window.gameConfirm('Are you sure you want to delete this post? This action cannot be undone.', 'Delete Post')) {
         return;
     }
 
@@ -202,11 +202,11 @@ async function deletePost(postId) {
             }
         } else {
             const errData = await res.json();
-            alert(errData.error || "Failed to delete post.");
+            await window.gameAlert(errData.error || "Failed to delete post.", "Error");
         }
     } catch (e) {
         console.error(e);
-        alert("Error deleting post");
+        await window.gameAlert("Error deleting post", "Error");
     }
 }
 
@@ -230,7 +230,7 @@ async function postReply() {
             loadThread(false); 
         } else {
             const errData = await res.json();
-            alert(errData.error || "Failed to post reply.");
+            await window.gameAlert(errData.error || "Failed to post reply.", "Error");
         }
     } catch (e) {
         console.error(e);
