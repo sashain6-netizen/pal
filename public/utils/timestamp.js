@@ -5,8 +5,19 @@
 
 // Format timestamp for consistent display across the platform
 function formatTimestamp(dateString) {
-    // Ensure we're working with a proper ISO string
-    const postDate = new Date(dateString);
+    // Handle database timestamps that lack timezone info (e.g., "2026-03-11 02:46:01")
+    // These are stored as UTC in database but sent without timezone indicator
+    let postDate;
+    
+    if (dateString.includes('T') || dateString.includes('Z') || dateString.includes('+')) {
+        // Full ISO string with timezone info - parse normally
+        postDate = new Date(dateString);
+    } else {
+        // Database timestamp without timezone - treat as UTC
+        // Convert "2026-03-11 02:46:01" to "2026-03-11T02:46:01.000Z"
+        const utcString = dateString.replace(' ', 'T') + '.000Z';
+        postDate = new Date(utcString);
+    }
     
     // Check if the date is valid
     if (isNaN(postDate.getTime())) {

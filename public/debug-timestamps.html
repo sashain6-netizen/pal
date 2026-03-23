@@ -59,9 +59,17 @@
                     data.threads.forEach((thread, index) => {
                         debugInfo += `\nThread ${index + 1}:\n`;
                         debugInfo += `  Raw created_at: ${thread.created_at}\n`;
-                        debugInfo += `  Parsed Date: ${new Date(thread.created_at).toString()}\n`;
-                        debugInfo += `  Local Format: ${new Date(thread.created_at).toLocaleString()}\n`;
-                        debugInfo += `  Our Format: ${formatTimestamp(thread.created_at)}\n`;
+                        debugInfo += `  Parsed Date (old): ${new Date(thread.created_at).toString()}\n`;
+                        debugInfo += `  Local Format (old): ${new Date(thread.created_at).toLocaleString()}\n`;
+                        debugInfo += `  Our Format (fixed): ${formatTimestamp(thread.created_at)}\n`;
+                        
+                        // Show the conversion we're doing
+                        if (!thread.created_at.includes('T')) {
+                            const utcString = thread.created_at.replace(' ', 'T') + '.000Z';
+                            debugInfo += `  UTC conversion: ${utcString}\n`;
+                            debugInfo += `  Parsed UTC: ${new Date(utcString).toString()}\n`;
+                            debugInfo += `  Local from UTC: ${new Date(utcString).toLocaleString()}\n`;
+                        }
                     });
                 }
                 
