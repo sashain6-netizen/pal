@@ -16,19 +16,28 @@
             { date: new Date().toISOString(), label: 'Current time (should show time only)' },
             { date: new Date(Date.now() - 86400000).toISOString(), label: 'Yesterday (should show date)' },
             { date: '2023-01-15T10:30:00.000Z', label: 'Fixed past date' },
-            { date: '2024-12-25T14:20:00.000Z', label: 'Future date' }
+            { date: '2024-12-25T14:20:00.000Z', label: 'Future date' },
+            { date: '2026-03-23T02:00:00.000Z', label: 'The problematic date you mentioned' }
         ];
         
         testResults.innerHTML = '<h2>Test Results:</h2>';
         
         testCases.forEach(test => {
             const result = formatTimestamp(test.date);
+            const postDate = new Date(test.date);
+            const localDate = new Date(postDate.getFullYear(), postDate.getMonth(), postDate.getDate());
+            const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+            const isToday = localDate.getTime() === today.getTime();
+            
             testResults.innerHTML += `
                 <div style="margin: 10px 0; padding: 10px; border: 1px solid #ccc;">
                     <strong>${test.label}:</strong><br>
                     Input: ${test.date}<br>
                     Output: ${result}<br>
-                    Local Time: ${new Date(test.date).toLocaleString()}
+                    Local Date: ${postDate.toLocaleDateString()}<br>
+                    Local Time: ${postDate.toLocaleTimeString()}<br>
+                    Is Today: ${isToday}<br>
+                    Full Local: ${postDate.toLocaleString()}
                 </div>
             `;
         });
@@ -38,7 +47,23 @@
             <div style="margin: 20px 0; padding: 10px; background: #f0f0f0;">
                 <strong>Utility Status:</strong><br>
                 formatTimestamp function available: ${typeof formatTimestamp === 'function'}<br>
-                Browser timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+                Browser timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}<br>
+                Current time: ${new Date().toLocaleString()}<br>
+                Current UTC: ${new Date().toUTCString()}
+            </div>
+        `;
+        
+        // Debug the specific issue
+        const problematicDate = '2026-03-23T02:00:00.000Z';
+        const dateObj = new Date(problematicDate);
+        testResults.innerHTML += `
+            <div style="margin: 20px 0; padding: 10px; background: #ffcccc;">
+                <strong>Debug for 3/23 issue:</strong><br>
+                Problematic date: ${problematicDate}<br>
+                Parsed date: ${dateObj.toString()}<br>
+                Local date parts: ${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}<br>
+                Today's date parts: ${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}<br>
+                Hours difference: ${(dateObj - new Date()) / (1000 * 60 * 60)}
             </div>
         `;
     </script>
