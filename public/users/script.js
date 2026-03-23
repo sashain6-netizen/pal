@@ -154,10 +154,23 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
         
         // Ban button - only show if target has lower rank (Owners can ban anyone except other Owners)
         if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
+            console.log("Ban Logic Debug:", {
+                myRank,
+                targetRank,
+                rankHierarchy,
+                myRankValue: rankHierarchy[myRank],
+                targetRankValue: rankHierarchy[targetRank],
+                condition1: myRank === "Owner" && targetRank === "Owner",
+                condition2: myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank],
+                condition3: myRank !== "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]
+            });
+            
             // Owners can ban anyone except other Owners
             if (myRank === "Owner" && targetRank === "Owner") {
+                console.log("Condition 1 hit: Owner trying to ban another Owner - hiding button");
                 // Don't show ban button for other Owners
             } else if (myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
+                console.log("Condition 2 hit: Owner can ban lower rank - showing button");
                 // Owners can ban lower ranks
                 buttonsHTML += `
                     <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
@@ -165,12 +178,15 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
                     </button>
                 `;
             } else if (myRank !== "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
+                console.log("Condition 3 hit: Non-Owner can ban lower rank - showing button");
                 // Non-Owners can only ban lower ranks
                 buttonsHTML += `
                     <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
                         ⚡ Ban
                     </button>
                 `;
+            } else {
+                console.log("No ban condition met - hiding button");
             }
         }
         
