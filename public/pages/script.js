@@ -44,10 +44,17 @@ async function loadPublicThreads(append = false) {
                         ${t.title}
                         ${t.has_unread ? '<span class="unread-dot" title="New activity!"></span>' : ''}
                     </h3>
-                    <button id="pin-icon-${t.id}" class="pin-btn ${t.is_pinned ? 'active' : ''}" 
-                            onclick="togglePin(${t.id}, event)">
-                        📌
-                    </button>
+                    <div class="thread-controls">
+                        <button id="pin-icon-${t.id}" class="pin-btn ${t.is_pinned ? 'active' : ''}" 
+                                onclick="togglePin(${t.id}, event)">
+                            📌
+                        </button>
+                        <button id="delete-icon-${t.id}" class="delete-btn" 
+                                onclick="deleteThread(${t.id}, '${t.title.replace(/'/g, "\\'")}', event)" 
+                                style="display: none; margin-left: 8px; color: #dc2626; background: none; border: none; cursor: pointer; font-size: 16px;">
+                            🗑️
+                        </button>
+                    </div>
                 </div>
                 <div class="meta-info" onclick="location.href='/pages/thread?id=${t.id}'">
                     By <span class="user-mention ${t.isPremium ? 'premium-user-text' : ''}"
@@ -64,6 +71,9 @@ async function loadPublicThreads(append = false) {
 
         currentOffset += threads.length;
         toggleLoadMoreButton(data.hasMore);
+        
+        // Check for admin permissions and show delete buttons
+        checkAdminPermissions();
     } catch (e) { console.error(e); }
 }
 // --- PINNING LOGIC ---
@@ -314,6 +324,53 @@ document.addEventListener('click', (e) => {
         if (uRes) uRes.style.display = 'none';
     }
 });
+
+// --- ADMIN CONTROLS ---
+async function checkAdminPermissions() {
+    try {
+        const res = await fetch('/api/get-profile', { credentials: 'include' });
+        if (res.ok) {
+            const userData = await res.json();
+            const staffRoles = ["Owner", "Admin", "Moderator"];
+            if (staffRoles.includes(userData.rank)) {
+                // Show delete buttons for staff
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.style.display = 'inline-block';
+                });
+            }
+        }
+    } catch (e) {
+        console.error("Failed to check admin permissions:", e);
+    }
+}
+
+window.deleteThread = async (threadId, threadTitle, event) => {
+    event.stopPropagation();
+    
+    if (!confirm(`Are you sure you want to delete the thread "${threadTitle}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        const res = await fetch('/api/delete-thread', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ threadId }),
+            credentials: 'include'
+        });
+        
+        if (res.ok) {
+            showToast("Thread deleted successfully");
+            loadPublicThreads(false); // Refresh the thread list
+        } else {
+            const error = await res.json();
+            showToast(error.error || "Failed to delete thread");
+        }
+    } catch (e) {
+        console.error("Delete thread error:", e);
+        showToast("Error deleting thread");
+    }
+};
 
 // Launch!
 init();

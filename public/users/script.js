@@ -6,6 +6,224 @@ function getColoredSvg(color) {
         </svg>`;
 }
 
+// Report Modal Function
+function showReportModal(username, displayName) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;';
+    
+    modal.innerHTML = `
+        <div class="modal-box" style="background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <h3 style="color: var(--blue-deep); margin-bottom: 10px;">Report User</h3>
+            <p style="color: var(--blue-soft); font-size: 0.9rem; margin-bottom: 20px;">Reporting @${username}</p>
+            
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Reason:</label>
+                <select id="report-reason" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <option value="">Select a reason...</option>
+                    <option value="spam">Spam</option>
+                    <option value="harassment">Harassment</option>
+                    <option value="inappropriate_content">Inappropriate Content</option>
+                    <option value="fake_account">Fake Account</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Description (optional):</label>
+                <textarea id="report-description" placeholder="Provide additional details..." style="width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; resize: none;"></textarea>
+            </div>
+            
+            <div class="modal-buttons" style="display: flex; gap: 10px;">
+                <button id="report-submit" class="auth-btn" style="margin-top: 0;">Submit Report</button>
+                <button id="report-cancel" class="auth-btn secondary-btn" style="margin-top: 0; background: #e2e8f0; color: #1e293b;">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    document.getElementById('report-submit').onclick = async () => {
+        const reason = document.getElementById('report-reason').value;
+        const description = document.getElementById('report-description').value.trim();
+        
+        if (!reason) {
+            showToast("Please select a reason");
+            return;
+        }
+        
+        try {
+            const res = await fetch('/api/report-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reportedUsername: username,
+                    reason,
+                    description
+                })
+            });
+            
+            if (res.ok) {
+                showToast("Report submitted successfully");
+                document.body.removeChild(modal);
+            } else {
+                showToast("Failed to submit report");
+            }
+        } catch (err) {
+            showToast("Error submitting report");
+        }
+    };
+    
+    document.getElementById('report-cancel').onclick = () => {
+        document.body.removeChild(modal);
+    };
+}
+
+// Admin Controls Function
+function showAdminControls(username, myRank) {
+    const profileActions = document.querySelector('.profile-actions');
+    if (!profileActions) return;
+    
+    // Create admin controls container
+    const adminControls = document.createElement('div');
+    adminControls.className = 'admin-controls';
+    adminControls.style.cssText = 'margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;';
+    
+    let buttonsHTML = '';
+    
+    // Ban button for Admin/Moderator/Owner
+    if (["Owner", "Admin", "Moderator"].includes(myRank)) {
+        buttonsHTML += `
+            <button class="auth-btn" onclick="showBanModal('${username}')" style="background: #f59e0b; margin-bottom: 8px;">
+                Ban User
+            </button>
+        `;
+    }
+    
+    // Delete button only for Owner
+    if (myRank === "Owner") {
+        buttonsHTML += `
+            <button class="auth-btn" onclick="confirmDeleteUser('${username}')" style="background: #dc2626; margin-bottom: 8px;">
+                Delete User
+            </button>
+        `;
+    }
+    
+    adminControls.innerHTML = buttonsHTML;
+    profileActions.appendChild(adminControls);
+}
+
+// Ban Modal Function
+function showBanModal(username) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;';
+    
+    modal.innerHTML = `
+        <div class="modal-box" style="background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+            <h3 style="color: var(--blue-deep); margin-bottom: 10px;">Ban User</h3>
+            <p style="color: var(--blue-soft); font-size: 0.9rem; margin-bottom: 20px;">Banning @${username}</p>
+            
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Duration:</label>
+                <select id="ban-duration" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <option value="permanent">Permanent</option>
+                    <option value="1hour">1 Hour</option>
+                    <option value="24hours">24 Hours</option>
+                    <option value="7days">7 Days</option>
+                    <option value="30days">30 Days</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Reason:</label>
+                <textarea id="ban-reason" placeholder="Reason for ban..." style="width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; resize: none;" required></textarea>
+            </div>
+            
+            <div class="modal-buttons" style="display: flex; gap: 10px;">
+                <button id="ban-submit" class="auth-btn" style="margin-top: 0; background: #f59e0b;">Ban User</button>
+                <button id="ban-cancel" class="auth-btn secondary-btn" style="margin-top: 0; background: #e2e8f0; color: #1e293b;">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    document.getElementById('ban-submit').onclick = async () => {
+        const duration = document.getElementById('ban-duration').value;
+        const reason = document.getElementById('ban-reason').value.trim();
+        
+        if (!reason) {
+            showToast("Please provide a reason for the ban");
+            return;
+        }
+        
+        try {
+            const res = await fetch('/api/ban-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUsername: username,
+                    reason,
+                    duration
+                })
+            });
+            
+            if (res.ok) {
+                showToast(`User @${username} has been banned`);
+                document.body.removeChild(modal);
+            } else {
+                const error = await res.json();
+                showToast(error.error || "Failed to ban user");
+            }
+        } catch (err) {
+            showToast("Error banning user");
+        }
+    };
+    
+    document.getElementById('ban-cancel').onclick = () => {
+        document.body.removeChild(modal);
+    };
+}
+
+// Delete User Confirmation
+function confirmDeleteUser(username) {
+    if (!confirm(`Are you sure you want to permanently delete @${username}? This action cannot be undone.`)) {
+        return;
+    }
+    
+    if (!confirm(`This will delete all of @${username}'s data including posts, profile, and account. Are you absolutely sure?`)) {
+        return;
+    }
+    
+    deleteUser(username);
+}
+
+// Delete User Function
+async function deleteUser(username) {
+    try {
+        const res = await fetch('/api/delete-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUsername: username
+            })
+        });
+        
+        if (res.ok) {
+            showToast(`User @${username} has been deleted`);
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        } else {
+            const error = await res.json();
+            showToast(error.error || "Failed to delete user");
+        }
+    } catch (err) {
+        showToast("Error deleting user");
+    }
+}
+
 async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('id')?.toLowerCase();
@@ -40,7 +258,7 @@ async function loadProfile() {
         }
 
         // 2. Handle Profile Avatar (SVG or Image)
-        const avatarWrapper = document.getElementById('avatar-wrapper'); // <--- Defined here!
+        const avatarWrapper = document.getElementById('avatar-wrapper');
         const avatarImg = document.getElementById('display-avatar');
 
         if (avatarWrapper) {
@@ -59,13 +277,11 @@ async function loadProfile() {
         }
         
         // --- PREMIUM SECTION ---
-        // Removed the "const avatarWrapper" line from here because it's already defined above!
-        const profileCard = document.querySelector('.profile-card'); 
+        const profileCard = document.querySelector('.profile-card');
 
         if (data.isPremium) {
             if (profileCard) profileCard.classList.add('premium-card-pulse');
             
-            // We can just use avatarWrapper directly now
             if (avatarWrapper) avatarWrapper.classList.add('premium-avatar-pulse');
             
             const nameEl = document.getElementById('display-name');
@@ -73,7 +289,6 @@ async function loadProfile() {
                 nameEl.classList.add('premium-user-text');
             }
         }
-
 
         if (myData) {
             const updateNavbarIcon = () => {
@@ -99,7 +314,7 @@ async function loadProfile() {
                 const navInterval = setInterval(() => {
                     if (updateNavbarIcon()) clearInterval(navInterval);
                 }, 100);
-                setTimeout(() => clearInterval(navInterval), 3000); // Stop trying after 3s
+                setTimeout(() => clearInterval(navInterval), 3000);
             }
         }
 
@@ -125,13 +340,16 @@ async function loadProfile() {
                 : 100;
             
             xpBar.style.width = `${Math.min(progress, 100)}%`;
-            xpBar.style.backgroundColor = data.themeColor || "#2563eb"; // Color the bar too!
+            xpBar.style.backgroundColor = data.themeColor || "#2563eb";
         }
 
-        // 5. Follow/Message Button Logic
+        // 5. Follow/Message/Report Button Logic
         if (!myData || myData.username.toLowerCase() === userId) {
             if (followBtn) followBtn.style.display = 'none';
             if (messageBtn) messageBtn.style.display = 'none';
+            // Hide report button if viewing own profile
+            const reportBtn = document.getElementById('report-btn');
+            if (reportBtn) reportBtn.style.display = 'none';
         } else {
             // --- FOLLOW LOGIC ---
             const myFollowing = Array.isArray(myData.following) ? myData.following : [];
@@ -193,16 +411,16 @@ async function loadProfile() {
                 sendBtn.textContent = "Sending...";
 
                 const res = await fetch('/api/send-notification', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    targetId: userId, // The person getting the message
-                    from: myData.displayName || myData.username, // Display name
-                    fromId: myData.username, // <--- ADD THIS: Your unique ID for the link!
-                    text: msg,
-                    type: "message"
-                })
-            });
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        targetId: userId,
+                        from: myData.displayName || myData.username,
+                        fromId: myData.username,
+                        text: msg,
+                        type: "message"
+                    })
+                });
 
                 if (res.ok) {
                     showToast("Message sent successfully!");
@@ -214,9 +432,24 @@ async function loadProfile() {
                 sendBtn.disabled = false;
                 sendBtn.textContent = "Send Message";
             };
+
+            // --- REPORT BUTTON LOGIC ---
+            const reportBtn = document.getElementById('report-btn');
+            if (reportBtn) {
+                reportBtn.onclick = () => {
+                    showReportModal(data.username, data.displayName || data.username);
+                };
+            }
+        }
+
+        // --- ADMIN CONTROLS LOGIC ---
+        const staffRoles = ["Owner", "Admin", "Moderator"];
+        if (myData && staffRoles.includes(myData.rank)) {
+            showAdminControls(data.username, myData.rank);
         }
     } catch (err) {
         console.error("Load error:", err);
     }
 }
+
 document.addEventListener('DOMContentLoaded', loadProfile);

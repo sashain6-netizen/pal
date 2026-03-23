@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Management • Pal</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <style>
+        .reports-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #f59e0b;
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .report-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .report-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .report-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-resolve {
+            background: #10b981;
+            color: white;
+        }
+        .btn-view {
+            background: #3b82f6;
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+    
+    <div class="reports-container">
+        <h1>Reports Management</h1>
+        <div id="reports-list">
+            <p class="empty-state">Loading reports...</p>
+        </div>
+    </div>
+
+    <script src="/navbar.js"></script>
+    <script>
+        async function loadReports() {
+            const container = document.getElementById('reports-list');
+            
+            try {
+                const res = await fetch('/api/report-user', { credentials: 'include' });
+                
+                if (res.status === 403) {
+                    container.innerHTML = '<p class="empty-state">Access denied. Admin privileges required.</p>';
+                    return;
+                }
+                
+                if (!res.ok) {
+                    container.innerHTML = '<p class="empty-state">Failed to load reports.</p>';
+                    return;
+                }
+                
+                const data = await res.json();
+                const reports = data.reports || [];
+                
+                if (reports.length === 0) {
+                    container.innerHTML = '<p class="empty-state">No reports found.</p>';
+                    return;
+                }
+                
+                const reportsHTML = reports.map(report => `
+                    <div class="report-card">
+                        <div class="report-header">
+                            <div class="report-info">
+                                <strong>@${report.reportedUsername}</strong>
+                                <span>reported by @${report.reporterUsername}</span>
+                                <span class="report-status status-${report.status}">${report.status}</span>
+                            </div>
+                            <div class="report-actions">
+                                <button class="btn-small btn-view" onclick="viewUser('${report.reportedUsername}')">View User</button>
+                                ${report.status === 'pending' ? `
+                                    <button class="btn-small btn-resolve" onclick="resolveReport('${report.id}')">Mark Resolved</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div>
+                            <strong>Reason:</strong> ${report.reason}
+                            ${report.description ? `<br><strong>Description:</strong> ${report.description}` : ''}
+                            <br><small>Reported: ${new Date(report.timestamp).toLocaleString()}</small>
+                        </div>
+                    </div>
+                `).join('');
+                
+                container.innerHTML = reportsHTML;
+                
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                container.innerHTML = '<p class="empty-state">Error loading reports.</p>';
+            }
+        }
+        
+        async function resolveReport(reportId) {
+            try {
+                // For now, we'll just refresh the list
+                // In a full implementation, you'd have an API endpoint to update report status
+                const res = await fetch('/api/report-user', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reportId, status: 'resolved' }),
+                    credentials: 'include'
+                });
+                
+                if (res.ok) {
+                    alert('Report marked as resolved');
+                    loadReports();
+                } else {
+                    alert('Failed to resolve report');
+                }
+            } catch (error) {
+                console.error('Error resolving report:', error);
+                alert('Error resolving report');
+            }
+        }
+        
+        function viewUser(username) {
+            window.location.href = `/users?id=${username}`;
+        }
+        
+        // Load reports when page loads
+        document.addEventListener('DOMContentLoaded', loadReports);
+    </script>
+</body>
+</html>
