@@ -148,8 +148,15 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
             // Owners can ban anyone except other Owners
             if (myRank === "Owner" && targetRank === "Owner") {
                 // Don't show ban button for other Owners
+            } else if (myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
+                // Owners can ban lower ranks
+                buttonsHTML += `
+                    <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
+                        ⚡ Ban
+                    </button>
+                `;
             } else if (myRank !== "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
-                // Non-Owners can only ban lower rank
+                // Non-Owners can only ban lower ranks
                 buttonsHTML += `
                     <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
                         ⚡ Ban
