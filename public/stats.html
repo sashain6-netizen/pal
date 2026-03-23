@@ -637,29 +637,26 @@
         // Load user statistics
         async function loadUserStats() {
             try {
-                // Get total users by querying multiple common letters to estimate
+                // Get total users from the all_users_index KV storage
                 let totalUsers = 0;
-                const commonLetters = ['a', 'e', 'i', 'o', 'u', 's', 't', 'r', 'n', 'l'];
-                const foundUsers = new Set();
-                
-                // Query each letter and collect unique usernames
-                for (const letter of commonLetters) {
-                    try {
-                        const usersRes = await fetch(`/api/users-search?q=${letter}`, { credentials: 'include' });
-                        if (usersRes.ok) {
-                            const users = await usersRes.json();
-                            users.forEach(user => {
-                                if (user.username) {
-                                    foundUsers.add(user.username.toLowerCase());
-                                }
-                            });
-                        }
-                    } catch (e) {
-                        // Continue with other letters if one fails
+                try {
+                    const userStatsRes = await fetch('/api/user-stats', { credentials: 'include' });
+                    if (userStatsRes.ok) {
+                        const userStatsData = await userStatsRes.json();
+                        totalUsers = userStatsData.count || 0;
+                    } else if (userStatsRes.status === 403) {
+                        // User doesn't have admin privileges, fall back to estimation
+                        addLog('WARNING', 'No access to user stats - falling back to estimation');
+                        totalUsers = await estimateUserCount();
+                    } else {
+                        addLog('ERROR', 'Failed to fetch user stats');
+                        totalUsers = await estimateUserCount();
                     }
+                } catch (e) {
+                    console.error('Error getting user stats:', e);
+                    addLog('ERROR', 'Failed to fetch user stats, using estimation');
+                    totalUsers = await estimateUserCount();
                 }
-                
-                totalUsers = foundUsers.size;
                 
                 // Get active users from last week (users with any platform interaction)
                 let activeUsers = 0;
@@ -747,7 +744,7 @@
                 document.getElementById('active-change').style.display = 'none';
                 
                 // Add log explaining the method
-                addLog('INFO', `User count estimated by searching ${commonLetters.length} common letters: ${totalUsers} unique users found`);
+                addLog('INFO', `Total users: ${totalUsers} (from all_users_index KV storage)`);
                 addLog('INFO', `Active users in last week: ${activeUsers} (based on forum posts, reports, and platform interactions)`);
                 
             } catch (error) {
@@ -757,6 +754,32 @@
                 document.getElementById('premium-users').textContent = 'Error';
                 document.getElementById('active-users').textContent = 'Error';
             }
+        }
+        
+        // Fallback method to estimate user count when direct access isn't available
+        async function estimateUserCount() {
+            const commonLetters = ['a', 'e', 'i', 'o', 'u', 's', 't', 'r', 'n', 'l'];
+            const foundUsers = new Set();
+            
+            // Query each letter and collect unique usernames
+            for (const letter of commonLetters) {
+                try {
+                    const usersRes = await fetch(`/api/users-search?q=${letter}`, { credentials: 'include' });
+                    if (usersRes.ok) {
+                        const users = await usersRes.json();
+                        users.forEach(user => {
+                            if (user.username) {
+                                foundUsers.add(user.username.toLowerCase());
+                            }
+                        });
+                    }
+                } catch (e) {
+                    // Continue with other letters if one fails
+                }
+            }
+            
+            addLog('INFO', `User count estimated by searching ${commonLetters.length} common letters: ${foundUsers.size} unique users found`);
+            return foundUsers.size;
         }
 
         // Load forum statistics
