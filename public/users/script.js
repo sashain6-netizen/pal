@@ -95,11 +95,23 @@ function showAdminControls(username, myRank) {
 }
 
 // User Actions Dropdown Function
-function showUserActionsDropdown(username, myRank, flagElement) {
+async function showUserActionsDropdown(username, myRank, flagElement) {
     // Remove existing dropdown if any
     const existingDropdown = document.getElementById('admin-dropdown');
     if (existingDropdown) {
         existingDropdown.remove();
+    }
+    
+    // Fetch target user's rank
+    let targetRank = "Member";
+    try {
+        const res = await fetch(`/api/get-user-public?id=${username}`);
+        if (res.ok) {
+            const userData = await res.json();
+            targetRank = userData.rank || "Member";
+        }
+    } catch (err) {
+        console.error("Failed to fetch user rank:", err);
     }
     
     // Create dropdown
@@ -126,11 +138,14 @@ function showUserActionsDropdown(username, myRank, flagElement) {
         </button>
     `;
     
-    // Staff-only options
+    // Staff-only options with rank checking
     const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
     if (myRank && staffRoles.includes(myRank)) {
-        // Ban button for Admin/Moderator/Owner/Manager
-        if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
+        const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
+        
+        // Ban button - only show if target has lower rank
+        if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank) && 
+            rankHierarchy[targetRank] < rankHierarchy[myRank]) {
             buttonsHTML += `
                 <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
                     ⚡ Ban
@@ -138,8 +153,8 @@ function showUserActionsDropdown(username, myRank, flagElement) {
             `;
         }
         
-        // Delete button only for Owner
-        if (myRank === "Owner") {
+        // Delete button only for Owner (and only on lower ranks)
+        if (myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
             buttonsHTML += `
                 <button class="admin-dropdown-btn" onclick="confirmDeleteUser('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #dc2626;">
                     🗑️ Delete
