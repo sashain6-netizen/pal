@@ -54,6 +54,14 @@ function renderReports() {
                            report.status === 'resolved' ? 'resolved' : 'deleted';
         const statusText = report.status.charAt(0).toUpperCase() + report.status.slice(1);
         
+        console.log("Report Debug:", {
+            id: report.id,
+            status: report.status,
+            statusClass,
+            showResolve: report.status === 'pending',
+            showDelete: report.status !== 'deleted'
+        });
+        
         return `
             <div class="report-card ${statusClass}">
                 <div class="report-header">
@@ -74,7 +82,7 @@ function renderReports() {
                     
                     <div class="report-actions">
                         <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn secondary-btn" target="_blank">
-                            � View User
+                            👤 View User
                         </a>
                         ${report.status === 'pending' ? `
                             <button onclick="resolveReport('${report.id}')" class="admin-btn success-btn">
