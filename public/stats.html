@@ -798,7 +798,17 @@
 
         // Run individual diagnostic
         async function runDiagnostic(name, testFunction) {
-            const statusElement = document.querySelector(`.diagnostic-name:contains("${name}") + .diagnostic-status`);
+            // Find the diagnostic item by name and update its status
+            const diagnosticItems = document.querySelectorAll('.diagnostic-item');
+            let statusElement = null;
+            
+            diagnosticItems.forEach(item => {
+                const nameElement = item.querySelector('.diagnostic-name');
+                if (nameElement && nameElement.textContent.trim() === name) {
+                    statusElement = item.querySelector('.diagnostic-status');
+                }
+            });
+            
             if (statusElement) {
                 statusElement.className = 'diagnostic-status status-running';
                 statusElement.textContent = 'Running...';
