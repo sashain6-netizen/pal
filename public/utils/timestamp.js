@@ -35,11 +35,11 @@ function formatTimestamp(dateString) {
     
     // Format based on whether it's today or not
     if (isToday) {
-        // Show time only for today's posts
+        // Show time only for today's posts with AM/PM
         return postDate.toLocaleTimeString([], { 
             hour: '2-digit', 
             minute: '2-digit',
-            hour12: false // Use 24-hour format for consistency
+            hour12: true // Use 12-hour format with AM/PM
         });
     } else {
         // Show date for older posts
