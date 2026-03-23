@@ -270,7 +270,7 @@ function addAdminButton() {
         
         // Add Admin link
         const adminLink = document.createElement('a');
-        adminLink.href = '/admin/reports.html';
+        adminLink.href = '/admin/index.html';
         adminLink.id = 'admin-link';
         adminLink.style.cssText = 'color: #dc2626; font-weight: 600; font-size: 0.9rem;';
         adminLink.textContent = 'Admin';

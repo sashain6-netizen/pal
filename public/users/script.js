@@ -143,14 +143,19 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
     if (myRank && staffRoles.includes(myRank)) {
         const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
         
-        // Ban button - only show if target has lower rank
-        if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank) && 
-            rankHierarchy[targetRank] < rankHierarchy[myRank]) {
-            buttonsHTML += `
-                <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
-                    ⚡ Ban
-                </button>
-            `;
+        // Ban button - only show if target has lower rank (Owners can ban anyone except other Owners)
+        if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
+            // Owners can ban anyone except other Owners
+            if (myRank === "Owner" && targetRank === "Owner") {
+                // Don't show ban button for other Owners
+            } else if (myRank !== "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
+                // Non-Owners can only ban lower rank
+                buttonsHTML += `
+                    <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
+                        ⚡ Ban
+                    </button>
+                `;
+            }
         }
         
         // Delete button only for Owner (and only on lower ranks)

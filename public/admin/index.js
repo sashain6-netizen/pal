@@ -98,6 +98,11 @@ function renderReports() {
 // Banned Users Management
 async function loadBannedUsers() {
     try {
+        // Get current user's rank for permission checking
+        const profileResponse = await fetch('/api/get-profile');
+        const currentUser = profileResponse.ok ? await profileResponse.json() : null;
+        const myRank = currentUser?.rank || 'Member';
+        
         const response = await fetch('/api/banned-users');
         if (!response.ok) {
             throw new Error('Failed to fetch banned users');
@@ -107,7 +112,7 @@ async function loadBannedUsers() {
         bannedUsersData = data.bannedUsers || [];
         filteredBannedUsers = [...bannedUsersData];
         
-        renderBannedUsers();
+        renderBannedUsers(myRank);
     } catch (error) {
         console.error('Error loading banned users:', error);
         showToast('Failed to load banned users', 'error');
@@ -115,7 +120,7 @@ async function loadBannedUsers() {
     }
 }
 
-function renderBannedUsers() {
+function renderBannedUsers(myRank) {
     const container = document.getElementById('banned-users-list');
     
     if (filteredBannedUsers.length === 0) {
@@ -132,6 +137,12 @@ function renderBannedUsers() {
     const usersHTML = filteredBannedUsers.map(user => {
         const timeDisplay = formatTimeRemaining(user.timeRemaining);
         const banStatusClass = user.banStatus === 'Permanent' ? 'permanent' : 'temporary';
+        
+        // Check if current user can unban this user
+        const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
+        const canUnban = myRank === "Owner" ? 
+            (user.rank !== "Owner") : // Owners can unban anyone except other Owners
+            (rankHierarchy[user.rank] < rankHierarchy[myRank]); // Non-Owners can only unban lower ranks
         
         return `
             <div class="banned-user-card ${banStatusClass}">
@@ -173,9 +184,11 @@ function renderBannedUsers() {
                     <a href="/users?id=${user.username}" class="admin-btn secondary-btn" target="_blank">
                         👁️ View Profile
                     </a>
-                    <button onclick="showUnbanModal('${user.username}', '${user.displayName}')" class="admin-btn success-btn">
-                        ✅ Unban
-                    </button>
+                    ${canUnban ? `
+                        <button onclick="showUnbanModal('${user.username}', '${user.displayName}')" class="admin-btn success-btn">
+                            ✅ Unban
+                        </button>
+                    ` : ''}
                 </div>
             </div>
         `;

@@ -36,9 +36,16 @@ export async function onRequestPost(context) {
 
         const target = JSON.parse(targetData);
 
-        // 5. Prevent banning higher rank users
+        // 5. Prevent banning higher rank users (Owners can ban anyone except other Owners)
         const rankHierarchy = { "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0 };
-        if (rankHierarchy[target.rank] >= rankHierarchy[banner.rank]) {
+        
+        // Owners can ban anyone except other Owners
+        if (banner.rank === "Owner" && target.rank === "Owner") {
+            return new Response(JSON.stringify({ error: "Cannot ban another Owner" }), { status: 403 });
+        }
+        
+        // Non-Owners cannot ban equal or higher rank
+        if (banner.rank !== "Owner" && rankHierarchy[target.rank] >= rankHierarchy[banner.rank]) {
             return new Response(JSON.stringify({ error: "Cannot ban users with equal or higher rank" }), { status: 403 });
         }
 
