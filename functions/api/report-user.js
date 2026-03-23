@@ -98,13 +98,18 @@ export async function onRequestPut(context) {
 
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = payload.username.toLowerCase();
+        
+        console.log('JWT decoded:', { username, hasToken: !!token });
 
         // 2. Check if user is admin/staff
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
         
+        console.log('Report access check (PUT):', { username, userRank: user.rank });
+        
         const staffRoles = ["Owner", "Admin", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
+            console.log('Access denied (PUT) - user rank:', user.rank, 'allowed roles:', staffRoles);
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
         }
 
@@ -170,13 +175,18 @@ export async function onRequestGet(context) {
 
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = payload.username.toLowerCase();
+        
+        console.log('JWT decoded:', { username, hasToken: !!token });
 
         // 2. Check if user is admin/staff
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
         
+        console.log('Report access check (GET):', { username, userRank: user.rank });
+        
         const staffRoles = ["Owner", "Admin", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
+            console.log('Access denied (GET) - user rank:', user.rank, 'allowed roles:', staffRoles);
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
         }
 
