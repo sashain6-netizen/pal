@@ -738,8 +738,12 @@
         // Load activity data for chart
         async function loadActivityData() {
             try {
-                // Since we don't have historical activity data, remove the chart
-                document.querySelector('.section:has(#activity-chart)').style.display = 'none';
+                // Since we don't have historical activity data, hide the chart section
+                const chartSection = document.querySelector('.section h2');
+                const chartSectionContainer = chartSection ? chartSection.closest('.section') : null;
+                if (chartSectionContainer && chartSectionContainer.textContent.includes('User Activity')) {
+                    chartSectionContainer.style.display = 'none';
+                }
                 addLog('INFO', 'Activity chart disabled - no historical data available');
             } catch (error) {
                 console.error('Error loading activity data:', error);
@@ -815,7 +819,7 @@
             const diagnosticItems = document.querySelectorAll('.diagnostic-item');
             diagnosticItems.forEach(item => {
                 const nameElement = item.querySelector('.diagnostic-name');
-                if (nameElement && nameElement.textContent === name) {
+                if (nameElement && nameElement.textContent.trim() === name) {
                     const statusElement = item.querySelector('.diagnostic-status');
                     statusElement.className = `diagnostic-status status-${passed ? 'pass' : 'fail'}`;
                     statusElement.textContent = passed ? 'Pass' : 'Fail';
@@ -861,9 +865,14 @@
 
         async function testPremiumSystem() {
             try {
-                // Test premium data access
-                const res = await fetch('/api/check-premium', { credentials: 'include' });
-                return res.ok;
+                // Test if we can access premium-related data
+                const res = await fetch('/api/me', { credentials: 'include' });
+                if (res.ok) {
+                    const userData = await res.json();
+                    // Check if the response includes premium data
+                    return userData.hasOwnProperty('isPremium');
+                }
+                return false;
             } catch (error) {
                 return false;
             }
@@ -900,16 +909,13 @@
         // Fetch premium data from actual API
         async function fetchPremiumData() {
             try {
-                const res = await fetch('/api/check-premium', { credentials: 'include' });
+                // Since check-premium doesn't exist, try to get premium data from me endpoint
+                const res = await fetch('/api/me', { credentials: 'include' });
                 if (res.ok) {
-                    const data = await res.json();
-                    // The API might return different formats, handle both array and object
-                    if (Array.isArray(data)) {
-                        return data;
-                    } else if (data && typeof data === 'object') {
-                        // If it's an object with usernames as keys
-                        return Object.keys(data);
-                    }
+                    const userData = await res.json();
+                    // We can't get all premium users from this endpoint, return empty array
+                    // The premium count will be 0 until a proper endpoint exists
+                    return [];
                 }
                 return [];
             } catch (error) {
