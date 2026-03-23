@@ -73,9 +73,9 @@ function renderReports() {
                     </div>
                     
                     <div class="report-actions">
-                        <button onclick="viewReportDetails('${report.id}')" class="admin-btn secondary-btn">
-                            👁️ View Details
-                        </button>
+                        <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn secondary-btn" target="_blank">
+                            � View User
+                        </a>
                         ${report.status === 'pending' ? `
                             <button onclick="resolveReport('${report.id}')" class="admin-btn success-btn">
                                 ✅ Resolve
@@ -264,29 +264,6 @@ function filterBannedUsers() {
 }
 
 // Report Actions
-function viewReportDetails(reportId) {
-    const report = reportsData.find(r => r.id === reportId);
-    if (!report) return;
-    
-    const content = `
-        <div class="report-detail">
-            <p><strong>Report ID:</strong> #${report.id}</p>
-            <p><strong>Date:</strong> ${formatDate(report.date)}</p>
-            <p><strong>Status:</strong> ${report.status}</p>
-            <p><strong>Reported User:</strong> ${escapeHTML(report.reportedUsername)}</p>
-            <p><strong>Reporter:</strong> ${escapeHTML(report.reporterUsername)}</p>
-            <p><strong>Reason:</strong> ${escapeHTML(report.reason)}</p>
-            ${report.description ? `<p><strong>Description:</strong> ${escapeHTML(report.description)}</p>` : ''}
-            ${report.resolvedAt ? `<p><strong>Resolved At:</strong> ${formatDate(report.resolvedAt)}</p>` : ''}
-            ${report.resolvedBy ? `<p><strong>Resolved By:</strong> ${escapeHTML(report.resolvedBy)}</p>` : ''}
-        </div>
-    `;
-    
-    document.getElementById('report-modal-title').textContent = `Report #${report.id}`;
-    document.getElementById('report-modal-content').innerHTML = content;
-    document.getElementById('report-modal').style.display = 'flex';
-}
-
 async function resolveReport(reportId) {
     try {
         const response = await fetch('/api/report-user', {
@@ -383,12 +360,7 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
 });
 
 // Modal Management
-document.getElementById('close-report-modal')?.addEventListener('click', closeReportModal);
 document.getElementById('cancel-unban')?.addEventListener('click', closeUnbanModal);
-
-function closeReportModal() {
-    document.getElementById('report-modal').style.display = 'none';
-}
 
 function closeUnbanModal() {
     document.getElementById('unban-modal').style.display = 'none';
