@@ -795,3 +795,30 @@
     14%         { left: calc(100% + 85px); opacity: 0; }
     14.1%, 100% { left: -85px; opacity: 0; }
 }
+
+/* ── Delete Post Button ───────────────────────────────────────── */
+
+.delete-post-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    margin-left: 8px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-post-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.delete-post-btn:active {
+    transform: scale(0.95);
+}

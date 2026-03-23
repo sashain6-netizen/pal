@@ -51,10 +51,18 @@ async function loadThread(append = false) {
             <div class="planet p-teal"></div>` 
             : '';
 
+        // Check if current user can delete this post
+        const canDeletePost = currentUser && (
+            currentUser.username === post.username || 
+            currentUser.username === data.author_username ||
+            ["Owner", "Admin", "Moderator"].includes(currentUser.rank)
+        );
+
         return `
     <div class="compact-post-row ${showPremiumBg ? 'premium-post' : ''} ${animClass}"
         style="--premium-forum-color: ${forumColor};" 
-        data-animation="${animType}">
+        data-animation="${animType}"
+        data-post-id="${post.id}">
 
         ${divineExtras} <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
 
@@ -72,6 +80,14 @@ async function loadThread(append = false) {
                 <span class="content">${escapeHTML(post.content)}</span>
                 ${post.postCaption ? `<span class="post-caption">${escapeHTML(post.postCaption)}</span>` : ''}
             </span>
+            ${canDeletePost ? `
+                <button class="delete-post-btn" onclick="deletePost(${post.id})" title="Delete post">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                    </svg>
+                </button>
+            ` : ''}
         </div>
         <span class="timestamp">${formatTimestamp(post.created_at)}</span>
     </div>`;
@@ -165,6 +181,38 @@ function renderDeleteButton(user, authorUsername) {
 }
 
 // --- MODAL & REPLIES ---
+
+async function deletePost(postId) {
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/delete-post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId }),
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            if (window.showToast) showToast("Post deleted successfully!");
+            // Remove the post element from DOM
+            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+            if (postElement) {
+                postElement.style.transition = 'opacity 0.3s ease';
+                postElement.style.opacity = '0';
+                setTimeout(() => postElement.remove(), 300);
+            }
+        } else {
+            const errData = await res.json();
+            alert(errData.error || "Failed to delete post.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Error deleting post");
+    }
+}
 
 async function postReply() {
     const replyInput = document.getElementById('replyText');
