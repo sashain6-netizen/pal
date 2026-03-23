@@ -1,0 +1,452 @@
+/* Banned Users Page Styles */
+.admin-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.admin-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-logo h1 {
+    margin: 0 0 8px 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.admin-logo p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.admin-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.admin-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.admin-btn.secondary-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.admin-btn.danger-btn {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: white;
+}
+
+.admin-btn.unban-btn {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: white;
+}
+
+/* Stats Section */
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 30px;
+    background: #f8fafc;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+/* Main Content */
+.banned-users-container {
+    padding: 30px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.8rem;
+}
+
+.search-filter {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.search-input {
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    min-width: 250px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.filter-select {
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+}
+
+/* Banned Users List */
+.banned-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.banned-user-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 25px;
+    align-items: start;
+    transition: all 0.3s ease;
+    border-left: 4px solid #e2e8f0;
+}
+
+.banned-user-card.temporary {
+    border-left-color: #f59e0b;
+}
+
+.banned-user-card.permanent {
+    border-left-color: #dc2626;
+}
+
+.banned-user-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* User Info Section */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #e2e8f0;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    color: #1e293b;
+    font-size: 1.2rem;
+}
+
+.user-details p {
+    margin: 0 0 5px 0;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.user-rank {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #667eea;
+    color: white;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Ban Info Section */
+.ban-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ban-info > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ban-info strong {
+    color: #374151;
+    font-weight: 600;
+    min-width: 100px;
+}
+
+.ban-status {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.ban-status.temporary {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.ban-status.permanent {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.countdown {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #059669;
+}
+
+.time-remaining .countdown {
+    color: #dc2626;
+}
+
+/* User Actions */
+.user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.user-actions .admin-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    justify-content: center;
+}
+
+/* Loading and Empty States */
+.loading-state, .empty-state, .error-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.empty-icon, .error-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.empty-state h3, .error-state h3 {
+    margin: 0 0 10px 0;
+    color: #374151;
+}
+
+.empty-state p, .error-state p {
+    margin: 0 0 20px 0;
+    font-size: 1.1rem;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.modal-box h3 {
+    margin: 0 0 15px 0;
+    color: #1e293b;
+    font-size: 1.5rem;
+}
+
+.modal-box p {
+    margin: 0 0 25px 0;
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+.toast {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    border-left: 4px solid #667eea;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-success {
+    border-left-color: #16a34a;
+}
+
+.toast-error {
+    border-left-color: #dc2626;
+}
+
+.toast-info {
+    border-left-color: #0ea5e9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-filter {
+        flex-direction: column;
+    }
+    
+    .search-input {
+        min-width: 100%;
+    }
+    
+    .banned-user-card {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .user-actions {
+        flex-direction: row;
+    }
+    
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+}
