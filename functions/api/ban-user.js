@@ -45,30 +45,54 @@ export async function onRequestPost(context) {
         // 6. Calculate ban expiration
         let banExpiration = null;
         if (duration && duration !== "permanent") {
-            const durationMap = {
-                "1hour": 1 * 60 * 60 * 1000,
-                "24hours": 24 * 60 * 60 * 1000,
-                "7days": 7 * 24 * 60 * 60 * 1000,
-                "30days": 30 * 24 * 60 * 60 * 1000
-            };
-            
             let durationMs;
-            if (durationMap[duration]) {
-                // Preset duration
-                durationMs = durationMap[duration];
+            
+            // Handle new seconds-based format (e.g., "3600seconds")
+            const secondsMatch = duration.match(/^(\d+)seconds$/);
+            if (secondsMatch) {
+                const seconds = parseInt(secondsMatch[1]);
+                // Validate maximum duration (365 days in seconds)
+                const maxSeconds = 365 * 24 * 60 * 60;
+                if (seconds > maxSeconds) {
+                    return new Response(JSON.stringify({ error: "Maximum ban duration is 365 days" }), { status: 400 });
+                }
+                if (seconds <= 0) {
+                    return new Response(JSON.stringify({ error: "Duration must be greater than 0" }), { status: 400 });
+                }
+                durationMs = seconds * 1000;
             } else {
-                // Custom duration (format: "Xdays")
-                const customMatch = duration.match(/^(\d+)days$/);
-                if (customMatch) {
-                    const days = parseInt(customMatch[1]);
-                    if (days >= 1 && days <= 365) {
-                        durationMs = days * 24 * 60 * 60 * 1000;
+                // Legacy support for old preset durations
+                const durationMap = {
+                    "1hour": 1 * 60 * 60 * 1000,
+                    "24hours": 24 * 60 * 60 * 1000,
+                    "7days": 7 * 24 * 60 * 60 * 1000,
+                    "30days": 30 * 24 * 60 * 60 * 1000
+                };
+                
+                if (durationMap[duration]) {
+                    durationMs = durationMap[duration];
+                } else {
+                    // Legacy custom duration (format: "Xdays")
+                    const customMatch = duration.match(/^(\d+)days$/);
+                    if (customMatch) {
+                        const days = parseInt(customMatch[1]);
+                        if (days >= 1 && days <= 365) {
+                            durationMs = days * 24 * 60 * 60 * 1000;
+                        }
                     }
                 }
             }
             
             if (durationMs) {
+                // Additional safety check - ensure we're not dealing with absurdly large numbers
+                const maxMs = 365 * 24 * 60 * 60 * 1000; // 365 days in milliseconds
+                if (durationMs > maxMs) {
+                    return new Response(JSON.stringify({ error: "Maximum ban duration is 365 days" }), { status: 400 });
+                }
+                
                 banExpiration = new Date(Date.now() + durationMs).toISOString();
+            } else {
+                return new Response(JSON.stringify({ error: "Invalid duration format" }), { status: 400 });
             }
         }
 

@@ -173,22 +173,29 @@ function showBanModal(username) {
                 <label style="display: block; margin-bottom: 8px; font-weight: 600;">Duration:</label>
                 <select id="ban-duration-type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
                     <option value="permanent">Permanent</option>
-                    <option value="preset">Preset Duration</option>
                     <option value="custom">Custom Duration</option>
                 </select>
                 
-                <div id="preset-options" style="display: none;">
-                    <select id="ban-duration" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                        <option value="1hour">1 Hour</option>
-                        <option value="24hours">24 Hours</option>
-                        <option value="7days">7 Days</option>
-                        <option value="30days">30 Days</option>
-                    </select>
-                </div>
-                
                 <div id="custom-options" style="display: none;">
-                    <input type="number" id="custom-days" min="1" max="365" placeholder="Number of days (1-365)" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <small style="color: #64748b; font-size: 0.8rem;">Enter a value between 1 and 365 days</small>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-size: 0.9rem; color: #64748b;">Days</label>
+                            <input type="number" id="ban-days" min="0" max="365" value="0" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-size: 0.9rem; color: #64748b;">Hours</label>
+                            <input type="number" id="ban-hours" min="0" max="23" value="0" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-size: 0.9rem; color: #64748b;">Minutes</label>
+                            <input type="number" id="ban-minutes" min="0" max="59" value="0" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 4px; font-size: 0.9rem; color: #64748b;">Seconds</label>
+                            <input type="number" id="ban-seconds" min="0" max="59" value="0" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        </div>
+                    </div>
+                    <small style="color: #64748b; font-size: 0.8rem;">Maximum: 365 days, 23 hours, 59 minutes, 59 seconds</small>
                 </div>
             </div>
             
@@ -208,19 +215,62 @@ function showBanModal(username) {
     
     // Handle duration type changes
     const durationType = document.getElementById('ban-duration-type');
-    const presetOptions = document.getElementById('preset-options');
     const customOptions = document.getElementById('custom-options');
     
     durationType.onchange = () => {
-        presetOptions.style.display = 'none';
-        customOptions.style.display = 'none';
-        
-        if (durationType.value === 'preset') {
-            presetOptions.style.display = 'block';
-        } else if (durationType.value === 'custom') {
-            customOptions.style.display = 'block';
-        }
+        customOptions.style.display = durationType.value === 'custom' ? 'block' : 'none';
     };
+    
+    // Add input validation for time fields
+    const timeInputs = ['ban-days', 'ban-hours', 'ban-minutes', 'ban-seconds'];
+    timeInputs.forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('input', () => {
+            const max = parseInt(input.max);
+            const min = parseInt(input.min);
+            let value = parseInt(input.value) || 0;
+            
+            // Clamp to valid range
+            if (value > max) input.value = max;
+            if (value < min) input.value = min;
+            
+            // Calculate total duration to prevent overflow
+            const totalSeconds = calculateTotalBanDuration();
+            const maxSeconds = 365 * 24 * 60 * 60; // 365 days in seconds
+            
+            if (totalSeconds > maxSeconds) {
+                // Adjust to prevent overflow
+                adjustTimeInputsToMax();
+                showToast('Maximum duration is 365 days');
+            }
+        });
+    });
+    
+    function calculateTotalBanDuration() {
+        const days = parseInt(document.getElementById('ban-days').value) || 0;
+        const hours = parseInt(document.getElementById('ban-hours').value) || 0;
+        const minutes = parseInt(document.getElementById('ban-minutes').value) || 0;
+        const seconds = parseInt(document.getElementById('ban-seconds').value) || 0;
+        
+        return days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
+    }
+    
+    function adjustTimeInputsToMax() {
+        const maxSeconds = 365 * 24 * 60 * 60;
+        let remaining = maxSeconds;
+        
+        const days = Math.floor(remaining / (24 * 60 * 60));
+        remaining %= (24 * 60 * 60);
+        const hours = Math.floor(remaining / (60 * 60));
+        remaining %= (60 * 60);
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        
+        document.getElementById('ban-days').value = days;
+        document.getElementById('ban-hours').value = hours;
+        document.getElementById('ban-minutes').value = minutes;
+        document.getElementById('ban-seconds').value = seconds;
+    }
     
     document.getElementById('ban-submit').onclick = async () => {
         const durationTypeValue = durationType.value;
@@ -228,15 +278,20 @@ function showBanModal(username) {
         
         if (durationTypeValue === 'permanent') {
             duration = 'permanent';
-        } else if (durationTypeValue === 'preset') {
-            duration = document.getElementById('ban-duration').value;
         } else if (durationTypeValue === 'custom') {
-            const customDays = parseInt(document.getElementById('custom-days').value);
-            if (!customDays || customDays < 1 || customDays > 365) {
-                showToast('Please enter a valid number of days (1-365)');
+            const totalSeconds = calculateTotalBanDuration();
+            
+            if (totalSeconds === 0) {
+                showToast('Please specify a duration greater than 0');
                 return;
             }
-            duration = `${customDays}days`;
+            
+            if (totalSeconds > 365 * 24 * 60 * 60) {
+                showToast('Maximum duration is 365 days');
+                return;
+            }
+            
+            duration = `${totalSeconds}seconds`;
         }
         
         const reason = document.getElementById('ban-reason').value.trim();
