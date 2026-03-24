@@ -105,9 +105,9 @@ function renderReports() {
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn">
                                 👤 View User
                             </a>
-                            ${currentUserRank === 'Owner' || currentUserRank === 'Admin' ? `
-                                <button onclick="showBanModal('${escapeHTML(report.reportedUsername)}')" class="admin-btn danger-btn">
-                                🚫 Ban User
+                            ${currentUserRank === 'Owner' ? `
+                                <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
+                                    🗑️ Delete
                                 </button>
                             ` : ''}
                         ` : `
@@ -122,11 +122,6 @@ function renderReports() {
                             <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
                                 🗑️ Delete
                             </button>
-                            ${currentUserRank === 'Owner' || currentUserRank === 'Admin' ? `
-                                <button onclick="showBanModal('${escapeHTML(report.reportedUsername)}')" class="admin-btn danger-btn">
-                                    🚫 Ban User
-                                </button>
-                            ` : ''}
                         `}
                     </div>
                 </div>
