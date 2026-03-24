@@ -83,9 +83,9 @@ function renderReports() {
                     
                     <div class="report-actions">
                         ${isResolved ? `
-                            <button onclick="viewReportDetails('${report.id}')" class="admin-btn primary-btn">
-                                📋 View Report
-                            </button>
+                            <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn" target="_blank">
+                                � View User
+                            </a>
                         ` : `
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn user-link-btn" target="_blank">
                                 👤 View User
@@ -95,11 +95,9 @@ function renderReports() {
                                     ✅ Resolve
                                 </button>
                             ` : ''}
-                            ${report.status !== 'deleted' ? `
-                                <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
-                                    🗑️ Delete
-                                </button>
-                            ` : ''}
+                            <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
+                                🗑️ Delete
+                            </button>
                         `}
                     </div>
                 </div>
@@ -279,13 +277,6 @@ function filterBannedUsers() {
 }
 
 // Report Actions
-function viewReportDetails(reportId) {
-    const report = reportsData.find(r => r.id === reportId);
-    if (!report) return;
-    
-    showToast(`Report #${report.id} - ${report.reason} by ${report.reporterUsername}`, 'info');
-}
-
 async function resolveReport(reportId) {
     try {
         const response = await fetch('/api/report-user', {
