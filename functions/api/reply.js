@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
         if (premiumData) {
             try {
                 const premiumUsers = JSON.parse(premiumData);
-                const uname = String(user.username || "").toLowerCase();
+                const uname = String(payload.username || "").toLowerCase();
                 if (Array.isArray(premiumUsers)) {
                     isPremium = premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
                 } else if (premiumUsers && typeof premiumUsers === "object") {
@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
         await env.DB.batch([
             env.DB.prepare(
                 "INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)"
-            ).bind(threadId, user.username, contentStr.trim()),
+            ).bind(threadId, payload.username, contentStr.trim()),
             
             env.DB.prepare(
                 "UPDATE threads SET last_activity_at = CURRENT_TIMESTAMP WHERE id = ?"

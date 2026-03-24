@@ -17,12 +17,53 @@ export async function onRequest(context) {
 
     try {
         if (method === "GET") {
-            // Ensure bumps table exists so the JOIN + ORDER BY works on fresh DBs
+            // Ensure required tables exist so the JOIN + ORDER BY works on fresh DBs
+            await env.DB.prepare(`
+                CREATE TABLE IF NOT EXISTS threads (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    creator_username TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    last_activity_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+            `).run();
+
+            await env.DB.prepare(`
+                CREATE TABLE IF NOT EXISTS thread_posts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    thread_id INTEGER NOT NULL,
+                    username TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (thread_id) REFERENCES threads(id) ON DELETE CASCADE
+                )
+            `).run();
+
             await env.DB.prepare(`
                 CREATE TABLE IF NOT EXISTS thread_bumps (
                     thread_id INTEGER PRIMARY KEY,
                     bumped_at TEXT NOT NULL,
                     bumped_by TEXT NOT NULL
+                )
+            `).run();
+
+            await env.DB.prepare(`
+                CREATE TABLE IF NOT EXISTS pinned_threads (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_username TEXT NOT NULL,
+                    thread_id INTEGER NOT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(user_username, thread_id)
+                )
+            `).run();
+
+            await env.DB.prepare(`
+                CREATE TABLE IF NOT EXISTS last_read (
+                    user_username TEXT NOT NULL,
+                    item_id INTEGER NOT NULL,
+                    item_type TEXT NOT NULL,
+                    last_viewed_at TEXT NOT NULL,
+                    PRIMARY KEY (user_username, item_id, item_type)
                 )
             `).run();
 
