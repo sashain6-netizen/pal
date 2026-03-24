@@ -187,6 +187,9 @@ function injectNavbar() {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     window.navbarHasLoaded = true;
 
+    // Setup mobile menu functionality
+    setupMobileMenu();
+
     window.addEventListener('authReady', (e) => {
         const userData = e.detail;
         const icon = document.getElementById('profile-icon');
@@ -255,6 +258,33 @@ async function checkAdminStatus() {
         }
     } catch (e) {
         console.error("Failed to check admin status:", e);
+    }
+}
+
+// --- MOBILE MENU TOGGLE ---
+function setupMobileMenu() {
+    const navbar = document.querySelector('.navbar');
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            navbar.classList.toggle('mobile-active');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navbar.classList.contains('mobile-active') && 
+                !navbar.contains(e.target)) {
+                navbar.classList.remove('mobile-active');
+            }
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navbar.classList.contains('mobile-active')) {
+                navbar.classList.remove('mobile-active');
+            }
+        });
     }
 }
 

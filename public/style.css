@@ -429,6 +429,9 @@ html, body {
   font-size: 0.9rem;
 }
 
+/* ===========================
+   MOBILE RESPONSIVENESS
+   =========================== */
 @media (max-width: 768px) {
   .navbar {
     padding: 15px 20px;
@@ -436,6 +439,39 @@ html, body {
   
   .nav-links {
     display: none; 
+  }
+
+  /* Mobile menu button */
+  .menu-toggle {
+    display: flex;
+  }
+
+  /* Mobile navigation */
+  .navbar.mobile-active .nav-links {
+    display: flex;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: rgba(248, 250, 255, 0.95);
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    gap: 15px;
+  }
+
+  .navbar.mobile-active .menu-toggle span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .navbar.mobile-active .menu-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .navbar.mobile-active .menu-toggle span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
   }
 
   .dropdown-menu { 
@@ -448,6 +484,23 @@ html, body {
 
   .smile-svg {
     width: 65vw;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .content-area {
+    padding: 60px 15px;
+  }
+
+  .container {
+    padding: 0;
+  }
+
+  .scene {
+    padding-top: 100px;
   }
 }
 

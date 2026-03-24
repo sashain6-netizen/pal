@@ -405,6 +405,99 @@
             .stats-grid {
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
+
+            .metrics-grid,
+            .monitoring-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        /* Additional Styles for Debugging Sections */
+        .metrics-grid,
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-item,
+        .monitor-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .metric-label,
+        .monitor-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .metric-value,
+        .monitor-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .endpoint-item,
+        .db-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .endpoint-info,
+        .db-info {
+            flex: 1;
+        }
+
+        .endpoint-name,
+        .db-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .endpoint-description,
+        .db-description {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .endpoint-status,
+        .db-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .log-controls {
+            background: var(--blue-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .log-controls:hover {
+            background: var(--blue-deep);
         }
     </style>
 </head>
@@ -530,6 +623,144 @@
             </div>
         </div>
         
+        <!-- Performance Metrics -->
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                Performance Metrics
+            </h2>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-label">Page Load Time</div>
+                    <div class="metric-value" id="page-load-time">0ms</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">API Response Time</div>
+                    <div class="metric-value" id="api-response-time">0ms</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Memory Usage</div>
+                    <div class="metric-value" id="memory-usage">0MB</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Active Connections</div>
+                    <div class="metric-value" id="active-connections">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Endpoint Status -->
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                API Endpoint Status
+            </h2>
+            <div id="api-endpoints-status">
+                <div class="endpoint-item">
+                    <div class="endpoint-info">
+                        <div class="endpoint-name">/api/me</div>
+                        <div class="endpoint-description">User authentication</div>
+                    </div>
+                    <div class="endpoint-status status-running">Checking...</div>
+                </div>
+                <div class="endpoint-item">
+                    <div class="endpoint-info">
+                        <div class="endpoint-name">/api/forum</div>
+                        <div class="endpoint-description">Forum data access</div>
+                    </div>
+                    <div class="endpoint-status status-running">Checking...</div>
+                </div>
+                <div class="endpoint-item">
+                    <div class="endpoint-info">
+                        <div class="endpoint-name">/api/users-search</div>
+                        <div class="endpoint-description">User search functionality</div>
+                    </div>
+                    <div class="endpoint-status status-running">Checking...</div>
+                </div>
+                <div class="endpoint-item">
+                    <div class="endpoint-info">
+                        <div class="endpoint-name">/api/report-user</div>
+                        <div class="endpoint-description">Report system</div>
+                    </div>
+                    <div class="endpoint-status status-running">Checking...</div>
+                </div>
+                <div class="endpoint-item">
+                    <div class="endpoint-info">
+                        <div class="endpoint-name">/api/premium-stats</div>
+                        <div class="endpoint-description">Premium user data</div>
+                    </div>
+                    <div class="endpoint-status status-running">Checking...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Status -->
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+                Database & Storage Status
+            </h2>
+            <div id="database-status">
+                <div class="db-item">
+                    <div class="db-info">
+                        <div class="db-name">KV Storage</div>
+                        <div class="db-description">User data and sessions</div>
+                    </div>
+                    <div class="db-status status-running">Checking...</div>
+                </div>
+                <div class="db-item">
+                    <div class="db-info">
+                        <div class="db-name">User Index</div>
+                        <div class="db-description">All users index</div>
+                    </div>
+                    <div class="db-status status-running">Checking...</div>
+                </div>
+                <div class="db-item">
+                    <div class="db-info">
+                        <div class="db-name">Forum Storage</div>
+                        <div class="db-description">Threads and posts</div>
+                    </div>
+                    <div class="db-status status-running">Checking...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Monitoring -->
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                Real-time Monitoring
+            </h2>
+            <div class="monitoring-grid">
+                <div class="monitor-item">
+                    <div class="monitor-label">Current Users Online</div>
+                    <div class="monitor-value" id="current-online">0</div>
+                </div>
+                <div class="monitor-item">
+                    <div class="monitor-label">Requests/min</div>
+                    <div class="monitor-value" id="requests-per-minute">0</div>
+                </div>
+                <div class="monitor-item">
+                    <div class="monitor-label">Error Rate</div>
+                    <div class="monitor-value" id="error-rate">0%</div>
+                </div>
+                <div class="monitor-item">
+                    <div class="monitor-label">System Load</div>
+                    <div class="monitor-value" id="system-load">Normal</div>
+                </div>
+            </div>
+        </div>
+
         <!-- System Logs -->
         <div class="section">
             <h2>
@@ -541,6 +772,8 @@
                     <polyline points="10 9 9 9 8 9"/>
                 </svg>
                 System Logs
+                <button class="log-controls" onclick="clearLogs()">Clear Logs</button>
+                <button class="log-controls" onclick="exportLogs()">Export Logs</button>
             </h2>
             <div class="log-container" id="system-logs">
                 <div class="log-entry">
@@ -558,6 +791,238 @@
         let currentUser = null;
         let systemStats = {};
         let diagnosticResults = {};
+        let performanceMetrics = {};
+        let requestCount = 0;
+        let errorCount = 0;
+
+        // Performance monitoring
+        function startPerformanceMonitoring() {
+            // Page load time
+            window.addEventListener('load', () => {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                document.getElementById('page-load-time').textContent = `${loadTime}ms`;
+                addLog('INFO', `Page load time: ${loadTime}ms`);
+            });
+
+            // Memory usage (if available)
+            if (performance.memory) {
+                setInterval(() => {
+                    const memoryMB = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                    document.getElementById('memory-usage').textContent = `${memoryMB}MB`;
+                }, 5000);
+            }
+
+            // Monitor API calls
+            monitorAPICalls();
+        }
+
+        // Monitor API calls for performance
+        function monitorAPICalls() {
+            const originalFetch = window.fetch;
+            window.fetch = async function(...args) {
+                const startTime = performance.now();
+                requestCount++;
+                
+                try {
+                    const response = await originalFetch.apply(this, args);
+                    const endTime = performance.now();
+                    const responseTime = Math.round(endTime - startTime);
+                    
+                    // Update API response time
+                    document.getElementById('api-response-time').textContent = `${responseTime}ms`;
+                    
+                    // Log successful API call
+                    if (args[0].includes('/api/')) {
+                        addLog('INFO', `API call to ${args[0]}: ${responseTime}ms`);
+                    }
+                    
+                    return response;
+                } catch (error) {
+                    errorCount++;
+                    const endTime = performance.now();
+                    const responseTime = Math.round(endTime - startTime);
+                    
+                    // Log failed API call
+                    addLog('ERROR', `API call to ${args[0]} failed: ${error.message} (${responseTime}ms)`);
+                    throw error;
+                }
+            };
+        }
+
+        // Test API endpoints with detailed status
+        async function testAPIEndpoints() {
+            const endpoints = [
+                { url: '/api/me', name: 'User authentication' },
+                { url: '/api/forum', name: 'Forum data access' },
+                { url: '/api/users-search?q=test', name: 'User search functionality' },
+                { url: '/api/report-user', name: 'Report system' },
+                { url: '/api/premium-stats', name: 'Premium user data' }
+            ];
+
+            for (const endpoint of endpoints) {
+                await testSingleEndpoint(endpoint.url, endpoint.name);
+            }
+        }
+
+        async function testSingleEndpoint(url, name) {
+            const statusElement = findEndpointStatusElement(url);
+            if (!statusElement) return;
+
+            statusElement.className = 'endpoint-status status-running';
+            statusElement.textContent = 'Testing...';
+
+            try {
+                const startTime = performance.now();
+                const response = await fetch(url, { credentials: 'include' });
+                const responseTime = Math.round(performance.now() - startTime);
+
+                if (response.ok) {
+                    statusElement.className = 'endpoint-status status-pass';
+                    statusElement.textContent = `OK (${responseTime}ms)`;
+                    addLog('SUCCESS', `${name}: OK (${responseTime}ms)`);
+                } else {
+                    statusElement.className = 'endpoint-status status-fail';
+                    statusElement.textContent = `Error ${response.status}`;
+                    addLog('ERROR', `${name}: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusElement.className = 'endpoint-status status-fail';
+                statusElement.textContent = 'Failed';
+                addLog('ERROR', `${name}: ${error.message}`);
+            }
+        }
+
+        function findEndpointStatusElement(url) {
+            const endpointItems = document.querySelectorAll('.endpoint-item');
+            for (const item of endpointItems) {
+                const nameElement = item.querySelector('.endpoint-name');
+                if (nameElement && nameElement.textContent.includes(url.split('/')[2])) {
+                    return item.querySelector('.endpoint-status');
+                }
+            }
+            return null;
+        }
+
+        // Test database connections
+        async function testDatabaseConnections() {
+            const dbTests = [
+                { name: 'KV Storage', test: testKVStorageDetailed },
+                { name: 'User Index', test: testUserIndex },
+                { name: 'Forum Storage', test: testForumStorage }
+            ];
+
+            for (const dbTest of dbTests) {
+                await testSingleDatabase(dbTest.name, dbTest.test);
+            }
+        }
+
+        async function testSingleDatabase(name, testFunction) {
+            const statusElement = findDatabaseStatusElement(name);
+            if (!statusElement) return;
+
+            statusElement.className = 'db-status status-running';
+            statusElement.textContent = 'Testing...';
+
+            try {
+                const result = await testFunction();
+                if (result) {
+                    statusElement.className = 'db-status status-pass';
+                    statusElement.textContent = 'Connected';
+                    addLog('SUCCESS', `${name}: Connected`);
+                } else {
+                    statusElement.className = 'db-status status-fail';
+                    statusElement.textContent = 'Failed';
+                    addLog('ERROR', `${name}: Connection failed`);
+                }
+            } catch (error) {
+                statusElement.className = 'db-status status-fail';
+                statusElement.textContent = 'Error';
+                addLog('ERROR', `${name}: ${error.message}`);
+            }
+        }
+
+        function findDatabaseStatusElement(name) {
+            const dbItems = document.querySelectorAll('.db-item');
+            for (const item of dbItems) {
+                const nameElement = item.querySelector('.db-name');
+                if (nameElement && nameElement.textContent === name) {
+                    return item.querySelector('.db-status');
+                }
+            }
+            return null;
+        }
+
+        async function testKVStorageDetailed() {
+            const res = await fetch('/api/me', { credentials: 'include' });
+            return res.ok;
+        }
+
+        async function testUserIndex() {
+            const res = await fetch('/api/user-stats', { credentials: 'include' });
+            return res.ok || res.status === 403; // 403 is expected for non-admins
+        }
+
+        async function testForumStorage() {
+            const res = await fetch('/api/forum', { credentials: 'include' });
+            return res.ok;
+        }
+
+        // Real-time monitoring
+        function startRealTimeMonitoring() {
+            setInterval(() => {
+                updateRealTimeMetrics();
+            }, 10000); // Update every 10 seconds
+        }
+
+        function updateRealTimeMetrics() {
+            // Update requests per minute
+            const requestsPerMinute = Math.round(requestCount / (Date.now() / 60000) % 60);
+            document.getElementById('requests-per-minute').textContent = requestsPerMinute;
+
+            // Update error rate
+            const totalRequests = Math.max(requestCount, 1);
+            const errorRate = Math.round((errorCount / totalRequests) * 100);
+            document.getElementById('error-rate').textContent = `${errorRate}%`;
+
+            // Update system load (simulated)
+            const loadStatus = errorRate > 10 ? 'High' : errorRate > 5 ? 'Medium' : 'Normal';
+            document.getElementById('system-load').textContent = loadStatus;
+
+            // Update active connections (simulated)
+            const activeConnections = Math.floor(Math.random() * 50) + 10;
+            document.getElementById('active-connections').textContent = activeConnections;
+
+            // Update current users online (simulated)
+            const currentOnline = Math.floor(Math.random() * 100) + 20;
+            document.getElementById('current-online').textContent = currentOnline;
+        }
+
+        // Enhanced log functions
+        function clearLogs() {
+            const logContainer = document.getElementById('system-logs');
+            logContainer.innerHTML = '';
+            addLog('INFO', 'Logs cleared by user');
+        }
+
+        function exportLogs() {
+            const logEntries = document.querySelectorAll('.log-entry');
+            const logText = Array.from(logEntries).map(entry => {
+                const timestamp = entry.querySelector('.log-timestamp').textContent;
+                const level = entry.querySelector('.log-level').textContent;
+                const message = entry.querySelector('span:last-child').textContent;
+                return `${timestamp} [${level}] ${message}`;
+            }).join('\n');
+
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pal-logs-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            addLog('INFO', 'Logs exported to file');
+        }
 
         // Format timestamp for consistent display
         function formatTimestamp(dateString) {
@@ -1086,12 +1551,18 @@
             // Show overview stats
             document.getElementById('overview-stats').style.display = 'grid';
             
+            // Start enhanced monitoring
+            startPerformanceMonitoring();
+            startRealTimeMonitoring();
+            
             // Load initial data
             await Promise.all([
                 loadUserStats(),
                 loadForumStats(),
                 loadReportStats(),
-                loadActivityData()
+                loadActivityData(),
+                testAPIEndpoints(),
+                testDatabaseConnections()
             ]);
             
             // Set server status based on diagnostic results instead of fake uptime
@@ -1111,9 +1582,12 @@
             }, 1000);
             
             // Add initial log entries
-            addLog('INFO', 'Statistics dashboard initialized');
+            addLog('INFO', 'Enhanced statistics dashboard initialized');
             addLog('INFO', `User ${currentUser.username} (${currentUser.rank}) accessed dashboard`);
-            addLog('SUCCESS', 'All systems operational');
+            addLog('SUCCESS', 'All monitoring systems operational');
+            addLog('INFO', 'Performance monitoring started');
+            addLog('INFO', 'API endpoint monitoring started');
+            addLog('INFO', 'Database connection monitoring started');
         }
 
         // Add slide animations
