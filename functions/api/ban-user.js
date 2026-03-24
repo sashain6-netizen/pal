@@ -199,7 +199,7 @@ export async function onRequestDelete(context) {
 
             if (isLongTermBan) {
                 return new Response(JSON.stringify({ 
-                    error: "Moderators cannot lift bans longer than 24 hours. Contact a Manager+." 
+                    error: "Moderators cannot lift bans longer than 24 hours. Contact someone higher." 
                 }), { status: 403 });
             }
         }
