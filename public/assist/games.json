@@ -12,21 +12,15 @@
     "external": false 
   },
   {
-    "title": "Sandspiel",
-    "thumb": "canva.com/templates/EAGs228mWWY-gray-white-and-red-bold-cinematic-street-youtube-thumbnail/",
-    "url": "https://sandspiel.club/",
-    "external": false
-  },
-  {
-    "title": "N_GON",
-    "thumb": "canva.com/templates/EAGs228mWWY-gray-white-and-red-bold-cinematic-street-youtube-thumbnail/",
+    "title": "n-gon",
+    "thumb": "/assist/n-gon.png",
     "url": "https://landgreen.github.io/n-gon/",
     "external": false
     
   },
   {
     "title": "Mario",
-    "thumb": "canva.com/templates/EAGs228mWWY-gray-white-and-red-bold-cinematic-street-youtube-thumbnail/",
+    "thumb": "assist/mario.png",
     "url": "https://fullscreenmario.github.io/",
     "external": false
   
