@@ -61,7 +61,6 @@ function renderReports() {
         return;
     }
     
-    // Sort reports: pending first, then resolved, then deleted
     const sortedReports = [...filteredReports].sort((a, b) => {
         const statusOrder = { 'pending': 0, 'resolved': 1, 'deleted': 2 };
         return statusOrder[a.status] - statusOrder[b.status];
@@ -73,12 +72,8 @@ function renderReports() {
         const statusText = report.status.charAt(0).toUpperCase() + report.status.slice(1);
         const isResolved = report.status === 'resolved';
         
-        console.log("Report Debug:", {
-            id: report.id,
-            status: report.status,
-            isResolved,
-            showDelete: true // Always show delete button
-        });
+        // Check if user is allowed to delete
+        const canDelete = currentUserRank === 'Owner';
         
         return `
             <div class="report-card ${statusClass} ${isResolved ? 'resolved-report' : ''}">
@@ -105,7 +100,7 @@ function renderReports() {
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn">
                                 👁 View User
                             </a>
-                            ${currentUserRank === 'Owner' ? `
+                            ${canDelete ? `
                                 <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
                                     🗑️ Delete
                                 </button>
@@ -119,9 +114,11 @@ function renderReports() {
                                     ✅ Resolve
                                 </button>
                             ` : ''}
-                            <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
-                                🗑️ Delete
-                            </button>
+                            ${canDelete ? `
+                                <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
+                                    🗑️ Delete
+                                </button>
+                            ` : ''}
                         `}
                     </div>
                 </div>
