@@ -61,6 +61,13 @@ function renderReports() {
         const statusText = report.status.charAt(0).toUpperCase() + report.status.slice(1);
         const isResolved = report.status === 'resolved';
         
+        console.log("Report Debug:", {
+            id: report.id,
+            status: report.status,
+            isResolved,
+            showDelete: true // Always show delete button
+        });
+        
         return `
             <div class="report-card ${statusClass} ${isResolved ? 'resolved-report' : ''}">
                 <div class="report-header">
@@ -415,7 +422,22 @@ function formatTimeRemaining(timeRemaining) {
 function formatDate(dateString) {
     if (dateString === "Unknown") return "Unknown";
     
+    // Handle timestamp IDs (numbers)
+    if (typeof dateString === 'number') {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "Invalid Date";
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+    
+    // Handle string dates
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date";
     return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
