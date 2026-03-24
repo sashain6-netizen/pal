@@ -20,7 +20,7 @@
   },
   {
     "title": "Mario",
-    "thumb": "assist/mario.png",
+    "thumb": "/assist/mario.png",
     "url": "https://fullscreenmario.github.io/",
     "external": false
   
