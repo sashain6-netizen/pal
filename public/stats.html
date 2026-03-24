@@ -579,7 +579,7 @@
 
         // Check if user has admin privileges
         function hasAdminPrivileges() {
-            return currentUser && ['Owner', 'Admin', 'Moderator'].includes(currentUser.rank);
+            return currentUser && ['Owner', 'Admin', 'Moderator', 'Manager'].includes(currentUser.rank);
         }
 
         // Refresh all statistics

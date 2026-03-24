@@ -1,4 +1,3 @@
-// Helper to create the colored SVG icon
 function getColoredSvg(color) {
     return `
         <svg viewBox="0 0 24 24" fill="${color}" style="width: 80%; height: 80%;">
@@ -6,17 +5,16 @@ function getColoredSvg(color) {
         </svg>`;
 }
 
-// Report Modal Function
 function showReportModal(username, displayName) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;';
-    
+
     modal.innerHTML = `
         <div class="modal-box" style="background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
             <h3 style="color: var(--blue-deep); margin-bottom: 10px;">Report User</h3>
             <p style="color: var(--blue-soft); font-size: 0.9rem; margin-bottom: 20px;">Reporting @${username}</p>
-            
+
             <div style="margin-bottom: 20px; text-align: left;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600;">Reason:</label>
                 <select id="report-reason" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
@@ -28,30 +26,30 @@ function showReportModal(username, displayName) {
                     <option value="other">Other</option>
                 </select>
             </div>
-            
+
             <div style="margin-bottom: 20px; text-align: left;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600;">Description (optional):</label>
                 <textarea id="report-description" placeholder="Provide additional details..." style="width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; resize: none;"></textarea>
             </div>
-            
+
             <div class="modal-buttons" style="display: flex; gap: 10px;">
                 <button id="report-submit" class="auth-btn" style="margin-top: 0;">Submit Report</button>
                 <button id="report-cancel" class="auth-btn secondary-btn" style="margin-top: 0; background: #e2e8f0; color: #1e293b;">Cancel</button>
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     document.getElementById('report-submit').onclick = async () => {
         const reason = document.getElementById('report-reason').value;
         const description = document.getElementById('report-description').value.trim();
-        
+
         if (!reason) {
             showToast("Please select a reason");
             return;
         }
-        
+
         try {
             const res = await fetch('/api/report-user', {
                 method: 'POST',
@@ -62,7 +60,7 @@ function showReportModal(username, displayName) {
                     description
                 })
             });
-            
+
             if (res.ok) {
                 showToast("Report submitted successfully");
                 document.body.removeChild(modal);
@@ -73,36 +71,31 @@ function showReportModal(username, displayName) {
             showToast("Error submitting report");
         }
     };
-    
+
     document.getElementById('report-cancel').onclick = () => {
         document.body.removeChild(modal);
     };
 }
 
-// Admin Controls Function
 function showAdminControls(username, myRank) {
     const adminFlag = document.getElementById('admin-flag');
     if (!adminFlag) return;
-    
-    // Show the red flag icon for all users
+
     adminFlag.style.display = 'block';
-    
-    // Add click handler to show dropdown
+
     adminFlag.onclick = (e) => {
         e.stopPropagation();
         showUserActionsDropdown(username, myRank, adminFlag);
     };
 }
 
-// User Actions Dropdown Function
 async function showUserActionsDropdown(username, myRank, flagElement) {
-    // Remove existing dropdown if any
+
     const existingDropdown = document.getElementById('admin-dropdown');
     if (existingDropdown) {
         existingDropdown.remove();
     }
-    
-    // Fetch target user's rank
+
     let targetRank = "Member";
     try {
         const res = await fetch(`/api/get-user-public?id=${username}`);
@@ -113,8 +106,7 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
     } catch (err) {
         console.error("Failed to fetch user rank:", err);
     }
-    
-    // Create dropdown
+
     const dropdown = document.createElement('div');
     dropdown.id = 'admin-dropdown';
     dropdown.style.cssText = `
@@ -128,17 +120,15 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
         z-index: 1000;
         min-width: 120px;
     `;
-    
+
     let buttonsHTML = '';
-    
-    // Report button (available to everyone)
+
     buttonsHTML += `
         <button class="admin-dropdown-btn" onclick="showReportModal('${username}', '${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #1e293b;">
             🚩 Report
         </button>
     `;
-    
-    // Staff-only options with rank checking
+
     const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
     if (myRank && staffRoles.includes(myRank)) {
         const rankHierarchy = { 
@@ -146,27 +136,26 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
     "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4, 
     "Supporter": -5, "Active Member": -6, "Member": -7 
 };
-        
-        // Ban button - only show if user is staff and target has lower rank (Owners can ban anyone except other Owners)
+
         if (["Owner", "Admin", "Manager", "Moderator"].includes(myRank)) {
-            // Additional check: only staff can ban, XP ranks cannot ban anyone
+
             const staffRoles = ["Owner", "Admin", "Manager", "Moderator", "Staff"];
             if (!staffRoles.includes(myRank)) {
-                return; // Don't show ban button for non-staff
+                return; 
+
             }
-            
-            // Owners can ban anyone except other Owners
+
             if (myRank === "Owner" && targetRank === "Owner") {
-                // Don't show ban button for other Owners
+
             } else if (myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
-                // Owners can ban lower ranks
+
                 buttonsHTML += `
                     <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
                         ⚡ Ban
                     </button>
                 `;
             } else if (myRank !== "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
-                // Non-Owners can only ban lower ranks
+
                 buttonsHTML += `
                     <button class="admin-dropdown-btn" onclick="showBanModal('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #f59e0b;">
                         ⚡ Ban
@@ -174,8 +163,7 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
                 `;
             }
         }
-        
-        // Delete button only for Owner (and only on lower ranks)
+
         if (myRank === "Owner" && rankHierarchy[targetRank] < rankHierarchy[myRank]) {
             buttonsHTML += `
                 <button class="admin-dropdown-btn" onclick="confirmDeleteUser('${username}')" style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; cursor: pointer; font-size: 14px; color: #dc2626;">
@@ -184,11 +172,10 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
             `;
         }
     }
-    
+
     dropdown.innerHTML = buttonsHTML;
     document.body.appendChild(dropdown);
-    
-    // Close dropdown when clicking outside
+
     setTimeout(() => {
         document.addEventListener('click', function closeDropdown(e) {
             if (!dropdown.contains(e.target)) {
@@ -199,24 +186,23 @@ async function showUserActionsDropdown(username, myRank, flagElement) {
     }, 100);
 }
 
-// Ban Modal Function
 function showBanModal(username) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;';
-    
+
     modal.innerHTML = `
         <div class="modal-box" style="background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
             <h3 style="color: var(--blue-deep); margin-bottom: 10px;">Ban User</h3>
             <p style="color: var(--blue-soft); font-size: 0.9rem; margin-bottom: 20px;">Banning @${username}</p>
-            
+
             <div style="margin-bottom: 20px; text-align: left;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600;">Duration:</label>
                 <select id="ban-duration-type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
                     <option value="permanent">Permanent</option>
                     <option value="custom">Custom Duration</option>
                 </select>
-                
+
                 <div id="custom-options" style="display: none;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                         <div>
@@ -239,30 +225,28 @@ function showBanModal(username) {
                     <small style="color: #64748b; font-size: 0.8rem;">Maximum: 365 days, 23 hours, 59 minutes, 59 seconds</small>
                 </div>
             </div>
-            
+
             <div style="margin-bottom: 20px; text-align: left;">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600;">Reason:</label>
                 <textarea id="ban-reason" placeholder="Reason for ban..." style="width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; resize: none;" required></textarea>
             </div>
-            
+
             <div class="modal-buttons" style="display: flex; gap: 10px;">
                 <button id="ban-submit" class="auth-btn" style="margin-top: 0; background: #f59e0b;">Ban User</button>
                 <button id="ban-cancel" class="auth-btn secondary-btn" style="margin-top: 0; background: #e2e8f0; color: #1e293b;">Cancel</button>
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
-    // Handle duration type changes
+
     const durationType = document.getElementById('ban-duration-type');
     const customOptions = document.getElementById('custom-options');
-    
+
     durationType.onchange = () => {
         customOptions.style.display = durationType.value === 'custom' ? 'block' : 'none';
     };
-    
-    // Add input validation for time fields
+
     const timeInputs = ['ban-days', 'ban-hours', 'ban-minutes', 'ban-seconds'];
     timeInputs.forEach(id => {
         const input = document.getElementById(id);
@@ -270,78 +254,76 @@ function showBanModal(username) {
             const max = parseInt(input.max);
             const min = parseInt(input.min);
             let value = parseInt(input.value) || 0;
-            
-            // Clamp to valid range
+
             if (value > max) input.value = max;
             if (value < min) input.value = min;
-            
-            // Calculate total duration to prevent overflow
+
             const totalSeconds = calculateTotalBanDuration();
-            const maxSeconds = 365 * 24 * 60 * 60; // 365 days in seconds
-            
+            const maxSeconds = 365 * 24 * 60 * 60; 
+
             if (totalSeconds > maxSeconds) {
-                // Adjust to prevent overflow
+
                 adjustTimeInputsToMax();
                 showToast('Maximum duration is 365 days');
             }
         });
     });
-    
+
     function calculateTotalBanDuration() {
         const days = parseInt(document.getElementById('ban-days').value) || 0;
         const hours = parseInt(document.getElementById('ban-hours').value) || 0;
         const minutes = parseInt(document.getElementById('ban-minutes').value) || 0;
         const seconds = parseInt(document.getElementById('ban-seconds').value) || 0;
-        
+
         return days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60 + seconds;
     }
-    
+
     function adjustTimeInputsToMax() {
         const maxSeconds = 365 * 24 * 60 * 60;
         let remaining = maxSeconds;
-        
+
         const days = Math.floor(remaining / (24 * 60 * 60));
         remaining %= (24 * 60 * 60);
         const hours = Math.floor(remaining / (60 * 60));
         remaining %= (60 * 60);
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        
+
         document.getElementById('ban-days').value = days;
         document.getElementById('ban-hours').value = hours;
         document.getElementById('ban-minutes').value = minutes;
         document.getElementById('ban-seconds').value = seconds;
     }
-    
+
     document.getElementById('ban-submit').onclick = async () => {
         const durationTypeValue = durationType.value;
         let duration;
-        
+
         if (durationTypeValue === 'permanent') {
             duration = 'permanent';
         } else if (durationTypeValue === 'custom') {
             const totalSeconds = calculateTotalBanDuration();
-            
+
             if (totalSeconds === 0) {
                 showToast('Please specify a duration greater than 0');
                 return;
             }
-            
+
             if (totalSeconds > 365 * 24 * 60 * 60) {
                 showToast('Maximum duration is 365 days');
                 return;
             }
-            
+
             duration = `${totalSeconds}seconds`;
         }
-        
+
         const reason = document.getElementById('ban-reason').value.trim();
-        
+
         if (!reason) {
             showToast("Please provide a reason for the ban");
             return;
         }
-        
+
         try {
             const res = await fetch('/api/ban-user', {
                 method: 'POST',
@@ -352,7 +334,7 @@ function showBanModal(username) {
                     duration
                 })
             });
-            
+
             if (res.ok) {
                 showToast(`User @${username} has been banned`);
                 document.body.removeChild(modal);
@@ -365,12 +347,11 @@ function showBanModal(username) {
             showToast('Failed to ban user');
         }
     };
-    
+
     document.getElementById('ban-cancel').onclick = () => {
         document.body.removeChild(modal);
     };
-    
-    // Close on overlay click
+
     modal.onclick = (e) => {
         if (e.target === modal) {
             document.body.removeChild(modal);
@@ -378,20 +359,18 @@ function showBanModal(username) {
     };
 }
 
-// Delete User Confirmation
 async function confirmDeleteUser(username) {
     if (!await window.gameConfirm(`Are you sure you want to permanently delete @${username}? This action cannot be undone.`, "Delete User")) {
         return;
     }
-    
+
     if (!await window.gameConfirm(`This will delete all of @${username}'s data including posts, profile, and account. Are you absolutely sure?`, "Final Confirmation")) {
         return;
     }
-    
+
     deleteUser(username);
 }
 
-// Delete User Function
 async function deleteUser(username) {
     try {
         const res = await fetch('/api/delete-user', {
@@ -401,7 +380,7 @@ async function deleteUser(username) {
                 targetUsername: username
             })
         });
-        
+
         if (res.ok) {
             showToast(`User @${username} has been deleted`);
             setTimeout(() => {
@@ -436,7 +415,6 @@ async function loadProfile() {
         const data = await pubRes.json();
         const myData = meRes.ok ? await meRes.json() : null;
 
-        // 1. Populate Text Data
         document.getElementById('display-name').textContent = data.displayName || data.username;
         document.getElementById('display-username').textContent = `@${data.username}`;
         document.getElementById('stat-followers').textContent = (data.followers || 0).toLocaleString();
@@ -444,12 +422,11 @@ async function loadProfile() {
         document.getElementById('stat-currency').textContent = (data.currency || 0).toLocaleString();
         document.getElementById('stat-rank').textContent = data.rank || "Member";
         document.getElementById('stat-xp').textContent = `${(data.xp || 0).toLocaleString()} XP`;
-        
+
         if (document.getElementById('display-bio')) {
             document.getElementById('display-bio').textContent = data.bio || "No bio yet.";
         }
 
-        // 2. Handle Profile Avatar (SVG or Image)
         const avatarWrapper = document.getElementById('avatar-wrapper');
         const avatarImg = document.getElementById('display-avatar');
 
@@ -467,15 +444,14 @@ async function loadProfile() {
                 avatarWrapper.innerHTML = getColoredSvg(data.themeColor || "#2563eb");
             }
         }
-        
-        // --- PREMIUM SECTION ---
+
         const profileCard = document.querySelector('.profile-card');
 
         if (data.isPremium) {
             if (profileCard) profileCard.classList.add('premium-card-pulse');
-            
+
             if (avatarWrapper) avatarWrapper.classList.add('premium-avatar-pulse');
-            
+
             const nameEl = document.getElementById('display-name');
             if (nameEl && !nameEl.innerHTML.includes('⭐')) {
                 nameEl.classList.add('premium-user-text');
@@ -501,7 +477,6 @@ async function loadProfile() {
                 return false;
             };
 
-            // Attempt to update navbar immediately, then poll if not found
             if (!updateNavbarIcon()) {
                 const navInterval = setInterval(() => {
                     if (updateNavbarIcon()) clearInterval(navInterval);
@@ -510,7 +485,6 @@ async function loadProfile() {
             }
         }
 
-        // 4. XP Bar Logic
         const ladder = [
             { name: "Legend", xp: 30000 },
             { name: "Elite", xp: 15000 },
@@ -530,20 +504,19 @@ async function loadProfile() {
             const progress = nextRank 
                 ? ((currentXP - currentRank.xp) / (nextRank.xp - currentRank.xp)) * 100 
                 : 100;
-            
+
             xpBar.style.width = `${Math.min(progress, 100)}%`;
             xpBar.style.backgroundColor = data.themeColor || "#2563eb";
         }
 
-        // 5. Follow/Message/Report Button Logic
         if (!myData || myData.username.toLowerCase() === userId) {
             if (followBtn) followBtn.style.display = 'none';
             if (messageBtn) messageBtn.style.display = 'none';
-            // Hide report button if viewing own profile
+
             const reportBtn = document.getElementById('report-btn');
             if (reportBtn) reportBtn.style.display = 'none';
         } else {
-            // --- FOLLOW LOGIC ---
+
             const myFollowing = Array.isArray(myData.following) ? myData.following : [];
             let currentlyFollowing = myFollowing.some(id => id.toLowerCase() === userId);
 
@@ -579,7 +552,6 @@ async function loadProfile() {
                 followBtn.disabled = false;
             };
 
-            // --- MESSAGE MODAL LOGIC ---
             messageBtn.onclick = () => {
                 document.getElementById('message-recipient').textContent = `To: ${data.displayName || data.username}`;
                 msgModal.style.display = 'flex';
@@ -627,8 +599,6 @@ async function loadProfile() {
 
         }
 
-        // --- USER ACTIONS LOGIC ---
-        // Show red flag for all users (unless viewing own profile)
         if (!myData || myData.username.toLowerCase() !== userId) {
             showAdminControls(data.username, myData ? myData.rank : null);
         }
@@ -638,3 +608,4 @@ async function loadProfile() {
 }
 
 document.addEventListener('DOMContentLoaded', loadProfile);
+
