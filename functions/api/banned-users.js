@@ -35,54 +35,62 @@ export async function onRequestGet(context) {
         const bannedUsers = [];
         const now = Date.now();
 
-        for (const username of allUsers) {
-            const userData = await env.USERS_KV.get(`user:${username.toLowerCase()}`);
-            if (userData) {
-                const user = JSON.parse(userData);
+        for (const targetUsername of allUsers) {
+            const targetData = await env.USERS_KV.get(`user:${targetUsername.toLowerCase()}`);
+            if (targetData) {
+                const targetUser = JSON.parse(targetData);
                 
-                if (user.isBanned === true) {
+                if (targetUser.isBanned === true) {
+                    // --- NEW LOGIC: Find the Ban ID for the frontend ---
+                    const userBansRecord = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
+                    const banIds = userBansRecord ? JSON.parse(userBansRecord) : [];
+                    let banId = null;
+                    
+                    // Get the most recent ban ID from the user's history
+                    if (banIds.length > 0) {
+                        banId = banIds[banIds.length - 1];
+                    }
+
                     // Calculate time remaining
                     let timeRemaining = null;
                     let banStatus = "Permanent";
                     
-                    if (user.banExpiration) {
-                        const expirationTime = new Date(user.banExpiration).getTime();
+                    if (targetUser.banExpiration) {
+                        const expirationTime = new Date(targetUser.banExpiration).getTime();
                         if (expirationTime > now) {
                             const remainingMs = expirationTime - now;
-                            const remainingDays = Math.floor(remainingMs / (24 * 60 * 60 * 1000));
-                            const remainingHours = Math.floor((remainingMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-                            const remainingMinutes = Math.floor((remainingMs % (60 * 60 * 1000)) / (60 * 1000));
-                            
                             timeRemaining = {
-                                days: remainingDays,
-                                hours: remainingHours,
-                                minutes: remainingMinutes,
+                                days: Math.floor(remainingMs / (24 * 60 * 60 * 1000)),
+                                hours: Math.floor((remainingMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)),
+                                minutes: Math.floor((remainingMs % (60 * 60 * 1000)) / (60 * 1000)),
                                 totalMs: remainingMs,
-                                expirationDate: user.banExpiration
+                                expirationDate: targetUser.banExpiration
                             };
                             banStatus = "Temporary";
                         } else {
-                            // Ban expired, skip this user
+                            // Ban expired (Auto-cleanup logic could go here)
                             continue;
                         }
                     }
 
                     bannedUsers.push({
-                        username: username,
-                        displayName: user.displayName || user.username,
-                        rank: user.rank || "Member",
-                        banReason: user.banReason || "No reason provided",
+                        username: targetUsername,
+                        displayName: targetUser.displayName || targetUser.username,
+                        rank: targetUser.rank || "Member",
+                        banReason: targetUser.banReason || "No reason provided",
                         banStatus: banStatus,
                         timeRemaining: timeRemaining,
-                        banDate: user.banDate || "Unknown"
+                        banDate: targetUser.banDate || "Unknown",
+                        // Added these for the frontend to find the ban log
+                        id: banId, 
+                        active: true 
                     });
                 }
             }
         }
 
-        // Sort by ban date (most recent first)
+        // Sort by ban date
         bannedUsers.sort((a, b) => {
-            if (a.banDate === "Unknown" && b.banDate === "Unknown") return 0;
             if (a.banDate === "Unknown") return 1;
             if (b.banDate === "Unknown") return -1;
             return new Date(b.banDate) - new Date(a.banDate);
