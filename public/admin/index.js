@@ -177,13 +177,31 @@ function renderBannedUsers(myRank) {
         
         // Check if current user can unban this user
         const rankHierarchy = { 
-    "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
-    "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4, 
-    "Supporter": -5, "Active Member": -6, "Member": -7 
-};
-        const canUnban = myRank === "Owner" ? 
+            "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
+            "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4, 
+            "Supporter": -5, "Active Member": -6, "Member": -7 
+        };
+
+        // 1. Initial hierarchy check
+        let canUnban = myRank === "Owner" ? 
             (user.rank !== "Owner") : // Owners can unban anyone except other Owners
             (rankHierarchy[user.rank] < rankHierarchy[myRank]); // Non-Owners can only unban lower ranks
+        
+        // 2. NEW RESTRICTION: Moderators cannot unban if duration > 24 hours
+        if (canUnban && myRank === "Moderator") {
+            if (user.banStatus === 'Permanent') {
+                canUnban = false;
+            } else if (user.timeRemaining && user.timeRemaining.expirationDate && user.banDate) {
+                const banStart = new Date(user.banDate).getTime();
+                const banEnd = new Date(user.timeRemaining.expirationDate).getTime();
+                const oneDayMs = 24 * 60 * 60 * 1000;
+                
+                // Hide button if total duration is more than 24 hours
+                if ((banEnd - banStart) > oneDayMs) {
+                    canUnban = false;
+                }
+            }
+        }
         
         return `
             <div class="banned-user-card ${banStatusClass}">

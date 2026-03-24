@@ -188,6 +188,23 @@ export async function onRequestDelete(context) {
             return new Response(JSON.stringify({ error: "Ban ID does not match target username" }), { status: 400 });
         }
 
+        // --- NEW RESTRICTION FOR MODERATORS ---
+        if (unbanner.rank === "Moderator") {
+            const oneDayMs = 24 * 60 * 60 * 1000;
+            const banDate = new Date(ban.timestamp).getTime();
+            const expiryDate = ban.banExpiration ? new Date(ban.banExpiration).getTime() : null;
+
+            // If it's a permanent ban OR the duration was > 24 hours
+            const isLongTermBan = !expiryDate || (expiryDate - banDate) > oneDayMs;
+
+            if (isLongTermBan) {
+                return new Response(JSON.stringify({ 
+                    error: "Moderators cannot lift bans longer than 24 hours. Contact a Manager+." 
+                }), { status: 403 });
+            }
+        }
+        // --------------------------------------
+
         // 5. Remove ban record
         await env.USERS_KV.delete(`ban:${banId}`);
 
@@ -205,10 +222,10 @@ export async function onRequestDelete(context) {
             user.isBanned = false;
             delete user.banReason;
             delete user.banExpiration;
-            await env.USERS_KV.put(`user:${targetUsername.toLowerCase()}`, JSON.stringify(user));
+            await env.USERS_KV.put("user:${targetUsername.toLowerCase()}", JSON.stringify(user));
         }
 
-        // 8. Remove from user's ban records, delete key if empty
+        // 8. Remove from user's ban records
         const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
         if (userBans) {
             const updatedBans = JSON.parse(userBans).filter(id => id !== banId);
