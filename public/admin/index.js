@@ -453,10 +453,15 @@ document.getElementById('confirm-ban')?.addEventListener('click', async () => {
 
 // Unban Actions
 function showUnbanModal(username, displayName) {
-    document.getElementById('unban-username').textContent = displayName;
-    document.getElementById('unban-modal').style.display = 'flex';
+    const modal = document.getElementById('unban-modal');
+    const nameSpan = document.getElementById('unban-username');
     
-    // Add escape key listener
+    const confirmBtn = document.getElementById('confirm-unban');
+    confirmBtn.setAttribute('data-target-username', username);
+    
+    nameSpan.textContent = displayName;
+    modal.style.display = 'flex';
+    
     const handleEscape = (e) => {
         if (e.key === 'Escape') {
             closeUnbanModal();
@@ -467,59 +472,46 @@ function showUnbanModal(username, displayName) {
 }
 
 document.getElementById('confirm-unban')?.addEventListener('click', async () => {
+    const confirmBtn = document.getElementById('confirm-unban');
+    const targetUsername = confirmBtn.getAttribute('data-target-username');
     const displayName = document.getElementById('unban-username').textContent;
-    
+
+    if (!targetUsername) {
+        showToast('Error: No target username found', 'error');
+        return;
+    }
+
     try {
-        // Find the user object in your local state
-        const user = bannedUsersData.find(u => u.displayName === displayName);
-        if (!user) {
-            showToast('User not found in local dashboard', 'error');
-            return;
-        }
+        // 1. Find the user in our local array to get the banId we attached earlier
+        const userEntry = bannedUsersData.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
         
-        // Fetch the fresh list of bans from the API
-        const response = await fetch('/api/ban-user');
-        if (!response.ok) throw new Error('Failed to fetch bans');
-        
-        const allBansData = await response.json();
-        const userBans = allBansData.bans || (Array.isArray(allBansData) ? allBansData : []);
-        
-        // FIND THE BAN: Match by username (Case Insensitive)
-        // We remove the .active check because your backend deletes inactive bans anyway
-        const activeBan = userBans.find(ban => 
-            ban.targetUsername.toLowerCase() === user.username.toLowerCase()
-        );
-        
-        if (!activeBan) {
-            showToast('No active ban record found on server', 'error');
-            return;
-        }
-        
-        // Execute the delete (unban) request
-        const unbanResponse = await fetch('/api/ban-user', {
+        // 2. Execute the DELETE request
+        // We send both the banId (for log cleanup) and targetUsername (for profile update)
+        const response = await fetch('/api/ban-user', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                banId: activeBan.id,
-                targetUsername: user.username
+                banId: userEntry ? userEntry.id : null, 
+                targetUsername: targetUsername
             })
         });
         
-        if (unbanResponse.ok) {
+        const result = await response.json();
+
+        if (response.ok) {
             showToast(`Successfully unbanned ${displayName}`, 'success');
             closeUnbanModal();
-            loadBannedUsers(); // Refresh the list
+            // Important: refresh both to keep stats in sync
+            await loadBannedUsers(); 
+            updateQuickStats();
         } else {
-            const error = await unbanResponse.json();
-            showToast(error.error || 'Failed to unban user', 'error');
+            showToast(result.error || 'Failed to unban user', 'error');
         }
     } catch (error) {
         console.error('Unban error:', error);
-        showToast('Connection error during unban', 'error');
+        showToast('Connection error. Please check your internet.', 'error');
     }
 });
-
-// Modal Management
 document.getElementById('cancel-unban')?.addEventListener('click', closeUnbanModal);
 document.getElementById('cancel-ban')?.addEventListener('click', closeBanModal);
 

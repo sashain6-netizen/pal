@@ -153,91 +153,117 @@ export async function onRequestDelete(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
+        // 1. Efficient Cookie Parsing & Auth
         const cookieHeader = request.headers.get("Cookie") || "";
-        const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
+        const cookies = Object.fromEntries(cookieHeader.split(';').map(c => {
+            const [key, ...v] = c.trim().split('=');
+            return [key, v.join('=')];
+        }));
+        
         const token = cookies['pal_session'];
-        if (!token) return new Response("Unauthorized", { status: 401 });
+        if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
 
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const unbannerUsername = payload.username.toLowerCase();
 
-        // 2. Get Ban ID and target from Request
+        // 2. Validation
         const { banId, targetUsername } = await request.json();
-        if (!banId || !targetUsername) {
-            return new Response(JSON.stringify({ error: "Ban ID and target username are required" }), { status: 400 });
+        if (!targetUsername) {
+            return new Response(JSON.stringify({ error: "Target username is required" }), { status: 400 });
         }
+        const targetKey = targetUsername.toLowerCase();
 
-        // 3. Check if unbanner is Staff
+        // 3. Permission & Rank Check
         const unbannerData = await env.USERS_KV.get(`user:${unbannerUsername}`);
-        const unbanner = unbannerData ? JSON.parse(unbannerData) : {};
-
+        if (!unbannerData) return new Response(JSON.stringify({ error: "Staff profile not found" }), { status: 403 });
+        
+        const unbanner = JSON.parse(unbannerData);
         const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(unbanner.rank)) {
-            return new Response(JSON.stringify({ error: "Only staff can unban users" }), { status: 403 });
+            return new Response(JSON.stringify({ error: "Insufficient permissions" }), { status: 403 });
         }
 
-        // 4. Get ban data and verify it matches the target
-        const banData = await env.USERS_KV.get(`ban:${banId}`);
-        if (!banData) {
-            return new Response(JSON.stringify({ error: "Ban record not found" }), { status: 404 });
-        }
+        // 4. Fetch Ban Data (Optional for Admins, Required for Moderators)
+        // We use a fall-through logic so Admins can unban even if the log is lost.
+        const banDataStr = banId ? await env.USERS_KV.get(`ban:${banId}`) : null;
+        const banData = banDataStr ? JSON.parse(banDataStr) : null;
 
-        const ban = JSON.parse(banData);
-        if (ban.targetUsername !== targetUsername.toLowerCase()) {
-            return new Response(JSON.stringify({ error: "Ban ID does not match target user" }), { status: 400 });
-        }
-
-        // 5. Hierarchy & Moderator Restriction
+        // 5. Hierarchy & Moderator Restriction Logic
         if (unbanner.rank === "Moderator") {
-            const oneDayMs = 24 * 60 * 60 * 1000;
-            const banDate = new Date(ban.timestamp).getTime();
-            const expiryDate = ban.banExpiration ? new Date(ban.banExpiration).getTime() : null;
-
-            // Block Moderators from lifting permanent or long-term bans
-            if (!expiryDate || (expiryDate - banDate) > (oneDayMs + 1000)) {
+            if (!banData) {
                 return new Response(JSON.stringify({ 
-                    error: "Moderators cannot lift permanent bans or bans longer than 24 hours." 
+                    error: "Ban log missing. Moderators cannot force-unban without a record." 
+                }), { status: 403 });
+            }
+
+            const oneDayMs = 24 * 60 * 60 * 1000;
+            const banDate = new Date(banData.timestamp).getTime();
+            const expiryDate = banData.banExpiration ? new Date(banData.banExpiration).getTime() : null;
+
+            if (!expiryDate || (expiryDate - banDate) > (oneDayMs + 5000)) { // 5s grace for processing
+                return new Response(JSON.stringify({ 
+                    error: "Moderators cannot lift permanent or long-term bans." 
                 }), { status: 403 });
             }
         }
 
-        // 6. Remove the specific ban record
-        await env.USERS_KV.delete(`ban:${banId}`);
-
-        // 7. Update Global Bans List
-        const bansList = await env.USERS_KV.get("bans_list");
-        if (bansList) {
-            const allBans = JSON.parse(bansList);
-            await env.USERS_KV.put("bans_list", JSON.stringify(allBans.filter(id => id !== banId)));
+        // 6. PRIMARY ACTION: Restore User Account (The "Source of Truth")
+        const targetUserData = await env.USERS_KV.get(`user:${targetKey}`);
+        if (targetUserData) {
+            const targetUser = JSON.parse(targetUserData);
+            targetUser.isBanned = false;
+            // Clean up ban metadata
+            delete targetUser.banReason;
+            delete targetUser.banExpiration;
+            delete targetUser.banDate;
+            // Audit Log: Track who did it
+            targetUser.lastUnbannedBy = unbannerUsername;
+            targetUser.lastUnbannedAt = new Date().toISOString();
+            
+            await env.USERS_KV.put(`user:${targetKey}`, JSON.stringify(targetUser));
         }
 
-        // 8. Update User Profile Status (FIXED SECTION)
-        const userData = await env.USERS_KV.get(`user:${targetUsername.toLowerCase()}`);
-        if (userData) {
-            const user = JSON.parse(userData);
-            user.isBanned = false;
-            delete user.banReason;
-            delete user.banExpiration;
-            // FIXED: Backticks used here
-            await env.USERS_KV.put(`user:${targetUsername.toLowerCase()}`, JSON.stringify(user));
-        }
+        // 7. BACKGROUND CLEANUP: Prevent "Ghost Data"
+        // We wrap these in a separate block to ensure the user is unbanned even if cleanup lags.
+        const cleanupTasks = [];
 
-        // 9. Clean up User's individual ban history list
-        const userBansRecord = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
-        if (userBansRecord) {
-            const updatedBans = JSON.parse(userBansRecord).filter(id => id !== banId);
-            if (updatedBans.length === 0) {
-                await env.USERS_KV.delete(`bans:${targetUsername.toLowerCase()}`);
-            } else {
-                await env.USERS_KV.put(`bans:${targetUsername.toLowerCase()}`, JSON.stringify(updatedBans));
+        // Task A: Delete specific ban record
+        if (banId) cleanupTasks.push(env.USERS_KV.delete(`ban:${banId}`));
+
+        // Task B: Update Global List
+        cleanupTasks.push((async () => {
+            const listStr = await env.USERS_KV.get("bans_list");
+            if (listStr) {
+                const list = JSON.parse(listStr);
+                const filtered = list.filter(id => id !== banId);
+                await env.USERS_KV.put("bans_list", JSON.stringify(filtered));
             }
-        }
+        })());
 
-        return new Response(JSON.stringify({ success: true, message: `User ${targetUsername} has been unbanned` }));
+        // Task C: Update User's Ban History
+        cleanupTasks.push((async () => {
+            const histStr = await env.USERS_KV.get(`bans:${targetKey}`);
+            if (histStr) {
+                const hist = JSON.parse(histStr);
+                const filtered = hist.filter(id => id !== banId);
+                if (filtered.length === 0) {
+                    await env.USERS_KV.delete(`bans:${targetKey}`);
+                } else {
+                    await env.USERS_KV.put(`bans:${targetKey}`, JSON.stringify(filtered));
+                }
+            }
+        })());
+
+        // Fire and forget cleanup or wait for all
+        await Promise.all(cleanupTasks);
+
+        return new Response(JSON.stringify({ 
+            success: true, 
+            message: `User ${targetUsername} successfully unbanned.` 
+        }), { headers: { "Content-Type": "application/json" } });
 
     } catch (e) {
-        console.error("Unban user error:", e);
+        console.error("Critical Unban Error:", e);
         return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
     }
 }
