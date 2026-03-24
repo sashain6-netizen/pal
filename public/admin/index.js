@@ -3,11 +3,23 @@ let bannedUsersData = [];
 let filteredReports = [];
 let filteredBannedUsers = [];
 let currentTab = 'reports';
+let currentUserRank = 'Member';
 
 // Load all data on page load
 document.addEventListener('DOMContentLoaded', loadAllData);
 
 async function loadAllData() {
+    // Get current user info first
+    try {
+        const profileResponse = await fetch('/api/get-profile');
+        if (profileResponse.ok) {
+            const currentUser = await profileResponse.json();
+            currentUserRank = currentUser.rank || 'Member';
+        }
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+    }
+    
     await Promise.all([
         loadReports(),
         loadBannedUsers()
@@ -93,6 +105,11 @@ function renderReports() {
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn">
                                 👤 View User
                             </a>
+                            ${currentUserRank === 'Owner' || currentUserRank === 'Admin' ? `
+                                <button onclick="showBanModal('${escapeHTML(report.reportedUsername)}')" class="admin-btn danger-btn">
+                                🚫 Ban User
+                                </button>
+                            ` : ''}
                         ` : `
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn user-link-btn">
                                 👤 View User
@@ -105,6 +122,11 @@ function renderReports() {
                             <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
                                 🗑️ Delete
                             </button>
+                            ${currentUserRank === 'Owner' || currentUserRank === 'Admin' ? `
+                                <button onclick="showBanModal('${escapeHTML(report.reportedUsername)}')" class="admin-btn danger-btn">
+                                    🚫 Ban User
+                                </button>
+                            ` : ''}
                         `}
                     </div>
                 </div>
@@ -280,7 +302,17 @@ function filterBannedUsers() {
         return matchesSearch && matchesFilter;
     });
     
-    renderBannedUsers();
+    // Get current user rank to pass to renderBannedUsers
+    fetch('/api/get-profile')
+        .then(response => response.ok ? response.json() : Promise.resolve(null))
+        .then(currentUser => {
+            const myRank = currentUser?.rank || 'Member';
+            renderBannedUsers(myRank);
+        })
+        .catch(error => {
+            console.error('Error getting user profile:', error);
+            renderBannedUsers('Member'); // Fallback to lowest rank
+        });
 }
 
 // Report Actions
@@ -338,39 +370,133 @@ async function deleteReport(reportId) {
     }
 }
 
+// Ban Actions
+function showBanModal(username) {
+    document.getElementById('ban-username').textContent = username;
+    document.getElementById('ban-modal').style.display = 'flex';
+    
+    // Clear previous values
+    document.getElementById('ban-reason').value = '';
+    document.getElementById('ban-duration').value = '3600seconds';
+    
+    // Focus on reason input
+    setTimeout(() => {
+        document.getElementById('ban-reason').focus();
+    }, 100);
+    
+    // Add escape key listener
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeBanModal();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+}
+
+function closeBanModal() {
+    document.getElementById('ban-modal').style.display = 'none';
+}
+
+document.getElementById('confirm-ban')?.addEventListener('click', async () => {
+    const username = document.getElementById('ban-username').textContent;
+    const reason = document.getElementById('ban-reason').value.trim();
+    const duration = document.getElementById('ban-duration').value;
+    
+    if (!reason) {
+        showToast('Please enter a ban reason', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/ban-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUsername: username,
+                reason: reason,
+                duration: duration
+            })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            showToast(`Successfully banned ${username}`, 'success');
+            closeBanModal();
+            loadBannedUsers();
+            
+            // Also refresh reports to update the UI
+            loadReports();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Failed to ban user', 'error');
+        }
+    } catch (error) {
+        console.error('Ban error:', error);
+        showToast('Failed to ban user', 'error');
+    }
+});
+
 // Unban Actions
 function showUnbanModal(username, displayName) {
     document.getElementById('unban-username').textContent = displayName;
     document.getElementById('unban-modal').style.display = 'flex';
+    
+    // Add escape key listener
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeUnbanModal();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
 }
 
 document.getElementById('confirm-unban')?.addEventListener('click', async () => {
-    const username = document.getElementById('unban-username').textContent;
+    const displayName = document.getElementById('unban-username').textContent;
     
     try {
-        const user = bannedUsersData.find(u => u.displayName === username);
+        const user = bannedUsersData.find(u => u.displayName === displayName);
         if (!user) {
             showToast('User not found', 'error');
             return;
         }
         
-        const banId = `ban_${user.username}_${Date.now()}`;
+        // Find the active ban for this user
+        const response = await fetch('/api/ban-user');
+        if (!response.ok) {
+            throw new Error('Failed to fetch bans');
+        }
         
-        const response = await fetch('/api/ban-user', {
+        const allBansData = await response.json();
+        const userBans = allBansData.bans || allBansData;
+        
+        // Find the active ban for this user
+        const activeBan = userBans.find(ban => 
+            ban.targetUsername === user.username && 
+            ban.active === true
+        );
+        
+        if (!activeBan) {
+            showToast('No active ban found for this user', 'error');
+            return;
+        }
+        
+        const unbanResponse = await fetch('/api/ban-user', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                banId: banId,
+                banId: activeBan.id,
                 targetUsername: user.username
             })
         });
         
-        if (response.ok) {
-            showToast(`Successfully unbanned ${username}`, 'success');
+        if (unbanResponse.ok) {
+            showToast(`Successfully unbanned ${displayName}`, 'success');
             closeUnbanModal();
             loadBannedUsers();
         } else {
-            const error = await response.json();
+            const error = await unbanResponse.json();
             showToast(error.error || 'Failed to unban user', 'error');
         }
     } catch (error) {
@@ -381,6 +507,7 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
 
 // Modal Management
 document.getElementById('cancel-unban')?.addEventListener('click', closeUnbanModal);
+document.getElementById('cancel-ban')?.addEventListener('click', closeBanModal);
 
 function closeUnbanModal() {
     document.getElementById('unban-modal').style.display = 'none';
@@ -488,17 +615,31 @@ function showToast(message, type = 'info') {
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
     
+    // Add icon based on type
+    let icon = '';
+    switch(type) {
+        case 'success': icon = '✅ '; break;
+        case 'error': icon = '❌ '; break;
+        case 'info': icon = 'ℹ️ '; break;
+        default: icon = '';
+    }
+    toast.textContent = icon + message;
+    
     const container = document.getElementById('toast-container');
     container.appendChild(toast);
     
+    // Trigger animation
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
     
+    // Auto remove
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
-            container.removeChild(toast);
+            if (container.contains(toast)) {
+                container.removeChild(toast);
+            }
         }, 300);
     }, 3000);
 }
@@ -513,6 +654,12 @@ function showReportsError() {
             <button onclick="loadReports()" class="admin-btn">🔄 Retry</button>
         </div>
     `;
+}
+
+function closeReportModal() {
+    // This function exists for consistency but doesn't need to do anything
+    // since we don't use a modal for reports anymore
+    return;
 }
 
 function showBannedError() {

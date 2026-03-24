@@ -72,15 +72,35 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Varela Round', sans-serif;
   border: 2px solid var(--blue-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.admin-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .admin-btn:hover {
   background: var(--blue-deep);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
 }
 
 .admin-btn.secondary-btn {
@@ -101,7 +121,7 @@
 
 .admin-btn.success-btn:hover {
   background: var(--green-600);
-  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+  box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
 }
 
 .admin-btn.danger-btn {
@@ -111,7 +131,7 @@
 
 .admin-btn.danger-btn:hover {
   background: var(--red-600);
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
 }
 
 /* Quick Stats */
@@ -513,8 +533,8 @@
   margin: 0 0 12px 0;
 }
 
-/* Loading and Empty States */
-.loading-state, .empty-state, .error-state {
+/* Loading States */
+.loading-state {
   text-align: center;
   padding: 60px 20px;
   color: var(--gray-400);
@@ -533,6 +553,40 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Pulse Animation for Live Updates */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.updating {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Success Animation */
+@keyframes slideInSuccess {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-success {
+  animation: slideInSuccess 0.3s ease-out;
+}
+
+/* Empty and Error States */
+.empty-state, .error-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray-400);
 }
 
 .empty-icon, .error-icon {
@@ -598,24 +652,71 @@
   flex-wrap: wrap;
 }
 
+/* Ban Form Styles */
+.ban-form {
+  text-align: left;
+  margin: 20px 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gray-600);
+  font-weight: 600;
+  font-family: 'Varela Round', sans-serif;
+}
+
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--gray-100);
+  border-radius: 12px;
+  font-family: 'Varela Round', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
 /* Toast Notifications */
 .toast-container {
   position: fixed;
   top: 20px;
   right: 20px;
   z-index: 10000;
+  pointer-events: none;
 }
 
 .toast {
   background: var(--white);
   padding: 15px 20px;
   border-radius: 50px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   margin-bottom: 10px;
   transform: translateX(100%);
-  transition: transform 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-left: 4px solid var(--blue-primary);
   border: 1px solid var(--gray-100);
+  pointer-events: auto;
+  max-width: 300px;
+  font-family: 'Varela Round', sans-serif;
+  font-weight: 500;
 }
 
 .toast.show {
@@ -624,14 +725,17 @@
 
 .toast-success {
   border-left-color: var(--green-500);
+  background: linear-gradient(135deg, #f0fdf4, #ffffff);
 }
 
 .toast-error {
   border-left-color: var(--red-500);
+  background: linear-gradient(135deg, #fef2f2, #ffffff);
 }
 
 .toast-info {
   border-left-color: var(--blue-primary);
+  background: linear-gradient(135deg, #f0f9ff, #ffffff);
 }
 
 /* Resolved Reports Styling */
