@@ -83,11 +83,11 @@ function renderReports() {
                     
                     <div class="report-actions">
                         ${isResolved ? `
-                            <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn" target="_blank">
-                                � View User
+                            <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn">
+                                👤 View User
                             </a>
                         ` : `
-                            <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn user-link-btn" target="_blank">
+                            <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn user-link-btn">
                                 👤 View User
                             </a>
                             ${report.status === 'pending' ? `
