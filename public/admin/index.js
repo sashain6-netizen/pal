@@ -103,7 +103,7 @@ function renderReports() {
                     <div class="report-actions">
                         ${isResolved ? `
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn">
-                                👤 View User
+                                👁 View User
                             </a>
                             ${currentUserRank === 'Owner' ? `
                                 <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
@@ -112,7 +112,7 @@ function renderReports() {
                             ` : ''}
                         ` : `
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn user-link-btn">
-                                👤 View User
+                                👁 View User
                             </a>
                             ${report.status === 'pending' ? `
                                 <button onclick="resolveReport('${report.id}')" class="admin-btn success-btn">
