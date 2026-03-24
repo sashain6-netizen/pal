@@ -162,13 +162,13 @@ export async function onRequestDelete(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const unbannerUsername = payload.username.toLowerCase();
 
-        // 2. Get Ban ID from Request
+        // 2. Get Ban ID and target from Request
         const { banId, targetUsername } = await request.json();
         if (!banId || !targetUsername) {
             return new Response(JSON.stringify({ error: "Ban ID and target username are required" }), { status: 400 });
         }
 
-        // 3. Check if unbanner has permission
+        // 3. Check if unbanner is Staff
         const unbannerData = await env.USERS_KV.get(`user:${unbannerUsername}`);
         const unbanner = unbannerData ? JSON.parse(unbannerData) : {};
 
@@ -177,58 +177,56 @@ export async function onRequestDelete(context) {
             return new Response(JSON.stringify({ error: "Only staff can unban users" }), { status: 403 });
         }
 
-        // 4. Get ban data
+        // 4. Get ban data and verify it matches the target
         const banData = await env.USERS_KV.get(`ban:${banId}`);
         if (!banData) {
-            return new Response(JSON.stringify({ error: "Ban not found" }), { status: 404 });
+            return new Response(JSON.stringify({ error: "Ban record not found" }), { status: 404 });
         }
 
         const ban = JSON.parse(banData);
         if (ban.targetUsername !== targetUsername.toLowerCase()) {
-            return new Response(JSON.stringify({ error: "Ban ID does not match target username" }), { status: 400 });
+            return new Response(JSON.stringify({ error: "Ban ID does not match target user" }), { status: 400 });
         }
 
-        // --- NEW RESTRICTION FOR MODERATORS ---
+        // 5. Hierarchy & Moderator Restriction
         if (unbanner.rank === "Moderator") {
             const oneDayMs = 24 * 60 * 60 * 1000;
             const banDate = new Date(ban.timestamp).getTime();
             const expiryDate = ban.banExpiration ? new Date(ban.banExpiration).getTime() : null;
 
-            // If it's a permanent ban OR the duration was > 24 hours
-            const isLongTermBan = !expiryDate || (expiryDate - banDate) > oneDayMs;
-
-            if (isLongTermBan) {
+            // Block Moderators from lifting permanent or long-term bans
+            if (!expiryDate || (expiryDate - banDate) > (oneDayMs + 1000)) {
                 return new Response(JSON.stringify({ 
-                    error: "Moderators cannot lift bans longer than 24 hours. Contact someone higher." 
+                    error: "Moderators cannot lift permanent bans or bans longer than 24 hours." 
                 }), { status: 403 });
             }
         }
-        // --------------------------------------
 
-        // 5. Remove ban record
+        // 6. Remove the specific ban record
         await env.USERS_KV.delete(`ban:${banId}`);
 
-        // 6. Clean up global bans list
+        // 7. Update Global Bans List
         const bansList = await env.USERS_KV.get("bans_list");
         if (bansList) {
             const allBans = JSON.parse(bansList);
             await env.USERS_KV.put("bans_list", JSON.stringify(allBans.filter(id => id !== banId)));
         }
 
-        // 7. Update user's banned status
+        // 8. Update User Profile Status (FIXED SECTION)
         const userData = await env.USERS_KV.get(`user:${targetUsername.toLowerCase()}`);
         if (userData) {
             const user = JSON.parse(userData);
             user.isBanned = false;
             delete user.banReason;
             delete user.banExpiration;
-            await env.USERS_KV.put("user:${targetUsername.toLowerCase()}", JSON.stringify(user));
+            // FIXED: Backticks used here
+            await env.USERS_KV.put(`user:${targetUsername.toLowerCase()}`, JSON.stringify(user));
         }
 
-        // 8. Remove from user's ban records
-        const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
-        if (userBans) {
-            const updatedBans = JSON.parse(userBans).filter(id => id !== banId);
+        // 9. Clean up User's individual ban history list
+        const userBansRecord = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
+        if (userBansRecord) {
+            const updatedBans = JSON.parse(userBansRecord).filter(id => id !== banId);
             if (updatedBans.length === 0) {
                 await env.USERS_KV.delete(`bans:${targetUsername.toLowerCase()}`);
             } else {
@@ -240,7 +238,7 @@ export async function onRequestDelete(context) {
 
     } catch (e) {
         console.error("Unban user error:", e);
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
     }
 }
 
