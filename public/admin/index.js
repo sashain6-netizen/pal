@@ -470,32 +470,32 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
     const displayName = document.getElementById('unban-username').textContent;
     
     try {
+        // Find the user object in your local state
         const user = bannedUsersData.find(u => u.displayName === displayName);
         if (!user) {
-            showToast('User not found', 'error');
+            showToast('User not found in local dashboard', 'error');
             return;
         }
         
-        // Find the active ban for this user
+        // Fetch the fresh list of bans from the API
         const response = await fetch('/api/ban-user');
-        if (!response.ok) {
-            throw new Error('Failed to fetch bans');
-        }
+        if (!response.ok) throw new Error('Failed to fetch bans');
         
         const allBansData = await response.json();
-        const userBans = allBansData.bans || allBansData;
+        const userBans = allBansData.bans || (Array.isArray(allBansData) ? allBansData : []);
         
-        // Find the active ban for this user
+        // FIND THE BAN: Match by username (Case Insensitive)
+        // We remove the .active check because your backend deletes inactive bans anyway
         const activeBan = userBans.find(ban => 
-            ban.targetUsername === user.username && 
-            ban.active === true
+            ban.targetUsername.toLowerCase() === user.username.toLowerCase()
         );
         
         if (!activeBan) {
-            showToast('No active ban found for this user', 'error');
+            showToast('No active ban record found on server', 'error');
             return;
         }
         
+        // Execute the delete (unban) request
         const unbanResponse = await fetch('/api/ban-user', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -508,14 +508,14 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
         if (unbanResponse.ok) {
             showToast(`Successfully unbanned ${displayName}`, 'success');
             closeUnbanModal();
-            loadBannedUsers();
+            loadBannedUsers(); // Refresh the list
         } else {
             const error = await unbanResponse.json();
             showToast(error.error || 'Failed to unban user', 'error');
         }
     } catch (error) {
         console.error('Unban error:', error);
-        showToast('Failed to unban user', 'error');
+        showToast('Connection error during unban', 'error');
     }
 });
 
