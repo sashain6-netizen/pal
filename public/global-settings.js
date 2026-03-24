@@ -207,4 +207,49 @@
             window.location.replace(panicUrl);
         }
     });
+
+    // --- 8. BAN CHECKING ---
+    // Periodically check if user is banned (every 30 seconds)
+    async function checkBanStatus() {
+        try {
+            const response = await fetch('/api/get-profile', { 
+                credentials: 'include',
+                headers: { 'Cache-Control': 'no-cache' }
+            });
+            
+            if (!response.ok) {
+                // If we get a 403 with ban info, kick the user
+                if (response.status === 403) {
+                    const data = await response.json();
+                    if (data.kicked && data.error && data.error.includes("banned")) {
+                        // Show ban notification
+                        let message = `🚫 ${data.error}`;
+                        if (data.reason) {
+                            message += `\nReason: ${data.reason}`;
+                        }
+                        if (data.expires) {
+                            const expiryDate = new Date(data.expires);
+                            message += `\nExpires: ${expiryDate.toLocaleDateString()} ${expiryDate.toLocaleTimeString()}`;
+                        }
+                        
+                        // Show notification and redirect to login
+                        showToast(message, "error");
+                        setTimeout(() => {
+                            window.location.href = "/login";
+                        }, 3000);
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            // Silently fail - don't show errors to users
+            console.error("Ban check error:", e);
+        }
+    }
+
+    // Check ban status every 30 seconds
+    setInterval(checkBanStatus, 30000);
+    // Also check immediately on load
+    checkBanStatus();
+
 })();

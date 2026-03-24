@@ -24,6 +24,48 @@ export async function onRequestGet(context) {
         if (!rawUserData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         const user = JSON.parse(rawUserData);
 
+        // CHECK IF USER IS BANNED
+        if (user.isBanned === true) {
+          // Check if ban has expired
+          if (user.banExpiration) {
+            const expirationTime = new Date(user.banExpiration).getTime();
+            if (expirationTime > Date.now()) {
+              // Ban is still active - kick user out
+              return new Response(JSON.stringify({ 
+                error: "Account banned",
+                reason: user.banReason || "No reason provided",
+                expires: user.banExpiration,
+                kicked: true
+              }), { 
+                status: 403,
+                headers: { 
+                  "Content-Type": "application/json",
+                  "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" // Clear session
+                }
+              });
+            } else {
+              // Ban has expired, reactivate account
+              user.isBanned = false;
+              delete user.banReason;
+              delete user.banExpiration;
+              await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
+            }
+          } else {
+            // Permanent ban - kick user out
+            return new Response(JSON.stringify({ 
+              error: "Account permanently banned",
+              reason: user.banReason || "No reason provided",
+              kicked: true
+            }), { 
+              status: 403,
+              headers: { 
+                "Content-Type": "application/json",
+                "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" // Clear session
+              }
+            });
+          }
+        }
+
         const rawPremiumData = await env.USERS_KV.get("pal_premium");
         let isPremiumUser = false;
 

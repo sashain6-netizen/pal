@@ -56,18 +56,53 @@ export async function onRequestPost(context) {
       return new Response("Invalid credentials", { status: 401 });
     }
 
-    // 6. JWT GENERATION
+    // 6. CHECK IF USER IS BANNED
+    if (user.isBanned === true) {
+      // Check if ban has expired
+      if (user.banExpiration) {
+        const expirationTime = new Date(user.banExpiration).getTime();
+        if (expirationTime > Date.now()) {
+          // Ban is still active
+          return new Response(JSON.stringify({ 
+            error: "Account banned",
+            reason: user.banReason || "No reason provided",
+            expires: user.banExpiration
+          }), { 
+            status: 403,
+            headers: { "Content-Type": "application/json" }
+          });
+        } else {
+          // Ban has expired, reactivate account
+          user.isBanned = false;
+          delete user.banReason;
+          delete user.banExpiration;
+          await env.USERS_KV.put(userKey, JSON.stringify(user));
+        }
+      } else {
+        // Permanent ban
+        return new Response(JSON.stringify({ 
+          error: "Account permanently banned",
+          reason: user.banReason || "No reason provided"
+        }), { 
+          status: 403,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+    }
+
+    // 7. JWT GENERATION
     // Note: 'user.username' is the lowercase version from our signup script
     const token = await createToken(user.username, env.JWT_SECRET);
 
-    // 7. RESPONSE
+    // 8. RESPONSE
     return new Response(JSON.stringify({ 
       success: true, 
       username: user.displayName // Return the "Pretty" name (e.g., "Pal") to the UI
     }), {
       headers: {
         "Content-Type": "application/json",
-        "Set-Cookie": `pal_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`      }
+        "Set-Cookie": `pal_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`
+      }
     });
 
   } catch (err) {
