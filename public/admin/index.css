@@ -634,6 +634,48 @@
   border-left-color: var(--blue-primary);
 }
 
+/* Resolved Reports Styling */
+.report-card.resolved-report {
+    opacity: 0.6;
+    background: var(--gray-50);
+    border-color: var(--gray-200);
+}
+
+.report-card.resolved-report:hover {
+    opacity: 0.8;
+}
+
+/* Blue User Link Button */
+.admin-btn.user-link-btn {
+    background: var(--blue-primary);
+    color: var(--white);
+    border-color: var(--blue-primary);
+}
+
+.admin-btn.user-link-btn:hover {
+    background: var(--blue-deep);
+    border-color: var(--blue-deep);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* Primary Button for View Report */
+.admin-btn.primary-btn {
+    background: var(--blue-primary);
+    color: var(--white);
+    border-color: var(--blue-primary);
+}
+
+.admin-btn.primary-btn:hover {
+    background: var(--blue-deep);
+    border-color: var(--blue-deep);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* Report Details Styling */
+.report-detail p {
+    margin: 0 0 12px 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .admin-dashboard {

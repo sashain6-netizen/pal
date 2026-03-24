@@ -49,21 +49,20 @@ function renderReports() {
         return;
     }
     
-    const reportsHTML = filteredReports.map(report => {
+    // Sort reports: pending first, then resolved, then deleted
+    const sortedReports = [...filteredReports].sort((a, b) => {
+        const statusOrder = { 'pending': 0, 'resolved': 1, 'deleted': 2 };
+        return statusOrder[a.status] - statusOrder[b.status];
+    });
+    
+    const reportsHTML = sortedReports.map(report => {
         const statusClass = report.status === 'pending' ? 'pending' : 
                            report.status === 'resolved' ? 'resolved' : 'deleted';
         const statusText = report.status.charAt(0).toUpperCase() + report.status.slice(1);
-        
-        console.log("Report Debug:", {
-            id: report.id,
-            status: report.status,
-            statusClass,
-            showResolve: report.status === 'pending',
-            showDelete: report.status !== 'deleted'
-        });
+        const isResolved = report.status === 'resolved';
         
         return `
-            <div class="report-card ${statusClass}">
+            <div class="report-card ${statusClass} ${isResolved ? 'resolved-report' : ''}">
                 <div class="report-header">
                     <div class="report-info">
                         <h3 class="report-id">#${report.id}</h3>
@@ -78,22 +77,30 @@ function renderReports() {
                         <p><strong>Reporter:</strong> ${escapeHTML(report.reporterUsername)}</p>
                         <p><strong>Reason:</strong> ${escapeHTML(report.reason)}</p>
                         ${report.description ? `<p><strong>Description:</strong> ${escapeHTML(report.description)}</p>` : ''}
+                        ${isResolved && report.resolvedAt ? `<p><strong>Resolved:</strong> ${formatDate(report.resolvedAt)}</p>` : ''}
+                        ${isResolved && report.resolvedBy ? `<p><strong>Resolved By:</strong> ${escapeHTML(report.resolvedBy)}</p>` : ''}
                     </div>
                     
                     <div class="report-actions">
-                        <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn secondary-btn" target="_blank">
-                            👤 View User
-                        </a>
-                        ${report.status === 'pending' ? `
-                            <button onclick="resolveReport('${report.id}')" class="admin-btn success-btn">
-                                ✅ Resolve
+                        ${isResolved ? `
+                            <button onclick="viewReportDetails('${report.id}')" class="admin-btn primary-btn">
+                                📋 View Report
                             </button>
-                        ` : ''}
-                        ${report.status !== 'deleted' ? `
-                            <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
-                                🗑️ Delete
-                            </button>
-                        ` : ''}
+                        ` : `
+                            <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn user-link-btn" target="_blank">
+                                👤 View User
+                            </a>
+                            ${report.status === 'pending' ? `
+                                <button onclick="resolveReport('${report.id}')" class="admin-btn success-btn">
+                                    ✅ Resolve
+                                </button>
+                            ` : ''}
+                            ${report.status !== 'deleted' ? `
+                                <button onclick="deleteReport('${report.id}')" class="admin-btn danger-btn">
+                                    🗑️ Delete
+                                </button>
+                            ` : ''}
+                        `}
                     </div>
                 </div>
             </div>
@@ -272,6 +279,13 @@ function filterBannedUsers() {
 }
 
 // Report Actions
+function viewReportDetails(reportId) {
+    const report = reportsData.find(r => r.id === reportId);
+    if (!report) return;
+    
+    showToast(`Report #${report.id} - ${report.reason} by ${report.reporterUsername}`, 'info');
+}
+
 async function resolveReport(reportId) {
     try {
         const response = await fetch('/api/report-user', {
