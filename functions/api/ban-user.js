@@ -22,8 +22,8 @@ export async function onRequestPost(context) {
         // 3. Check if banner has permission (staff only)
         const bannerData = await env.USERS_KV.get(`user:${bannerUsername}`);
         const banner = bannerData ? JSON.parse(bannerData) : {};
-        
-        const staffRoles = ["Owner", "Admin", "Manager", "Moderator", "Staff"];
+
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(banner.rank)) {
             return new Response(JSON.stringify({ error: "Only staff can ban users" }), { status: 403 });
         }
@@ -36,54 +36,50 @@ export async function onRequestPost(context) {
 
         const target = JSON.parse(targetData);
 
-        // 5. Prevent banning higher rank users (Owners can ban anyone except other Owners)
-        const rankHierarchy = { 
-    "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
-    "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4, 
-    "Supporter": -5, "Active Member": -6, "Member": -7 
-};
-        
-        // Owners can ban anyone except other Owners
+        // 5. Prevent banning higher rank users
+        const rankHierarchy = {
+            "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
+            "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4,
+            "Supporter": -5, "Active Member": -6, "Member": -7
+        };
+
         if (banner.rank === "Owner" && target.rank === "Owner") {
             return new Response(JSON.stringify({ error: "Cannot ban another Owner" }), { status: 403 });
         }
-        
-        // Non-Owners cannot ban equal or higher rank
+
         if (banner.rank !== "Owner" && rankHierarchy[target.rank] >= rankHierarchy[banner.rank]) {
             return new Response(JSON.stringify({ error: "Cannot ban users with equal or higher rank" }), { status: 403 });
         }
 
         // 6. Calculate ban expiration
         let banExpiration = null;
+
+        // Moderators cannot issue permanent bans
+        if (banner.rank === "Moderator" && (!duration || duration === "permanent")) {
+            return new Response(JSON.stringify({ error: "Moderators cannot issue permanent bans" }), { status: 403 });
+        }
+
         if (duration && duration !== "permanent") {
             let durationMs;
-            
-            // Handle new seconds-based format (e.g., "3600seconds")
+
             const secondsMatch = duration.match(/^(\d+)seconds$/);
             if (secondsMatch) {
                 const seconds = parseInt(secondsMatch[1]);
-                // Validate maximum duration (365 days in seconds)
-                const maxSeconds = 365 * 24 * 60 * 60;
-                if (seconds > maxSeconds) {
-                    return new Response(JSON.stringify({ error: "Maximum ban duration is 365 days" }), { status: 400 });
-                }
                 if (seconds <= 0) {
                     return new Response(JSON.stringify({ error: "Duration must be greater than 0" }), { status: 400 });
                 }
                 durationMs = seconds * 1000;
             } else {
-                // Legacy support for old preset durations
                 const durationMap = {
-                    "1hour": 1 * 60 * 60 * 1000,
+                    "1hour":   1  * 60 * 60 * 1000,
                     "24hours": 24 * 60 * 60 * 1000,
-                    "7days": 7 * 24 * 60 * 60 * 1000,
-                    "30days": 30 * 24 * 60 * 60 * 1000
+                    "7days":   7  * 24 * 60 * 60 * 1000,
+                    "30days":  30 * 24 * 60 * 60 * 1000
                 };
-                
+
                 if (durationMap[duration]) {
                     durationMs = durationMap[duration];
                 } else {
-                    // Legacy custom duration (format: "Xdays")
                     const customMatch = duration.match(/^(\d+)days$/);
                     if (customMatch) {
                         const days = parseInt(customMatch[1]);
@@ -93,18 +89,23 @@ export async function onRequestPost(context) {
                     }
                 }
             }
-            
-            if (durationMs) {
-                // Additional safety check - ensure we're not dealing with absurdly large numbers
-                const maxMs = 365 * 24 * 60 * 60 * 1000; // 365 days in milliseconds
-                if (durationMs > maxMs) {
-                    return new Response(JSON.stringify({ error: "Maximum ban duration is 365 days" }), { status: 400 });
-                }
-                
-                banExpiration = new Date(Date.now() + durationMs).toISOString();
-            } else {
+
+            if (!durationMs) {
                 return new Response(JSON.stringify({ error: "Invalid duration format" }), { status: 400 });
             }
+
+            const oneDayMs = 24  * 60 * 60 * 1000;
+            const maxMs    = 365 * 24 * 60 * 60 * 1000;
+
+            if (banner.rank === "Moderator" && durationMs > oneDayMs) {
+                return new Response(JSON.stringify({ error: "Moderators can only ban users for up to 1 day" }), { status: 403 });
+            }
+
+            if (durationMs > maxMs) {
+                return new Response(JSON.stringify({ error: "Maximum ban duration is 365 days" }), { status: 400 });
+            }
+
+            banExpiration = new Date(Date.now() + durationMs).toISOString();
         }
 
         // 7. Create ban entry
@@ -122,7 +123,7 @@ export async function onRequestPost(context) {
         // 8. Store ban
         await env.USERS_KV.put(`ban:${ban.id}`, JSON.stringify(ban));
 
-        // 9. Add to user's record
+        // 9. Add to user's ban records
         const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
         const bans = userBans ? JSON.parse(userBans) : [];
         bans.push(ban.id);
@@ -170,7 +171,7 @@ export async function onRequestDelete(context) {
         // 3. Check if unbanner has permission
         const unbannerData = await env.USERS_KV.get(`user:${unbannerUsername}`);
         const unbanner = unbannerData ? JSON.parse(unbannerData) : {};
-        
+
         const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(unbanner.rank)) {
             return new Response(JSON.stringify({ error: "Only staff can unban users" }), { status: 403 });
@@ -187,15 +188,14 @@ export async function onRequestDelete(context) {
             return new Response(JSON.stringify({ error: "Ban ID does not match target username" }), { status: 400 });
         }
 
-        // 5. Completely remove ban record and clean up all KV pairs
+        // 5. Remove ban record
         await env.USERS_KV.delete(`ban:${banId}`);
 
         // 6. Clean up global bans list
         const bansList = await env.USERS_KV.get("bans_list");
         if (bansList) {
             const allBans = JSON.parse(bansList);
-            const updatedBansList = allBans.filter(id => id !== banId);
-            await env.USERS_KV.put("bans_list", JSON.stringify(updatedBansList));
+            await env.USERS_KV.put("bans_list", JSON.stringify(allBans.filter(id => id !== banId)));
         }
 
         // 7. Update user's banned status
@@ -208,13 +208,11 @@ export async function onRequestDelete(context) {
             await env.USERS_KV.put(`user:${targetUsername.toLowerCase()}`, JSON.stringify(user));
         }
 
-        // 8. Remove from user's ban records list and clean up empty KV
+        // 8. Remove from user's ban records, delete key if empty
         const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
         if (userBans) {
-            const bans = JSON.parse(userBans);
-            const updatedBans = bans.filter(id => id !== banId);
+            const updatedBans = JSON.parse(userBans).filter(id => id !== banId);
             if (updatedBans.length === 0) {
-                // Remove the entire KV entry if no bans remain
                 await env.USERS_KV.delete(`bans:${targetUsername.toLowerCase()}`);
             } else {
                 await env.USERS_KV.put(`bans:${targetUsername.toLowerCase()}`, JSON.stringify(updatedBans));
@@ -245,7 +243,7 @@ export async function onRequestGet(context) {
         // 2. Check if user is staff
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
-        
+
         const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
@@ -254,13 +252,11 @@ export async function onRequestGet(context) {
         // 3. Get all bans
         const bansList = await env.USERS_KV.get("bans_list");
         const banIds = bansList ? JSON.parse(bansList) : [];
-        
+
         const bans = [];
         for (const banId of banIds) {
             const banData = await env.USERS_KV.get(`ban:${banId}`);
-            if (banData) {
-                bans.push(JSON.parse(banData));
-            }
+            if (banData) bans.push(JSON.parse(banData));
         }
 
         return new Response(JSON.stringify({ bans }));
