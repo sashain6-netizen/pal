@@ -187,13 +187,18 @@ export async function onRequestDelete(context) {
             return new Response(JSON.stringify({ error: "Ban ID does not match target username" }), { status: 400 });
         }
 
-        // 5. Deactivate ban
-        ban.active = false;
-        ban.unbannerUsername = unbannerUsername;
-        ban.unbanTimestamp = new Date().toISOString();
-        await env.USERS_KV.put(`ban:${banId}`, JSON.stringify(ban));
+        // 5. Completely remove ban record and clean up all KV pairs
+        await env.USERS_KV.delete(`ban:${banId}`);
 
-        // 6. Update user's banned status
+        // 6. Clean up global bans list
+        const bansList = await env.USERS_KV.get("bans_list");
+        if (bansList) {
+            const allBans = JSON.parse(bansList);
+            const updatedBansList = allBans.filter(id => id !== banId);
+            await env.USERS_KV.put("bans_list", JSON.stringify(updatedBansList));
+        }
+
+        // 7. Update user's banned status
         const userData = await env.USERS_KV.get(`user:${targetUsername.toLowerCase()}`);
         if (userData) {
             const user = JSON.parse(userData);
@@ -203,12 +208,17 @@ export async function onRequestDelete(context) {
             await env.USERS_KV.put(`user:${targetUsername.toLowerCase()}`, JSON.stringify(user));
         }
 
-        // 7. Remove from user's ban records list
+        // 8. Remove from user's ban records list and clean up empty KV
         const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
         if (userBans) {
             const bans = JSON.parse(userBans);
             const updatedBans = bans.filter(id => id !== banId);
-            await env.USERS_KV.put(`bans:${targetUsername.toLowerCase()}`, JSON.stringify(updatedBans));
+            if (updatedBans.length === 0) {
+                // Remove the entire KV entry if no bans remain
+                await env.USERS_KV.delete(`bans:${targetUsername.toLowerCase()}`);
+            } else {
+                await env.USERS_KV.put(`bans:${targetUsername.toLowerCase()}`, JSON.stringify(updatedBans));
+            }
         }
 
         return new Response(JSON.stringify({ success: true, message: `User ${targetUsername} has been unbanned` }));

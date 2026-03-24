@@ -72,11 +72,32 @@ export async function onRequestPost(context) {
             headers: { "Content-Type": "application/json" }
           });
         } else {
-          // Ban has expired, reactivate account
+          // Ban has expired, clean up all ban-related KV pairs
           user.isBanned = false;
           delete user.banReason;
           delete user.banExpiration;
           await env.USERS_KV.put(userKey, JSON.stringify(user));
+          
+          // Clean up ban records and KV pairs
+          const username = user.username.toLowerCase();
+          const userBans = await env.USERS_KV.get(`bans:${username}`);
+          if (userBans) {
+            const bans = JSON.parse(userBans);
+            // Remove each ban KV pair
+            for (const banId of bans) {
+              await env.USERS_KV.delete(`ban:${banId}`);
+              
+              // Clean up global bans list
+              const bansList = await env.USERS_KV.get("bans_list");
+              if (bansList) {
+                const allBans = JSON.parse(bansList);
+                const updatedBansList = allBans.filter(id => id !== banId);
+                await env.USERS_KV.put("bans_list", JSON.stringify(updatedBansList));
+              }
+            }
+            // Remove the bans list KV entry
+            await env.USERS_KV.delete(`bans:${username}`);
+          }
         }
       } else {
         // Permanent ban
