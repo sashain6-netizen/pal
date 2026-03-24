@@ -104,14 +104,14 @@
 }
 
 .admin-btn.secondary-btn {
-  background: transparent;
+  background: var(--blue-600);
   color: var(--white);
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: var(--blue-600);
 }
 
 .admin-btn.secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.7);
+  background: var(--blue-700);
+  border-color: var(--blue-700);
 }
 
 .admin-btn.success-btn {
