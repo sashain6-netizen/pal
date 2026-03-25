@@ -942,6 +942,7 @@
 
         // Test API endpoints with detailed status
         async function testAPIEndpoints() {
+            addLog('INFO', 'Starting individual endpoint status tests...');
             const endpoints = [
                 { url: '/api/me', name: 'User authentication' },
                 { url: '/api/forum', name: 'Forum data access' },
@@ -953,12 +954,17 @@
             for (const endpoint of endpoints) {
                 await testSingleEndpoint(endpoint.url, endpoint.name);
             }
+            addLog('INFO', 'Individual endpoint status tests completed');
         }
 
         async function testSingleEndpoint(url, name) {
             const statusElement = findEndpointStatusElement(url);
-            if (!statusElement) return;
+            if (!statusElement) {
+                addLog('ERROR', `Status element not found for ${name} (${url})`);
+                return;
+            }
 
+            addLog('INFO', `Testing ${name} (${url})...`);
             statusElement.className = 'endpoint-status status-running';
             statusElement.textContent = 'Testing...';
 
