@@ -956,9 +956,7 @@
         }
 
         async function testSingleEndpoint(url, name) {
-            console.log('Testing endpoint:', name, 'URL:', url);
-            const statusElement = findEndpointStatusElementByName(name);
-            console.log('Status element found:', !!statusElement);
+            const statusElement = findEndpointStatusElement(url);
             if (!statusElement) return;
 
             statusElement.className = 'endpoint-status status-running';
@@ -1004,6 +1002,7 @@
 
         function findEndpointStatusElement(url) {
             const endpointItems = document.querySelectorAll('.endpoint-item');
+            
             for (const item of endpointItems) {
                 const nameElement = item.querySelector('.endpoint-name');
                 if (nameElement) {
