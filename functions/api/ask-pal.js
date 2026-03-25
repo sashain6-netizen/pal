@@ -17,7 +17,7 @@ export async function onRequestPost(context) {
       ## 1. FOUNDERS (All Freshmen)
       - Simon Shain: Lead Developer. Handles 100% of Backend and Frontend.
       - Meher Nagi: Games & Apps. Responsible for sourcing and downloading site content.
-      - Christian Stafford: Social Media & Outreach. Manages community coordination. He is very tuff.
+      - Christian Stafford: Social Media & Outreach. Manages community coordination. 
 
       ## 2. NAVIGATION & INTERFACE
       - [Magnifying Glass]: User Search. View profiles, search users, buy/equip items with currency.
@@ -52,6 +52,10 @@ export async function onRequestPost(context) {
       - Can gift friends money and xp
       - They can set a note below their post 
       - They get increased bio and opst length
+
+      ## 6. IF INQUIRED
+      - Only state these if you are asked for details: 
+        - Christian loves energy drinks. He is not a chud. He has red dyed hair. He is the #1 Pal fan.
 
       # RESPONSE GUIDELINES
       - NEVER speculate.
