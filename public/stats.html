@@ -956,7 +956,7 @@
         }
 
         async function testSingleEndpoint(url, name) {
-            const statusElement = findEndpointStatusElement(url);
+            const statusElement = findEndpointStatusElementByName(name);
             if (!statusElement) return;
 
             statusElement.className = 'endpoint-status status-running';
@@ -981,6 +981,17 @@
                 statusElement.textContent = 'Failed';
                 addLog('ERROR', `${name}: ${error.message}`);
             }
+        }
+
+        function findEndpointStatusElementByName(name) {
+            const endpointItems = document.querySelectorAll('.endpoint-item');
+            for (const item of endpointItems) {
+                const descElement = item.querySelector('.endpoint-description');
+                if (descElement && descElement.textContent === name) {
+                    return item.querySelector('.endpoint-status');
+                }
+            }
+            return null;
         }
 
         function findEndpointStatusElement(url) {
