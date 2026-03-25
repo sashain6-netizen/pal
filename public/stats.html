@@ -1367,9 +1367,7 @@
             ];
 
             for (const diagnostic of diagnostics) {
-                addLog('DEBUG', `Running diagnostic: ${diagnostic.name}`);
                 await runDiagnostic(diagnostic.name, diagnostic.test);
-                await new Promise(resolve => setTimeout(resolve, 100));
             }
 
             addLog('INFO', 'System diagnostics completed');
@@ -1377,55 +1375,35 @@
 
         // Run individual diagnostic
         async function runDiagnostic(name, testFunction) {
-            addLog('DEBUG', `Looking for diagnostic: "${name}"`);
-            
             const diagnosticItems = document.querySelectorAll('.diagnostic-item');
             let statusElement = null;
-            
-            addLog('DEBUG', `Found ${diagnosticItems.length} diagnostic items`);
 
-            diagnosticItems.forEach((item, index) => {
+            diagnosticItems.forEach(item => {
                 const nameElement = item.querySelector('.diagnostic-name');
-                const itemText = nameElement ? nameElement.textContent.trim() : 'NO NAME';
-                addLog('DEBUG', `Item ${index}: "${itemText}" (looking for "${name}")`);
-                
                 if (nameElement && nameElement.textContent.trim().toLowerCase() === name.toLowerCase()) {
                     statusElement = item.querySelector('.diagnostic-status');
-                    addLog('DEBUG', `Found matching element for "${name}"`);
                 }
             });
 
             if (statusElement) {
-                addLog('DEBUG', `Updating status for "${name}" to Running...`);
                 statusElement.className = 'diagnostic-status status-running';
                 statusElement.textContent = 'Running...';
-            } else {
-                addLog('ERROR', `Could not find status element for diagnostic: "${name}"`);
             }
 
             try {
                 const result = await testFunction();
-                addLog('DEBUG', `Diagnostic "${name}" result: ${result}`);
-                updateDiagnosticStatus(name, result);
+                if (statusElement) {
+                    statusElement.className = `diagnostic-status status-${result ? 'pass' : 'fail'}`;
+                    statusElement.textContent = result ? 'Pass' : 'Fail';
+                }
                 addLog('INFO', `Diagnostic "${name}": ${result ? 'PASSED' : 'FAILED'}`);
             } catch (error) {
-                addLog('DEBUG', `Diagnostic "${name}" error: ${error.message}`);
-                updateDiagnosticStatus(name, false);
+                if (statusElement) {
+                    statusElement.className = 'diagnostic-status status-fail';
+                    statusElement.textContent = 'Fail';
+                }
                 addLog('ERROR', `Diagnostic "${name}" failed: ${error.message}`);
             }
-        }
-
-        // Update diagnostic status in UI
-        function updateDiagnosticStatus(name, passed) {
-            const diagnosticItems = document.querySelectorAll('.diagnostic-item');
-            diagnosticItems.forEach(item => {
-                const nameElement = item.querySelector('.diagnostic-name');
-                if (nameElement && nameElement.textContent.trim().toLowerCase() === name.toLowerCase()) {
-                    const statusElement = item.querySelector('.diagnostic-status');
-                    statusElement.className = `diagnostic-status status-${passed ? 'pass' : 'fail'}`;
-                    statusElement.textContent = passed ? 'Pass' : 'Fail';
-                }
-            });
         }
 
         async function testDatabaseConnection() {
