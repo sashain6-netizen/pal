@@ -956,7 +956,9 @@
         }
 
         async function testSingleEndpoint(url, name) {
+            console.log('Testing endpoint:', name, 'URL:', url);
             const statusElement = findEndpointStatusElementByName(name);
+            console.log('Status element found:', !!statusElement);
             if (!statusElement) return;
 
             statusElement.className = 'endpoint-status status-running';
@@ -985,12 +987,18 @@
 
         function findEndpointStatusElementByName(name) {
             const endpointItems = document.querySelectorAll('.endpoint-item');
+            console.log('Looking for:', name);
+            console.log('Found items:', endpointItems.length);
+            
             for (const item of endpointItems) {
                 const descElement = item.querySelector('.endpoint-description');
+                console.log('Description:', descElement ? descElement.textContent : 'not found');
                 if (descElement && descElement.textContent === name) {
+                    console.log('Match found for:', name);
                     return item.querySelector('.endpoint-status');
                 }
             }
+            console.log('No match found for:', name);
             return null;
         }
 
