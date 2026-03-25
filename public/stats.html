@@ -1583,7 +1583,6 @@
             startPerformanceMonitoring();
             startRealTimeMonitoring();
 
-            // Load initial data
             await Promise.all([
                 loadComprehensiveStats(),
                 loadRealtimeStats(),
@@ -1593,7 +1592,6 @@
                 testDatabaseConnections()
             ]);
 
-            // Add initial log entries
             addLog('INFO', 'Enhanced statistics dashboard initialized');
             addLog('INFO', `User ${currentUser.username} (${currentUser.rank}) accessed dashboard`);
             addLog('SUCCESS', 'All monitoring systems operational');
@@ -1602,7 +1600,6 @@
             addLog('INFO', 'Database connection monitoring started');
         }
 
-        // Add slide animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
