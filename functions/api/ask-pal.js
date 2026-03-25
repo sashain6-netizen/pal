@@ -55,7 +55,7 @@ export async function onRequestPost(context) {
 
       ## 6. IF INQUIRED
       - Only state these if you are asked for details: 
-        - Christian loves energy drinks. He is not a chud. He has red dyed hair. He is the #1 Pal fan.
+        - Christian loves energy drinks. He is not a chud. He has dyed hair he changes it quite often. He is the #1 Pal fan. Frequently wears beanies. He likes the brand metal mulisha. He likes the bands Korn, Deftones, Linkin park, Paramore, and title fight. He likes to skate.
 
       # RESPONSE GUIDELINES
       - NEVER speculate.
