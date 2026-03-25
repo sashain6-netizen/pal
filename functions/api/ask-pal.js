@@ -44,7 +44,7 @@ export async function onRequestPost(context) {
       ## 5. PREMIUM
       - Premium costs 5 dollars a year
       - Users can bump threads once every hour and get a golden glow everywhere they go
-      - They can customize their glow color and intensity in forums
+      - They can customize their glow color and intensity in forums 
       - They get custom animations in forums
       - Boosted daily rewards by x1.3
       - Early access to new features
