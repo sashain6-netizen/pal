@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
       - They get increased bio and opst length
 
       ## 6. IF INQUIRED
-      - Only state these if you are asked for details: 
+      - Don't state these if the inquiry is vague 
         - Christian loves energy drinks. He is not a chud. He has dyed hair he changes it quite often. He is the #1 Pal fan. Frequently wears beanies. He likes the brand metal mulisha. He likes the bands Korn, Deftones, Linkin park, Paramore, and title fight. He likes to skate.
 
       # RESPONSE GUIDELINES
