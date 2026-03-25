@@ -987,8 +987,16 @@
             const endpointItems = document.querySelectorAll('.endpoint-item');
             for (const item of endpointItems) {
                 const nameElement = item.querySelector('.endpoint-name');
-                if (nameElement && nameElement.textContent.includes(url.split('/')[2])) {
-                    return item.querySelector('.endpoint-status');
+                if (nameElement) {
+                    const endpointName = nameElement.textContent;
+                    // Match by endpoint name
+                    if ((url.includes('/api/me') && endpointName === '/api/me') ||
+                        (url.includes('/api/forum') && endpointName === '/api/forum') ||
+                        (url.includes('/api/users-search') && endpointName === '/api/users-search') ||
+                        (url.includes('/api/report-user') && endpointName === '/api/report-user') ||
+                        (url.includes('/api/premium-stats') && endpointName === '/api/premium-stats')) {
+                        return item.querySelector('.endpoint-status');
+                    }
                 }
             }
             return null;
@@ -1043,6 +1051,19 @@
         async function testForumStorage() {
             const res = await fetch('/api/forum', { credentials: 'include' });
             return res.ok;
+        }
+
+        // Test all database connections
+        async function testDatabaseConnections() {
+            const databases = [
+                { name: 'KV Storage', test: testKVStorageDetailed },
+                { name: 'User Index', test: testUserIndex },
+                { name: 'Forum Storage', test: testForumStorage }
+            ];
+
+            for (const database of databases) {
+                await testSingleDatabase(database.name, database.test);
+            }
         }
 
         // Real-time monitoring
@@ -1574,6 +1595,7 @@
                 loadForumStats(),
                 loadReportStats(),
                 testAPIEndpoints(),
+                testDatabaseConnections(),
                 runAllDiagnostics()
             ]);
 
