@@ -4,7 +4,6 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    // 1. Accept 'history' from the frontend (an array of {role, content})
     const { userMessage, history = [] } = await request.json();
 
     const groq = new Groq({ apiKey: env.GROQ_API_KEY });
@@ -59,18 +58,14 @@ export async function onRequestPost(context) {
       - Maximum 2 paragraphs per response.
     `;
 
-    // 2. Format the Conversation History
-    // We take the last 3 messages from the history provided by the frontend
     const limitedHistory = history.slice(-3);
 
-    // 3. Construct the full message list for Groq
     const messages = [
       { role: "system", content: PAL_SYSTEM_PROMPT },
       ...limitedHistory,
       { role: "user", content: userMessage }
     ];
 
-    // 4. Call Groq
     const chatCompletion = await groq.chat.completions.create({
       messages: messages,
       model: "llama-3.1-8b-instant",
@@ -79,7 +74,6 @@ export async function onRequestPost(context) {
 
     const aiResponse = chatCompletion.choices[0].message.content;
 
-    // 5. Return the response
     return new Response(JSON.stringify({ 
       response: aiResponse 
     }), {

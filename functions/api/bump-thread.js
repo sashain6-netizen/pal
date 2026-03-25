@@ -20,7 +20,6 @@ export async function onRequestPost(context) {
     const username = String(payload.username || "").toLowerCase();
     if (!username) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
 
-    // 1. Premium Check
     const premiumListRaw = await env.USERS_KV.get("pal_premium");
     let isPremium = false;
     if (premiumListRaw) {
@@ -32,7 +31,6 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Premium-only feature." }), { status: 403 });
     }
 
-    // 2. Cooldown Check (24 Hours)
     const cooldownMs = 60 * 60 * 1000;
     const now = Date.now();
     const lastRaw = await env.USERS_KV.get(`pal_thread_bump_last:${username}`);
@@ -42,25 +40,22 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Too soon", cooldownMsRemaining: remaining }), { status: 429 });
     }
 
-    // 3. Thread Ownership Check
     const body = await request.json();
     const threadId = Number(body.threadId);
-    
-    const thread = await env.DB.prepare("SELECT creator_username FROM threads WHERE id = ?").bind(threadId).first();
+
+        const thread = await env.DB.prepare("SELECT creator_username FROM threads WHERE id = ?").bind(threadId).first();
     if (!thread) return new Response(JSON.stringify({ error: "Thread not found" }), { status: 404 });
-    
-    if (String(thread.creator_username || "").toLowerCase() !== username) {
+
+        if (String(thread.creator_username || "").toLowerCase() !== username) {
       return new Response(JSON.stringify({ error: "You can only bump your own threads." }), { status: 403 });
     }
 
-    // 4. THE JUMP TO TOP LOGIC
     await env.DB.prepare(`
       UPDATE threads 
       SET last_activity_at = CURRENT_TIMESTAMP 
       WHERE id = ?
     `).bind(threadId).run();
 
-    // 5. Update Cooldown
     await env.USERS_KV.put(`pal_thread_bump_last:${username}`, String(now));
 
     return new Response(JSON.stringify({ success: true }), { 

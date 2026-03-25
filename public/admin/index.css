@@ -1,7 +1,3 @@
-/* ===========================
-   UNIFIED ADMIN DASHBOARD
-   Consistent with Pal Design System
-   =========================== */
 
 :root {
   --blue-primary: #2563eb;
@@ -28,7 +24,7 @@
 .admin-dashboard {
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
   min-height: 100vh;
-  padding: 100px 20px 20px; /* Account for fixed navbar */
+  padding: 100px 20px 20px; 
 }
 
 .admin-header {
@@ -149,7 +145,6 @@
   box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
 }
 
-/* Quick Stats */
 .quick-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -188,7 +183,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Tab Navigation */
 .tab-navigation {
   display: flex;
   background: var(--white);
@@ -222,7 +216,6 @@
   color: var(--white);
 }
 
-/* Tab Content */
 .tab-content {
   display: none;
   background: var(--white);
@@ -291,7 +284,6 @@
   border-color: var(--blue-primary);
 }
 
-/* Reports List */
 .reports-list {
   display: flex;
   flex-direction: column;
@@ -399,7 +391,6 @@
   align-items: stretch;
 }
 
-/* Banned Users List */
 .banned-users-list {
   display: flex;
   flex-direction: column;
@@ -433,7 +424,6 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* User Info Section */
 .user-info {
   display: flex;
   align-items: center;
@@ -478,7 +468,6 @@
   font-weight: 600;
 }
 
-/* Ban Info Section */
 .ban-info {
   display: flex;
   flex-direction: column;
@@ -524,7 +513,6 @@
   color: var(--red-500);
 }
 
-/* User Actions */
 .user-actions {
   display: flex;
   flex-direction: column;
@@ -538,7 +526,6 @@
   justify-content: center;
 }
 
-/* Report Detail Modal */
 .report-detail {
   text-align: left;
   line-height: 1.6;
@@ -548,7 +535,6 @@
   margin: 0 0 12px 0;
 }
 
-/* Loading States */
 .loading-state {
   text-align: center;
   padding: 60px 20px;
@@ -570,7 +556,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Pulse Animation for Live Updates */
 @keyframes pulse {
   0% { opacity: 1; }
   50% { opacity: 0.7; }
@@ -581,7 +566,6 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* Success Animation */
 @keyframes slideInSuccess {
   from {
     transform: translateX(100%);
@@ -597,7 +581,6 @@
   animation: slideInSuccess 0.3s ease-out;
 }
 
-/* Empty and Error States */
 .empty-state, .error-state {
   text-align: center;
   padding: 60px 20px;
@@ -620,7 +603,6 @@
   font-size: 1.1rem;
 }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -667,7 +649,6 @@
   flex-wrap: wrap;
 }
 
-/* Ban Form Styles */
 .ban-form {
   text-align: left;
   margin: 20px 0;
@@ -709,7 +690,6 @@
   resize: vertical;
 }
 
-/* Toast Notifications */
 .toast-container {
   position: fixed;
   top: 20px;
@@ -753,7 +733,6 @@
   background: linear-gradient(135deg, #f0f9ff, #ffffff);
 }
 
-/* Resolved Reports Styling */
 .report-card.resolved-report {
     opacity: 0.6;
     background: var(--gray-50);
@@ -764,7 +743,6 @@
     opacity: 0.8;
 }
 
-/* Blue User Link Button */
 .admin-btn.user-link-btn {
     background: var(--blue-primary);
     color: var(--white);
@@ -777,7 +755,6 @@
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
-/* Primary Button for View Report */
 .admin-btn.primary-btn {
     background: var(--blue-primary);
     color: var(--white);
@@ -790,57 +767,55 @@
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
-/* Report Details Styling */
 .report-detail p {
     margin: 0 0 12px 0;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .admin-dashboard {
     padding: 100px 10px 10px;
   }
-  
-  .admin-header {
+
+    .admin-header {
     flex-direction: column;
     text-align: center;
     gap: 20px;
     border-radius: 20px;
   }
-  
-  .section-header {
+
+    .section-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
-  .section-actions {
+
+    .section-actions {
     flex-direction: column;
   }
-  
-  .search-input {
+
+    .search-input {
     min-width: 100%;
   }
-  
-  .report-content,
+
+    .report-content,
   .banned-user-card {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
-  .user-actions {
+
+    .user-actions {
     flex-direction: row;
   }
-  
-  .quick-stats {
+
+    .quick-stats {
     grid-template-columns: repeat(2, 1fr);
   }
-  
-  .tab-navigation {
+
+    .tab-navigation {
     flex-direction: column;
     gap: 10px;
   }
-  
-  .tab-btn {
+
+    .tab-btn {
     text-align: center;
   }
 }

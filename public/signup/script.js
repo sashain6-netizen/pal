@@ -1,13 +1,11 @@
-// 2. Fetch current profile data
 async function loadProfile() {
-    // List of pages where we DON'T want to force a redirect
     const publicPages = ['/login', '/signup', '/index.html', '/']; 
     const isPublicPage = publicPages.some(path => window.location.pathname.endsWith(path));
 
     try {
         const res = await fetch('/api/get-profile');
-        
-        if (!res.ok) {
+
+                if (!res.ok) {
             if (!isPublicPage) {
                 window.location.href = "/";
             }
@@ -15,8 +13,7 @@ async function loadProfile() {
         }
 
         const user = await res.json();
-        
-        // Use optional chaining (?.) so it doesn't crash if these inputs don't exist on the page
+
         if (document.getElementById('display-username')) {
             document.getElementById('display-username').value = user.username;
             document.getElementById('displayName').value = user.displayName || "";
@@ -31,7 +28,6 @@ async function loadProfile() {
     }
 }
 
-// 3. Handle the Save
 document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
@@ -67,14 +63,14 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
 document.addEventListener('click', async (e) => {
     const logoutBtn = e.target.closest('#logoutLink');
-    
-    if (logoutBtn) {
+
+        if (logoutBtn) {
         e.preventDefault(); 
-        
-        try {
+
+                try {
             const res = await fetch('/api/logout');
-            
-            if (res.ok) {
+
+                        if (res.ok) {
                 localStorage.clear(); 
 
                 if (typeof updateGlobalUI === 'function') {
@@ -91,18 +87,16 @@ document.addEventListener('click', async (e) => {
 });
 
 async function handleSignup(event) {
-    event.preventDefault(); // Stops the page from refreshing
+    event.preventDefault(); 
 
     const form = event.target;
     const btn = form.querySelector('button');
     const originalText = btn.innerText;
 
-    // 1. Get values using the IDs from your HTML
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // 2. Simple UI state
     btn.innerText = "Creating Account...";
     btn.disabled = true;
 
@@ -121,7 +115,6 @@ async function handleSignup(event) {
                 window.location.href = "/login";
             }, 2000);
         } else {
-            // This displays "Username taken" or "Email in use" from your Worker
             showToast(data.error || "Signup failed", "error");
         }
     } catch (err) {

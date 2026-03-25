@@ -15,8 +15,8 @@ async function loadMessages(page = 0) {
         if (data.error) return;
 
         document.getElementById('chatName').innerText = data.roomName || "Private Chat";
-        
-        const roomOwner = (data.createdBy || "").toLowerCase().trim();
+
+                const roomOwner = (data.createdBy || "").toLowerCase().trim();
         const me = (currentUser.username || "").toLowerCase().trim();
         const isOwner = (roomOwner === me);
 
@@ -31,8 +31,8 @@ async function loadMessages(page = 0) {
             const senderName = m.username.toLowerCase().trim();
             const isMe = (senderName === me);
             if (senderName === 'system') return `<div class="msg-bubble system-msg">${m.content}</div>`;
-            
-            return `
+
+                        return `
                 <div class="msg-bubble ${isMe ? 'my-msg' : 'their-msg'}">
                     <span class="msg-user">${isMe ? 'You' : '@' + m.username}</span>
                     <p class="msg-text">${m.content}</p>
@@ -42,13 +42,12 @@ async function loadMessages(page = 0) {
         }).join('');
 
         if (page === 0) {
-            // Only show the Load More button if we actually received 50 messages
             const showLoadMore = data.messages.length === 50;
             const btnHtml = showLoadMore ? `<button id="loadMoreBtn" onclick="loadMore()">Load Older Messages</button>` : '';
-            
-            display.innerHTML = btnHtml + messagesHtml;
-            
-            if (isInitialLoad || isAtBottom) {
+
+                        display.innerHTML = btnHtml + messagesHtml;
+
+                        if (isInitialLoad || isAtBottom) {
                 display.scrollTop = display.scrollHeight;
                 isInitialLoad = false;
             }
@@ -57,8 +56,8 @@ async function loadMessages(page = 0) {
             const loadMoreBtn = document.getElementById('loadMoreBtn');
             loadMoreBtn.insertAdjacentHTML('afterend', messagesHtml);
             display.scrollTop = display.scrollHeight - oldHeight;
-            
-            if (data.messages.length < 50) {
+
+                        if (data.messages.length < 50) {
                 loadMoreBtn.style.display = 'none';
             }
         }
@@ -77,7 +76,6 @@ async function initChat() {
         if (!meRes.ok) return;
         currentUser = await meRes.json();
 
-        // 1. Setup Confirmation Modal logic
         const confirmModal = document.getElementById('confirmModal');
         const confirmBtn = document.getElementById('confirmBtn');
         const cancelBtn = document.getElementById('cancelBtn');
@@ -97,7 +95,6 @@ async function initChat() {
 
         if (cancelBtn) cancelBtn.onclick = () => confirmModal.style.display = 'none';
 
-        // 2. Button Assignments
         const leaveBtn = document.getElementById('leaveBtn');
         const deleteBtn = document.getElementById('deleteBtn');
 
@@ -127,7 +124,6 @@ async function initChat() {
             };
         }
 
-        // 3. Kick & Invite Modal Close Logic
         const inviteModal = document.getElementById('inviteModal');
         const kickModal = document.getElementById('kickModal');
         const closeInviteBtn = document.getElementById('closeInviteBtn');
@@ -142,7 +138,6 @@ async function initChat() {
             if (e.target === confirmModal) confirmModal.style.display = 'none';
         };
 
-        // 4. Initial Load and Loop
         await loadMessages(0);
         setInterval(() => {
             if (currentPage === 0) loadMessages(0);
@@ -173,8 +168,8 @@ async function inviteUser() {
     const inviteModal = document.getElementById('inviteModal');
     const inviteInput = document.getElementById('inviteInput');
     const sendInviteBtn = document.getElementById('sendInviteBtn');
-    
-    inviteInput.value = '';
+
+        inviteInput.value = '';
     inviteModal.style.display = 'flex';
     inviteInput.focus();
 
@@ -198,8 +193,8 @@ function openKickModal() {
     const kickModal = document.getElementById('kickModal');
     const kickInput = document.getElementById('kickInput');
     const confirmKickBtn = document.getElementById('confirmKickBtn');
-    
-    kickInput.value = '';
+
+        kickInput.value = '';
     kickModal.style.display = 'flex';
     kickInput.focus();
 

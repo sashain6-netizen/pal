@@ -6,12 +6,11 @@ export async function onRequest(context) {
     const method = request.method;
 
     try {
-        // 1. Auth Check
         const cookie = request.headers.get("Cookie") || "";
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
         if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-        
-        const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
+
+                const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = user.username;
 
         // --- GET: Fetch Messages ---
@@ -23,7 +22,6 @@ export async function onRequest(context) {
 
             if (!chatId) return new Response(JSON.stringify({ error: "Missing ID" }), { status: 400 });
 
-            // Membership Check
             const membership = await env.DB.prepare(
                 "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
             ).bind(chatId, username).first();
@@ -31,7 +29,6 @@ export async function onRequest(context) {
             if (!membership) return new Response(JSON.stringify({ error: "Access Denied" }), { status: 403 });
 
             // --- AUTO MARK AS READ ---
-            // We use waitUntil so the user doesn't wait for this DB write to see their messages
             context.waitUntil(
                 env.DB.prepare(`
                     INSERT INTO last_read (user_username, item_id, item_type, last_viewed_at)
@@ -41,7 +38,6 @@ export async function onRequest(context) {
                 `).bind(username, chatId).run()
             );
 
-            // Fetch Messages
             const result = await env.DB.prepare(
                 `SELECT username, content, created_at 
                  FROM chat_messages 
@@ -52,7 +48,6 @@ export async function onRequest(context) {
 
             const messages = (result.results || []).reverse();
 
-            // Fetch Room Info
             const room = await env.DB.prepare("SELECT room_name, creator_username FROM chat_rooms WHERE id = ?")
                 .bind(chatId)
                 .first();
@@ -68,8 +63,8 @@ export async function onRequest(context) {
         // --- POST: Send Message ---
         if (method === "POST") {
             const { chatId, content } = await request.json();
-            
-            const contentStr = String(content || "");
+
+                        const contentStr = String(content || "");
             if (!contentStr.trim()) {
                 return new Response(JSON.stringify({ error: "Empty message" }), { status: 400 });
             }
@@ -101,8 +96,8 @@ export async function onRequest(context) {
             ).bind(chatId, username).first();
 
             if (!membership) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
-            
-            await env.DB.prepare(
+
+                        await env.DB.prepare(
                 "INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
             ).bind(chatId, username, contentStr.trim()).run();
 

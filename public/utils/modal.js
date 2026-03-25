@@ -1,7 +1,3 @@
-/**
- * Global Modal Utility for Pal
- * Replaces browser alert() and confirm() with in-game modals
- */
 
 class GameModal {
     constructor() {
@@ -10,7 +6,6 @@ class GameModal {
     }
 
     createModalContainer() {
-        // Create modal container if it doesn't exist
         if (!document.getElementById('game-modal-container')) {
             const container = document.createElement('div');
             container.id = 'game-modal-container';
@@ -157,7 +152,6 @@ class GameModal {
 
             okBtn.addEventListener('click', handleOk);
 
-            // Also close on Escape key
             const handleEscape = (e) => {
                 if (e.key === 'Escape') {
                     modal.style.display = 'none';
@@ -216,14 +210,11 @@ class GameModal {
     }
 }
 
-// Create global instance
 window.gameModal = new GameModal();
 
-// Replacement functions for backward compatibility
 window.gameAlert = (message, title) => window.gameModal.showAlert(message, title);
 window.gameConfirm = (message, title) => window.gameModal.showConfirm(message, title);
 
-// Auto-replace global alert and confirm (optional - can be enabled per page)
 window.replaceNativeDialogs = () => {
     window.nativeAlert = window.alert;
     window.nativeConfirm = window.confirm;

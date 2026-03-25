@@ -1,6 +1,3 @@
-/* ===========================
-   PAL — Contacts Page Style
-   =========================== */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -95,7 +92,7 @@ body {
 }
 
 .contacts-page {
-  padding-top: 140px; /* Space for navbar */
+  padding-top: 140px; 
   padding-bottom: 80px;
 }
 
@@ -136,12 +133,11 @@ body {
   border: 1px solid rgba(37, 99, 235, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-  /* THE FIX: Force them to stay a specific size */
-  flex: 0 1 300px;  /* 0 growth, 1 shrink, 300px base */
-  width: 300px;     /* Concrete width */
-  max-width: 300px; /* Absolute limit - prevents the "massive" 4th card */
-  
-  margin-bottom: 10px; 
+  flex: 0 1 300px;  
+  width: 300px;     
+  max-width: 300px; 
+
+    margin-bottom: 10px; 
 }
 
 .staff-card:hover {
@@ -223,7 +219,7 @@ body {
   border-radius: 50%;
   margin: 0 auto 20px;
   border: 2px solid var(--blue-primary);
-  overflow: hidden; /* This crops the image to the circle */
+  overflow: hidden; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,7 +228,7 @@ body {
 .staff-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* This prevents the image from stretching */
+  object-fit: cover; 
   display: block;
 }
 
@@ -249,14 +245,13 @@ body {
   display: inline-block;
 }
 
-/* This is the secret "bridge" that fixes the glitching without padding */
 .profile-dropdown::after {
   content: "";
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
-  height: 20px; /* Invisible gap filler */
+  height: 20px; 
   display: none;
 }
 
@@ -273,7 +268,7 @@ body {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
-  display: flex; /* Ensures image centers perfectly */
+  display: flex; 
 }
 
 .profile-icon img {
@@ -286,13 +281,12 @@ body {
   display: none;
   position: absolute;
   right: 0;
-  top: calc(100% + 10px); /* Perfectly spaced below the icon */
+  top: calc(100% + 10px); 
   width: 180px;
   z-index: 2000;
   animation: slideDown 0.2s ease-out forwards;
 }
 
-/* Keep menu open when hovering the dropdown or the bridge */
 .profile-dropdown:hover .dropdown-menu {
   display: block;
 }
@@ -337,7 +331,6 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Mobile Adjustment - Ensure dropdown doesn't go off-screen */
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .dropdown-menu { right: -10px; }

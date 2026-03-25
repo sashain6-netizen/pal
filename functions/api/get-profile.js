@@ -2,8 +2,8 @@ import { verifyAndDecodeToken } from "./_jwt.js";
 
 export async function onRequestGet(context) {
     const { request, env } = context;
-    
-    const cookieHeader = request.headers.get("Cookie") || "";
+
+        const cookieHeader = request.headers.get("Cookie") || "";
     const token = cookieHeader
         .split('; ')
         .find(row => row.trim().startsWith('pal_session='))
@@ -24,13 +24,10 @@ export async function onRequestGet(context) {
         if (!rawUserData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         const user = JSON.parse(rawUserData);
 
-        // CHECK IF USER IS BANNED
         if (user.isBanned === true) {
-          // Check if ban has expired
           if (user.banExpiration) {
             const expirationTime = new Date(user.banExpiration).getTime();
             if (expirationTime > Date.now()) {
-              // Ban is still active - kick user out
               return new Response(JSON.stringify({ 
                 error: "Account banned",
                 reason: user.banReason || "No reason provided",
@@ -40,25 +37,21 @@ export async function onRequestGet(context) {
                 status: 403,
                 headers: { 
                   "Content-Type": "application/json",
-                  "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" // Clear session
+                  "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" 
                 }
               });
             } else {
-              // Ban has expired, clean up all ban-related KV pairs
               user.isBanned = false;
               delete user.banReason;
               delete user.banExpiration;
               await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
-              
-              // Clean up ban records and KV pairs
+
               const userBans = await env.USERS_KV.get(`bans:${username}`);
               if (userBans) {
                 const bans = JSON.parse(userBans);
-                // Remove each ban KV pair
                 for (const banId of bans) {
                   await env.USERS_KV.delete(`ban:${banId}`);
-                  
-                  // Clean up global bans list
+
                   const bansList = await env.USERS_KV.get("bans_list");
                   if (bansList) {
                     const allBans = JSON.parse(bansList);
@@ -66,12 +59,10 @@ export async function onRequestGet(context) {
                     await env.USERS_KV.put("bans_list", JSON.stringify(updatedBansList));
                   }
                 }
-                // Remove the bans list KV entry
                 await env.USERS_KV.delete(`bans:${username}`);
               }
             }
           } else {
-            // Permanent ban - kick user out
             return new Response(JSON.stringify({ 
               error: "Account permanently banned",
               reason: user.banReason || "No reason provided",
@@ -80,7 +71,7 @@ export async function onRequestGet(context) {
               status: 403,
               headers: { 
                 "Content-Type": "application/json",
-                "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" // Clear session
+                "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" 
               }
             });
           }
@@ -91,8 +82,8 @@ export async function onRequestGet(context) {
 
         if (rawPremiumData) {
             const premiumList = JSON.parse(rawPremiumData);
-            
-            if (Array.isArray(premiumList)) {
+
+                        if (Array.isArray(premiumList)) {
                 isPremiumUser = premiumList.includes(username);
             } 
             else {
@@ -100,7 +91,6 @@ export async function onRequestGet(context) {
             }
         }
 
-        // 3. XP Ladder Logic (Standard)
         const ladder = [
             { name: "Legend", xp: 30000 }, { name: "Elite", xp: 15000 },
             { name: "Veteran", xp: 7500 }, { name: "Contributor", xp: 3500 },

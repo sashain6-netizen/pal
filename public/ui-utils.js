@@ -1,7 +1,3 @@
-/**
- * Global UI Utilities for PAL
- * Provides loading states, error handling, and accessibility features
- */
 
 class UIUtils {
     constructor() {
@@ -16,7 +12,6 @@ class UIUtils {
         this.setupAccessibility();
     }
 
-    // Loading States
     showLoading(elementId, options = {}) {
         const {
             message = 'Loading...',
@@ -27,7 +22,6 @@ class UIUtils {
         const element = document.getElementById(elementId);
         if (!element) return;
 
-        // Store original content
         if (!this.loadingStates.has(elementId)) {
             this.loadingStates.set(elementId, {
                 originalContent: element.innerHTML,
@@ -62,7 +56,6 @@ class UIUtils {
         }
     }
 
-    // Error Handling
     showError(elementId, error, options = {}) {
         const {
             title = 'Error',
@@ -74,8 +67,8 @@ class UIUtils {
         if (!element) return;
 
         const errorMessage = error?.message || error || 'An unknown error occurred';
-        
-        const errorHTML = `
+
+                const errorHTML = `
             <div class="ui-error" role="alert" aria-live="polite">
                 <div class="ui-error-icon">⚠️</div>
                 <div class="ui-error-content">
@@ -100,18 +93,17 @@ class UIUtils {
             element.innerHTML = state.originalContent;
             element.style.display = state.originalDisplay;
         }
-        
-        this.errorBoundaries.delete(elementId);
+
+                this.errorBoundaries.delete(elementId);
     }
 
-    // Toast Notifications
     showToast(message, type = 'info', duration = 3000) {
         const toast = document.createElement('div');
         toast.className = `ui-toast ui-toast-${type}`;
         toast.setAttribute('role', 'alert');
         toast.setAttribute('aria-live', 'polite');
-        
-        const icons = {
+
+                const icons = {
             success: '✅',
             error: '❌',
             warning: '⚠️',
@@ -134,7 +126,6 @@ class UIUtils {
 
         container.appendChild(toast);
 
-        // Auto-dismiss
         if (duration > 0) {
             setTimeout(() => {
                 if (toast.parentElement) {
@@ -146,7 +137,6 @@ class UIUtils {
         return toast;
     }
 
-    // Safe API Wrapper
     async safeFetch(url, options = {}, errorElementId = null) {
         try {
             const response = await fetch(url, {
@@ -161,8 +151,8 @@ class UIUtils {
             return await response.json();
         } catch (error) {
             console.error('API Error:', error);
-            
-            if (errorElementId) {
+
+                        if (errorElementId) {
                 this.showError(errorElementId, error, {
                     title: 'Connection Error',
                     retryCallback: `uiUtils.safeFetch('${url}', ${JSON.stringify(options)}, '${errorElementId}')`
@@ -170,12 +160,11 @@ class UIUtils {
             } else {
                 this.showToast(error.message, 'error');
             }
-            
-            throw error;
+
+                        throw error;
         }
     }
 
-    // Form Validation
     validateForm(formElement) {
         const errors = [];
         const inputs = formElement.querySelectorAll('input, textarea, select');
@@ -187,28 +176,24 @@ class UIUtils {
             const pattern = input.getAttribute('pattern');
             let hasError = false;
 
-            // Required validation
             if (isRequired && !value) {
                 errors.push(`${input.getAttribute('data-label') || input.name || 'Field'} is required`);
                 this.showFieldError(input, 'This field is required');
                 hasError = true;
             }
 
-            // Email validation
             if (!hasError && type === 'email' && value && !this.isValidEmail(value)) {
                 errors.push('Please enter a valid email address');
                 this.showFieldError(input, 'Please enter a valid email address');
                 hasError = true;
             }
 
-            // Pattern validation
             if (!hasError && pattern && value && !new RegExp(pattern).test(value)) {
                 errors.push(`${input.getAttribute('data-label') || input.name} format is invalid`);
                 this.showFieldError(input, 'Please enter a valid format');
                 hasError = true;
             }
 
-            // Clear previous errors if no error found
             if (!hasError) {
                 this.clearFieldError(input);
             }
@@ -223,13 +208,13 @@ class UIUtils {
     showFieldError(input, message) {
         this.clearFieldError(input);
         input.classList.add('ui-field-error');
-        
-        const errorElement = document.createElement('div');
+
+                const errorElement = document.createElement('div');
         errorElement.className = 'ui-field-error-message';
         errorElement.textContent = message;
         errorElement.setAttribute('role', 'alert');
-        
-        input.parentNode.appendChild(errorElement);
+
+                input.parentNode.appendChild(errorElement);
     }
 
     clearFieldError(input) {
@@ -240,15 +225,11 @@ class UIUtils {
         }
     }
 
-    // Accessibility
     setupAccessibility() {
-        // Add skip links
         this.addSkipLinks();
-        
-        // Setup keyboard navigation
+
         this.setupKeyboardNavigation();
-        
-        // Add ARIA labels dynamically
+
         this.addARIALabels();
     }
 
@@ -263,7 +244,6 @@ class UIUtils {
     }
 
     setupKeyboardNavigation() {
-        // Focus management for modals
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Tab') {
                 this.handleTabNavigation(e);
@@ -280,10 +260,10 @@ class UIUtils {
         const focusableElements = modal.querySelectorAll(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
-        
-        if (focusableElements.length === 0) return;
-        
-        const firstElement = focusableElements[0];
+
+                if (focusableElements.length === 0) return;
+
+                const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
 
         if (e.shiftKey) {
@@ -308,7 +288,6 @@ class UIUtils {
             }
         }
 
-        // Close mobile menu
         const mobileMenu = document.querySelector('.navbar.mobile-active');
         if (mobileMenu) {
             mobileMenu.classList.remove('mobile-active');
@@ -316,14 +295,12 @@ class UIUtils {
     }
 
     addARIALabels() {
-        // Add ARIA labels to interactive elements
         document.querySelectorAll('button:not([aria-label])').forEach(button => {
             if (button.textContent.trim()) {
                 button.setAttribute('aria-label', button.textContent.trim());
             }
         });
 
-        // Add roles to main landmarks
         const main = document.querySelector('main') || document.querySelector('.content-area');
         if (main && !main.hasAttribute('role')) {
             main.setAttribute('role', 'main');
@@ -337,7 +314,6 @@ class UIUtils {
         }
     }
 
-    // Utility Functions
     escapeHTML(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -374,7 +350,6 @@ class UIUtils {
         };
     }
 
-    // Private Methods
     setupGlobalErrorHandling() {
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);
@@ -644,10 +619,8 @@ class UIUtils {
     }
 }
 
-// Initialize globally
 const uiUtils = new UIUtils();
 
-// Export for module usage
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = UIUtils;
 }

@@ -7,7 +7,6 @@
     gap: 20px;
 }
 
-/* Tabs */
 .tab-controls {
     display: flex;
     background: #f1f5f9;
@@ -33,7 +32,6 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Thread Item Styling */
 .thread-card {
     cursor: pointer;
     text-align: left;
@@ -60,7 +58,6 @@
     font-weight: 700;
 }
 
-/* Modal Styling */
 .modal {
     display: none;
     position: fixed;
@@ -94,15 +91,13 @@
     margin-top: 20px;
 }
 
-/* FORCE the container to move below the fixed navbar */
 .container {
-    margin-top: 120px !important; /* Push everything down */
-    text-align: left !important;   /* Fix the centering from main style.css */
+    margin-top: 120px !important; 
+    text-align: left !important;   
     display: block !important;
     padding: 0 20px;
 }
 
-/* Ensure the header takes up the full width and shows its items */
 .forum-header {
     display: flex !important;
     justify-content: space-between;
@@ -112,7 +107,6 @@
     background: transparent;
 }
 
-/* Make the button ultra-visible to verify it's there */
 .create-btn {
     background: var(--blue-primary) !important;
     color: white !important;
@@ -125,10 +119,9 @@
     z-index: 10;
 }
 
-/* Fix the grid so the 'No threads' message doesn't hide everything */
 .features-grid {
     display: grid !important;
-    grid-template-columns: 1fr; /* Default to one big column for the empty message */
+    grid-template-columns: 1fr; 
     gap: 20px;
     width: 100%;
 }
@@ -151,10 +144,9 @@
     text-decoration: none;
 }
 
-/* Style for the Cancel Button */
 .cancel-btn {
-    background: #f1f5f9 !important; /* Soft grey */
-    color: #64748b !important;      /* Muted slate */
+    background: #f1f5f9 !important; 
+    color: #64748b !important;      
     border: none;
     padding: 10px 22px;
     border-radius: 50px;
@@ -170,12 +162,10 @@
     transform: scale(1.02);
 }
 
-/* Ensure the Post button (nav-btn) looks primary in the modal */
 .modal-actions .nav-btn {
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
-/* Input styling inside modal */
 .modal-content input, 
 .modal-content textarea {
     border: 1px solid #e2e8f0;
@@ -194,38 +184,36 @@
 .search-container {
     position: relative;
     display: inline-block; 
-    width: 220px; /* Shorter width to fit in the header row */
+    width: 220px; 
     margin: 0 10px;
     vertical-align: middle;
     z-index: 1;
 }
 
-/* The Input: Bright Blue & Compact */
 #forumSearch {
     width: 100%;
-    padding: 8px 15px; /* Smaller padding */
+    padding: 8px 15px; 
     border-radius: 12px;
-    border: 2px solid #60a5fa; /* Light blue border */
-    background: #eff6ff; /* Very light blue background */
-    color: #1e40af; /* Dark blue text for readability */
+    border: 2px solid #60a5fa; 
+    background: #eff6ff; 
+    color: #1e40af; 
     font-family: 'Varela Round', sans-serif;
-    font-size: 0.85rem; /* Smaller text */
+    font-size: 0.85rem; 
     transition: all 0.2s ease;
     outline: none;
     box-sizing: border-box;
 }
 
 #forumSearch::placeholder {
-    color: #93c5fd; /* Soft blue placeholder */
+    color: #93c5fd; 
 }
 
 #forumSearch:focus {
     background: #ffffff;
-    border-color: #2563eb; /* Primary Pal Blue */
+    border-color: #2563eb; 
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-/* The Dropdown: Matching Blue Theme */
 .search-dropdown {
     position: absolute;
     top: calc(100% + 5px);
@@ -246,7 +234,6 @@
     border: 2px solid #bfdbfe;
 }
 
-/* Items in the dropdown */
 .search-item {
     display: block;
     padding: 10px 15px;
@@ -258,7 +245,7 @@
 }
 
 .search-item:hover {
-    background: #dbeafe; /* Light blue highlight on hover */
+    background: #dbeafe; 
 }
 
 .search-title {
@@ -313,12 +300,12 @@
 
 .forum-header {
     position: relative;
-    z-index: 50; /* Above thread cards */
+    z-index: 50; 
 }
 
 .search-container {
     position: relative;
-    z-index: 60; /* Slightly above header content */
+    z-index: 60; 
 }
 
 .search-dropdown {
@@ -326,7 +313,7 @@
     top: calc(100% + 5px);
     left: 0;
     right: 0;
-    z-index: 70; /* Above threads but below navbar */
+    z-index: 70; 
 }
 
 .thread-card {
@@ -338,12 +325,12 @@
 .load-more-btn {
     display: block;
     width: fit-content;
-    margin: 40px auto; /* Centers it and adds space from the grid */
+    margin: 40px auto; 
     padding: 12px 32px;
-    background: white; /* Matches thread-card background */
+    background: white; 
     color: var(--blue-primary);
     border: 2px solid var(--blue-primary);
-    border-radius: 50px; /* Pill shape for a modern feel */
+    border-radius: 50px; 
     font-family: 'Varela Round', sans-serif;
     font-weight: 700;
     font-size: 1rem;
@@ -363,20 +350,18 @@
     transform: translateY(0);
 }
 
-/* Optional: Add a "Loading" state class for the button */
 .load-more-btn.loading {
     opacity: 0.7;
     pointer-events: none;
     cursor: wait;
 }
 
-/* The Pin Button */
 .pin-btn {
     background: transparent;
     border: none;
     cursor: pointer;
     font-size: 1.1rem;
-    filter: grayscale(1); /* Looks muted when not pinned */
+    filter: grayscale(1); 
     opacity: 0.5;
     transition: all 0.2s ease;
     padding: 4px;
@@ -388,23 +373,21 @@
 }
 
 .pin-btn.active {
-    filter: grayscale(0); /* Full color when pinned */
+    filter: grayscale(0); 
     opacity: 1;
-    transform: rotate(-45deg); /* Tilted look */
+    transform: rotate(-45deg); 
 }
 
-/* Highlighted card for pinned threads */
 .thread-card.pinned {
-    border-left: 5px solid #f59e0b; /* Amber/Gold border */
-    background: #fffdf5; /* Very subtle warm background */
+    border-left: 5px solid #f59e0b; 
+    background: #fffdf5; 
 }
 
-/* Red Dot Indicator */
 .unread-dot {
     display: inline-block;
     width: 10px;
     height: 10px;
-    background-color: #ff4b2b; /* Vibrant red-orange */
+    background-color: #ff4b2b; 
     border-radius: 50%;
     margin-left: 8px;
     vertical-align: middle;
@@ -418,7 +401,6 @@
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* Optional: Make pinned cards stand out slightly more if they have unread messages */
 .thread-card.pinned:has(.unread-dot) {
     border-left: 4px solid #ff4b2b;
 }

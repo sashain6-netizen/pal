@@ -6,20 +6,16 @@
     --off-white:    #f8faff;
 }
 
-/* style.css (AI Page Specific) */
 
-/* 1. Override Global Body settings for the Chat Layout */
 body {
     display: flex !important;
     flex-direction: column !important;
     height: 100vh !important;
-    padding-top: 80px !important; /* Forces the gap for the navbar */
+    padding-top: 80px !important; 
     margin: 0;
-    overflow: hidden !important; /* Prevents double scrollbars */
+    overflow: hidden !important; 
 }
 
-/* 2. Style the Injected Navbar Links (They are missing because global.css 
-      doesn't know how to style the specific JS-injected classes) */
 .nav-links {
     display: flex !important;
     list-style: none;
@@ -30,17 +26,16 @@ body {
 
 .nav-links a {
     text-decoration: none;
-    color: #64748b; /* --blue-soft */
+    color: #64748b; 
     font-weight: 500;
     font-size: 0.95rem;
     transition: color 0.2s;
 }
 
 .nav-links a:hover {
-    color: #2563eb; /* --blue-primary */
+    color: #2563eb; 
 }
 
-/* 3. Adjust the Chat Scene to fill the remaining space */
 .chat-scene {
     flex: 1;
     display: flex;
@@ -53,7 +48,7 @@ body {
 .chat-container {
     width: 100%;
     max-width: 800px;
-    height: 85vh; /* Adjusted for better fit */
+    height: 85vh; 
     background: #ffffff;
     border-radius: 24px;
     box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1);
@@ -61,10 +56,9 @@ body {
     flex-direction: column;
     overflow: hidden;
     border: 1px solid rgba(37, 99, 235, 0.1);
-    pointer-events: auto; /* Ensure clicks work */
+    pointer-events: auto; 
 }
 
-/* 4. Keep your window, message, and input styles below... */
 .chat-window {
     flex: 1;
     padding: 30px;
@@ -74,7 +68,6 @@ body {
     gap: 15px;
 }
 
-/* ... (Your existing .message, .ai-message, .user-message, .input-area styles) ... */
 /* --- Keep the rest of your Message Bubbles and Input Area styles below --- */
 .message {
     max-width: 80%;
@@ -135,7 +128,6 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Styling for code blocks */
 .ai-message pre {
     background: #1e1e1e;
     color: #dcdcdc;
@@ -152,19 +144,16 @@ body {
     border-radius: 4px;
 }
 
-/* Styling for headers */
 .ai-message h1, .ai-message h2, .ai-message h3 {
     margin-top: 10px;
     color: #2563eb;
 }
 
-/* Styling for lists */
 .ai-message ul, .ai-message ol {
     padding-left: 20px;
     margin-bottom: 10px;
 }
 
-/* Position the copy button inside the code block */
 .ai-message pre {
     position: relative;
 }

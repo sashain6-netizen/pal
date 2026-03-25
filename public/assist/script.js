@@ -62,7 +62,6 @@ function renderGames(gamesList) {
     }).join('');
 }
 
-// Open the game overlay
 function openGame(index) {
     const game = allGames[index];
     const frame = document.getElementById('gameFrame');
@@ -75,13 +74,11 @@ function openGame(index) {
         return;
     }
 
-    // Prepare UI
     frame.src = game.url;
     overlay.style.display = 'block';
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // Focus handling
     frame.onload = () => {
         setTimeout(() => {
             frame.focus();
@@ -90,7 +87,6 @@ function openGame(index) {
     };
 }
 
-// The function for your "Full Screen" button in the HTML
 async function toggleFullScreen() {
     const overlay = document.getElementById('gameOverlay');
     if (!overlay) return;
@@ -118,7 +114,6 @@ function closeGame() {
     const overlay = document.getElementById('gameOverlay');
     const frame = document.getElementById('gameFrame');
 
-    // Exit fullscreen if active when closing
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
@@ -128,8 +123,8 @@ function closeGame() {
         overlay.style.display = 'none';
         overlay.classList.remove('active');
     }
-    
-    if (frame) frame.src = 'about:blank';
+
+        if (frame) frame.src = 'about:blank';
     document.body.style.overflow = 'auto';
 }
 
@@ -141,7 +136,6 @@ function filterGames() {
     renderGames(filtered);
 }
 
-// Global Event Listeners
 document.addEventListener('keydown', (e) => {
     if (e.key === "Escape") closeGame();
 });

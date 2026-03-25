@@ -2,48 +2,38 @@
     const saved = localStorage.getItem('site_settings');
     const settings = saved ? JSON.parse(saved) : {};
 
-    // Flag for manual triggers (Panic Key, Toasts)
     let allowExit = false;
 
     // --- 0. AUTO-STEALTH LOGIC ---
-    // 1. Check if we are already "cloaked" (inside the iframe)
     const isInsideIframe = window.self !== window.top;
 
-    // 2. Check for settings page (Searching for 'settings' anywhere in the path)
     const path = window.location.pathname.toLowerCase();
     const isSettingsPage = path.includes('/settings/') || path.includes('settings.html');
-    
-    // 3. Check for the override flag
+
     const isOverridden = window.location.search.includes('override=true');
 
-    // DEBUG: Uncomment the line below to see what's happening in F12 console
-    // console.log("Stealth Check:", { isInsideIframe, path, isSettingsPage });
 
     if (settings.autoStealth && !isInsideIframe && !isSettingsPage && !isOverridden) {
-        // We only run this if we are the TOP window and NOT on settings
         const win = window.open('about:blank', '_blank');
         if (win) {
             const doc = win.document;
             doc.title = "Google Docs";
-            
-            // Favicon
+
             const link = doc.createElement('link');
             link.rel = 'icon';
             link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
             doc.head.appendChild(link);
 
-            // Iframe
             const iframe = doc.createElement('iframe');
             iframe.src = window.location.href; 
             iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
-            
-            doc.body.style.margin = '0';
+
+                        doc.body.style.margin = '0';
             doc.body.style.overflow = 'hidden';
             doc.body.appendChild(iframe);
 
             win.focus();
-            
-            // Redirect original tab
+
             window.location.replace(settings.panicUrl || "https://google.com");
             return; 
         }
@@ -51,7 +41,7 @@
 
     // --- 1. THE CHECKER (Improved) ---
     const isInternal = (url) => {
-        if (!url || url.startsWith('javascript:')) return true; // Don't trigger for script links
+        if (!url || url.startsWith('javascript:')) return true; 
         try {
             const target = new URL(url, window.location.origin);
             const isLocal = target.hostname === window.location.hostname || 
@@ -59,7 +49,6 @@
                            target.hostname === 'localhost';
             return isLocal;
         } catch (e) {
-            // If it's a relative path (starts with / or doesn't have a protocol), it's internal
             return !url.includes('://'); 
         }
     };
@@ -209,20 +198,17 @@
     });
 
     // --- 8. BAN CHECKING ---
-    // Periodically check if user is banned (every 30 seconds)
     async function checkBanStatus() {
         try {
             const response = await fetch('/api/get-profile', { 
                 credentials: 'include',
                 headers: { 'Cache-Control': 'no-cache' }
             });
-            
-            if (!response.ok) {
-                // If we get a 403 with ban info, kick the user
+
+                        if (!response.ok) {
                 if (response.status === 403) {
                     const data = await response.json();
                     if (data.kicked && data.error && data.error.includes("banned")) {
-                        // Show ban notification
                         let message = `🚫 ${data.error}`;
                         if (data.reason) {
                             message += `\nReason: ${data.reason}`;
@@ -231,8 +217,7 @@
                             const expiryDate = new Date(data.expires);
                             message += `\nExpires: ${expiryDate.toLocaleDateString()} ${expiryDate.toLocaleTimeString()}`;
                         }
-                        
-                        // Show notification and redirect to login
+
                         showToast(message, "error");
                         setTimeout(() => {
                             window.location.href = "/login";
@@ -242,14 +227,11 @@
                 }
             }
         } catch (e) {
-            // Silently fail - don't show errors to users
             console.error("Ban check error:", e);
         }
     }
 
-    // Check ban status every 30 seconds
     setInterval(checkBanStatus, 30000);
-    // Also check immediately on load
     checkBanStatus();
 
 })();

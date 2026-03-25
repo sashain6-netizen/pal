@@ -1,7 +1,6 @@
 import { verifyAndDecodeToken } from "./_jwt.js";
 
 function parseCookiePalSession(cookieHeader) {
-  // Cookie header looks like: "pal_session=...; other=..."
   const tokenPart = (cookieHeader || "")
     .split(";")
     .map(s => s.trim())
@@ -26,9 +25,7 @@ function isPremiumUser(premiumUsersRaw, username) {
     return premiumUsers.map(u => String(u).toLowerCase()).includes(uname);
   }
 
-  // In case it's stored as an object/map
   if (premiumUsers && typeof premiumUsers === "object") {
-    // { [username]: true }
     return !!premiumUsers[uname] || !!premiumUsers[username];
   }
 
@@ -43,7 +40,6 @@ function normalizeHexColor(hex) {
 }
 
 function normalizeGlowAlpha(glowAlpha) {
-  // Accept either 0..1 (float) or 0..100 (slider percent)
   const n = typeof glowAlpha === "string" ? Number(glowAlpha) : glowAlpha;
   if (!Number.isFinite(n)) return null;
   if (n >= 0 && n <= 1) return Math.max(0, Math.min(1, n));

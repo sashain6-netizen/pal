@@ -9,13 +9,12 @@ export async function onRequest(context) {
         const token = tokenPart.split(";")[0];
         const payload = JSON.parse(atob(token.split(".")[1]));
         const userKey = `user:${payload.username.toLowerCase()}`;
-        
-        const rawData = await env.USERS_KV.get(userKey, { cacheTtl: 1800 });
+
+                const rawData = await env.USERS_KV.get(userKey, { cacheTtl: 1800 });
         if (!rawData) return new Response(JSON.stringify([]), { status: 404 });
 
         let user = JSON.parse(rawData);
 
-        // Handle POST (Delete or Clear All)
         if (request.method === "POST") {
             const { notifId, clearAll } = await request.json();
 
@@ -33,13 +32,11 @@ export async function onRequest(context) {
             });
         }
 
-        // Handle GET (Fetch)
         return new Response(JSON.stringify(user.notifications || []), {
             headers: { "Content-Type": "application/json" }
         });
-        
-    } catch (e) {
-        // Return the error message so you can see what went wrong in the toast
+
+            } catch (e) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
 }

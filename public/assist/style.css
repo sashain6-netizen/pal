@@ -1,8 +1,7 @@
-/* Games Page Styling */
 .games-page {
     padding: 20px;
     max-width: 1200px;
-    margin: 80px auto 0; /* Adjust for your navbar */
+    margin: 80px auto 0; 
 }
 
 .games-header {
@@ -22,14 +21,12 @@
 
 #gameSearch:focus { border-color: #007bff; box-shadow: 0 0 5px rgba(0,123,255,0.2); }
 
-/* The Grid */
 .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
 }
 
-/* Individual Game Card */
 .game-card {
     background: white;
     border-radius: 15px;
@@ -54,7 +51,6 @@
 .game-info { padding: 15px; text-align: center; }
 .game-info h3 { margin: 0; font-size: 16px; color: #333; }
 
-/* The Overlay Player */
 .game-overlay {
     display: none;
     position: fixed;
@@ -93,13 +89,11 @@
     background: white;
 }
 
-/* 1. Hide the nav bar ONLY when the overlay is in fullscreen mode */
 #gameOverlay:fullscreen .overlay-nav,
 #gameOverlay:-webkit-full-screen .overlay-nav {
     display: none;
 }
 
-/* 2. Ensure the iframe fills 100% of the screen in fullscreen */
 #gameOverlay:fullscreen #gameFrame,
 #gameOverlay:-webkit-full-screen #gameFrame {
     width: 100vw;
@@ -107,17 +101,15 @@
     border: none;
 }
 
-/* 3. Smooth transition for the overlay */
 .game-overlay {
-    display: none; /* Controlled by JS */
+    display: none; 
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: #000; /* Pure black for immersion */
+    background: #000; 
     z-index: 10000;
 }
 
-/* 4. Fix for the back button styling */
 .overlay-nav button {
     padding: 10px 20px;
     border-radius: 8px;

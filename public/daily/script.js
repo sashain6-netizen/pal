@@ -1,12 +1,12 @@
 async function checkRewardStatus() {
     const btn = document.getElementById('claim-btn');
     const statusText = document.getElementById('reward-status');
-    
-    try {
-        const res = await fetch('/api/get-profile'); // Get user data
+
+        try {
+        const res = await fetch('/api/get-profile'); 
         const user = await res.json();
-        
-        const lastClaim = user.lastClaim || 0;
+
+                const lastClaim = user.lastClaim || 0;
         const now = Date.now();
         const oneDay = 24 * 60 * 60 * 1000;
 
@@ -35,10 +35,9 @@ document.getElementById('claim-btn').onclick = async () => {
         const data = await res.json();
 
         if (data.success) {
-            // Updated toast to show both Currency and XP
             showToast(`Success! +${data.amount} 💰 & +${data.xpGained} XP ⭐`, "success");
-            
-            updateUI(Date.now(), data.streak); 
+
+                        updateUI(Date.now(), data.streak); 
         } else {
             showToast(data.error || "Too early!", "error");
             if (data.lastClaim) {
@@ -59,8 +58,8 @@ function updateUI(lastClaim, streak) {
     const btn = document.getElementById('claim-btn');
     const statusText = document.getElementById('reward-status');
     const timerText = document.getElementById('timer-text');
-    
-    const now = Date.now();
+
+        const now = Date.now();
     const oneDay = 24 * 60 * 60 * 1000;
     const timeLeft = oneDay - (now - lastClaim);
 
@@ -71,8 +70,8 @@ function updateUI(lastClaim, streak) {
         const hours = Math.floor(timeLeft / (1000 * 60 * 60));
         const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         timerText.innerText = `Claim again in ${hours}h ${mins}m`;
-    
-        startTimer(timeLeft);
+
+            startTimer(timeLeft);
     } else {
         btn.disabled = false;
         btn.innerText = "Claim Reward!";

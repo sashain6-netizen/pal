@@ -12,8 +12,8 @@ export async function onRequest(context) {
 
     try {
         const targetUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
-        
-        const response = await fetch(targetUrl, {
+
+                const response = await fetch(targetUrl, {
             method: "GET",
             headers: {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -23,7 +23,6 @@ export async function onRequest(context) {
         const data = await response.json();
         const results = [];
 
-        // 1. Check for the main Abstract (Primary Result)
         if (data.AbstractText && data.AbstractURL) {
             results.push({
                 title: data.Heading || "Summary",
@@ -32,10 +31,8 @@ export async function onRequest(context) {
             });
         }
 
-        // 2. Map RelatedTopics (Supporting Results)
         if (data.RelatedTopics) {
             data.RelatedTopics.forEach(item => {
-                // Direct topic
                 if (item.FirstURL && item.Text) {
                     results.push({
                         title: item.Text.split(" - ")[0],
@@ -43,7 +40,6 @@ export async function onRequest(context) {
                         content: item.Text
                     });
                 } 
-                // Nested categories
                 else if (item.Topics) {
                     item.Topics.forEach(sub => {
                         if (sub.FirstURL) {

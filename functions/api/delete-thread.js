@@ -4,7 +4,6 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
         const token = cookies['pal_session'];
@@ -13,11 +12,9 @@ export async function onRequestPost(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = payload.username.toLowerCase();
 
-        // 2. Get Thread ID from Request
         const { threadId } = await request.json();
         if (!threadId) return new Response("Thread ID required", { status: 400 });
 
-        // 3. Fetch Thread (FIXED COLUMN NAME)
         const thread = await env.DB.prepare("SELECT creator_username FROM threads WHERE id = ?")
             .bind(threadId).first();
 
@@ -26,8 +23,6 @@ export async function onRequestPost(context) {
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
 
-        // 4. THE SECURITY CHECK (FIXED REFERENCE)
-        // We check against thread.creator_username now
         const isOP = thread.creator_username.toLowerCase() === username;
         const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         const isStaff = staffRoles.includes(user.rank);
@@ -37,7 +32,6 @@ export async function onRequestPost(context) {
         }
 
         await env.DB.batch([
-        // Order is important!!!!! Don't delete
         env.DB.prepare("DELETE FROM thread_posts WHERE thread_id = ?").bind(threadId),
         env.DB.prepare("DELETE FROM threads WHERE id = ?").bind(threadId)
     ]);

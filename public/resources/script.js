@@ -3,7 +3,6 @@
 
   document.addEventListener('DOMContentLoaded', () => {
 
-    /* ── Card Animation Logic ── */
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -22,7 +21,6 @@
     });
 
 
-    /* ── QR Code Modal Logic ── */
 
     const modal = document.getElementById('qr-modal');
     const qrImage = document.getElementById('qr-image');

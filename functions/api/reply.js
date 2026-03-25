@@ -6,8 +6,8 @@ export async function onRequestPost(context) {
     // --- 1. AUTH CHECK ---
     const cookie = request.headers.get("Cookie") || "";
     const token = cookie.split('pal_session=')[1]?.split(';')[0];
-    
-    if (!token) {
+
+        if (!token) {
         return new Response(JSON.stringify({ error: "You must be logged in to reply." }), { status: 401 });
     }
 
@@ -45,8 +45,8 @@ export async function onRequestPost(context) {
 
         const threadCheck = await env.DB.prepare("SELECT id FROM threads WHERE id = ?")
             .bind(threadId).first();
-            
-        if (!threadCheck) {
+
+                    if (!threadCheck) {
             return new Response(JSON.stringify({ error: "Thread not found." }), { status: 404 });
         }
 
@@ -55,8 +55,8 @@ export async function onRequestPost(context) {
             env.DB.prepare(
                 "INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)"
             ).bind(threadId, payload.username, contentStr.trim()),
-            
-            env.DB.prepare(
+
+                        env.DB.prepare(
                 "UPDATE threads SET last_activity_at = CURRENT_TIMESTAMP WHERE id = ?"
             ).bind(threadId)
         ]);

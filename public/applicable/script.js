@@ -6,13 +6,9 @@ const apps = [
     { name: "YouTube", desc: "Watch Videos", cat: "Fun", icon: "▷", url: "https://youtube.com", extrnal: true},
     { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "https://chatgpt.com", extrnal: true },
     { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", icon: "xyz", url: "https://www.canvascalculator.xyz/"}
-    
-];
 
-/**
- * Populate the apps grid with the given filter.
- * @param {string} filter - The category to filter by. Defaults to 'All'.
- */
+    ];
+
 function loadApps(filter = 'All') {
     const grid = document.getElementById('appsGrid');
     grid.innerHTML = '';
@@ -50,19 +46,17 @@ function closeApp() {
 }
 
 function filterCategory(cat) {
-    // Update button UI
     document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.classList.toggle('active', btn.innerText === cat);
     });
     loadApps(cat);
 }
 
-// Search functionality
 function filterApps() {
     const query = document.getElementById('appSearch').value.toLowerCase();
     const cards = document.querySelectorAll('.app-card');
-    
-    apps.forEach((app, index) => {
+
+        apps.forEach((app, index) => {
         const matches = app.name.toLowerCase().includes(query);
         cards[index].style.display = matches ? 'flex' : 'none';
     });

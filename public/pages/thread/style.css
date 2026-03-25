@@ -1,10 +1,5 @@
-/* ============================================================
-   THREAD PAGE — Full Stylesheet
-   Layout + Animations. Deduplicated and conflict-free.
-   ============================================================ */
 
 
-/* ── Layout Container ───────────────────────────────────────── */
 
 .container {
     max-width: 1000px;
@@ -24,7 +19,6 @@
 #posts-container .compact-post-row:only-child   { border-radius: 11px; border-bottom: none; }
 
 
-/* ── Compact Post Row ───────────────────────────────────────── */
 
 .compact-post-row {
     display: flex;
@@ -36,8 +30,6 @@
     background-color: white;
     position: relative;
     overflow: hidden;
-    /* background-color only — never the 'background' shorthand, which would
-       reset background-image and break shimmer/scanner/vortex on hover */
     transition: background-color 0.2s;
     will-change: box-shadow, background-color, border-color, filter;
     z-index: 1;
@@ -47,7 +39,6 @@
 .compact-post-row:hover { background-color: #f8faff; }
 
 
-/* ── Row Sub-Elements ───────────────────────────────────────── */
 
 .rank-tag {
     font-size: 0.65rem;
@@ -125,7 +116,6 @@
 }
 
 
-/* ── Thread Header ──────────────────────────────────────────── */
 
 .thread-header {
     display: flex;
@@ -180,7 +170,6 @@
 .bump-thread-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 
-/* ── Sticky Reply Bar ───────────────────────────────────────── */
 
 .reply-box {
     position: fixed;
@@ -238,7 +227,6 @@
 .reply-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
 
 
-/* ── Load More ──────────────────────────────────────────────── */
 
 .load-more-btn {
     padding: 10px 25px;
@@ -253,7 +241,6 @@
 .load-more-btn:hover { opacity: 0.8; }
 
 
-/* ── Delete Modal ───────────────────────────────────────────── */
 
 .modal-overlay {
     position: fixed;
@@ -308,7 +295,6 @@
 .btn-danger:hover      { background: #ff6b81; }
 
 
-/* ── Premium Row ────────────────────────────────────────────── */
 
 .compact-post-row.premium-post {
     border-left: 3px solid var(--premium-forum-color, #ffd700) !important;
@@ -328,17 +314,8 @@
 }
 
 
-/* ══════════════════════════════════════════════════════════════
-   POST ANIMATIONS
-   ══════════════════════════════════════════════════════════════
-
-   Note: shimmer, scanner, and vortex animate background-image/
-   background-position. The hover rule above uses background-color
-   only, so they coexist safely without fighting each other.
-   ══════════════════════════════════════════════════════════════ */
 
 
-/* ── Tier 1 · Starter  (free – 5,000) ──────────────────────── */
 
 .post-anim-float { animation: p-float 3s ease-in-out infinite; }
 @keyframes p-float {
@@ -379,7 +356,6 @@
 }
 
 
-/* ── Tier 2 · Advanced  (7,500 – 25,000) ───────────────────── */
 
 .post-anim-tilt { animation: p-tilt 3s ease-in-out infinite; }
 @keyframes p-tilt {
@@ -389,7 +365,6 @@
                            inset 0 0 0 1px rgba(37, 99, 235, 0.07); }
 }
 
-/* Animates background-position of a background-image sweep. */
 .post-anim-shimmer {
     background-image: linear-gradient(
         90deg, transparent, rgba(255, 255, 255, 0.6) 50%, transparent
@@ -410,7 +385,6 @@
               filter: brightness(0.92) saturate(0.8); }
 }
 
-/* Animates background-position of a background-image sweep. */
 .post-anim-scanner {
     border-left: 3px solid rgba(14, 165, 233, 0.55) !important;
     background-image: linear-gradient(
@@ -429,7 +403,6 @@
 }
 
 
-/* ── Tier 3 · Elite  (35,000 – 75,000) ─────────────────────── */
 
 .post-anim-glitch { animation: p-glitch 0.35s steps(2, end) infinite; }
 @keyframes p-glitch {
@@ -441,8 +414,6 @@
           background-color: rgba(239, 68, 68, 0.035); }
 }
 
-/* Note: border-radius is intentionally overridden for first/last-child rows —
-   the container corner clips win and that's correct behaviour. */
 .post-anim-jello { animation: p-jello 2.2s ease-in-out infinite; }
 @keyframes p-jello {
     0%,100% { border-radius: 0; box-shadow: none; }
@@ -474,7 +445,6 @@
 }
 
 
-/* ── Tier 4 · Legendary  (90,000 – 175,000) ────────────────── */
 
 .post-anim-rainbow {
     border-left: 4px solid hsl(0, 80%, 60%) !important;
@@ -494,9 +464,6 @@
           background-color: rgba(239, 68, 68, 0.04); }
 }
 
-/* Vortex: conic-gradient spins via a registered custom property.
-   linear-gradient(white, white) masks the content area so only the
-   rotating border is visible. Update the first stop if --color-bg changes. */
 @property --vortex-a {
     syntax: '<angle>';
     initial-value: 0deg;
@@ -533,7 +500,6 @@
 @keyframes p-plasma-hue { 100% { filter: hue-rotate(360deg); } }
 
 
-/* ── Tier 5 · Mythic  (220,000 – 300,000) ──────────────────── */
 
 .post-anim-gold {
     border-left: 4px solid #d4af37 !important;
@@ -796,7 +762,6 @@
     14.1%, 100% { left: -85px; opacity: 0; }
 }
 
-/* ── Delete Post Button ───────────────────────────────────────── */
 
 .delete-post-btn {
     background: none;

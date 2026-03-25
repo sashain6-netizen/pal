@@ -3,8 +3,8 @@
 async function loadNotifications() {
     const list = document.getElementById('notif-list');
     const clearBtn = document.getElementById('clear-all-btn');
-    
-    try {
+
+        try {
         const res = await fetch('/api/notifications');
         const data = await res.json();
 
@@ -17,8 +17,8 @@ async function loadNotifications() {
         clearBtn.style.display = 'block';
         list.innerHTML = data.map(n => {
         const profileLink = n.fromId ? `/users?id=${n.fromId.toLowerCase()}` : null;
-        
-        const senderHTML = profileLink
+
+                const senderHTML = profileLink
             ? `<a href="${profileLink}" class="notif-user-link">${n.from || 'System'}</a>`
             : `<strong class="notif-system-name">${n.from || 'System'}</strong>`;
 
@@ -45,7 +45,7 @@ const modal = document.getElementById('custom-modal');
 const clearBtn = document.getElementById('clear-all-btn');
 
 clearBtn.onclick = () => {
-    modal.style.display = 'flex'; // Show custom modal instead of confirm()
+    modal.style.display = 'flex'; 
 };
 
 document.getElementById('modal-cancel').onclick = () => {
@@ -54,8 +54,8 @@ document.getElementById('modal-cancel').onclick = () => {
 
 document.getElementById('modal-confirm').onclick = async () => {
     modal.style.display = 'none';
-    
-    const res = await fetch('/api/notifications', {
+
+        const res = await fetch('/api/notifications', {
         method: 'POST',
         body: JSON.stringify({ clearAll: true }),
         headers: { 'Content-Type': 'application/json' }
@@ -79,8 +79,8 @@ async function deleteNotif(id) {
         body: JSON.stringify({ notifId: id }),
         headers: { 'Content-Type': 'application/json' }
     });
-    
-    if (res.ok) {
+
+        if (res.ok) {
         showToast("Notification removed.");
         loadNotifications();
     }

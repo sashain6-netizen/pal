@@ -21,8 +21,8 @@ function isPremiumUser(premiumUsersRaw, username) {
   const premiumUsers = safeParseJson(premiumUsersRaw, null);
   if (!premiumUsers || !username) return false;
   const uname = username.toLowerCase();
-  
-  if (Array.isArray(premiumUsers)) {
+
+    if (Array.isArray(premiumUsers)) {
     return premiumUsers.some(u => String(u).toLowerCase() === uname);
   }
   return !!(premiumUsers[uname] || premiumUsers[username]);
@@ -52,8 +52,7 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const { request, env } = context;
   const now = Date.now();
-  
-  // A. AUTH & IDENTITY
+
   const token = parseCookiePalSession(request.headers.get("Cookie"));
   if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
 
@@ -62,23 +61,20 @@ export async function onRequestPost(context) {
     const username = payload.username;
     if (!username) return new Response(JSON.stringify({ error: "Invalid Session" }), { status: 401 });
 
-    // B. PREMIUM VALIDATION
     const premiumData = await env.USERS_KV.get("pal_premium");
     if (!isPremiumUser(premiumData, username)) {
       return new Response(JSON.stringify({ error: "Premium required" }), { status: 403 });
     }
 
-    // C. COOLDOWN (10 Minutes)
     const userLower = username.toLowerCase();
     const lastSpinTs = Number(await env.USERS_KV.get(`pal_jackpot_last_spin:${userLower}`)) || 0;
     const cooldownMs = 10 * 60 * 1000;
     const remaining = Math.max(0, cooldownMs - (now - lastSpinTs));
-    
-    if (remaining > 0) {
+
+        if (remaining > 0) {
       return new Response(JSON.stringify({ error: "Too soon", cooldownMsRemaining: remaining }), { status: 429 });
     }
 
-    // D. ECONOMY LOGIC
     const userKey = `user:${username}`;
     const userData = safeParseJson(await env.USERS_KV.get(userKey), null);
     if (!userData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
@@ -89,26 +85,22 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
     }
 
-    // E. THE CALCULATION
-    const winChance = 0.02; // 2% 
+    const winChance = 0.02; 
     const potState = await loadPot(env);
-    const potAfterFee = potState.pot + spinCost; // Include the current spin in the potential win
-    
-    const didWin = Math.random() < winChance;
+    const potAfterFee = potState.pot + spinCost; 
+
+        const didWin = Math.random() < winChance;
     let winAmount = 0;
 
-    // Deduct the cost first
     userData.currency = currentCurrency - spinCost;
 
     if (didWin) {
       winAmount = potAfterFee;
-      userData.currency += winAmount; // Add the jackpot to the same object
+      userData.currency += winAmount; 
     }
 
-    // F. EXECUTE UPDATES
     const nextPot = didWin ? 0 : potAfterFee;
 
-    // Promise.all runs these simultaneously (much faster)
     await Promise.all([
       env.USERS_KV.put(userKey, JSON.stringify(userData)),
       env.USERS_KV.put("pal_jackpot_pot", JSON.stringify({ pot: nextPot, updatedAt: now })),
@@ -116,7 +108,6 @@ export async function onRequestPost(context) {
     ]);
 
     if (didWin) {
-      // Log the win for the frontend to show "Last Winner: PlayerX"
       await env.USERS_KV.put("pal_jackpot_last_winner", JSON.stringify({
         username: username,
         amount: winAmount,

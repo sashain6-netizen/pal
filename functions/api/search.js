@@ -8,7 +8,6 @@ export async function onRequestGet(context) {
     }
 
     try {
-        // Fetch Master List AND Premium List
         const [allUsersRaw, premiumRaw] = await Promise.all([
             env.USERS_KV.get("all_users_index"),
             env.USERS_KV.get("pal_premium", { cacheTtl: 3600 })
@@ -23,14 +22,13 @@ export async function onRequestGet(context) {
             const userData = await env.USERS_KV.get(`user:${username}`, { cacheTtl: 1800 });
             if (!userData) return null;
             const user = JSON.parse(userData);
-            
-            return {
+
+                        return {
                 username: user.username,
                 displayName: user.displayName,
                 avatarUrl: user.avatarUrl || "/default-avatar.png",
                 prefix: user.currentPrefix || "",
                 themeColor: user.themeColor || "#2563eb",
-                // ADD THIS FLAG
                 isPremium: premiumUsers.includes(username.toLowerCase()) 
             };
         }));

@@ -1,6 +1,3 @@
-/**
- * Advanced Markup Parser
- */
 function parseMarkup(text) {
     if (!text) return "";
     return text
@@ -19,10 +16,9 @@ function parseMarkup(text) {
 const titleInput = document.getElementById('title');
 const contentInput = document.getElementById('content');
 const previewTitle = document.getElementById('preview-title');
-const previewBody = document.getElementById('article-body'); // UPDATED TO MATCH HTML
+const previewBody = document.getElementById('article-body'); 
 const previewHr = document.getElementById('preview-hr');
 
-// Handle Live Preview
 function updatePreview() {
     const titleVal = titleInput.value.trim();
     const contentVal = contentInput.value;
@@ -30,14 +26,12 @@ function updatePreview() {
     previewTitle.textContent = titleVal;
     previewBody.innerHTML = parseMarkup(contentVal);
 
-    // Show horizontal line only if there is content or title
     previewHr.style.display = (titleVal || contentVal) ? 'block' : 'none';
 }
 
 titleInput.addEventListener('input', updatePreview);
 contentInput.addEventListener('input', updatePreview);
 
-// Handle Submission
 document.getElementById('submit-btn').addEventListener('click', async () => {
     const title = titleInput.value.trim();
     const content = contentInput.value.trim();

@@ -4,7 +4,6 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = {};
         cookieHeader.split(';').forEach(cookie => {
@@ -19,13 +18,11 @@ export async function onRequestPost(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const reporterUsername = payload.username.toLowerCase();
 
-        // 2. Get Report Data from Request
         const { reportedUsername, reason, description } = await request.json();
         if (!reportedUsername || !reason) {
             return new Response(JSON.stringify({ error: "Reported username and reason are required" }), { status: 400 });
         }
 
-        // 3. Validate input
         if (reporterUsername === reportedUsername.toLowerCase()) {
             return new Response(JSON.stringify({ error: "You cannot report yourself" }), { status: 400 });
         }
@@ -35,15 +32,13 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Invalid reason" }), { status: 400 });
         }
 
-        // 4. Check if both users exist
         const reporterData = await env.USERS_KV.get(`user:${reporterUsername}`);
         const reportedData = await env.USERS_KV.get(`user:${reportedUsername.toLowerCase()}`);
-        
-        if (!reporterData || !reportedData) {
+
+                if (!reporterData || !reportedData) {
             return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         }
 
-        // 5. Create report entry
         const report = {
             id: Date.now().toString(),
             reporterUsername,
@@ -54,10 +49,8 @@ export async function onRequestPost(context) {
             status: "pending"
         };
 
-        // 6. Store report
         await env.USERS_KV.put(`report:${report.id}`, JSON.stringify(report));
 
-        // 7. Add to reports list for easy retrieval
         const reportsList = await env.USERS_KV.get("reports_list");
         const reports = reportsList ? JSON.parse(reportsList) : [];
         reports.push(report.id);
@@ -75,7 +68,6 @@ export async function onRequestPut(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = {};
         cookieHeader.split(';').forEach(cookie => {
@@ -89,28 +81,25 @@ export async function onRequestPut(context) {
 
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username.toLowerCase();
-        
-        console.log('JWT decoded:', { username, hasToken: !!token });
 
-        // 2. Check if user is admin/staff
+                console.log('JWT decoded:', { username, hasToken: !!token });
+
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
-        
-        console.log('Report access check (PUT):', { username, userRank: user.rank });
-        
-        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
+
+                console.log('Report access check (PUT):', { username, userRank: user.rank });
+
+                const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
             console.log('Access denied (PUT) - user rank:', user.rank, 'allowed roles:', staffRoles);
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
         }
 
-        // 3. Get Report Data from Request
         const { reportId, status } = await request.json();
         if (!reportId || !status) {
             return new Response(JSON.stringify({ error: "Report ID and status are required" }), { status: 400 });
         }
 
-        // 4. Check permissions - only owners can delete, others can only resolve
         if (status === "deleted") {
             if (user.rank !== "Owner") {
                 return new Response(JSON.stringify({ error: "Only owners can delete reports" }), { status: 403 });
@@ -119,7 +108,6 @@ export async function onRequestPut(context) {
             return new Response(JSON.stringify({ error: "Invalid status" }), { status: 400 });
         }
 
-        // 5. Update report
         const reportData = await env.USERS_KV.get(`report:${reportId}`);
         if (!reportData) {
             return new Response(JSON.stringify({ error: "Report not found" }), { status: 404 });
@@ -132,14 +120,12 @@ export async function onRequestPut(context) {
 
         await env.USERS_KV.put(`report:${reportId}`, JSON.stringify(report));
 
-        // 6. If deleted, remove from reports list and delete KV pair
         if (status === "deleted") {
             const reportsList = await env.USERS_KV.get("reports_list");
             const reports = reportsList ? JSON.parse(reportsList) : [];
             const updatedReports = reports.filter(id => id !== reportId);
             await env.USERS_KV.put("reports_list", JSON.stringify(updatedReports));
-            
-            // Actually delete the report KV pair
+
             await env.USERS_KV.delete(`report:${reportId}`);
         }
 
@@ -155,7 +141,6 @@ export async function onRequestGet(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = {};
         cookieHeader.split(';').forEach(cookie => {
@@ -169,26 +154,24 @@ export async function onRequestGet(context) {
 
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username.toLowerCase();
-        
-        console.log('JWT decoded:', { username, hasToken: !!token });
 
-        // 2. Check if user is admin/staff
+                console.log('JWT decoded:', { username, hasToken: !!token });
+
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
-        
-        console.log('Report access check (GET):', { username, userRank: user.rank });
-        
-        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
+
+                console.log('Report access check (GET):', { username, userRank: user.rank });
+
+                const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(user.rank)) {
             console.log('Access denied (GET) - user rank:', user.rank, 'allowed roles:', staffRoles);
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
         }
 
-        // 3. Get all reports
         const reportsList = await env.USERS_KV.get("reports_list");
         const reportIds = reportsList ? JSON.parse(reportsList) : [];
-        
-        const reports = [];
+
+                const reports = [];
         for (const reportId of reportIds) {
             const reportData = await env.USERS_KV.get(`report:${reportId}`);
             if (reportData) {

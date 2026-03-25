@@ -5,11 +5,9 @@ let filteredBannedUsers = [];
 let currentTab = 'reports';
 let currentUserRank = 'Member';
 
-// Load all data on page load
 document.addEventListener('DOMContentLoaded', loadAllData);
 
 async function loadAllData() {
-    // Get current user info first
     try {
         const profileResponse = await fetch('/api/get-profile');
         if (profileResponse.ok) {
@@ -19,27 +17,26 @@ async function loadAllData() {
     } catch (error) {
         console.error('Error loading user profile:', error);
     }
-    
-    await Promise.all([
+
+        await Promise.all([
         loadReports(),
         loadBannedUsers()
     ]);
     updateQuickStats();
 }
 
-// Reports Management
 async function loadReports() {
     try {
         const response = await fetch('/api/report-user');
         if (!response.ok) {
             throw new Error('Failed to fetch reports');
         }
-        
-        const data = await response.json();
+
+                const data = await response.json();
         reportsData = data.reports || [];
         filteredReports = [...reportsData];
-        
-        renderReports();
+
+                renderReports();
     } catch (error) {
         console.error('Error loading reports:', error);
         showToast('Failed to load reports', 'error');
@@ -49,8 +46,8 @@ async function loadReports() {
 
 function renderReports() {
     const container = document.getElementById('reports-list');
-    
-    if (filteredReports.length === 0) {
+
+        if (filteredReports.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🚩</div>
@@ -60,22 +57,21 @@ function renderReports() {
         `;
         return;
     }
-    
-    const sortedReports = [...filteredReports].sort((a, b) => {
+
+        const sortedReports = [...filteredReports].sort((a, b) => {
         const statusOrder = { 'pending': 0, 'resolved': 1, 'deleted': 2 };
         return statusOrder[a.status] - statusOrder[b.status];
     });
-    
-    const reportsHTML = sortedReports.map(report => {
+
+        const reportsHTML = sortedReports.map(report => {
         const statusClass = report.status === 'pending' ? 'pending' : 
                            report.status === 'resolved' ? 'resolved' : 'deleted';
         const statusText = report.status.charAt(0).toUpperCase() + report.status.slice(1);
         const isResolved = report.status === 'resolved';
-        
-        // Check if user is allowed to delete
+
         const canDelete = currentUserRank === 'Owner';
-        
-        return `
+
+                return `
             <div class="report-card ${statusClass} ${isResolved ? 'resolved-report' : ''}">
                 <div class="report-header">
                     <div class="report-info">
@@ -125,28 +121,26 @@ function renderReports() {
             </div>
         `;
     }).join('');
-    
-    container.innerHTML = reportsHTML;
+
+        container.innerHTML = reportsHTML;
 }
 
-// Banned Users Management
 async function loadBannedUsers() {
     try {
-        // Get current user's rank for permission checking
         const profileResponse = await fetch('/api/get-profile');
         const currentUser = profileResponse.ok ? await profileResponse.json() : null;
         const myRank = currentUser?.rank || 'Member';
-        
-        const response = await fetch('/api/banned-users');
+
+                const response = await fetch('/api/banned-users');
         if (!response.ok) {
             throw new Error('Failed to fetch banned users');
         }
-        
-        const data = await response.json();
+
+                const data = await response.json();
         bannedUsersData = data.bannedUsers || [];
         filteredBannedUsers = [...bannedUsersData];
-        
-        renderBannedUsers(myRank);
+
+                renderBannedUsers(myRank);
     } catch (error) {
         console.error('Error loading banned users:', error);
         showToast('Failed to load banned users', 'error');
@@ -156,8 +150,8 @@ async function loadBannedUsers() {
 
 function renderBannedUsers(myRank) {
     const container = document.getElementById('banned-users-list');
-    
-    if (filteredBannedUsers.length === 0) {
+
+        if (filteredBannedUsers.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🚫</div>
@@ -167,12 +161,11 @@ function renderBannedUsers(myRank) {
         `;
         return;
     }
-    
-    const usersHTML = filteredBannedUsers.map(user => {
+
+        const usersHTML = filteredBannedUsers.map(user => {
     const timeDisplay = formatTimeRemaining(user.timeRemaining);
     const banStatusClass = user.banStatus === 'Permanent' ? 'permanent' : 'temporary';
-    
-    // 1. Initial hierarchy check
+
     const rankHierarchy = { 
         "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
         "Member": -7 
@@ -181,30 +174,27 @@ function renderBannedUsers(myRank) {
     let canUnban = myRank === "Owner" ? 
         (user.rank !== "Owner") : 
         (rankHierarchy[user.rank] < rankHierarchy[myRank]);
-    
-    // 2. The Fixed Moderator Restriction
+
     if (canUnban && myRank === "Moderator") {
         if (user.banStatus === 'Permanent') {
             canUnban = false;
         } else if (user.timeRemaining && user.timeRemaining.expirationDate) {
             const oneDayMs = 24 * 60 * 60 * 1000;
-            
-            // Fix: Your backend uses 'banDate'. If it's "Unknown", we should 
-            // play it safe and hide the unban button (or assume it's old/long).
+
             if (user.banDate === "Unknown") {
                 canUnban = false; 
             } else {
                 const banStart = new Date(user.banDate).getTime();
                 const banEnd = new Date(user.timeRemaining.expirationDate).getTime();
-                
-                if (isNaN(banStart) || (banEnd - banStart) > oneDayMs) {
+
+                                if (isNaN(banStart) || (banEnd - banStart) > oneDayMs) {
                     canUnban = false;
                 }
             }
         }
     }
-        
-        return `
+
+                return `
             <div class="banned-user-card ${banStatusClass}">
                 <div class="user-info">
                     <div class="user-avatar">
@@ -253,31 +243,26 @@ function renderBannedUsers(myRank) {
             </div>
         `;
     }).join('');
-    
-    container.innerHTML = usersHTML;
-    
-    // Start countdown timers
+
+        container.innerHTML = usersHTML;
+
     startCountdownTimers();
 }
 
-// Tab Navigation
 function switchTab(tabName) {
-    // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-    
-    // Update tab content
+
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
     });
     document.getElementById(`${tabName}-section`).classList.add('active');
-    
-    currentTab = tabName;
+
+        currentTab = tabName;
 }
 
-// Search and Filter
 document.getElementById('reports-search')?.addEventListener('input', () => filterReports());
 document.getElementById('reports-filter')?.addEventListener('change', () => filterReports());
 document.getElementById('banned-search')?.addEventListener('input', () => filterBannedUsers());
@@ -286,37 +271,36 @@ document.getElementById('banned-filter')?.addEventListener('change', () => filte
 function filterReports() {
     const searchTerm = document.getElementById('reports-search').value.toLowerCase();
     const filterType = document.getElementById('reports-filter').value;
-    
-    filteredReports = reportsData.filter(report => {
+
+        filteredReports = reportsData.filter(report => {
         const matchesSearch = report.reportedUsername.toLowerCase().includes(searchTerm) ||
                             report.reporterUsername.toLowerCase().includes(searchTerm) ||
                             report.reason.toLowerCase().includes(searchTerm);
-        
-        const matchesFilter = filterType === 'all' ||
+
+                const matchesFilter = filterType === 'all' ||
                             report.status === filterType;
-        
-        return matchesSearch && matchesFilter;
+
+                return matchesSearch && matchesFilter;
     });
-    
-    renderReports();
+
+        renderReports();
 }
 
 function filterBannedUsers() {
     const searchTerm = document.getElementById('banned-search').value.toLowerCase();
     const filterType = document.getElementById('banned-filter').value;
-    
-    filteredBannedUsers = bannedUsersData.filter(user => {
+
+        filteredBannedUsers = bannedUsersData.filter(user => {
         const matchesSearch = user.username.toLowerCase().includes(searchTerm) ||
                             user.displayName.toLowerCase().includes(searchTerm);
-        
-        const matchesFilter = filterType === 'all' ||
+
+                const matchesFilter = filterType === 'all' ||
                             (filterType === 'temporary' && user.banStatus === 'Temporary') ||
                             (filterType === 'permanent' && user.banStatus === 'Permanent');
-        
-        return matchesSearch && matchesFilter;
+
+                return matchesSearch && matchesFilter;
     });
-    
-    // Get current user rank to pass to renderBannedUsers
+
     fetch('/api/get-profile')
         .then(response => response.ok ? response.json() : Promise.resolve(null))
         .then(currentUser => {
@@ -325,11 +309,10 @@ function filterBannedUsers() {
         })
         .catch(error => {
             console.error('Error getting user profile:', error);
-            renderBannedUsers('Member'); // Fallback to lowest rank
+            renderBannedUsers('Member'); 
         });
 }
 
-// Report Actions
 async function resolveReport(reportId) {
     try {
         const response = await fetch('/api/report-user', {
@@ -340,8 +323,8 @@ async function resolveReport(reportId) {
                 status: 'resolved'
             })
         });
-        
-        if (response.ok) {
+
+                if (response.ok) {
             showToast('Report marked as resolved', 'success');
             closeReportModal();
             loadReports();
@@ -359,8 +342,8 @@ async function deleteReport(reportId) {
     if (!confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
         return;
     }
-    
-    try {
+
+        try {
         const response = await fetch('/api/report-user', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -369,8 +352,8 @@ async function deleteReport(reportId) {
                 status: 'deleted'
             })
         });
-        
-        if (response.ok) {
+
+                if (response.ok) {
             showToast('Report deleted successfully', 'success');
             closeReportModal();
             loadReports();
@@ -384,21 +367,17 @@ async function deleteReport(reportId) {
     }
 }
 
-// Ban Actions
 function showBanModal(username) {
     document.getElementById('ban-username').textContent = username;
     document.getElementById('ban-modal').style.display = 'flex';
-    
-    // Clear previous values
+
     document.getElementById('ban-reason').value = '';
     document.getElementById('ban-duration').value = '3600seconds';
-    
-    // Focus on reason input
+
     setTimeout(() => {
         document.getElementById('ban-reason').focus();
     }, 100);
-    
-    // Add escape key listener
+
     const handleEscape = (e) => {
         if (e.key === 'Escape') {
             closeBanModal();
@@ -416,13 +395,13 @@ document.getElementById('confirm-ban')?.addEventListener('click', async () => {
     const username = document.getElementById('ban-username').textContent;
     const reason = document.getElementById('ban-reason').value.trim();
     const duration = document.getElementById('ban-duration').value;
-    
-    if (!reason) {
+
+        if (!reason) {
         showToast('Please enter a ban reason', 'error');
         return;
     }
-    
-    try {
+
+        try {
         const response = await fetch('/api/ban-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -432,14 +411,13 @@ document.getElementById('confirm-ban')?.addEventListener('click', async () => {
                 duration: duration
             })
         });
-        
-        if (response.ok) {
+
+                if (response.ok) {
             const result = await response.json();
             showToast(`Successfully banned ${username}`, 'success');
             closeBanModal();
             loadBannedUsers();
-            
-            // Also refresh reports to update the UI
+
             loadReports();
         } else {
             const error = await response.json();
@@ -451,18 +429,17 @@ document.getElementById('confirm-ban')?.addEventListener('click', async () => {
     }
 });
 
-// Unban Actions
 function showUnbanModal(username, displayName) {
     const modal = document.getElementById('unban-modal');
     const nameSpan = document.getElementById('unban-username');
-    
-    const confirmBtn = document.getElementById('confirm-unban');
+
+        const confirmBtn = document.getElementById('confirm-unban');
     confirmBtn.setAttribute('data-target-username', username);
-    
-    nameSpan.textContent = displayName;
+
+        nameSpan.textContent = displayName;
     modal.style.display = 'flex';
-    
-    const handleEscape = (e) => {
+
+        const handleEscape = (e) => {
         if (e.key === 'Escape') {
             closeUnbanModal();
             document.removeEventListener('keydown', handleEscape);
@@ -482,11 +459,8 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
     }
 
     try {
-        // 1. Find the user in our local array to get the banId we attached earlier
         const userEntry = bannedUsersData.find(u => u.username.toLowerCase() === targetUsername.toLowerCase());
-        
-        // 2. Execute the DELETE request
-        // We send both the banId (for log cleanup) and targetUsername (for profile update)
+
         const response = await fetch('/api/ban-user', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -495,13 +469,12 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
                 targetUsername: targetUsername
             })
         });
-        
-        const result = await response.json();
+
+                const result = await response.json();
 
         if (response.ok) {
             showToast(`Successfully unbanned ${displayName}`, 'success');
             closeUnbanModal();
-            // Important: refresh both to keep stats in sync
             await loadBannedUsers(); 
             updateQuickStats();
         } else {
@@ -519,14 +492,13 @@ function closeUnbanModal() {
     document.getElementById('unban-modal').style.display = 'none';
 }
 
-// Stats and Refresh
 function updateQuickStats() {
     const totalReports = reportsData.length;
     const pendingReports = reportsData.filter(r => r.status === 'pending').length;
     const totalBanned = bannedUsersData.length;
     const temporaryBans = bannedUsersData.filter(u => u.banStatus === 'Temporary').length;
-    
-    document.getElementById('total-reports').textContent = totalReports;
+
+        document.getElementById('total-reports').textContent = totalReports;
     document.getElementById('pending-reports').textContent = pendingReports;
     document.getElementById('total-banned').textContent = totalBanned;
     document.getElementById('temporary-bans').textContent = temporaryBans;
@@ -537,13 +509,12 @@ function refreshAllData() {
     loadAllData();
 }
 
-// Utility Functions
 function formatTimeRemaining(timeRemaining) {
     if (!timeRemaining) return 'Permanent';
-    
-    const { days, hours, minutes } = timeRemaining;
-    
-    if (days > 0) {
+
+        const { days, hours, minutes } = timeRemaining;
+
+        if (days > 0) {
         return `${days}d ${hours}h ${minutes}m`;
     } else if (hours > 0) {
         return `${hours}h ${minutes}m`;
@@ -554,8 +525,7 @@ function formatTimeRemaining(timeRemaining) {
 
 function formatDate(dateString) {
     if (dateString === "Unknown") return "Unknown";
-    
-    // Handle timestamp IDs (numbers)
+
     if (typeof dateString === 'number') {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return "Invalid Date";
@@ -567,8 +537,7 @@ function formatDate(dateString) {
             minute: '2-digit'
         });
     }
-    
-    // Handle string dates
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "Invalid Date";
     return date.toLocaleDateString('en-US', {
@@ -582,8 +551,8 @@ function formatDate(dateString) {
 
 function startCountdownTimers() {
     const countdowns = document.querySelectorAll('.countdown');
-    
-    countdowns.forEach(countdown => {
+
+        countdowns.forEach(countdown => {
         const expiration = countdown.getAttribute('data-expiration');
         if (expiration) {
             updateCountdown(countdown, expiration);
@@ -596,18 +565,18 @@ function updateCountdown(element, expirationDate) {
     const now = new Date().getTime();
     const expiration = new Date(expirationDate).getTime();
     const remaining = expiration - now;
-    
-    if (remaining <= 0) {
+
+        if (remaining <= 0) {
         element.textContent = 'Expired';
         element.parentElement.parentElement.classList.add('expired');
         return;
     }
-    
-    const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+
+        const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
     const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
     const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-    
-    element.textContent = formatTimeRemaining({ days, hours, minutes });
+
+        element.textContent = formatTimeRemaining({ days, hours, minutes });
 }
 
 function escapeHTML(text) {
@@ -620,8 +589,7 @@ function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
-    
-    // Add icon based on type
+
     let icon = '';
     switch(type) {
         case 'success': icon = '✅ '; break;
@@ -630,16 +598,14 @@ function showToast(message, type = 'info') {
         default: icon = '';
     }
     toast.textContent = icon + message;
-    
-    const container = document.getElementById('toast-container');
+
+        const container = document.getElementById('toast-container');
     container.appendChild(toast);
-    
-    // Trigger animation
+
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
-    
-    // Auto remove
+
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
@@ -663,8 +629,6 @@ function showReportsError() {
 }
 
 function closeReportModal() {
-    // This function exists for consistency but doesn't need to do anything
-    // since we don't use a modal for reports anymore
     return;
 }
 

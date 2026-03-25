@@ -7,18 +7,16 @@ let chatHistory = [];
 function appendMessage(role, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role === 'ai' ? 'ai-message' : 'user-message'}`;
-    
-    if (role === 'ai') {
-        // 1. Convert Markdown to HTML
+
+        if (role === 'ai') {
         msgDiv.innerHTML = marked.parse(text);
 
-        // 2. Add Copy Buttons to all code blocks
         msgDiv.querySelectorAll('pre').forEach(block => {
             const copyBtn = document.createElement('button');
             copyBtn.innerText = 'Copy';
-            copyBtn.className = 'copy-code-btn'; // Style this in your CSS
-            
-            copyBtn.onclick = () => {
+            copyBtn.className = 'copy-code-btn'; 
+
+                        copyBtn.onclick = () => {
                 const codeText = block.querySelector('code').innerText;
                 navigator.clipboard.writeText(codeText);
                 copyBtn.innerText = 'Copied!';
@@ -27,13 +25,12 @@ function appendMessage(role, text) {
             block.appendChild(copyBtn);
         });
 
-        // 3. Trigger Syntax Highlighting
         Prism.highlightAllUnder(msgDiv);
     } else {
         msgDiv.textContent = text;
     }
-    
-    chatWindow.appendChild(msgDiv);
+
+        chatWindow.appendChild(msgDiv);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
@@ -41,15 +38,12 @@ async function handleChat() {
     const text = userInput.value.trim();
     if (!text) return;
 
-    // Show User Message and clear input
     appendMessage('user', text);
     userInput.value = '';
-    
-    // Professional touch: Disable input while AI "thinks"
+
     userInput.disabled = true;
     sendBtn.disabled = true;
 
-    // Show Loading State
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'message ai-message loading-state';
     loadingDiv.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
@@ -85,7 +79,6 @@ async function handleChat() {
         appendMessage('ai', "I'm having trouble connecting to the Pal network.");
         console.error("Chat Error:", error);
     } finally {
-        // Re-enable input
         userInput.disabled = false;
         sendBtn.disabled = false;
         userInput.focus();

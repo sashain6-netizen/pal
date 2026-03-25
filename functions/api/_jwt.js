@@ -1,6 +1,5 @@
 const encoder = new TextEncoder();
 
-// Modern Base64URL Encode
 function base64UrlEncode(buffer) {
     if (typeof buffer === 'string') buffer = encoder.encode(buffer);
     const binString = Array.from(new Uint8Array(buffer), (byte) => String.fromCharCode(byte)).join("");
@@ -10,7 +9,6 @@ function base64UrlEncode(buffer) {
         .replace(/=/g, "");
 }
 
-// Modern Base64URL Decode
 function base64UrlDecode(str) {
     str = str.replace(/-/g, "+").replace(/_/g, "/");
     while (str.length % 4) str += "=";
@@ -46,11 +44,11 @@ export async function createToken(username, secret) {
 export async function verifyAndDecodeToken(token, secret, env = null) {
     const parts = token.split(".");
     if (parts.length !== 3) throw new Error("Invalid Token Format");
-    
-    const [headerB64, payloadB64, signatureB64] = parts;
+
+        const [headerB64, payloadB64, signatureB64] = parts;
     const data = `${headerB64}.${payloadB64}`;
-    
-    const key = await crypto.subtle.importKey(
+
+        const key = await crypto.subtle.importKey(
         "raw",
         encoder.encode(secret),
         { name: "HMAC", hash: "SHA-256" },
@@ -71,40 +69,33 @@ export async function verifyAndDecodeToken(token, secret, env = null) {
     try {
         const decodedPayload = new TextDecoder().decode(base64UrlDecode(payloadB64));
         const payload = JSON.parse(decodedPayload);
-        
-        if (payload.exp && Date.now() / 1000 > payload.exp) {
+
+                if (payload.exp && Date.now() / 1000 > payload.exp) {
             throw new Error("Token Expired");
         }
-        
-        // Check if user is banned (if env is provided)
+
         if (env && payload.username) {
             const userData = await env.USERS_KV.get(`user:${payload.username.toLowerCase()}`);
             if (userData) {
                 const user = JSON.parse(userData);
-                
-                // Check if user is banned
+
                 if (user.isBanned === true) {
-                    // Check if ban is permanent or expired
                     if (user.banExpiration) {
                         const expirationTime = new Date(user.banExpiration).getTime();
                         if (Date.now() < expirationTime) {
                             throw new Error("Account Banned");
                         } else {
-                            // Ban expired, clean up all ban-related KV pairs
                             user.isBanned = false;
                             delete user.banReason;
                             delete user.banExpiration;
                             await env.USERS_KV.put(`user:${payload.username.toLowerCase()}`, JSON.stringify(user));
-                            
-                            // Clean up ban records and KV pairs
+
                             const userBans = await env.USERS_KV.get(`bans:${payload.username.toLowerCase()}`);
                             if (userBans) {
                                 const bans = JSON.parse(userBans);
-                                // Remove each ban KV pair
                                 for (const banId of bans) {
                                     await env.USERS_KV.delete(`ban:${banId}`);
-                                    
-                                    // Clean up global bans list
+
                                     const bansList = await env.USERS_KV.get("bans_list");
                                     if (bansList) {
                                         const allBans = JSON.parse(bansList);
@@ -112,22 +103,20 @@ export async function verifyAndDecodeToken(token, secret, env = null) {
                                         await env.USERS_KV.put("bans_list", JSON.stringify(updatedBansList));
                                     }
                                 }
-                                // Remove the bans list KV entry
                                 await env.USERS_KV.delete(`bans:${payload.username.toLowerCase()}`);
                             }
                         }
                     } else {
-                        // Permanent ban
                         throw new Error("Account Banned");
                     }
                 }
             }
         }
-        
-        return payload;
+
+                return payload;
     } catch (e) {
         if (e.message === "Account Banned") {
-            throw e; // Re-throw ban error
+            throw e; 
         }
         throw new Error("Malformed Token Payload");
     }

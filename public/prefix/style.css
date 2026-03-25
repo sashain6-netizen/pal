@@ -37,7 +37,6 @@
     font-weight: 700;
 }
 
-/* Item Card Specifics */
 .feature-card {
     display: flex;
     flex-direction: column;
@@ -88,29 +87,25 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
 }
 
-/* 1. Kill the glass/coating effect on this specific page */
 .navbar {
-    background: #ffffff !important; /* Solid White */
-    backdrop-filter: none !important; /* Disables the blur causing the coating */
+    background: #ffffff !important; 
+    backdrop-filter: none !important; 
     -webkit-backdrop-filter: none !important;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
     height: 70px !important;
 }
 
-/* 2. Fix the Toast Container interference */
 #toast-container {
-    z-index: 99999 !important; /* Ensure toasts are WAY above the nav */
+    z-index: 99999 !important; 
     pointer-events: none;
 }
 
-/* 3. The "Coating" is often caused by the Shop Container sliding UNDER the nav */
 .shop-container {
-    margin-top: 100px !important; /* Give the nav space to breath */
+    margin-top: 100px !important; 
     position: relative;
     z-index: 10;
 }
 
-/* 4. Reset the Logo Wrapper animation that is likely glitching the top half */
 .shop-header .logo-wrapper {
     opacity: 1 !important;
     animation: none !important;
@@ -119,12 +114,11 @@
 }
 
 .equipped-card {
-    border: 2px solid #10b981 !important; /* Green border for the active one */
-    background: #f0fdf4 !important; /* Very light green tint */
+    border: 2px solid #10b981 !important; 
+    background: #f0fdf4 !important; 
 }
 
 .prefix-preview {
-    /* Increase font size for emojis */
     font-size: 2.5rem !important;
     display: flex;
     align-items: center;
@@ -132,7 +126,6 @@
     height: 80px;
 }
 
-/* Rarity Tags */
 .rarity-tag {
     font-size: 0.65rem;
     font-weight: 900;
@@ -143,13 +136,11 @@
     display: inline-block;
 }
 
-/* Tier Specifics */
 .tier-common .rarity-tag { background: #e2e8f0; color: #475569; }
 .tier-elite .rarity-tag { background: #dbeafe; color: #1e40af; }
 .tier-legendary .rarity-tag { background: #fef3c7; color: #92400e; }
 .tier-mythic .rarity-tag { background: #fae8ff; color: #701a75; }
 
-/* The Mythic Glow */
 .tier-mythic {
     border: 2px solid #d946ef !important;
     background: linear-gradient(145deg, #ffffff, #fdf4ff) !important;
@@ -167,11 +158,9 @@
     100% { transform: scale(1); }
 }
 
-/* Button Colors */
 .active-btn { background: #10b981 !important; }
 .equip-btn { background: #6366f1 !important; }
 
-/* Exotic Tier - Gold/Amber Theme */
 .tier-exotic {
     border: 2px solid #f59e0b !important;
     background: linear-gradient(145deg, #ffffff, #fffbeb) !important;
@@ -179,7 +168,6 @@
 }
 .tier-exotic .rarity-tag { background: #fef3c7; color: #92400e; }
 
-/* Divine Tier - Cyan/Diamond Theme */
 .tier-divine {
     border: 3px solid #06b6d4 !important;
     background: linear-gradient(145deg, #f0f9ff, #e0f2fe) !important;
@@ -188,7 +176,6 @@
     overflow: hidden;
 }
 
-/* Add a "Sparkle" effect to the Divine Tier */
 .tier-divine::after {
     content: '';
     position: absolute;
@@ -208,15 +195,14 @@
 
 /* --- The "Active" Card Highlight --- */
 .equipped-card {
-    border: 3px solid #10b981 !important; /* Bold Green Border */
-    background: linear-gradient(145deg, #ffffff, #f0fdf4) !important; /* Soft Green Tint */
-    transform: scale(1.03); /* Slightly larger */
+    border: 3px solid #10b981 !important; 
+    background: linear-gradient(145deg, #ffffff, #f0fdf4) !important; 
+    transform: scale(1.03); 
     box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2) !important;
     position: relative;
     z-index: 2;
 }
 
-/* Add a "CURRENTLY EQUIPPED" ribbon or badge */
 .equipped-card::before {
     content: 'EQUIPPED';
     position: absolute;
@@ -233,7 +219,6 @@
     box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
 }
 
-/* Make the Active button look unique */
 .active-btn {
     background: #10b981 !important;
     color: white !important;
@@ -241,10 +226,9 @@
     font-weight: 800;
     text-transform: uppercase;
     border: none !important;
-    opacity: 1 !important; /* Ensure it's not faded like standard disabled buttons */
+    opacity: 1 !important; 
 }
 
-/* Add a subtle pulse to the active preview icon */
 .equipped-card .prefix-preview {
     border-color: #10b981 !important;
     background: white !important;

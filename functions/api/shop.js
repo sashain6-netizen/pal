@@ -7,8 +7,8 @@ export async function onRequest(context) {
     const token = cookies['pal_session'];
 
     if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-    
-    const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
+
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
     const userKey = `user:${payload.username}`;
     let user = JSON.parse(await env.USERS_KV.get(userKey, { cacheTtl: 1800 }));
 
@@ -79,34 +79,31 @@ export async function onRequest(context) {
 
     // --- EQUIP LOGIC ---
     if (action === "equip") {
-        // We now check if the EMOJI is in the owned list
         if (!user.ownedPrefixes.includes(item.label)) {
             return new Response(JSON.stringify({ error: "You don't own this!" }), { status: 400 });
         }
-        
-        user.currentPrefix = item.label; 
-        
-        await env.USERS_KV.put(userKey, JSON.stringify(user));
+
+                user.currentPrefix = item.label; 
+
+                await env.USERS_KV.put(userKey, JSON.stringify(user));
         return new Response(JSON.stringify({ success: true, user }));
     }
 
     // --- PURCHASE LOGIC ---
-    // Check ownership using the emoji label
     if (user.ownedPrefixes.includes(item.label)) {
         return new Response(JSON.stringify({ error: "Already owned" }), { status: 400 });
     }
-    
-    if ((user.currency || 0) < item.price) {
+
+        if ((user.currency || 0) < item.price) {
         return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
     }
 
     user.currency -= item.price;
-    
-    // Save the EMOJI to the list and the current slot
+
     user.ownedPrefixes.push(item.label);
     user.currentPrefix = item.label; 
-    
-    await env.USERS_KV.put(userKey, JSON.stringify(user));
+
+        await env.USERS_KV.put(userKey, JSON.stringify(user));
     return new Response(JSON.stringify({ success: true, user }));
 }
 

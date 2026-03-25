@@ -10,29 +10,25 @@ const panicBtn = document.getElementById('panicKeyBtn');
 const saveBtn = document.getElementById('saveBtn');
 let isRecording = false;
 
-// Initialize Settings
 function loadSettings() {
     const saved = localStorage.getItem('site_settings');
     const settings = saved ? JSON.parse(saved) : DEFAULTS;
-    
-    // Fill the UI with saved data
+
     if(panicBtn) panicBtn.innerText = settings.panicKey;
     if(document.getElementById('panicUrl')) document.getElementById('panicUrl').value = settings.panicUrl;
     if(document.getElementById('cloakingToggle')) document.getElementById('cloakingToggle').checked = settings.cloaking;
     if(document.getElementById('leaveConfirmToggle')) document.getElementById('leaveConfirmToggle').checked = settings.leaveConfirm;
-    
-    const autoStealthToggle = document.getElementById('autoStealthToggle');
+
+        const autoStealthToggle = document.getElementById('autoStealthToggle');
     if(autoStealthToggle) autoStealthToggle.checked = settings.autoStealth;
-    
-    return settings;
+
+        return settings;
 }
 
 let currentSettings = loadSettings();
 
 // --- NOTE: ALL AUTO-STEALTH LOGIC MOVED TO GLOBAL-SETTINGS.JS ---
-// Do not add triggerStealthProtocol here to avoid conflicts.
 
-// 1. KEY RECORDING LOGIC
 if (panicBtn) {
     panicBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -62,24 +58,23 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// 2. SAVE LOGIC
 saveBtn.addEventListener('click', () => {
     currentSettings.panicUrl = document.getElementById('panicUrl').value || DEFAULTS.panicUrl;
     currentSettings.cloaking = document.getElementById('cloakingToggle').checked;
     currentSettings.leaveConfirm = document.getElementById('leaveConfirmToggle').checked;
-    
-    const autoStealthToggle = document.getElementById('autoStealthToggle');
+
+        const autoStealthToggle = document.getElementById('autoStealthToggle');
     if(autoStealthToggle) {
         currentSettings.autoStealth = autoStealthToggle.checked;
     }
-    
-    localStorage.setItem('site_settings', JSON.stringify(currentSettings));
-    
-    const originalText = saveBtn.innerText;
+
+        localStorage.setItem('site_settings', JSON.stringify(currentSettings));
+
+        const originalText = saveBtn.innerText;
     saveBtn.innerText = "✅ Saved!";
     saveBtn.style.background = "#059669"; 
-    
-    setTimeout(() => {
+
+        setTimeout(() => {
         saveBtn.innerText = originalText;
         saveBtn.style.background = ""; 
     }, 2000);

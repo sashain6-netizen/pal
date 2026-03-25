@@ -10,15 +10,15 @@ export async function onRequest(context) {
     async function getStaffUser(request, env, secret) {
         const cookieHeader = request.headers.get("Cookie") || "";
         if (!cookieHeader.includes("pal_session=")) return null;
-        
-        try {
+
+                try {
             const token = cookieHeader.split("pal_session=")[1].split(";")[0];
             const payload = await verifyAndDecodeToken(token, secret);
-            
-            const username = payload.username.toLowerCase();
+
+                        const username = payload.username.toLowerCase();
             const kvData = await env.USERS_KV.get(`user:${username}`, { cacheTtl: 1800 });
-            
-            if (!kvData) return null;
+
+                        if (!kvData) return null;
 
             const userData = JSON.parse(kvData);
             const allowedRanks = ['Owner', 'Admin', 'Moderator'];
@@ -34,14 +34,12 @@ export async function onRequest(context) {
 
     // --- 1. GET: Fetch Article(s) ---
     if (request.method === "GET") {
-        // Individual Article View
         if (id) {
             const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?").bind(id).first();
             return article ? Response.json(article) : new Response("Not Found", { status: 404 });
         }
 
-        // List View with Pagination
-        const limit = parseInt(url.searchParams.get("limit")) || 10; // News usually looks better with 10-20 per page
+        const limit = parseInt(url.searchParams.get("limit")) || 10; 
         const offset = parseInt(url.searchParams.get("offset")) || 0;
 
         const { results: articles } = await env.DB.prepare(`
@@ -67,8 +65,8 @@ export async function onRequest(context) {
         if (!id) return new Response("Missing Article ID", { status: 400 });
 
         const data = await request.json();
-        
-        try {
+
+                try {
             const current = await env.DB.prepare("SELECT title, category FROM news_articles WHERE id = ?").bind(id).first();
             if (!current) return new Response("Not Found", { status: 404 });
 

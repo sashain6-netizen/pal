@@ -1,6 +1,5 @@
 export async function onRequestPost(context) {
     const { request, env } = context;
-    // 1. Add 'fromId' to the destructuring here
     const { targetId, from, fromId, text, type } = await request.json();
 
     const userKey = `user:${targetId.toLowerCase()}`;
@@ -13,7 +12,6 @@ export async function onRequestPost(context) {
     user.notifications.unshift({
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         from: from,
-        // 2. Change this from targetId to fromId
         fromId: fromId, 
         text: text,
         type: type || "message",

@@ -9,10 +9,8 @@ async function loadShop() {
     const data = await res.json();
     const { user, shopItems } = data;
 
-    // Update Top Stats
     document.getElementById('balance').innerText = user.currency || 0;
-    
-    // Display the EMOJI for the active prefix instead of the ID string
+
     const activeLabel = user.currentPrefix || "None";
     document.getElementById('active-prefix').innerText = activeLabel;
 
@@ -22,8 +20,7 @@ async function loadShop() {
     for (const [id, item] of Object.entries(shopItems)) {
     const isOwned = user.ownedPrefixes?.includes(item.label);
     const isActive = user.currentPrefix === item.label;
-    
-    // Determine the "Rarity" class for styling
+
     let rarityClass = 'tier-common';
 if (item.price >= 300000) rarityClass = 'tier-divine';
 else if (item.price >= 100000) rarityClass = 'tier-exotic';
@@ -59,14 +56,14 @@ async function handleAction(itemId, action) {
         const res = await fetch('/api/shop', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId, action }) // Sends 'buy' or 'equip'
+            body: JSON.stringify({ itemId, action }) 
         });
         const data = await res.json();
 
         if (data.success) {
             const msg = action === 'buy' ? `Purchased ${itemId}!` : `Equipped ${itemId}!`;
             showToast(msg, "success");
-            loadShop(); // Refresh the grid to update button states
+            loadShop(); 
         } else {
             showToast(data.error || "Action failed", "error");
         }

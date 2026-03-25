@@ -8,7 +8,6 @@ async function loadProfile() {
 
         const user = await res.json();
 
-        // Helper to update based on your specific HTML IDs
         const updateEl = (id, val, isInput = false) => {
             const el = document.getElementById(id);
             if (!el) return;
@@ -19,20 +18,18 @@ async function loadProfile() {
             }
         };
 
-        // 1. Form Inputs
         updateEl('display-username', `@${user.username}`); 
         updateEl('displayName', user.displayName || user.username);
         updateEl('bio', user.bio || "");
-        
-        const themeEl = document.getElementById('themeColor');
+
+                const themeEl = document.getElementById('themeColor');
         if (themeEl) themeEl.value = user.themeColor || "#2563eb";
 
-        // 2. Stats Display
         updateEl('stat-rank', user.rank || "Member");
         updateEl('stat-currency', (user.currency || 0).toLocaleString());
         updateEl('stat-xp', `${(user.xp || 0).toLocaleString()} XP`);
-        
-        const followers = user.followersCount ?? (Array.isArray(user.followers) ? user.followers.length : 0);
+
+                const followers = user.followersCount ?? (Array.isArray(user.followers) ? user.followers.length : 0);
         updateEl('stat-followers', followers.toLocaleString());
 
         const following = user.followingCount ?? (Array.isArray(user.following) ? user.following.length : 0);
@@ -63,7 +60,6 @@ async function loadProfile() {
                 const progress = ((currentXP - min) / (max - min)) * 100;
                 xpBar.style.width = `${Math.max(0, Math.min(progress, 100))}%`;
             }
-            // Optional: Color the bar based on their theme
             xpBar.style.backgroundColor = user.themeColor || "#2563eb";
         }
 
@@ -75,8 +71,7 @@ async function loadProfile() {
 // --- SAVE CHANGES LOGIC ---
 document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    // UI Feedback: Disable button while saving
+
     const saveBtn = e.target.querySelector('button[type="submit"]');
     const originalText = saveBtn ? saveBtn.textContent : "Save Changes";
     if (saveBtn) {
@@ -99,7 +94,6 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
         if (res.ok) {
             showToast("Profile updated successfully! ✨");
-            // Update the UI theme immediately without a refresh
             document.documentElement.style.setProperty('--blue-primary', updatedData.themeColor);
         } else {
             showToast("⚠️ Failed to update profile.");

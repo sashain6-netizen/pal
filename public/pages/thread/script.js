@@ -19,15 +19,15 @@ async function loadThread(append = false) {
         const fetchTasks = [
             fetch(`/api/thread?id=${threadId}&limit=${limit}&offset=${currentOffset}`)
         ];
-        
-        if (!currentUser) {
+
+                if (!currentUser) {
             fetchTasks.push(fetch('/api/me').then(res => res.json()));
         }
 
         const [threadRes, userData] = await Promise.all(fetchTasks);
         const data = await threadRes.json();
-        
-        if (userData) currentUser = userData;
+
+                if (userData) currentUser = userData;
 
         document.getElementById('thread-title').innerText = data.title;
         const container = document.getElementById('posts-container');
@@ -48,7 +48,6 @@ async function loadThread(append = false) {
             <div class="planet p-orange"></div>` 
             : '';
 
-        // Check if current user can delete this post
         const canDeletePost = currentUser && (
             currentUser.username === post.username || 
             ["Owner", "Admin", "Moderator"].includes(currentUser.rank)
@@ -155,9 +154,8 @@ function renderDeleteButton(user, authorUsername) {
                 });
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) throw new Error(data.error || 'Bump failed');
-                
-                if (window.showToast) showToast("Thread bumped! Redirecting...");
-                // FIX: Redirect after bump so they see it at the top
+
+                                if (window.showToast) showToast("Thread bumped! Redirecting...");
                 setTimeout(() => window.location.href = '/pages', 1000);
             } catch (err) {
                 await window.gameAlert(err.message || "Bump failed", "Error");
@@ -193,7 +191,6 @@ async function deletePost(postId) {
 
         if (res.ok) {
             if (window.showToast) showToast("Post deleted successfully!");
-            // Remove the post element from DOM
             const postElement = document.querySelector(`[data-post-id="${postId}"]`);
             if (postElement) {
                 postElement.style.transition = 'opacity 0.3s ease';
@@ -224,9 +221,8 @@ async function postReply() {
         });
 
         if (res.ok) {
-            replyInput.value = ''; // Clear input
+            replyInput.value = ''; 
             if (window.showToast) showToast("Reply posted!");
-            // FIX: Don't redirect. Just reload the thread posts.
             loadThread(false); 
         } else {
             const errData = await res.json();
@@ -242,22 +238,21 @@ async function postReply() {
 function openDeleteModal(threadId) {
     const modal = document.getElementById('deleteModal');
     const confirmBtn = document.getElementById('confirmDeleteBtn');
-    
-    // Set up the confirm button to delete the thread
+
     confirmBtn.onclick = async () => {
         if (!await window.gameConfirm('Are you sure you want to delete this thread? This action cannot be undone.', 'Delete Thread')) {
             return;
         }
-        
-        try {
+
+                try {
             const res = await fetch('/api/delete-thread', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ threadId }),
                 credentials: 'include'
             });
-            
-            if (res.ok) {
+
+                        if (res.ok) {
                 await window.gameAlert('Thread deleted successfully', 'Success');
                 window.location.href = '/pages';
             } else {
@@ -268,11 +263,11 @@ function openDeleteModal(threadId) {
             console.error('Delete thread error:', e);
             await window.gameAlert('Error deleting thread', 'Error');
         }
-        
-        closeDeleteModal();
+
+                closeDeleteModal();
     };
-    
-    modal.style.display = 'flex';
+
+        modal.style.display = 'flex';
 }
 
 function closeDeleteModal() {
@@ -289,5 +284,4 @@ function escapeHTML(str) {
     return p.innerHTML;
 }
 
-// Start
 loadThread();

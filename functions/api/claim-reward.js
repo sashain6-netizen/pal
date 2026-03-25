@@ -1,12 +1,11 @@
-import { verifyAndDecodeToken } from './_jwt.js'; // Ensure this path is correct
+import { verifyAndDecodeToken } from './_jwt.js'; 
 
 export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
         const cookieHeader = request.headers.get("Cookie") || "";
-        
-        // 1. IMPROVED COOKIE PARSING (Handles the spaces and semicolons correctly)
+
         const cookies = Object.fromEntries(
             cookieHeader.split(';').map(c => {
                 const [key, ...v] = c.split('=');
@@ -14,7 +13,6 @@ export async function onRequestPost(context) {
             })
         );
 
-        // 2. MATCH YOUR LOGIN COOKIE NAME: 'pal_session'
         const token = cookies['pal_session']; 
 
         if (!token) {
@@ -24,11 +22,9 @@ export async function onRequestPost(context) {
             });
         }
 
-        // 3. VERIFY JWT
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
-        const username = payload.username; // This is the lowercase version
+        const username = payload.username; 
 
-        // 4. FETCH USER FROM KV
         const rawUser = await env.USERS_KV.get(`user:${username}`);
         if (!rawUser) {
             return new Response(JSON.stringify({ success: false, error: "User not found" }), { 
@@ -56,17 +52,14 @@ export async function onRequestPost(context) {
             });
         }
 
-        // Streak check (Reset if > 48 hours)
         if (now - lastClaim > oneDay * 2) {
             user.streak = 1;
         } else {
             user.streak = (user.streak || 0) + 1;
         }
 
-        // 1. Calculate Reward Currency (Existing)
         const baseReward = 100 + (user.streak * 25);
 
-        // Premium buff: 1.3x currency + 1.3x XP on daily claim
         const premiumData = await env.USERS_KV.get("pal_premium");
         let isPremium = false;
         if (premiumData) {
@@ -85,8 +78,6 @@ export async function onRequestPost(context) {
         const reward = Math.floor(baseReward * multiplier);
         user.currency = (user.currency || 0) + reward;
 
-        // 2. NEW: Calculate XP based on Followers
-        // Logic: 10 XP base + 2 XP per follower
         const followerCount = user.followers || 0;
         const baseXpReward = 10 + Math.floor(Math.log10(followerCount + 1) * 20);
 
@@ -95,14 +86,12 @@ export async function onRequestPost(context) {
 
         user.lastClaim = now;
 
-// 3. SAVE UPDATED USER
 await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
 
-// 4. Update Response to show the new XP
 return new Response(JSON.stringify({
     success: true,
     amount: reward,
-    xpGained: xpReward, // Let the frontend know how much XP they got
+    xpGained: xpReward, 
     streak: user.streak,
     newTotal: user.currency,
     newXP: user.xp

@@ -17,8 +17,8 @@ export default {
         }
 
         const premiumUsers = JSON.parse(premiumData); 
-        
-        const isPremium = Array.isArray(premiumUsers) && premiumUsers.includes(username);
+
+                const isPremium = Array.isArray(premiumUsers) && premiumUsers.includes(username);
 
         return Response.json({ isPremium }, {
           headers: {

@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const newsContainer = document.getElementById('news-container');
     const adminControls = document.getElementById('admin-controls');
-    
-    // --- STATE MANAGEMENT ---
+
+        // --- STATE MANAGEMENT ---
     let allArticles = []; 
     let currentOffset = 0;
     let isLoading = false;
@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let serverHasMore = false;
     const LIMIT = 10;
 
-    // Helper: Prevent XSS by escaping HTML entities
     const escapeHTML = (str) => {
         if (!str) return "";
         return String(str)
@@ -21,38 +20,35 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, "&#039;");
     };
 
-    // 1. Listen for Auth
     window.addEventListener('authReady', (e) => {
         const userData = e.detail;
         isStaffMember = ['Owner', 'Admin', 'Moderator'].includes(userData.rank);
-        
-        if (isStaffMember && adminControls) {
+
+                if (isStaffMember && adminControls) {
             adminControls.classList.remove('hidden');
         }
-        
-        // Re-render current articles to show/hide delete buttons based on new auth state
+
         renderArticles(allArticles, false);
     });
 
-    // 2. Fetch Articles
     async function fetchNews(append = false) {
-        if (isLoading) return; // Prevent double-fetching
+        if (isLoading) return; 
         if (!append) currentOffset = 0;
 
         isLoading = true;
         try {
             const response = await fetch(`/api/news?limit=${LIMIT}&offset=${currentOffset}`);
             if (!response.ok) throw new Error('Network response was not ok');
-            
-            const data = await response.json(); 
+
+                        const data = await response.json(); 
             serverHasMore = data.hasMore; 
             toggleLoadMoreButton(serverHasMore);
             const newArticles = data.articles || [];
-            
-            allArticles = append ? [...allArticles, ...newArticles] : newArticles;
+
+                        allArticles = append ? [...allArticles, ...newArticles] : newArticles;
             renderArticles(newArticles, append);
-            
-            currentOffset += newArticles.length;
+
+                        currentOffset += newArticles.length;
             toggleLoadMoreButton(data.hasMore);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -62,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. Render function
     function renderArticles(articles, append) {
         if (!append && (!articles || articles.length === 0)) {
             newsContainer.innerHTML = '<p>No news yet.</p>';
@@ -90,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Load More Button Helper
     function toggleLoadMoreButton(hasMore) {
         let btn = document.getElementById('load-more-news-btn');
         if (!btn) {
@@ -104,12 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.display = hasMore ? 'block' : 'none';
     }
 
-    // 5. Global Event Listener (Event Delegation)
-    // This handles all clicks inside the news container for better performance
     newsContainer.addEventListener('click', async (e) => {
         const target = e.target;
-        
-        // Handle Delete Action
+
         if (target.dataset.action === 'delete') {
             const card = target.closest('.article-card');
             const id = card.dataset.id;
@@ -120,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await fetch(`/api/news?id=${id}`, { method: 'DELETE' });
                 if (res.ok) {
                     allArticles = allArticles.filter(a => a.id != id);
-                    card.remove(); // Smoothly remove from DOM without full re-render
+                    card.remove(); 
                 } else {
                     await window.gameAlert("Failed to delete.", "Delete Error");
                 }
@@ -130,19 +121,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 6. Category Filtering (Updated to work without 'window' scope)
-    const filterContainer = document.querySelector('.filter-container'); // Assuming you have one
+    const filterContainer = document.querySelector('.filter-container'); 
     if (filterContainer) {
         filterContainer.addEventListener('click', (e) => {
             if (!e.target.classList.contains('filter-btn')) return;
 
-            const category = e.target.innerText; // Or use a data-category attribute
+            const category = e.target.innerText; 
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
 
             const loadMoreBtn = document.getElementById('load-more-news-btn');
-            
-            if (category === 'All') {
+
+                        if (category === 'All') {
                 renderArticles(allArticles, false);
                 if (loadMoreBtn) loadMoreBtn.style.display = serverHasMore ? 'block' : 'none';
             } else {
@@ -153,6 +143,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial Load
     fetchNews();
 });

@@ -12,7 +12,6 @@ export async function onRequestGet(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = payload.username;
 
-        // Subquery checks the latest message time in chat_messages table
         const sql = `
             SELECT 
                 r.id, r.room_name, r.creator_username, r.created_at,

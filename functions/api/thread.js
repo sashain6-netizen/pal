@@ -3,18 +3,17 @@ import { verifyAndDecodeToken } from "./_jwt.js";
 export async function onRequestGet(context) {
     const { request, env } = context;
     const url = new URL(request.url);
-    
-    const threadId = url.searchParams.get("id");
-    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 100); // Cap the limit
+
+        const threadId = url.searchParams.get("id");
+    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 100); 
     const offset = parseInt(url.searchParams.get("offset")) || 0;
 
     if (!threadId) return new Response("ID Required", { status: 400 });
 
-    // 1. Handle "Mark as Read" in background
     const cookie = request.headers.get("Cookie") || "";
     const token = cookie.split('pal_session=')[1]?.split(';')[0];
-    
-    if (token) {
+
+        if (token) {
         context.waitUntil((async () => {
             try {
                 const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
@@ -29,13 +28,11 @@ export async function onRequestGet(context) {
     }
 
     try {
-        // 2. Fetch Thread Metadata
         const thread = await env.DB.prepare("SELECT title, creator_username FROM threads WHERE id = ?")
             .bind(threadId).first();
 
         if (!thread) return new Response("Thread not found", { status: 404 });
 
-        // 3. Fetch Posts
         const { results: posts } = await env.DB.prepare(`
             SELECT * FROM thread_posts 
             WHERE thread_id = ? 
@@ -46,11 +43,9 @@ export async function onRequestGet(context) {
         const hasMore = posts.length > limit;
         const postsToSend = hasMore ? posts.slice(0, limit) : posts;
 
-        // 4. OPTIMIZED USER LOOKUP
         const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
         const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
-        
-        // Get unique usernames to avoid duplicate KV hits
+
         const uniqueUsernames = [...new Set(postsToSend.map(p => p.username.toLowerCase().trim()))];
         const userMap = {};
 
@@ -59,7 +54,6 @@ export async function onRequestGet(context) {
             userMap[uname] = data ? JSON.parse(data) : {};
         }));
 
-        // 5. Decorate Posts
         const decoratedPosts = postsToSend.map(post => {
             const uname = post.username.toLowerCase().trim();
             const user = userMap[uname] || {};

@@ -1,6 +1,3 @@
-/* =========================================
-   PREMIUM DASHBOARD - LOGIC
-   ========================================= */
 
 function formatNumber(n) {
     const num = Number(n || 0);
@@ -8,7 +5,6 @@ function formatNumber(n) {
 }
 
 async function initPremiumFeatures() {
-    // 1. Initial Access Check
     const accessRes = await fetch('/api/get-profile');
     if (!accessRes.ok) {
         window.location.replace('/');
@@ -33,14 +29,12 @@ async function initPremiumFeatures() {
     const glowIntensity = document.getElementById('glowIntensity');
     const glowIntensityLabel = document.getElementById('glowIntensityLabel');
 
-    // New Split Action Buttons
     const saveCaptionBtn = document.getElementById('saveCaptionBtn');
     const saveGlowBtn = document.getElementById('saveGlowBtn');
     const saveAnimBtn = document.getElementById('saveAnimBtn');
 
     // --- 2. Identity & Style Initialization ---
     if (forumColorPicker) {
-        // Matches the "Visual Effects" card
         forumColorPicker.value = myData.forumColor || '#2563eb';
     }
 
@@ -49,8 +43,8 @@ async function initPremiumFeatures() {
         const pct = Math.round(alpha * 100);
         glowIntensity.value = String(pct);
         glowIntensityLabel.textContent = `${pct}%`;
-        
-        glowIntensity.addEventListener('input', () => {
+
+                glowIntensity.addEventListener('input', () => {
             glowIntensityLabel.textContent = `${glowIntensity.value}%`;
         });
     }
@@ -67,7 +61,6 @@ async function initPremiumFeatures() {
             const owned = Array.isArray(data.ownedAnimations) ? data.ownedAnimations : ['none'];
             const current = data.currentAnimation || 'none';
 
-            // Populate Dropdown
             if (postAnimationSelect) {
                 postAnimationSelect.innerHTML = owned.map(id => {
                     const label = id === 'none' ? 'None' : id[0].toUpperCase() + id.slice(1);
@@ -76,7 +69,6 @@ async function initPremiumFeatures() {
                 postAnimationSelect.value = owned.includes(current) ? current : 'none';
             }
 
-            // Render Shop Items
             const shop = Array.isArray(data.shop) ? data.shop : [];
             const purchasables = shop.filter(i => i.price > 0);
 
@@ -122,20 +114,18 @@ async function initPremiumFeatures() {
         try {
             let res;
 
-            // 1. If user clicked the GLOW/COLOR save button
             if (btn.id === 'saveGlowBtn') {
                 const forumColor = forumColorPicker?.value;
                 const glowAlpha = glowIntensity ? Number(glowIntensity.value) / 100 : 0.8;
-                
-                res = await fetch('/api/update-premium-forum-style', {
+
+                                res = await fetch('/api/update-premium-forum-style', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({ forumColor, glowAlpha })
                 });
             } 
-            
-            // 2. If user clicked the CAPTION or ANIMATION save button
+
             else {
                 const postCaption = postCaptionInput?.value || '';
                 const postAnimation = (postAnimationSelect && postAnimationSelect.value) ? postAnimationSelect.value : 'none';
@@ -151,11 +141,11 @@ async function initPremiumFeatures() {
             if (!res || !res.ok) throw new Error('Save failed');
 
             btn.textContent = 'Saved!';
-            btn.style.backgroundColor = '#22c55e'; // Green feedback
+            btn.style.backgroundColor = '#22c55e'; 
         } catch (err) {
             console.error("Save Error:", err);
             btn.textContent = 'Error';
-            btn.style.backgroundColor = '#ef4444'; // Red feedback
+            btn.style.backgroundColor = '#ef4444'; 
         } finally {
             setTimeout(() => {
                 btn.disabled = false;
@@ -244,10 +234,8 @@ async function initPremiumFeatures() {
         };
     }
 
-    // Initial Loads
     await loadAnimations();
     await loadPot();
 }
 
-// Start
 initPremiumFeatures();

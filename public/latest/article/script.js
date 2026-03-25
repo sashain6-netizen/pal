@@ -1,12 +1,9 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
 let currentRawContent = ""; 
-let isStaff = false; // Track staff status globally in this script
+let isStaff = false; 
 
 
-/**
- * Advanced Markup Parser
- */
 function parseMarkup(text) {
     if (!text) return "";
     return text
@@ -22,12 +19,11 @@ function parseMarkup(text) {
         .replace(/\n/g, '<br>');
 }
 
-// 1. Auth Detection Logic
 function handleAuthDetection(userData) {
     const staffRanks = ['Owner', 'Admin', 'Moderator'];
     if (userData && userData.loggedIn && staffRanks.includes(userData.rank)) {
         isStaff = true;
-        renderEditButton(); // Attempt to render
+        renderEditButton(); 
     }
 }
 
@@ -35,13 +31,11 @@ window.addEventListener('authReady', (e) => {
     handleAuthDetection(e.detail);
 });
 
-// Check if auth already finished before this script loaded
 if (window.currentUserData) { 
     handleAuthDetection(window.currentUserData); 
 }
 
 function renderEditButton() {
-    // Only render if we are staff AND the meta container exists (article loaded)
     const meta = document.getElementById('meta');
     if (!isStaff || !meta || document.getElementById('edit-article-btn')) return;
 
@@ -52,11 +46,10 @@ function renderEditButton() {
     meta.appendChild(btn);
 }
 
-// 2. Modal Logic
 function openEditModal() {
     if (document.getElementById('edit-modal')) return;
-    
-    const modal = document.createElement('div');
+
+        const modal = document.createElement('div');
     modal.id = 'edit-modal';
     modal.innerHTML = `
         <div class="modal-content">
@@ -91,8 +84,8 @@ window.closeModal = function() {
 async function saveChanges() {
     const newContent = document.getElementById('edit-textarea').value;
     const saveBtn = document.getElementById('save-btn');
-    
-    saveBtn.innerText = "Saving...";
+
+        saveBtn.innerText = "Saving...";
     saveBtn.disabled = true;
 
     try {
@@ -115,7 +108,6 @@ async function saveChanges() {
     }
 }
 
-// 3. Initial Load
 async function loadArticle() {
     try {
         const res = await fetch(`/api/news?id=${id}`);
@@ -129,14 +121,12 @@ async function loadArticle() {
 
         document.getElementById('title').textContent = data.title;
         const date = formatTimestamp(data.created_at);
-        
-        // This line overwrites the meta div. 
+
         document.getElementById('meta').innerHTML = `By <strong>${data.author_name}</strong> (${data.author_rank}) on ${date}`;
-        
-        document.getElementById('article-body').innerHTML = parseMarkup(data.content);
+
+                document.getElementById('article-body').innerHTML = parseMarkup(data.content);
         document.title = `${data.title} • Pal`;
 
-        // CRITICAL: Now that the HTML is injected, try to render the button again
         renderEditButton();
 
     } catch (err) {

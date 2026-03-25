@@ -4,7 +4,6 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
         const token = cookies['pal_session'];
@@ -13,13 +12,11 @@ export async function onRequestPost(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const bannerUsername = payload.username.toLowerCase();
 
-        // 2. Get Ban Data from Request
         const { targetUsername, reason, duration } = await request.json();
         if (!targetUsername || !reason) {
             return new Response(JSON.stringify({ error: "Target username and reason are required" }), { status: 400 });
         }
 
-        // 3. Check if banner has permission (staff only)
         const bannerData = await env.USERS_KV.get(`user:${bannerUsername}`);
         const banner = bannerData ? JSON.parse(bannerData) : {};
 
@@ -28,7 +25,6 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Only staff can ban users" }), { status: 403 });
         }
 
-        // 4. Check if target user exists
         const targetData = await env.USERS_KV.get(`user:${targetUsername.toLowerCase()}`);
         if (!targetData) {
             return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
@@ -36,7 +32,6 @@ export async function onRequestPost(context) {
 
         const target = JSON.parse(targetData);
 
-        // 5. Prevent banning higher rank users
         const rankHierarchy = {
             "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
             "Legend": -1, "Elite": -2, "Veteran": -3, "Contributor": -4,
@@ -51,10 +46,8 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Cannot ban users with equal or higher rank" }), { status: 403 });
         }
 
-        // 6. Calculate ban expiration
         let banExpiration = null;
 
-        // Moderators cannot issue permanent bans
         if (banner.rank === "Moderator" && (!duration || duration === "permanent")) {
             return new Response(JSON.stringify({ error: "Moderators cannot issue permanent bans" }), { status: 403 });
         }
@@ -108,7 +101,6 @@ export async function onRequestPost(context) {
             banExpiration = new Date(Date.now() + durationMs).toISOString();
         }
 
-        // 7. Create ban entry
         const ban = {
             id: Date.now().toString(),
             targetUsername: targetUsername.toLowerCase(),
@@ -120,22 +112,18 @@ export async function onRequestPost(context) {
             active: true
         };
 
-        // 8. Store ban
         await env.USERS_KV.put(`ban:${ban.id}`, JSON.stringify(ban));
 
-        // 9. Add to user's ban records
         const userBans = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
         const bans = userBans ? JSON.parse(userBans) : [];
         bans.push(ban.id);
         await env.USERS_KV.put(`bans:${targetUsername.toLowerCase()}`, JSON.stringify(bans));
 
-        // 10. Update user's banned status
         target.isBanned = true;
         target.banReason = reason;
         target.banExpiration = banExpiration;
         await env.USERS_KV.put(`user:${targetUsername.toLowerCase()}`, JSON.stringify(target));
 
-        // 11. Add to global bans list
         const bansList = await env.USERS_KV.get("bans_list");
         const allBans = bansList ? JSON.parse(bansList) : [];
         allBans.push(ban.id);
@@ -153,42 +141,36 @@ export async function onRequestDelete(context) {
     const { request, env } = context;
 
     try {
-        // 1. Efficient Cookie Parsing & Auth
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = Object.fromEntries(cookieHeader.split(';').map(c => {
             const [key, ...v] = c.trim().split('=');
             return [key, v.join('=')];
         }));
-        
-        const token = cookies['pal_session'];
+
+                const token = cookies['pal_session'];
         if (!token) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
 
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const unbannerUsername = payload.username.toLowerCase();
 
-        // 2. Validation
         const { banId, targetUsername } = await request.json();
         if (!targetUsername) {
             return new Response(JSON.stringify({ error: "Target username is required" }), { status: 400 });
         }
         const targetKey = targetUsername.toLowerCase();
 
-        // 3. Permission & Rank Check
         const unbannerData = await env.USERS_KV.get(`user:${unbannerUsername}`);
         if (!unbannerData) return new Response(JSON.stringify({ error: "Staff profile not found" }), { status: 403 });
-        
-        const unbanner = JSON.parse(unbannerData);
+
+                const unbanner = JSON.parse(unbannerData);
         const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         if (!staffRoles.includes(unbanner.rank)) {
             return new Response(JSON.stringify({ error: "Insufficient permissions" }), { status: 403 });
         }
 
-        // 4. Fetch Ban Data (Optional for Admins, Required for Moderators)
-        // We use a fall-through logic so Admins can unban even if the log is lost.
         const banDataStr = banId ? await env.USERS_KV.get(`ban:${banId}`) : null;
         const banData = banDataStr ? JSON.parse(banDataStr) : null;
 
-        // 5. Hierarchy & Moderator Restriction Logic
         if (unbanner.rank === "Moderator") {
             if (!banData) {
                 return new Response(JSON.stringify({ 
@@ -200,37 +182,30 @@ export async function onRequestDelete(context) {
             const banDate = new Date(banData.timestamp).getTime();
             const expiryDate = banData.banExpiration ? new Date(banData.banExpiration).getTime() : null;
 
-            if (!expiryDate || (expiryDate - banDate) > (oneDayMs + 5000)) { // 5s grace for processing
+            if (!expiryDate || (expiryDate - banDate) > (oneDayMs + 5000)) { 
                 return new Response(JSON.stringify({ 
                     error: "Moderators cannot lift permanent or long-term bans." 
                 }), { status: 403 });
             }
         }
 
-        // 6. PRIMARY ACTION: Restore User Account (The "Source of Truth")
         const targetUserData = await env.USERS_KV.get(`user:${targetKey}`);
         if (targetUserData) {
             const targetUser = JSON.parse(targetUserData);
             targetUser.isBanned = false;
-            // Clean up ban metadata
             delete targetUser.banReason;
             delete targetUser.banExpiration;
             delete targetUser.banDate;
-            // Audit Log: Track who did it
             targetUser.lastUnbannedBy = unbannerUsername;
             targetUser.lastUnbannedAt = new Date().toISOString();
-            
-            await env.USERS_KV.put(`user:${targetKey}`, JSON.stringify(targetUser));
+
+                        await env.USERS_KV.put(`user:${targetKey}`, JSON.stringify(targetUser));
         }
 
-        // 7. BACKGROUND CLEANUP: Prevent "Ghost Data"
-        // We wrap these in a separate block to ensure the user is unbanned even if cleanup lags.
         const cleanupTasks = [];
 
-        // Task A: Delete specific ban record
         if (banId) cleanupTasks.push(env.USERS_KV.delete(`ban:${banId}`));
 
-        // Task B: Update Global List
         cleanupTasks.push((async () => {
             const listStr = await env.USERS_KV.get("bans_list");
             if (listStr) {
@@ -240,7 +215,6 @@ export async function onRequestDelete(context) {
             }
         })());
 
-        // Task C: Update User's Ban History
         cleanupTasks.push((async () => {
             const histStr = await env.USERS_KV.get(`bans:${targetKey}`);
             if (histStr) {
@@ -254,7 +228,6 @@ export async function onRequestDelete(context) {
             }
         })());
 
-        // Fire and forget cleanup or wait for all
         await Promise.all(cleanupTasks);
 
         return new Response(JSON.stringify({ 
@@ -272,7 +245,6 @@ export async function onRequestGet(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
         const token = cookies['pal_session'];
@@ -281,7 +253,6 @@ export async function onRequestGet(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username.toLowerCase();
 
-        // 2. Check if user is staff
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
 
@@ -290,7 +261,6 @@ export async function onRequestGet(context) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 403 });
         }
 
-        // 3. Get all bans
         const bansList = await env.USERS_KV.get("bans_list");
         const banIds = bansList ? JSON.parse(bansList) : [];
 

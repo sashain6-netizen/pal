@@ -7,7 +7,6 @@ let currentOffset = 0;
 const limit = 50; 
 
 async function init() {
-    // Initial data load
     loadPublicThreads();
     loadPrivateChats();
 }
@@ -71,18 +70,16 @@ async function loadPublicThreads(append = false) {
 
         currentOffset += threads.length;
         toggleLoadMoreButton(data.hasMore);
-        
-        // Check for admin permissions and show delete buttons
+
         checkAdminPermissions();
     } catch (e) { console.error(e); }
 }
 
 // --- PINNING LOGIC ---
 window.togglePin = async (threadId, event) => {
-    event.stopPropagation(); // Prevent opening the thread when clicking the pin
+    event.stopPropagation(); 
     const btn = document.getElementById(`pin-icon-${threadId}`);
-    
-    // Optimistic UI update
+
     btn.classList.toggle('active');
 
     try {
@@ -94,12 +91,11 @@ window.togglePin = async (threadId, event) => {
         });
 
         if (res.ok) {
-            // Refresh the list to apply sorting (Pins fly to top)
             loadPublicThreads(false);
         } else {
             const data = await res.json();
             await window.gameAlert(data.error || "Login required to pin threads.", "Permission Error");
-            loadPublicThreads(false); // Revert UI
+            loadPublicThreads(false); 
         }
     } catch (e) {
         console.error("Pinning error:", e);
@@ -120,8 +116,8 @@ function toggleLoadMoreButton(hasMore) {
         btn.onclick = () => loadPublicThreads(true);
         listSection.appendChild(btn);
     }
-    
-    if (btn) {
+
+        if (btn) {
         btn.style.display = (hasMore && currentTab === 'public') ? 'block' : 'none';
     }
 }
@@ -135,12 +131,12 @@ function switchTab(tab, e) {
     const isPublic = tab === 'public';
     const searchInput = document.getElementById('forumSearch');
     const searchResults = document.getElementById('searchResults');
-    
-    searchInput.placeholder = isPublic ? "Search public threads..." : "Filter my private chats...";
+
+        searchInput.placeholder = isPublic ? "Search public threads..." : "Filter my private chats...";
     searchInput.value = ""; 
     if (searchResults) searchResults.classList.remove('active');
-    
-    if (!isPublic) {
+
+        if (!isPublic) {
         loadPrivateChats();
         const btn = document.getElementById('load-more-threads-btn');
         if (btn) btn.style.display = 'none';
@@ -231,8 +227,8 @@ async function submitPost() {
 async function handleSearch() {
     const query = document.getElementById('forumSearch').value.toLowerCase().trim();
     const forumResultsDiv = document.getElementById('searchResults');
-    
-    if (currentTab === 'private') {
+
+        if (currentTab === 'private') {
         const chats = document.querySelectorAll('#chat-list .thread-card');
         chats.forEach(chat => {
             const text = chat.innerText.toLowerCase();
@@ -334,7 +330,6 @@ async function checkAdminPermissions() {
             const userData = await res.json();
             const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
             if (staffRoles.includes(userData.rank)) {
-                // Show delete buttons for staff
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.style.display = 'inline-block';
                 });
@@ -347,22 +342,22 @@ async function checkAdminPermissions() {
 
 window.deleteThread = async (threadId, threadTitle, event) => {
     event.stopPropagation();
-    
-    if (!await window.gameConfirm(`Are you sure you want to delete the thread "${threadTitle}"? This action cannot be undone.`, "Delete Thread")) {
+
+        if (!await window.gameConfirm(`Are you sure you want to delete the thread "${threadTitle}"? This action cannot be undone.`, "Delete Thread")) {
         return;
     }
-    
-    try {
+
+        try {
         const res = await fetch('/api/delete-thread', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ threadId }),
             credentials: 'include'
         });
-        
-        if (res.ok) {
+
+                if (res.ok) {
             showToast("Thread deleted successfully");
-            loadPublicThreads(false); // Refresh the thread list
+            loadPublicThreads(false); 
         } else {
             const error = await res.json();
             showToast(error.error || "Failed to delete thread");
@@ -373,5 +368,4 @@ window.deleteThread = async (threadId, threadTitle, event) => {
     }
 };
 
-// Launch!
 init();

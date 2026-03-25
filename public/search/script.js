@@ -2,8 +2,8 @@ async function performSearch() {
     const queryInput = document.getElementById('userQuery');
     const resultsArea = document.getElementById('results-area');
     const query = queryInput.value.trim().toLowerCase();
-    
-    if (!query) return;
+
+        if (!query) return;
 
     resultsArea.innerHTML = "<p style='color: var(--blue-soft);'>Searching...</p>";
 
@@ -11,11 +11,9 @@ async function performSearch() {
         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
         const users = await res.json();
 
-        // Clear the area for the new result
         resultsArea.innerHTML = "";
 
         if (users.length === 0) {
-            // No redirect, just a simple message
             resultsArea.innerHTML = `
                 <div class="feature-card" style="grid-column: 1 / -1; border-color: #ef4444;">
                     <p style="color: #ef4444; font-weight: bold;">User not found</p>

@@ -1,4 +1,4 @@
-import { verifyAndDecodeToken } from './_jwt.js'; // Ensure you import your JWT helper
+import { verifyAndDecodeToken } from './_jwt.js'; 
 
 export async function onRequestGet(context) {
     const { request, env } = context;
@@ -8,23 +8,20 @@ export async function onRequestGet(context) {
     if (!query || query.length < 1) return new Response("[]");
 
     try {
-        // 1. Get current user from Cookie/JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const token = cookieHeader.split('pal_session=')[1]?.split(';')[0];
         let currentUser = "";
-        
-        if (token) {
+
+                if (token) {
             try {
                 const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
                 currentUser = payload.username.toLowerCase();
-            } catch (e) { /* Guest or expired token */ }
+            } catch (e) {  }
         }
 
-        // 2. Fetch the index
         const allUsers = JSON.parse(await env.USERS_KV.get("all_users_index", { cacheTtl: 3600 }) || "[]");
         if (!allUsers.length) return new Response("[]");
 
-        // 3. Filter: Match query AND NOT current user
         const matches = allUsers
             .filter(username => {
                 const name = username.toLowerCase();

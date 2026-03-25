@@ -1,8 +1,4 @@
-/* ===========================
-   PAL Subfolder — Edit Profile
-   =========================== */
 
-/* Center the card on the page */
 .auth-page {
   display: flex;
   justify-content: center;
@@ -12,7 +8,6 @@
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
 }
 
-/* Card Styling */
 .auth-card {
   background: var(--white);
   width: 100%;
@@ -46,7 +41,6 @@
   font-size: 0.95rem;
 }
 
-/* Form Elements */
 .input-group {
   text-align: left;
   margin-bottom: 20px;
@@ -85,7 +79,6 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-/* Color Picker Styling */
 .input-group input[type="color"] {
   width: 100%;
   border-radius: 12px;
@@ -93,7 +86,6 @@
   cursor: pointer;
 }
 
-/* Action Buttons */
 .auth-btn {
   width: 100%;
   background: var(--blue-primary);
@@ -165,7 +157,6 @@
   text-decoration: underline;
 }
 
-/* Stats Grid Layout */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -216,7 +207,6 @@
     font-weight: 500;
 }
 
-/* XP Progress Bar */
 .xp-container {
     margin-bottom: 25px;
     text-align: left;
@@ -250,43 +240,40 @@
     .stats-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* Fix for stats sticking out */
 .stats-grid {
     display: grid;
-    /* auto-fit will wrap items to a new line if they can't maintain at least 80px */
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px; /* Reduced gap slightly for more breathing room */
+    gap: 10px; 
     margin: 20px 0;
     width: 100%;
     box-sizing: border-box;
 }
 
 .stat-box {
-    padding: 12px 5px; /* Reduced side padding to prevent overflow */
-    min-width: 0;      /* Crucial: allows grid items to shrink smaller than content */
-    overflow: hidden;  /* Safety net */
-    background: #f8fafc; /* Subtle distinction from card background */
+    padding: 12px 5px; 
+    min-width: 0;      
+    overflow: hidden;  
+    background: #f8fafc; 
 }
 
 .stat-label {
-    font-size: 0.65rem; /* Slightly smaller to fit "Followers" comfortably */
+    font-size: 0.65rem; 
     letter-spacing: 0.5px;
-    white-space: nowrap; /* Prevents label from breaking into two lines */
+    white-space: nowrap; 
 }
 
 .stat-value {
-    font-size: 1rem; /* Slightly smaller to accommodate larger numbers */
-    word-break: break-all; /* If someone has 1,000,000, it won't break the box */
+    font-size: 1rem; 
+    word-break: break-all; 
 }
 
-/* Adjust card padding for smaller screens so the grid has more room */
 @media (max-width: 480px) {
     .auth-card {
         padding: 30px 20px;
     }
-    
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2x2 grid is much cleaner on mobile */
+
+        .stats-grid {
+        grid-template-columns: repeat(2, 1fr); 
     }
 }
 
@@ -299,11 +286,11 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    pointer-events: none; /* Allows clicking through the container itself */
+    pointer-events: none; 
 }
 
 .game-toast {
-    background: #1e293b; /* Dark slate background */
+    background: #1e293b; 
     color: white;
     padding: 12px 20px;
     border-radius: 8px;
@@ -313,9 +300,8 @@
     font-weight: 500;
     min-width: 200px;
     max-width: 300px;
-    pointer-events: auto; /* Re-enable clicking for the actual toast */
-    
-    /* Animation */
+    pointer-events: auto; 
+
     animation: toast-in 0.3s ease forwards;
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
@@ -331,7 +317,6 @@
     }
 }
 
-/* Optional: Success/Error variations if you want to expand later */
 .game-toast.error {
     border-left-color: #ef4444;
 }

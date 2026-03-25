@@ -3,8 +3,8 @@ const checkoutBtn = document.getElementById('checkout-button');
 async function checkPremium() {
     try {
         const res = await fetch('/api/get-profile');
-        
-        if (!res.ok) {
+
+                if (!res.ok) {
             document.body.classList.add('authorized');
             return;
         }
@@ -29,7 +29,6 @@ async function checkPremium() {
 
 window.checkPremium = checkPremium;
 
-// Checkout button logic
 if (checkoutBtn) {
     checkoutBtn.onclick = async () => {
         if (window.currentUserData && window.currentUserData.isPremium) {
@@ -45,8 +44,8 @@ if (checkoutBtn) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-            
-            if (!res.ok) throw new Error("Session creation failed");
+
+                        if (!res.ok) throw new Error("Session creation failed");
 
             const { url } = await res.json();
             window.location.href = url;

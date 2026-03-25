@@ -1,8 +1,4 @@
-/* ===========================
-   PAL Subfolder — Edit Profile
-   =========================== */
 
-/* Center the card on the page */
 .auth-page {
   display: flex;
   justify-content: center;
@@ -12,7 +8,6 @@
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
 }
 
-/* Card Styling */
 .auth-card {
   background: var(--white);
   width: 100%;
@@ -46,7 +41,6 @@
   font-size: 0.95rem;
 }
 
-/* Form Elements */
 .input-group {
   text-align: left;
   margin-bottom: 20px;
@@ -85,7 +79,6 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-/* Color Picker Styling */
 .input-group input[type="color"] {
   width: 100%;
   border-radius: 12px;
@@ -93,7 +86,6 @@
   cursor: pointer;
 }
 
-/* Action Buttons */
 .auth-btn {
   width: 100%;
   background: var(--blue-primary);
@@ -129,7 +121,6 @@
   color: var(--blue-primary);
 }
 
-/* Toast Notifications (for script.js feedback) */
 #toast-container {
   position: fixed;
   top: 20px;
@@ -183,7 +174,6 @@
   text-decoration: underline;
 }
 
-/* Stats Grid Layout */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -234,7 +224,6 @@
     font-weight: 500;
 }
 
-/* XP Progress Bar */
 .xp-container {
     margin-bottom: 25px;
     text-align: left;
@@ -268,43 +257,40 @@
     .stats-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* Fix for stats sticking out */
 .stats-grid {
     display: grid;
-    /* auto-fit will wrap items to a new line if they can't maintain at least 80px */
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px; /* Reduced gap slightly for more breathing room */
+    gap: 10px; 
     margin: 20px 0;
     width: 100%;
     box-sizing: border-box;
 }
 
 .stat-box {
-    padding: 12px 5px; /* Reduced side padding to prevent overflow */
-    min-width: 0;      /* Crucial: allows grid items to shrink smaller than content */
-    overflow: hidden;  /* Safety net */
-    background: #f8fafc; /* Subtle distinction from card background */
+    padding: 12px 5px; 
+    min-width: 0;      
+    overflow: hidden;  
+    background: #f8fafc; 
 }
 
 .stat-label {
-    font-size: 0.65rem; /* Slightly smaller to fit "Followers" comfortably */
+    font-size: 0.65rem; 
     letter-spacing: 0.5px;
-    white-space: nowrap; /* Prevents label from breaking into two lines */
+    white-space: nowrap; 
 }
 
 .stat-value {
-    font-size: 1rem; /* Slightly smaller to accommodate larger numbers */
-    word-break: break-all; /* If someone has 1,000,000, it won't break the box */
+    font-size: 1rem; 
+    word-break: break-all; 
 }
 
-/* Adjust card padding for smaller screens so the grid has more room */
 @media (max-width: 480px) {
     .auth-card {
         padding: 30px 20px;
     }
-    
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2x2 grid is much cleaner on mobile */
+
+        .stats-grid {
+        grid-template-columns: repeat(2, 1fr); 
     }
 }
 
@@ -360,15 +346,15 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    pointer-events: none; /* Allows clicks to pass through to the game */
+    pointer-events: none; 
 }
 
 .game-toast {
-    background: rgba(30, 41, 59, 0.95); /* Dark blue-grey */
+    background: rgba(30, 41, 59, 0.95); 
     color: white;
     padding: 12px 20px;
     border-radius: 10px;
-    border-left: 4px solid #2563eb; /* Blue accent */
+    border-left: 4px solid #2563eb; 
     font-family: 'Varela Round', sans-serif;
     font-size: 0.9rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -386,7 +372,6 @@
     to { opacity: 0; }
 }
 
-/* 1. Pulsing Gold Border for the Profile Card */
 .premium-card-pulse {
     position: relative;
     border: 2px solid #ffd700 !important;
@@ -400,7 +385,6 @@
     100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
 }
 
-/* 2. Pulsing Glow around the Avatar Circle */
 .premium-avatar-pulse {
     position: relative;
 }
@@ -420,9 +404,8 @@
     100% { transform: scale(1.2); opacity: 0; }
 }
 
-/* 3. Style for the Name Text */
 .premium-user-text {
-    color: #b8860b !important; /* Deep Golden Rod */
+    color: #b8860b !important; 
     font-weight: 800;
     text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
 }

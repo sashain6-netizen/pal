@@ -1,4 +1,3 @@
-// 1. Prevent double injection
 if (typeof window.navbarHasLoaded === 'undefined') {
     window.navbarHasLoaded = false;
 }
@@ -189,7 +188,6 @@ function injectNavbar() {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
     window.navbarHasLoaded = true;
 
-    // Setup mobile menu functionality
     setupMobileMenu();
 
     window.addEventListener('authReady', (e) => {
@@ -267,21 +265,19 @@ async function checkAdminStatus() {
 function setupMobileMenu() {
     const navbar = document.querySelector('.navbar');
     const menuToggle = document.getElementById('mobile-menu-toggle');
-    
-    if (menuToggle) {
+
+        if (menuToggle) {
         menuToggle.addEventListener('click', () => {
             navbar.classList.toggle('mobile-active');
         });
-        
-        // Close mobile menu when clicking outside
+
         document.addEventListener('click', (e) => {
             if (navbar.classList.contains('mobile-active') && 
                 !navbar.contains(e.target)) {
                 navbar.classList.remove('mobile-active');
             }
         });
-        
-        // Close mobile menu on escape key
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && navbar.classList.contains('mobile-active')) {
                 navbar.classList.remove('mobile-active');
@@ -294,27 +290,24 @@ function setupMobileMenu() {
 function addAdminButton() {
     const navLinks = document.getElementById('nav-links');
     if (navLinks && !document.getElementById('admin-link')) {
-        // Create admin links container
         const adminContainer = document.createElement('li');
         adminContainer.style.display = 'flex';
         adminContainer.style.gap = '8px';
         adminContainer.style.alignItems = 'center';
-        
-        // Add Admin link
+
         const adminLink = document.createElement('a');
         adminLink.href = '/admin/index.html';
         adminLink.id = 'admin-link';
         adminLink.style.cssText = 'color: #dc2626; font-weight: 600; font-size: 0.9rem;';
         adminLink.textContent = 'Admin';
-        
-        // Add Stats link
+
         const statsLink = document.createElement('a');
         statsLink.href = '/stats.html';
         statsLink.id = 'stats-link';
         statsLink.style.cssText = 'color: #059669; font-weight: 600; font-size: 0.9rem;';
         statsLink.textContent = 'Stats';
-        
-        adminContainer.appendChild(adminLink);
+
+                adminContainer.appendChild(adminLink);
         adminContainer.appendChild(statsLink);
         navLinks.appendChild(adminContainer);
     }

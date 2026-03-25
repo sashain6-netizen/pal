@@ -1,8 +1,8 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
   const cookieHeader = request.headers.get("Cookie") || "";
-  
-  if (!cookieHeader.includes("pal_session=")) {
+
+    if (!cookieHeader.includes("pal_session=")) {
     return new Response(JSON.stringify({ loggedIn: false }), { 
       headers: { "Content-Type": "application/json" } 
     });

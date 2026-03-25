@@ -4,7 +4,6 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
-        // 1. Get User from JWT
         const cookieHeader = request.headers.get("Cookie") || "";
         const cookies = Object.fromEntries(cookieHeader.split(';').map(c => [c.split('=')[0].trim(), c.split('=')[1]]));
         const token = cookies['pal_session'];
@@ -13,11 +12,9 @@ export async function onRequestPost(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = payload.username.toLowerCase();
 
-        // 2. Get Post ID from Request
         const { postId } = await request.json();
         if (!postId) return new Response("Post ID required", { status: 400 });
 
-        // 3. Fetch Post and Thread
         const post = await env.DB.prepare(`
             SELECT tp.username, tp.thread_id, t.creator_username as thread_creator
             FROM thread_posts tp
@@ -27,11 +24,9 @@ export async function onRequestPost(context) {
 
         if (!post) return new Response(JSON.stringify({ error: "Post not found" }), { status: 404 });
 
-        // 4. Get user data for role check
         const userData = await env.USERS_KV.get(`user:${username}`);
         const user = userData ? JSON.parse(userData) : {};
 
-        // 5. Security check - allow post author, admins, mods, and owners only
         const isPostAuthor = post.username.toLowerCase() === username;
         const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
         const isStaff = staffRoles.includes(user.rank);
@@ -40,14 +35,12 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "You do not have permission to delete this post." }), { status: 403 });
         }
 
-        // 6. Delete the post
         await env.DB.prepare("DELETE FROM thread_posts WHERE id = ?").bind(postId).run();
 
-        // 7. Update thread's last activity time if this was the last post
         const remainingPosts = await env.DB.prepare("SELECT created_at FROM thread_posts WHERE thread_id = ? ORDER BY created_at DESC LIMIT 1")
             .bind(post.thread_id).first();
-        
-        if (remainingPosts) {
+
+                if (remainingPosts) {
             await env.DB.prepare("UPDATE threads SET last_activity_at = ? WHERE id = ?")
                 .bind(remainingPosts.created_at, post.thread_id).run();
         }

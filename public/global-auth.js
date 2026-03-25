@@ -1,13 +1,11 @@
-// Single Source of Truth for Auth
 async function checkAuth() {
     try {
         const response = await fetch('/api/me'); 
         if (!response.ok) throw new Error();
         const data = await response.json();
-        
-        updateGlobalUI(data.loggedIn, data);
-        
-        // Notify other scripts that user data is ready
+
+                updateGlobalUI(data.loggedIn, data);
+
         window.dispatchEvent(new CustomEvent('authReady', { detail: data }));
     } catch (e) {
         updateGlobalUI(false);
@@ -15,24 +13,20 @@ async function checkAuth() {
 }
 
 function updateGlobalUI(isLoggedIn, userData = {}) {
-    // CRITICAL: Set the global variable BEFORE any "if (!element) return" checks.
-    // This ensures script.js can see the user's rank even if the navbar is slow.
     window.currentUserData = { loggedIn: isLoggedIn, ...userData };
 
     const loggedInLinks = document.getElementById('loggedInLinks');
     const loggedOutLinks = document.getElementById('loggedOutLinks');
     const avatarContainer = document.getElementById('avatar-container');
     const profileIcon = document.getElementById('profile-icon');
-    
-    // If navbar elements aren't injected yet, we stop UI updates, 
-    // but the data above is already saved globally!
+
     if (!profileIcon || !avatarContainer) return;
 
     if (isLoggedIn) {
         if (loggedInLinks) loggedInLinks.style.display = 'flex';
         if (loggedOutLinks) loggedOutLinks.style.display = 'none';
-        
-        const userColor = userData.themeColor || "#2563eb";
+
+                const userColor = userData.themeColor || "#2563eb";
         profileIcon.style.borderColor = userColor;
 
         if (userData.avatarUrl && userData.avatarUrl !== "" && userData.avatarUrl !== "/default-avatar.png") {
@@ -44,8 +38,8 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
                           fill="${userColor}" />
                 </svg>`;
         }
-        
-        const logoutBtn = document.getElementById('logoutLink');
+
+                const logoutBtn = document.getElementById('logoutLink');
         if (logoutBtn) logoutBtn.onclick = handleLogout;
 
     } else {
@@ -65,8 +59,8 @@ async function handleLogout(e) {
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
-    
-    const observer = new MutationObserver(() => {
+
+        const observer = new MutationObserver(() => {
         const logoutBtn = document.getElementById('logoutLink');
         if (logoutBtn) {
             logoutBtn.onclick = handleLogout;

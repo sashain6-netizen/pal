@@ -7,8 +7,8 @@ export async function onRequest(context) {
 
     const cookie = request.headers.get("Cookie") || "";
     const token = cookie.split('pal_session=')[1]?.split(';')[0];
-    
-    let user = null;
+
+        let user = null;
     if (token) {
         try {
             user = await verifyAndDecodeToken(token, env.JWT_SECRET);
@@ -17,7 +17,6 @@ export async function onRequest(context) {
 
     try {
         if (method === "GET") {
-            // Ensure required tables exist so the JOIN + ORDER BY works on fresh DBs
             await env.DB.prepare(`
                 CREATE TABLE IF NOT EXISTS threads (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,

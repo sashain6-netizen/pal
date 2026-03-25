@@ -86,7 +86,6 @@
   font-weight: 600;
 }
 
-/* Toast Container - stays fixed on screen */
 .toast-container {
   position: fixed;
   top: 20px;
@@ -97,7 +96,6 @@
   gap: 12px;
 }
 
-/* Individual Toast Styling */
 .toast {
   min-width: 280px;
   padding: 16px 24px;
@@ -118,7 +116,6 @@
   transform: translateX(0);
 }
 
-/* Success vs Error colors */
 .toast.success { border-left: 5px solid #10b981; }
 .toast.error { border-left: 5px solid #ef4444; }
 

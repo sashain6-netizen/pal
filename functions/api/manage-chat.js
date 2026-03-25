@@ -7,7 +7,6 @@ export async function onRequestPost(context) {
         const body = await request.json();
         const { action, chatId, targetUsername } = body;
 
-        // 1. SECURE JWT AUTHENTICATION
         const cookie = request.headers.get("Cookie") || "";
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
 
@@ -18,11 +17,9 @@ export async function onRequestPost(context) {
             });
         }
 
-        // Use verifyAndDecodeToken to prevent JWT spoofing
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = payload.username;
 
-        // 2. MANDATORY MEMBERSHIP GATE
         const isMember = await env.DB.prepare(
             "SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?"
         ).bind(chatId, username).first();
@@ -44,7 +41,6 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: true }));
         }
 
-        // 3. OWNER VERIFICATION (For Admin Actions)
         const room = await env.DB.prepare("SELECT creator_username FROM chat_rooms WHERE id = ?")
             .bind(chatId).first();
 
@@ -66,14 +62,12 @@ export async function onRequestPost(context) {
         if (action === "invite") {
             if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
 
-            // Check if user exists globally
             const allUsersJson = await env.USERS_KV.get("all_users_index", { cacheTtl: 3600 });
             const userList = JSON.parse(allUsersJson || "[]");
             if (!userList.some(u => u.toLowerCase() === targetUsername.toLowerCase())) {
                 return new Response(JSON.stringify({ error: "User does not exist" }), { status: 404 });
             }
 
-            // Check if user is already in this chat
             const alreadyIn = await env.DB.prepare("SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?")
                 .bind(chatId, targetUsername).first();
 
@@ -94,12 +88,11 @@ export async function onRequestPost(context) {
         // --- ACTION: KICK ---
         if (action === "kick") {
             if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
-            
-            if (targetUsername.toLowerCase() === username.toLowerCase()) {
+
+                        if (targetUsername.toLowerCase() === username.toLowerCase()) {
                 return new Response(JSON.stringify({ error: "You cannot kick yourself" }), { status: 400 });
             }
 
-            // Verify they are in the chat before trying to kick
             const memberToKick = await env.DB.prepare("SELECT 1 FROM chat_members WHERE room_id = ? AND username = ?")
                 .bind(chatId, targetUsername).first();
 
