@@ -686,35 +686,35 @@
             <div id="diagnostics-list">
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">Database Connection</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">KV Storage Access</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">JWT Token Validation</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">API Endpoints Health</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">Premium System Status</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">Report System Status</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">Forum System Status</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
                 <div class="diagnostic-item">
                     <div class="diagnostic-name">Search Functionality</div>
-                    <div class="diagnostic-status status-running">Checking...</div>
+                    <div class="diagnostic-status">Checking...</div>
                 </div>
             </div>
         </div>
@@ -992,19 +992,6 @@
                 }
             }
             return null;
-        }
-
-        // Test database connections
-        async function testDatabaseConnections() {
-            const dbTests = [
-                { name: 'KV Storage', test: testKVStorageDetailed },
-                { name: 'User Index', test: testUserIndex },
-                { name: 'Forum Storage', test: testForumStorage }
-            ];
-
-            for (const dbTest of dbTests) {
-                await testSingleDatabase(dbTest.name, dbTest.test);
-            }
         }
 
         async function testSingleDatabase(name, testFunction) {
@@ -1380,7 +1367,7 @@
 
             diagnosticItems.forEach(item => {
                 const nameElement = item.querySelector('.diagnostic-name');
-                if (nameElement && nameElement.textContent.trim().toLowerCase() === name.toLowerCase()) {
+                if (nameElement && nameElement.textContent.trim() === name) {
                     statusElement = item.querySelector('.diagnostic-status');
                 }
             });
@@ -1501,7 +1488,6 @@
         }
 
 
-        // Add log entry
         function addLog(level, message) {
             const logContainer = document.getElementById('system-logs');
             const timestamp = new Date().toLocaleString();
@@ -1539,7 +1525,6 @@
             btn.disabled = false;
         }
 
-        // Show error message
         function showError(message) {
             const toast = document.createElement('div');
             toast.className = 'toast-error';
@@ -1589,7 +1574,7 @@
                 loadForumStats(),
                 loadReportStats(),
                 testAPIEndpoints(),
-                testDatabaseConnections()
+                runAllDiagnostics()
             ]);
 
             addLog('INFO', 'Enhanced statistics dashboard initialized');
