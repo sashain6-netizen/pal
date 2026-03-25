@@ -190,6 +190,11 @@
             color: #92400e;
         }
 
+                .stat-change.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
                 .status-running {
             background: #dbeafe;
             color: #1e40af;
@@ -533,32 +538,32 @@
             <div class="stat-card">
                 <div class="stat-number" id="total-users">0</div>
                 <div class="stat-label">Total Users</div>
-                <div class="stat-change positive" id="users-change">+0 today</div>
+                <div class="stat-change positive" id="users-change">0 active this week</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="active-users">0</div>
-                <div class="stat-label">Active Users</div>
-                <div class="stat-change positive" id="active-change">+0 today</div>
+                <div class="stat-label">Online Now</div>
+                <div class="stat-change positive" id="active-change">Currently active</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="premium-users">0</div>
                 <div class="stat-label">Premium Users</div>
-                <div class="stat-change positive" id="premium-change">+0 today</div>
+                <div class="stat-change positive" id="premium-change">0% of users</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="total-threads">0</div>
                 <div class="stat-label">Forum Threads</div>
-                <div class="stat-change positive" id="threads-change">+0 today</div>
+                <div class="stat-change positive" id="threads-change">0 this week</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="total-reports">0</div>
                 <div class="stat-label">Reports</div>
-                <div class="stat-change negative" id="reports-change">+0 today</div>
+                <div class="stat-change negative" id="reports-change">0 pending</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="server-uptime">0%</div>
-                <div class="stat-label">Server Uptime</div>
-                <div class="stat-change positive" id="uptime-status">Healthy</div>
+                <div class="stat-number" id="system-health">0%</div>
+                <div class="stat-label">System Health</div>
+                <div class="stat-change positive" id="health-status">Checking...</div>
             </div>
         </div>
 
@@ -567,10 +572,105 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M18 20V10M12 20V4M6 20v-6"/>
                 </svg>
-                User Activity (Last 7 Days)
+                Activity Timeline (Last 7 Days)
             </h2>
             <div class="chart-container">
                 <div class="chart-bar" id="activity-chart">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                User Distribution by Rank
+            </h2>
+            <div class="metrics-grid" id="rank-distribution">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Chat Statistics
+            </h2>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-label">Total Chat Rooms</div>
+                    <div class="metric-value" id="total-chat-rooms">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Total Messages</div>
+                    <div class="metric-value" id="total-chat-messages">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Messages This Week</div>
+                    <div class="metric-value" id="messages-this-week">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Messages Last Hour</div>
+                    <div class="metric-value" id="messages-last-hour">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                News & Content
+            </h2>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-label">Total Articles</div>
+                    <div class="metric-value" id="total-articles">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Published Articles</div>
+                    <div class="metric-value" id="published-articles">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Articles This Week</div>
+                    <div class="metric-value" id="articles-this-week">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Forum Posts This Week</div>
+                    <div class="metric-value" id="posts-this-week">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                Moderation & Safety
+            </h2>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-label">Total Banned Users</div>
+                    <div class="metric-value" id="total-banned">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Permanent Bans</div>
+                    <div class="metric-value" id="permanent-bans">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Temporary Bans</div>
+                    <div class="metric-value" id="temporary-bans">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Reports This Week</div>
+                    <div class="metric-value" id="reports-this-week">0</div>
                 </div>
             </div>
         </div>
@@ -966,26 +1066,30 @@
         }
 
         function updateRealTimeMetrics() {
-            // Update requests per minute
+            // Update requests per minute (actual tracking)
             const requestsPerMinute = Math.round(requestCount / (Date.now() / 60000) % 60);
             document.getElementById('requests-per-minute').textContent = requestsPerMinute;
 
-            // Update error rate
+            // Update error rate (actual tracking)
             const totalRequests = Math.max(requestCount, 1);
             const errorRate = Math.round((errorCount / totalRequests) * 100);
             document.getElementById('error-rate').textContent = `${errorRate}%`;
 
-            // Update system load (simulated)
-            const loadStatus = errorRate > 10 ? 'High' : errorRate > 5 ? 'Medium' : 'Normal';
+            // Update system load based on error rate and response times
+            const apiResponseTime = document.getElementById('api-response-time').textContent;
+            const responseTimeMs = parseInt(apiResponseTime) || 0;
+            
+            let loadStatus = 'Normal';
+            if (errorRate > 10 || responseTimeMs > 1000) {
+                loadStatus = 'High';
+            } else if (errorRate > 5 || responseTimeMs > 500) {
+                loadStatus = 'Medium';
+            }
             document.getElementById('system-load').textContent = loadStatus;
 
-            // Update active connections (simulated)
-            const activeConnections = Math.floor(Math.random() * 50) + 10;
+            // Update active connections (estimated from recent activity)
+            const activeConnections = Math.max(1, Math.floor(requestCount / 10));
             document.getElementById('active-connections').textContent = activeConnections;
-
-            // Update current users online (simulated)
-            const currentOnline = Math.floor(Math.random() * 100) + 20;
-            document.getElementById('current-online').textContent = currentOnline;
         }
 
         // Enhanced log functions
@@ -1047,164 +1151,154 @@
 
             showLoading();
             await Promise.all([
-                loadUserStats(),
+                loadComprehensiveStats(),
+                loadRealtimeStats(),
                 loadForumStats(),
-                loadReportStats(),
-                loadActivityData()
+                loadReportStats()
             ]);
             hideLoading();
             addLog('INFO', 'Statistics refreshed successfully');
         }
 
-        // Load user statistics
-        async function loadUserStats() {
+        async function loadComprehensiveStats() {
             try {
-                // Get total users from the all_users_index KV storage
-                let totalUsers = 0;
-                try {
-                    const userStatsRes = await fetch('/api/user-stats', { credentials: 'include' });
-                    if (userStatsRes.ok) {
-                        const userStatsData = await userStatsRes.json();
-                        totalUsers = userStatsData.count || 0;
-                    } else if (userStatsRes.status === 403) {
-                        // User doesn't have admin privileges, fall back to estimation
-                        addLog('WARNING', 'No access to user stats - falling back to estimation');
-                        totalUsers = await estimateUserCount();
-                    } else {
-                        addLog('ERROR', 'Failed to fetch user stats');
-                        totalUsers = await estimateUserCount();
-                    }
-                } catch (e) {
-                    console.error('Error getting user stats:', e);
-                    addLog('ERROR', 'Failed to fetch user stats, using estimation');
-                    totalUsers = await estimateUserCount();
+                const res = await fetch('/api/comprehensive-stats', { credentials: 'include' });
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
                 }
-
-                                // Get active users from last week (users with any platform interaction)
-                let activeUsers = 0;
-                const activeUsernames = new Set();
-                const oneWeekAgo = new Date();
-                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-                                try {
-                    // Check forum thread creation
-                    const forumRes = await fetch('/api/forum', { credentials: 'include' });
-                    if (forumRes.ok) {
-                        const forumData = await forumRes.json();
-                        if (forumData.threads) {
-                            forumData.threads.forEach(thread => {
-                                const threadDate = new Date(thread.created_at);
-                                if (threadDate >= oneWeekAgo) {
-                                    activeUsernames.add(thread.creator_username.toLowerCase());
-                                }
-                            });
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error getting forum activity:', e);
+                
+                const stats = await res.json();
+                
+                document.getElementById('total-users').textContent = stats.users.total || 0;
+                document.getElementById('users-change').textContent = `${stats.users.activeLastWeek || 0} active this week`;
+                
+                document.getElementById('premium-users').textContent = stats.premium.total || 0;
+                document.getElementById('premium-change').textContent = `${stats.premium.percentage || 0}% of users`;
+                
+                document.getElementById('total-threads').textContent = stats.forum.totalThreads || 0;
+                document.getElementById('threads-change').textContent = `${stats.forum.threadsThisWeek || 0} this week`;
+                document.getElementById('posts-this-week').textContent = stats.forum.postsThisWeek || 0;
+                
+                document.getElementById('total-chat-rooms').textContent = stats.chats.totalRooms || 0;
+                document.getElementById('total-chat-messages').textContent = stats.chats.totalMessages || 0;
+                document.getElementById('messages-this-week').textContent = stats.chats.messagesThisWeek || 0;
+                
+                document.getElementById('total-articles').textContent = stats.news.totalArticles || 0;
+                document.getElementById('published-articles').textContent = stats.news.publishedArticles || 0;
+                document.getElementById('articles-this-week').textContent = stats.news.articlesThisWeek || 0;
+                
+                document.getElementById('total-banned').textContent = stats.bans.total || 0;
+                document.getElementById('permanent-bans').textContent = stats.bans.permanent || 0;
+                document.getElementById('temporary-bans').textContent = stats.bans.temporary || 0;
+                document.getElementById('reports-this-week').textContent = stats.reports.thisWeek || 0;
+                
+                updateRankDistribution(stats.users.byRank || {});
+                
+                if (stats.activity.last7Days) {
+                    updateActivityChart(stats.activity.last7Days);
                 }
-
-                                try {
-                    // Check report filings (for admin users)
-                    if (hasAdminPrivileges()) {
-                        const reportsRes = await fetch('/api/report-user', { credentials: 'include' });
-                        if (reportsRes.ok) {
-                            const reportsData = await reportsRes.json();
-                            if (reportsData.reports) {
-                                reportsData.reports.forEach(report => {
-                                    const reportDate = new Date(report.timestamp);
-                                    if (reportDate >= oneWeekAgo) {
-                                        activeUsernames.add(report.reporterUsername.toLowerCase());
-                                        activeUsernames.add(report.reportedUsername.toLowerCase());
-                                    }
-                                });
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error getting report activity:', e);
-                }
-
-                                // Try to detect users from recent search queries (indirect activity)
-                try {
-                    const searchLetters = ['a', 'e', 'i', 'o', 'u', 's', 't', 'r', 'n', 'l'];
-                    for (const letter of searchLetters) {
-                        const searchRes = await fetch(`/api/users-search?q=${letter}`, { credentials: 'include' });
-                        if (searchRes.ok) {
-                            const users = await searchRes.json();
-                            // If we get users from search, it means the system is active
-                            // We can't determine when they were active, but we know they exist
-                            users.forEach(user => {
-                                if (user.username) {
-                                    // Add to active set as a conservative estimate
-                                    // This assumes existing users are potentially active
-                                    activeUsernames.add(user.username.toLowerCase());
-                                }
-                            });
-                        }
-                        // Only check a few letters to avoid too many API calls
-                        if (searchLetters.indexOf(letter) >= 4) break;
-                    }
-                } catch (e) {
-                    console.error('Error getting search activity:', e);
-                }
-
-                                activeUsers = activeUsernames.size;
-
-                                // Get premium users
-                const premiumUsers = await fetchPremiumData();
-                const premiumCount = premiumUsers ? premiumUsers.length : 0;
-
-                                // Update UI with real data
-                document.getElementById('total-users').textContent = totalUsers;
-                document.getElementById('premium-users').textContent = premiumCount;
-                document.getElementById('active-users').textContent = activeUsers;
-
-                                // Remove change indicators since we don't have historical data
-                document.getElementById('users-change').style.display = 'none';
-                document.getElementById('premium-change').style.display = 'none';
-                document.getElementById('active-change').style.display = 'none';
-
-                                // Add log explaining the method
-                addLog('INFO', `Total users: ${totalUsers} (from all_users_index KV storage)`);
-                addLog('INFO', `Active users in last week: ${activeUsers} (based on forum posts, reports, and platform interactions)`);
-
-                            } catch (error) {
-                console.error('Error loading user stats:', error);
-                addLog('ERROR', 'Failed to load user statistics');
-                document.getElementById('total-users').textContent = 'Error';
-                document.getElementById('premium-users').textContent = 'Error';
-                document.getElementById('active-users').textContent = 'Error';
+                
+                addLog('SUCCESS', 'Comprehensive statistics loaded successfully');
+                
+            } catch (error) {
+                console.error('Error loading comprehensive stats:', error);
+                addLog('ERROR', `Failed to load comprehensive stats: ${error.message}`);
             }
         }
 
-                // Fallback method to estimate user count when direct access isn't available
-        async function estimateUserCount() {
-            const commonLetters = ['a', 'e', 'i', 'o', 'u', 's', 't', 'r', 'n', 'l'];
-            const foundUsers = new Set();
-
-                        // Query each letter and collect unique usernames
-            for (const letter of commonLetters) {
-                try {
-                    const usersRes = await fetch(`/api/users-search?q=${letter}`, { credentials: 'include' });
-                    if (usersRes.ok) {
-                        const users = await usersRes.json();
-                        users.forEach(user => {
-                            if (user.username) {
-                                foundUsers.add(user.username.toLowerCase());
-                            }
-                        });
-                    }
-                } catch (e) {
-                    // Continue with other letters if one fails
+        // Load real-time statistics
+        async function loadRealtimeStats() {
+            try {
+                const res = await fetch('/api/realtime-stats', { credentials: 'include' });
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
                 }
+                
+                const stats = await res.json();
+                
+                document.getElementById('active-users').textContent = stats.online.currentUsers || 0;
+                document.getElementById('active-change').textContent = 'Currently active';
+                
+                document.getElementById('messages-last-hour').textContent = stats.activity.messagesLastHour || 0;
+                
+                document.getElementById('system-health').textContent = `${stats.health.overallScore || 0}%`;
+                document.getElementById('health-status').textContent = stats.health.status || 'Unknown';
+                document.getElementById('health-status').className = 
+                    `stat-change ${stats.health.overallScore >= 75 ? 'positive' : stats.health.overallScore >= 50 ? 'warning' : 'negative'}`;
+                
+                if (stats.performance.dbResponseTime) {
+                    document.getElementById('api-response-time').textContent = `${stats.performance.dbResponseTime}ms`;
+                }
+                
+                addLog('SUCCESS', 'Real-time statistics loaded successfully');
+                
+            } catch (error) {
+                console.error('Error loading realtime stats:', error);
+                addLog('ERROR', `Failed to load realtime stats: ${error.message}`);
             }
-
-                        addLog('INFO', `User count estimated by searching ${commonLetters.length} common letters: ${foundUsers.size} unique users found`);
-            return foundUsers.size;
         }
 
-        // Load forum statistics
+        // Update rank distribution display
+        function updateRankDistribution(rankCounts) {
+            const container = document.getElementById('rank-distribution');
+            container.innerHTML = '';
+            
+            const totalUsers = Object.values(rankCounts).reduce((sum, count) => sum + count, 0);
+            
+            Object.entries(rankCounts).forEach(([rank, count]) => {
+                const percentage = totalUsers > 0 ? Math.round((count / totalUsers) * 100) : 0;
+                const rankColor = getRankColor(rank);
+                
+                const metricItem = document.createElement('div');
+                metricItem.className = 'metric-item';
+                metricItem.innerHTML = `
+                    <div class="metric-label">${rank}</div>
+                    <div class="metric-value" style="color: ${rankColor}">${count}</div>
+                    <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px">${percentage}% of users</div>
+                `;
+                container.appendChild(metricItem);
+            });
+        }
+
+        // Get rank color for display
+        function getRankColor(rank) {
+            const colors = {
+                'Owner': '#dc2626',
+                'Admin': '#ea580c', 
+                'Manager': '#ca8a04',
+                'Moderator': '#65a30d',
+                'Member': '#2563eb'
+            };
+            return colors[rank] || '#64748b';
+        }
+
+        function updateActivityChart(activityData) {
+            const chartContainer = document.getElementById('activity-chart');
+            
+            if (!activityData || activityData.length === 0) {
+                chartContainer.innerHTML = '<div style="text-align: center; color: #64748b; padding: 40px;">No activity data available</div>';
+                return;
+            }
+            
+            const maxValue = Math.max(
+                ...activityData.map(day => Math.max(day.threads, day.posts, day.messages, day.reports))
+            );
+            
+            const barsHTML = activityData.map((day, index) => {
+                const totalActivity = day.threads + day.posts + day.messages + day.reports;
+                const height = maxValue > 0 ? (totalActivity / maxValue) * 100 : 0;
+                
+                return `
+                    <div class="bar" style="height: ${height}%; background: linear-gradient(135deg, #3b82f6, #1d4ed8)" title="${day.dayName}: ${totalActivity} activities">
+                        <div class="bar-value">${totalActivity}</div>
+                        <div class="bar-label">${day.dayName}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            chartContainer.innerHTML = barsHTML;
+        }
+
         async function loadForumStats() {
             try {
                 const forumRes = await fetch('/api/forum', { credentials: 'include' });
@@ -1212,8 +1306,7 @@
                     const forumData = await forumRes.json();
                     const threadCount = forumData.threads ? forumData.threads.length : 0;
 
-                                        document.getElementById('total-threads').textContent = threadCount;
-                    // Remove change indicator since we don't have historical data
+                    document.getElementById('total-threads').textContent = threadCount;
                     document.getElementById('threads-change').style.display = 'none';
                 } else {
                     document.getElementById('total-threads').textContent = 'Error';
@@ -1227,7 +1320,6 @@
             }
         }
 
-        // Load report statistics
         async function loadReportStats() {
             try {
                 const reportsRes = await fetch('/api/report-user', { credentials: 'include' });
@@ -1236,8 +1328,7 @@
                     const reportCount = reportsData.reports ? reportsData.reports.length : 0;
                     const pendingCount = reportsData.reports ? reportsData.reports.filter(r => r.status === 'pending').length : 0;
 
-                                        document.getElementById('total-reports').textContent = reportCount;
-                    // Show actual pending count instead of fake change
+                    document.getElementById('total-reports').textContent = reportCount;
                     document.getElementById('reports-change').textContent = pendingCount > 0 ? `${pendingCount} pending` : 'All resolved';
                     document.getElementById('reports-change').className = pendingCount > 0 ? 'stat-change negative' : 'stat-change positive';
                 } else if (reportsRes.status === 403) {
@@ -1253,40 +1344,6 @@
                 document.getElementById('total-reports').textContent = 'Error';
                 document.getElementById('reports-change').style.display = 'none';
             }
-        }
-
-        // Load activity data for chart
-        async function loadActivityData() {
-            try {
-                // Since we don't have historical activity data, hide the chart section
-                const chartSection = document.querySelector('.section h2');
-                const chartSectionContainer = chartSection ? chartSection.closest('.section') : null;
-                if (chartSectionContainer && chartSectionContainer.textContent.includes('User Activity')) {
-                    chartSectionContainer.style.display = 'none';
-                }
-                addLog('INFO', 'Activity chart disabled - no historical data available');
-            } catch (error) {
-                console.error('Error loading activity data:', error);
-                addLog('ERROR', 'Failed to load activity data');
-            }
-        }
-
-        // Render activity chart
-        function renderActivityChart(labels, data) {
-            const chartContainer = document.getElementById('activity-chart');
-            const maxValue = Math.max(...data);
-
-                        const barsHTML = labels.map((label, index) => {
-                const height = (data[index] / maxValue) * 100;
-                return `
-                    <div class="bar" style="height: ${height}%">
-                        <div class="bar-value">${data[index]}</div>
-                        <div class="bar-label">${label}</div>
-                    </div>
-                `;
-            }).join('');
-
-                        chartContainer.innerHTML = barsHTML;
         }
 
         // Run all diagnostics
@@ -1318,7 +1375,6 @@
 
         // Run individual diagnostic
         async function runDiagnostic(name, testFunction) {
-            // Find the diagnostic item by name and update its status
             const diagnosticItems = document.querySelectorAll('.diagnostic-item');
             let statusElement = null;
 
@@ -1357,7 +1413,6 @@
             });
         }
 
-        // Diagnostic test functions
         async function testDatabaseConnection() {
             try {
                 const res = await fetch('/api/forum', { credentials: 'include' });
@@ -1395,11 +1450,9 @@
 
         async function testPremiumSystem() {
             try {
-                // Test if we can access premium-related data
                 const res = await fetch('/api/me', { credentials: 'include' });
                 if (res.ok) {
                     const userData = await res.json();
-                    // Check if the response includes premium data
                     return userData.hasOwnProperty('isPremium');
                 }
                 return false;
@@ -1409,10 +1462,10 @@
         }
 
         async function testReportSystem() {
-            if (!hasAdminPrivileges()) return true; // Skip if not admin
+            if (!hasAdminPrivileges()) return true; 
             try {
                 const res = await fetch('/api/report-user', { credentials: 'include' });
-                return res.ok || res.status === 403; // 403 is expected for non-admins
+                return res.ok || res.status === 403; 
             } catch (error) {
                 return false;
             }
@@ -1436,16 +1489,13 @@
             }
         }
 
-        // Fetch premium data from actual API
         async function fetchPremiumData() {
             try {
-                // Use the new premium-stats endpoint to get the actual premium users list
                 const res = await fetch('/api/premium-stats', { credentials: 'include' });
                 if (res.ok) {
                     const premiumData = await res.json();
                     return premiumData.users || [];
                 } else if (res.status === 403) {
-                    // User doesn't have admin privileges
                     addLog('WARNING', 'No access to premium stats - admin privileges required');
                     return [];
                 }
@@ -1473,20 +1523,17 @@
                         logContainer.appendChild(logEntry);
             logContainer.scrollTop = logContainer.scrollHeight;
 
-                        // Keep only last 50 log entries
             while (logContainer.children.length > 50) {
                 logContainer.removeChild(logContainer.firstChild);
             }
         }
 
-        // Show loading state
         function showLoading() {
             const btn = document.querySelector('.refresh-btn');
             btn.innerHTML = '<div class="loading-spinner"></div> Loading...';
             btn.disabled = true;
         }
 
-        // Hide loading state
         function hideLoading() {
             const btn = document.querySelector('.refresh-btn');
             btn.innerHTML = `
@@ -1525,12 +1572,11 @@
             }, 3000);
         }
 
-        // Initialize page
         async function initializePage() {
             await getCurrentUser();
 
-                        if (!hasAdminPrivileges()) {
-                document.querySelector('.stats-container').innerHTML = `
+            if (!hasAdminPrivileges()) {
+                document.querySelector('.container').innerHTML = `
                     <div class="empty-state">
                         <h2>Access Denied</h2>
                         <p>You don't have permission to view this page. Admin privileges required.</p>
@@ -1539,40 +1585,22 @@
                 return;
             }
 
-            // Show overview stats
             document.getElementById('overview-stats').style.display = 'grid';
 
-                        // Start enhanced monitoring
             startPerformanceMonitoring();
             startRealTimeMonitoring();
 
-                        // Load initial data
+            // Load initial data
             await Promise.all([
-                loadUserStats(),
+                loadComprehensiveStats(),
+                loadRealtimeStats(),
                 loadForumStats(),
                 loadReportStats(),
-                loadActivityData(),
                 testAPIEndpoints(),
                 testDatabaseConnections()
             ]);
 
-                        // Set server status based on diagnostic results instead of fake uptime
-            document.getElementById('server-uptime').textContent = 'Checking...';
-            document.getElementById('uptime-status').textContent = 'Running diagnostics...';
-
-                        // Update server status after diagnostics
-            setTimeout(async () => {
-                await runAllDiagnostics();
-                const passedTests = document.querySelectorAll('.status-pass').length;
-                const totalTests = document.querySelectorAll('.diagnostic-status').length;
-                const healthPercentage = Math.round((passedTests / totalTests) * 100);
-
-                                document.getElementById('server-uptime').textContent = `${healthPercentage}%`;
-                document.getElementById('uptime-status').textContent = healthPercentage >= 80 ? 'Healthy' : 'Issues Detected';
-                document.getElementById('uptime-status').className = healthPercentage >= 80 ? 'stat-change positive' : 'stat-change negative';
-            }, 1000);
-
-                        // Add initial log entries
+            // Add initial log entries
             addLog('INFO', 'Enhanced statistics dashboard initialized');
             addLog('INFO', `User ${currentUser.username} (${currentUser.rank}) accessed dashboard`);
             addLog('SUCCESS', 'All monitoring systems operational');
@@ -1595,14 +1623,12 @@
         `;
         document.head.appendChild(style);
 
-        // Auto-refresh every 30 seconds - only refresh real data
         setInterval(() => {
             if (hasAdminPrivileges()) {
-                refreshAllStats();
+                loadRealtimeStats(); 
             }
         }, 30000);
 
-        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
