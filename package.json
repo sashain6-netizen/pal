@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/sashain6-netizen/pal#readme",
   "dependencies": {
+    "cloc": "^2.6.0-cloc",
     "decomment": "^0.9.5",
     "groq-sdk": "^0.37.0",
     "stripe": "^20.4.1"
