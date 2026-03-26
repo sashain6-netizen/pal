@@ -28,7 +28,7 @@ export async function onRequestPost(context) {
         const user = userData ? JSON.parse(userData) : {};
 
         const isPostAuthor = post.username.toLowerCase() === username;
-        const staffRoles = ["Owner", "Admin", "Manager", "Moderator"];
+        const staffRoles = ["Owner", "Admin", "Manager", "Moderator", "Staff"];
         const isStaff = staffRoles.includes(user.rank);
 
         if (!isPostAuthor && !isStaff) {

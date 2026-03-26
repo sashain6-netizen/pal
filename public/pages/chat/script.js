@@ -184,7 +184,11 @@ async function inviteUser() {
                 body: JSON.stringify({ action: 'invite', chatId, targetUsername })
             });
             if (r.ok) inviteModal.style.display = 'none';
-        } finally { sendInviteBtn.disabled = false; }
+            else {
+                showToast("This user cannot be invited.")
+            }
+        }
+        finally { sendInviteBtn.disabled = false; }
     };
 }
 
@@ -212,7 +216,11 @@ function openKickModal() {
                 kickModal.style.display = 'none';
                 loadMessages(0);
             }
-        } finally { confirmKickBtn.disabled = false; }
+            else {
+                showToast("This user cannot be kicked.")
+            }
+        }
+        finally { confirmKickBtn.disabled = false; }
     };
 }
 
