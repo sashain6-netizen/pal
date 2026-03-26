@@ -50,7 +50,7 @@ async function loadThread(append = false) {
 
         const canDeletePost = currentUser && (
             currentUser.username === post.username || 
-            ["Owner", "Admin", "Moderator"].includes(currentUser.rank)
+            ["Owner", "Admin", "Moderator", "Staff", "Manager"].includes(currentUser.rank)
         );
 
         return `
