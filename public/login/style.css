@@ -12,7 +12,7 @@
   align-items: center;
   min-height: 100vh;
   background-color: var(--bg-soft);
-  margin: 0;
+  margin: 50;
   font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
