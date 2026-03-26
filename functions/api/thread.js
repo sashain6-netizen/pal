@@ -50,14 +50,33 @@ export async function onRequestGet(context) {
         const userMap = {};
 
         await Promise.all(uniqueUsernames.map(async (uname) => {
-            const data = await env.USERS_KV.get(`user:${uname}`, { cacheTtl: 1800 });
-            userMap[uname] = data ? JSON.parse(data) : {};
+            if (uname === "[deleted]") {
+                userMap[uname] = { deleted: true };
+            } else {
+                const data = await env.USERS_KV.get(`user:${uname}`, { cacheTtl: 1800 });
+                userMap[uname] = data ? JSON.parse(data) : {};
+            }
         }));
 
         const decoratedPosts = postsToSend.map(post => {
             const uname = post.username.toLowerCase().trim();
             const user = userMap[uname] || {};
             const isPremium = premiumUsers.includes(uname);
+
+            if (uname === "[deleted]" || user.deleted) {
+                return {
+                    ...post,
+                    displayName: "Deleted User",
+                    themeColor: "#6b7280",
+                    forumColor: "#6b7280",
+                    rank: "Deleted",
+                    prefix: "",
+                    premiumGlowAlpha: 0.8,
+                    postCaption: "",
+                    postAnimation: "none",
+                    isPremium: false
+                };
+            }
 
             return {
                 ...post,

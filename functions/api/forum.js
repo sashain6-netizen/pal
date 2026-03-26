@@ -103,6 +103,16 @@ export async function onRequest(context) {
             const threads = await Promise.all(
                 rawThreads.map(async (t) => {
                     const creatorUsername = String(t.creator_username || "").toLowerCase();
+                    
+                    if (creatorUsername === "[deleted]") {
+                        return {
+                            ...t,
+                            isPremium: false,
+                            forumColor: "#6b7280",
+                            premiumGlowAlpha: 0.8
+                        };
+                    }
+                    
                     const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`, { cacheTtl: 1800 });
                     const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
 

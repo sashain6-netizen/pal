@@ -52,8 +52,12 @@ export async function onRequestPost(context) {
             }
         }
 
-        await env.DB.prepare("DELETE FROM thread_posts WHERE creator_username = ?").bind(targetUsername.toLowerCase()).run();
-        await env.DB.prepare("DELETE FROM threads WHERE creator_username = ?").bind(targetUsername.toLowerCase()).run();
+        await env.DB.prepare("UPDATE thread_posts SET username = ? WHERE username = ?").bind("[deleted]", targetUsername.toLowerCase()).run();
+        await env.DB.prepare("UPDATE threads SET creator_username = ? WHERE creator_username = ?").bind("[deleted]", targetUsername.toLowerCase()).run();
+
+        await env.DB.prepare("DELETE FROM chat_members WHERE username = ?").bind(targetUsername.toLowerCase()).run();
+        await env.DB.prepare("DELETE FROM chat_rooms WHERE creator_username = ?").bind(targetUsername.toLowerCase()).run();
+        await env.DB.prepare("UPDATE chat_messages SET username = ? WHERE username = ?").bind("[deleted]", targetUsername.toLowerCase()).run();
 
         const allUsers = await env.USERS_KV.list({ prefix: "user:" });
         for (const { key } of allUsers.keys) {
