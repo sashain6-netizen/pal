@@ -175,6 +175,7 @@ function injectNavbar() {
             </div>
         </div>
     </nav>
+    <div id="toast-container"></div>
     <div class="stealth-wrapper">
         <button class="stealth-btn" id="stealth-launch-btn" title="Initiate Stealth Protocol">
             <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -185,7 +186,11 @@ function injectNavbar() {
     </div>`;
 
     document.head.insertAdjacentHTML('beforeend', navStyles);
-    document.body.insertAdjacentHTML('afterbegin', navbarHTML);
+    if (!document.getElementById('toast-container')) {
+        document.body.insertAdjacentHTML('afterbegin', navbarHTML);
+    } else {
+        document.body.insertAdjacentHTML('afterbegin', navbarHTML.replace('<div id="toast-container"></div>', ''));
+    }
     window.navbarHasLoaded = true;
 
     setupMobileMenu();

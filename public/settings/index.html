@@ -3,17 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings • Pal</title>
+    <title>Settings - Pal</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="../favicon.png" type="image/png">
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <div id="toast-container"></div>
+
     <div class="settings-card">
         <header>
-            <a href="/" class="back-link">← Back to Home Page</a>
+            <div class="settings-topbar">
+                <a href="/" class="back-link">Back to Home Page</a>
+                <button id="notifBellBtn" class="notif-bell-btn" type="button" aria-expanded="false" aria-controls="notifMenu" title="Notification preferences">
+                    <svg class="bell-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"></path>
+                        <path d="M10 17a2 2 0 0 0 4 0"></path>
+                    </svg>
+                </button>
+            </div>
             <h1>System Settings</h1>
         </header>
+
+        <section id="notifMenu" class="notif-menu" hidden>
+            <div class="notif-menu-header">
+                <div>
+                    <h2>Notifications</h2>
+                    <p>Choose where alerts should reach you.</p>
+                </div>
+                <span id="browserPermissionState" class="notif-permission-state">Browser popups off</span>
+            </div>
+
+            <label class="notif-option">
+                <span>
+                    <strong>All alerts</strong>
+                    <small>Master switch for every notification.</small>
+                </span>
+                <input type="checkbox" id="notificationsEnabledToggle">
+            </label>
+
+            <label class="notif-option">
+                <span>
+                    <strong>Inbox notifications</strong>
+                    <small>Alert when someone sends a direct notification.</small>
+                </span>
+                <input type="checkbox" id="notificationInboxToggle">
+            </label>
+
+            <label class="notif-option">
+                <span>
+                    <strong>Private chats</strong>
+                    <small>Alert when a private chat gets a new message.</small>
+                </span>
+                <input type="checkbox" id="privateChatToggle">
+            </label>
+
+            <label class="notif-option">
+                <span>
+                    <strong>Pinned public forums</strong>
+                    <small>Alert when activity appears in threads you pinned.</small>
+                </span>
+                <input type="checkbox" id="pinnedForumToggle">
+            </label>
+
+            <label class="notif-option">
+                <span>
+                    <strong>In-site toasts</strong>
+                    <small>Show toast alerts while you are on the website.</small>
+                </span>
+                <input type="checkbox" id="inAppToastToggle">
+            </label>
+
+            <div class="notif-browser-row">
+                <label class="notif-option browser-option">
+                    <span>
+                        <strong>Chrome popups</strong>
+                        <small>Use browser notifications when the tab is in the background.</small>
+                    </span>
+                    <input type="checkbox" id="browserNotifToggle">
+                </label>
+                <button id="enableBrowserNotificationsBtn" type="button" class="secondary-btn">Enable in Browser</button>
+            </div>
+        </section>
 
         <section class="setting-item">
             <div class="info">
