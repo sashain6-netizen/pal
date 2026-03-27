@@ -172,43 +172,41 @@
 
     async function emitAlert(kind, item) {
         const prefs = settings.notifications || DEFAULTS.notifications;
+        const isHidden = document.hidden;
+
         let message = "";
-        let targetUrl = item.url || null;
         let browserTitle = "PAL";
         let browserBody = "";
-        let shouldToast = false;
-        let shouldBrowserNotify = false;
+        let targetUrl = item.url || null;
+        let shouldToast = prefs.inApp && !isHidden;
+        let shouldBrowserNotify = prefs.browser && isHidden;
+
+        const speaker = item.latestDisplayName || item.latestUsername || "Someone";
 
         if (kind === "notification" && prefs.inbox) {
-            const author = item.from ? ` from ${item.from}` : "";
-            message = `New notification${author}: ${truncateText(item.text, 120)}`;
-            browserTitle = item.from ? `PAL - ${item.from}` : "PAL - New notification";
-            browserBody = truncateText(item.text, 160);
+            const from = item.from ? `${item.from}: ` : "";
+            message = `🔔 ${from}${truncateText(item.text, 60)}`;
+            browserTitle = `🔔 ${item.from || "New Alert"}`;
+            browserBody = truncateText(item.text, 120);
             targetUrl = "/notifications";
-            shouldToast = prefs.inApp && !document.hidden;
-            shouldBrowserNotify = prefs.browser && document.hidden;
-        }
-
-        if (kind === "chat" && prefs.privateChats) {
-            const speaker = item.latestDisplayName || item.latestUsername || "Someone";
-            message = `${speaker} spoke in ${item.roomName}: ${truncateText(item.latestContent, 100)}`;
-            browserTitle = `PAL - ${item.roomName}`;
-            browserBody = `${speaker}: ${truncateText(item.latestContent, 140)}`;
-            shouldToast = prefs.inApp && !document.hidden;
-            shouldBrowserNotify = prefs.browser && document.hidden;
-        }
-
-        if (kind === "pinnedThread" && prefs.pinnedForums) {
-            const speaker = item.latestDisplayName || item.latestUsername || "Someone";
-            message = `Pinned forum update in ${item.title}: ${speaker} posted ${truncateText(item.latestContent, 90)}`;
-            browserTitle = `PAL - ${item.title}`;
-            browserBody = `${speaker} posted in a pinned thread`;
-            shouldToast = prefs.inApp && !document.hidden;
-            shouldBrowserNotify = prefs.browser && document.hidden;
+        } 
+        
+        else if (kind === "chat" && prefs.privateChats) {
+            message = `💬 ${item.roomName} | ${speaker}: ${truncateText(item.latestContent, 50)}`;
+            browserTitle = `💬 ${item.roomName}`;
+            browserBody = `${speaker}: ${truncateText(item.latestContent, 100)}`;
+        } 
+        
+        else if (kind === "pinnedThread" && prefs.pinnedForums) {
+            message = `📌 ${item.title} | ${speaker}: ${truncateText(item.latestContent, 50)}`;
+            browserTitle = `📌 ${item.title}`;
+            browserBody = `New post by ${speaker}`;
         }
 
         if (!message) return;
+
         if (shouldToast) window.showToast(message, targetUrl);
+        
         if (shouldBrowserNotify) {
             await maybeShowBrowserNotification(browserTitle, {
                 body: browserBody,
