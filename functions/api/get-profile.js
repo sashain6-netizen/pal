@@ -134,7 +134,8 @@ export async function onRequestGet(context) {
             currency: user.currency || 0,
             themeColor: user.themeColor || "#2563eb",
             forumColor: user.forumColor || user.themeColor || "#2563eb",
-            premiumGlowAlpha: typeof user.premiumGlowAlpha === "number" ? user.premiumGlowAlpha : 0.8
+            premiumGlowAlpha: typeof user.premiumGlowAlpha === "number" ? user.premiumGlowAlpha : 0.8,
+            accessories: user.accessories || null
         };
 
         return new Response(JSON.stringify(profileData), {

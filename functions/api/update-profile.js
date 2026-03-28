@@ -151,6 +151,11 @@ export async function onRequestPost(context) {
             themeColor: updates.themeColor || "#2563eb"
         };
 
+        // Add accessories data if provided
+        if (updates.accessories && typeof updates.accessories === 'object') {
+            updatedUser.accessories = updates.accessories;
+        }
+
         await env.USERS_KV.put(kvKey, JSON.stringify(updatedUser));
 
         return new Response(JSON.stringify({ success: true }), {

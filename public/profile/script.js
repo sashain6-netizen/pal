@@ -37,6 +37,11 @@ async function loadProfile() {
                 const themeEl = document.getElementById('themeColor');
         if (themeEl) themeEl.value = user.themeColor || "#2563eb";
 
+        // Load accessories if available
+        if (user.accessories && window.accessoryManager) {
+            window.accessoryManager.setAccessoriesData(user.accessories);
+        }
+
         updateEl('stat-rank', user.rank || "Member");
         updateEl('stat-currency', (user.currency || 0).toLocaleString());
         updateEl('stat-xp', `${(user.xp || 0).toLocaleString()} XP`);
@@ -105,6 +110,11 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         bio: document.getElementById('bio').value,
         themeColor: document.getElementById('themeColor').value
     };
+
+    // Add accessories data if available
+    if (window.accessoryManager) {
+        updatedData.accessories = window.accessoryManager.getAccessoriesData();
+    }
 
     const avatarUrlInput = document.getElementById('avatarUrl');
     if (avatarUrlInput) {

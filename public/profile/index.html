@@ -37,12 +37,77 @@
                         <label for="avatarUrl">Profile Picture URL</label>
                         <input type="text" id="avatarUrl" placeholder="https://example.com/your-image.png">
                         <div class="avatar-preview" id="avatarPreview">
-                            <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+                            <div class="avatar-preview-container">
+                                <div class="avatar-with-accessories" id="avatarWithAccessories">
+                                    <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+                                    <div class="accessory-layer" id="accessoryLayer"></div>
+                                </div>
+                            </div>
                             <div class="preview-status" id="previewStatus"></div>
                         </div>
                         <small style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">
                             Enter any image URL from the web. Supports JPG, PNG, GIF, WebP, BMP, SVG, AVIF, ICO, TIFF formats. Works with any image hosting service or direct image links.
                         </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dropdown-section">
+                <div class="dropdown-header" onclick="toggleDropdown('accessoriesDropdown')">
+                    <span>🎨 Avatar Accessories</span>
+                    <span class="dropdown-arrow" id="accessoriesDropdown-arrow">▼</span>
+                </div>
+                <div class="dropdown-content" id="accessoriesDropdown" style="display: none;">
+                    <div class="accessories-container">
+                        <div class="accessory-category">
+                            <h4>🎩 Hats</h4>
+                            <div class="accessory-grid" id="hats-grid"></div>
+                        </div>
+                        
+                        <div class="accessory-category">
+                            <h4>🕶️ Glasses</h4>
+                            <div class="accessory-grid" id="glasses-grid"></div>
+                        </div>
+                        
+                        <div class="accessory-category">
+                            <h4>😊 Mouth</h4>
+                            <div class="accessory-grid" id="mouths-grid"></div>
+                        </div>
+                        
+                        <div class="accessory-category">
+                            <h4>✨ Face Accessories</h4>
+                            <div class="accessory-grid" id="face-accessories-grid"></div>
+                        </div>
+                        
+                        <div class="accessory-category">
+                            <h4>🌟 Backgrounds</h4>
+                            <div class="accessory-grid" id="backgrounds-grid"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="accessory-controls" id="accessoryControls" style="display: none;">
+                        <h4>Adjust Selected Accessory</h4>
+                        <div class="control-group">
+                            <label>Position X: <span id="posXValue">0</span></label>
+                            <input type="range" id="posX" min="-50" max="50" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label>Position Y: <span id="posYValue">0</span></label>
+                            <input type="range" id="posY" min="-50" max="50" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label>Scale: <span id="scaleValue">1.0</span></label>
+                            <input type="range" id="scale" min="0.5" max="2" step="0.1" value="1">
+                        </div>
+                        <div class="control-group">
+                            <label>Rotation: <span id="rotationValue">0°</span></label>
+                            <input type="range" id="rotation" min="-45" max="45" step="5" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label>Opacity: <span id="opacityValue">100%</span></label>
+                            <input type="range" id="opacity" min="0.3" max="1" step="0.1" value="1">
+                        </div>
+                        <button type="button" class="reset-btn" onclick="resetAccessoryControls()">Reset</button>
                     </div>
                 </div>
             </div>
@@ -97,6 +162,8 @@
     </div>
 
         <script src="/global-settings.js" defer></script>
+        <script src="accessories.js" defer></script>
+        <script src="accessory-manager.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

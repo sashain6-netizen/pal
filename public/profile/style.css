@@ -561,3 +561,324 @@
     border-top: 1px solid #e2e8f0;
     background: white;
 }
+
+/* Accessory System Styles */
+.accessories-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.accessory-category {
+    margin-bottom: 20px;
+}
+
+.accessory-category h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--blue-deep);
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 6px;
+}
+
+.accessory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.accessory-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+    min-height: 80px;
+    justify-content: center;
+}
+
+.accessory-item:hover {
+    border-color: var(--blue-primary);
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
+}
+
+.accessory-item.selected {
+    border-color: var(--blue-primary);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.accessory-preview {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.accessory-preview svg {
+    width: 100%;
+    height: 100%;
+    max-width: 35px;
+    max-height: 35px;
+}
+
+.accessory-name {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #475569;
+    text-align: center;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.accessory-controls {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    margin-top: 16px;
+}
+
+.accessory-controls h4 {
+    margin: 0 0 16px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--blue-deep);
+}
+
+.control-group {
+    margin-bottom: 12px;
+}
+
+.control-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.control-group input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+    transition: background 0.2s ease;
+}
+
+.control-group input[type="range"]:hover {
+    background: #cbd5e1;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--blue-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--blue-deep);
+    transform: scale(1.1);
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--blue-primary);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.control-group input[type="range"]::-moz-range-thumb:hover {
+    background: var(--blue-deep);
+    transform: scale(1.1);
+}
+
+.reset-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.reset-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Enhanced Avatar Preview with Accessories */
+.avatar-preview {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 16px;
+    border: 2px solid rgba(37, 99, 235, 0.08);
+    margin-top: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-preview-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.avatar-with-accessories {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#previewImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.accessory-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.accessory-element {
+    position: absolute;
+    transform-origin: center;
+    transition: all 0.2s ease;
+}
+
+/* Animation effects for accessories */
+.accessory-element.hat {
+    animation: hatFloat 3s ease-in-out infinite;
+}
+
+.accessory-element.glasses {
+    animation: glassesShine 4s ease-in-out infinite;
+}
+
+.accessory-element.mouth {
+    animation: mouthPulse 2s ease-in-out infinite;
+}
+
+.accessory-element.face-accessory {
+    animation: faceAccessoryWiggle 5s ease-in-out infinite;
+}
+
+.accessory-element.background {
+    animation: backgroundTwinkle 6s linear infinite;
+}
+
+@keyframes hatFloat {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+    50% { transform: translate(-50%, -50%) translateY(-2px); }
+}
+
+@keyframes glassesShine {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.9; }
+}
+
+@keyframes mouthPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes faceAccessoryWiggle {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+    25% { transform: translate(-50%, -50%) rotate(1deg); }
+    75% { transform: translate(-50%, -50%) rotate(-1deg); }
+}
+
+@keyframes backgroundTwinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* Hover effects for accessories in preview */
+.avatar-with-accessories:hover .accessory-element.hat {
+    animation-duration: 1.5s;
+}
+
+.avatar-with-accessories:hover .accessory-element.glasses {
+    animation-duration: 2s;
+}
+
+.avatar-with-accessories:hover .accessory-element.mouth {
+    animation-duration: 1s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .accessory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 8px;
+    }
+    
+    .accessory-item {
+        padding: 8px;
+        min-height: 70px;
+    }
+    
+    .accessory-preview {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .accessory-name {
+        font-size: 0.65rem;
+    }
+    
+    .control-group input[type="range"] {
+        height: 5px;
+    }
+    
+    .control-group input[type="range"]::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .control-group input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+    }
+}
