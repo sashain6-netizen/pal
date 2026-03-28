@@ -126,21 +126,29 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateDebugInfo('DOM loaded, waiting for accessory manager...');
-
-            window.addEventListener('accessoryManagerReady', () => {
-                updateDebugInfo('✅ Accessory manager ready');
+            updateDebugInfo('DOM loaded, checking for accessory manager...');
+            
+            // Check if manager already exists
+            if (window.accessoryManager) {
+                updateDebugInfo('✅ Accessory manager already ready');
                 testUserAccessories();
-            });
-
-            setTimeout(() => {
-                if (window.accessoryManager) {
-                    updateDebugInfo('✅ Accessory manager found via fallback');
+            } else {
+                // Listen for the accessory manager to be ready
+                window.addEventListener('accessoryManagerReady', () => {
+                    updateDebugInfo('✅ Accessory manager ready');
                     testUserAccessories();
-                } else {
-                    updateDebugInfo('❌ Accessory manager not found after timeout');
-                }
-            }, 1000);
+                });
+                
+                // Quick fallback timeout
+                setTimeout(() => {
+                    if (window.accessoryManager) {
+                        updateDebugInfo('✅ Accessory manager found via fallback');
+                        testUserAccessories();
+                    } else {
+                        updateDebugInfo('❌ Accessory manager not found after timeout');
+                    }
+                }, 200);
+            }
         });
 </script>
 </body>
