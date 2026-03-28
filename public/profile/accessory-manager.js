@@ -16,26 +16,25 @@ class AccessoryManager {
             const gridId = `${category.replace('_', '-')}-grid`;
             const grid = document.getElementById(gridId);
             const isReady = grid && grid.children.length > 0;
-            
+
             if (!isReady) {
                 console.log(`Grid not ready: ${gridId} (found: ${!!grid}, children: ${grid ? grid.children.length : 0})`);
             }
-            
+
             return isReady;
         });
 
         if (!allGridsReady) {
             console.log('Re-initializing accessory grids...');
             this.setupAccessoryGrids();
-            
-            // Double-check after setup
+
             setTimeout(() => {
                 const stillNotReady = categories.filter(category => {
                     const gridId = `${category.replace('_', '-')}-grid`;
                     const grid = document.getElementById(gridId);
                     return !(grid && grid.children.length > 0);
                 });
-                
+
                 if (stillNotReady.length > 0) {
                     console.warn('Grids still not ready after re-initialization:', stillNotReady);
                 } else {
@@ -105,17 +104,15 @@ class AccessoryManager {
 
     updateSelectionUI(category, accessoryKey) {
         console.log(`Updating selection for ${category} -> ${accessoryKey}`);
-        
-        // Remove existing selection from GRID items only
+
         const existingSelected = document.querySelectorAll(`.accessory-item[data-category="${category}"].selected`);
         console.log(`Found ${existingSelected.length} existing selected grid items for ${category}`);
-        
+
         existingSelected.forEach(item => {
             console.log(`Removing selected from grid item: ${item.dataset.accessoryKey}`);
             item.classList.remove('selected');
         });
 
-        // Add new selection to GRID item only
         const selectedItem = document.querySelector(`.accessory-item[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
         if (selectedItem) {
             selectedItem.classList.add('selected');
@@ -123,7 +120,7 @@ class AccessoryManager {
             console.log(`Grid item classes after selection: ${selectedItem.className}`);
         } else {
             console.warn(`❌ Grid item not found: category="${category}", key="${accessoryKey}"`);
-            
+
             // Log all available grid items for debugging
             const allGridItems = document.querySelectorAll(`.accessory-item[data-category="${category}"]`);
             console.log(`Available grid items for category ${category}:`, Array.from(allGridItems).map(item => ({
@@ -164,7 +161,7 @@ class AccessoryManager {
 
         const animationClassMap = {
             'hats': 'hat',
-            'glasses': 'glasses', 
+            'glasses': 'glasses',
             'mouths': 'mouth',
             'face_accessories': 'face-accessory',
             'backgrounds': 'background'
@@ -214,7 +211,6 @@ class AccessoryManager {
         console.log('Setting accessories data:', data);
 
         if (data && typeof data === 'object') {
-            // Only use defaults for categories that are completely missing from user data
             const mappedAccessories = {
                 hats: data.hats !== undefined ? data.hats : 'none',
                 glasses: data.glasses !== undefined ? data.glasses : 'none',
@@ -225,20 +221,17 @@ class AccessoryManager {
 
             console.log('Mapped accessories:', mappedAccessories);
 
-            // Start with defaults, then override with user's actual selections
             this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
 
-            // Ensure grids are populated before updating selection UI
             this.ensureUIReady();
 
-            // Update selection UI with retry mechanism
             const updateSelectionWithRetry = (attempt = 1) => {
                 let successCount = 0;
-                
+
                 Object.keys(this.accessories).forEach(category => {
                     const accessoryKey = this.accessories[category];
                     const selectedItem = document.querySelector(`[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
-                    
+
                     if (selectedItem) {
                         this.updateSelectionUI(category, accessoryKey);
                         successCount++;
