@@ -209,6 +209,9 @@ let accessoryManager;
 document.addEventListener('DOMContentLoaded', () => {
     accessoryManager = new AccessoryManager();
     window.accessoryManager = accessoryManager;
+    
+    // Dispatch an event to let other scripts know the manager is ready
+    window.dispatchEvent(new CustomEvent('accessoryManagerReady'));
 });
 
 if (typeof module !== 'undefined' && module.exports) {

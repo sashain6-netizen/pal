@@ -52,20 +52,15 @@ async function loadProfile() {
             if (window.accessoryManager) {
                 loadAccessories();
             } else {
-                const maxWaitTime = 3000; // Increased timeout
-                const checkInterval = 50;  // More frequent checks
-                let waitedTime = 0;
-
-                const waitForManager = setInterval(() => {
+                // Listen for the accessory manager to be ready
+                window.addEventListener('accessoryManagerReady', loadAccessories);
+                
+                // Fallback timeout in case the event doesn't fire
+                setTimeout(() => {
                     if (window.accessoryManager) {
-                        clearInterval(waitForManager);
                         loadAccessories();
-                    } else if (waitedTime >= maxWaitTime) {
-                        clearInterval(waitForManager);
-                        console.warn('Accessory manager failed to initialize within timeout');
                     }
-                    waitedTime += checkInterval;
-                }, checkInterval);
+                }, 3000);
             }
         }
 
