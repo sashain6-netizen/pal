@@ -37,16 +37,18 @@ async function loadProfile() {
                 const themeEl = document.getElementById('themeColor');
         if (themeEl) themeEl.value = user.themeColor || "#2563eb";
 
-        // Load accessories if available
-        if (user.accessories && window.accessoryManager) {
-            window.accessoryManager.setAccessoriesData(user.accessories);
-        } else if (user.accessories) {
-            // Wait for accessory manager to be initialized
-            setTimeout(() => {
-                if (window.accessoryManager) {
-                    window.accessoryManager.setAccessoriesData(user.accessories);
-                }
-            }, 100);
+        // Load accessories - always try since API now returns default accessories object
+        if (user.accessories) {
+            if (window.accessoryManager) {
+                window.accessoryManager.setAccessoriesData(user.accessories);
+            } else {
+                // Wait for accessory manager to be initialized
+                setTimeout(() => {
+                    if (window.accessoryManager) {
+                        window.accessoryManager.setAccessoriesData(user.accessories);
+                    }
+                }, 100);
+            }
         }
 
         updateEl('stat-rank', user.rank || "Member");

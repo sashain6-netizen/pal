@@ -135,7 +135,13 @@ export async function onRequestGet(context) {
             themeColor: user.themeColor || "#2563eb",
             forumColor: user.forumColor || user.themeColor || "#2563eb",
             premiumGlowAlpha: typeof user.premiumGlowAlpha === "number" ? user.premiumGlowAlpha : 0.8,
-            accessories: user.accessories || null
+            accessories: user.accessories || {
+                hats: 'none',
+                glasses: 'none',
+                mouths: 'none',
+                face_accessories: 'none',
+                backgrounds: 'none'
+            }
         };
 
         return new Response(JSON.stringify(profileData), {
