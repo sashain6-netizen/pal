@@ -466,7 +466,7 @@ async function handleAvatarInput() {
             try {
                 await loadImageWithRetry(url);
                 updatePreview(url, "✅ Image loaded successfully");
-                return;
+                return; // Success - exit function
             } catch (error) {
                 let errorMessage = "❌ Failed to load image";
 
