@@ -504,6 +504,8 @@ async function handleAvatarInput() {
 
                 const img = new Image();
                 img.onload = () => {
+                    console.log('Direct image load success for:', url);
+                    console.log('Image dimensions:', img.naturalWidth, 'x', img.naturalHeight);
                     if (img.naturalWidth > 0 && img.naturalHeight > 0) {
                         updatePreview(url, "✅ Image loaded (direct access)");
                     } else {
