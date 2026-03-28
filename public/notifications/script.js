@@ -39,21 +39,22 @@ async function loadNotifications() {
     }
 }
 
-const modal = document.getElementById('custom-modal');
 const clearBtn = document.getElementById('clear-all-btn');
 
-clearBtn.onclick = () => {
-    modal.style.display = 'flex';
-};
+clearBtn.onclick = async () => {
+    const confirmed = await window.palConfirm(
+        'This will permanently delete all your notifications.',
+        'Clear All?',
+        {
+            confirmText: 'Delete Everything',
+            cancelText: 'Keep Them',
+            variant: 'danger'
+        }
+    );
 
-document.getElementById('modal-cancel').onclick = () => {
-    modal.style.display = 'none';
-};
+    if (!confirmed) return;
 
-document.getElementById('modal-confirm').onclick = async () => {
-    modal.style.display = 'none';
-
-        const res = await fetch('/api/notifications', {
+    const res = await fetch('/api/notifications', {
         method: 'POST',
         body: JSON.stringify({ clearAll: true }),
         headers: { 'Content-Type': 'application/json' }

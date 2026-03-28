@@ -44,12 +44,14 @@
     let settings = getSettings();
     let allowExit = false;
     let alertPoller = null;
+    let toastCounter = 0;
     const seenKeys = {
         notification: new Set(),
         chat: new Set(),
         pinnedThread: new Set()
     };
     let didPrimeAlertCache = false;
+    let dialogState = null;
 
     window.PalSettings = {
         get: () => ({ ...settings, notifications: { ...settings.notifications } }),
@@ -78,9 +80,282 @@
         if (!container) {
             container = document.createElement("div");
             container.id = "toast-container";
+            container.className = "pal-toast-container";
             document.body.appendChild(container);
+        } else if (!container.classList.contains("pal-toast-container")) {
+            container.classList.add("pal-toast-container");
         }
         return container;
+    }
+
+    function ensureGlobalUIStyles() {
+        if (document.getElementById("pal-global-ui-styles")) return;
+
+        const style = document.createElement("style");
+        style.id = "pal-global-ui-styles";
+        style.textContent = `
+            .pal-toast-container {
+                position: fixed;
+                right: 20px;
+                bottom: 20px;
+                z-index: 2147483000;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                pointer-events: none;
+                max-width: min(420px, calc(100vw - 24px));
+            }
+
+            .pal-toast {
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                gap: 12px;
+                align-items: start;
+                padding: 14px 16px;
+                border-radius: 16px;
+                border: 1px solid rgba(148, 163, 184, 0.18);
+                background: rgba(15, 23, 42, 0.94);
+                color: #f8fafc;
+                box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28);
+                backdrop-filter: blur(18px);
+                pointer-events: auto;
+                transform: translateY(0);
+                opacity: 1;
+                transition: transform 0.22s ease, opacity 0.22s ease;
+            }
+
+            .pal-toast.is-leaving {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            .pal-toast[data-clickable="true"] {
+                cursor: pointer;
+            }
+
+            .pal-toast-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 999px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                font-weight: 700;
+                background: rgba(255, 255, 255, 0.12);
+            }
+
+            .pal-toast-content {
+                min-width: 0;
+            }
+
+            .pal-toast-message {
+                margin: 0;
+                color: inherit;
+                font-size: 14px;
+                line-height: 1.45;
+                white-space: pre-wrap;
+                word-break: break-word;
+            }
+
+            .pal-toast-hint {
+                margin-top: 6px;
+                color: rgba(226, 232, 240, 0.78);
+                font-size: 12px;
+            }
+
+            .pal-toast-close {
+                border: 0;
+                background: transparent;
+                color: rgba(248, 250, 252, 0.75);
+                width: 28px;
+                height: 28px;
+                border-radius: 999px;
+                cursor: pointer;
+                font-size: 18px;
+                line-height: 1;
+            }
+
+            .pal-toast-close:hover {
+                color: #ffffff;
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .pal-toast[data-variant="success"] .pal-toast-icon {
+                background: rgba(16, 185, 129, 0.18);
+                color: #6ee7b7;
+            }
+
+            .pal-toast[data-variant="error"] .pal-toast-icon {
+                background: rgba(239, 68, 68, 0.18);
+                color: #fca5a5;
+            }
+
+            .pal-toast[data-variant="warning"] .pal-toast-icon {
+                background: rgba(245, 158, 11, 0.18);
+                color: #fcd34d;
+            }
+
+            .pal-toast[data-variant="info"] .pal-toast-icon {
+                background: rgba(59, 130, 246, 0.18);
+                color: #93c5fd;
+            }
+
+            .pal-dialog-root {
+                position: fixed;
+                inset: 0;
+                z-index: 2147483640;
+                display: none;
+            }
+
+            .pal-dialog-root.is-open {
+                display: block;
+            }
+
+            .pal-dialog-backdrop {
+                position: absolute;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.62);
+                backdrop-filter: blur(6px);
+            }
+
+            .pal-dialog-panel {
+                position: relative;
+                margin: min(12vh, 88px) auto 24px;
+                width: min(92vw, 460px);
+                padding: 24px;
+                border-radius: 24px;
+                background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                color: #0f172a;
+                box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+                animation: palDialogIn 0.18s ease-out;
+            }
+
+            .pal-dialog-badge {
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                font-weight: 700;
+                margin-bottom: 14px;
+                background: #dbeafe;
+                color: #1d4ed8;
+            }
+
+            .pal-dialog-panel[data-variant="danger"] .pal-dialog-badge {
+                background: #fee2e2;
+                color: #dc2626;
+            }
+
+            .pal-dialog-title {
+                margin: 0 0 10px;
+                font-size: 1.3rem;
+                line-height: 1.2;
+            }
+
+            .pal-dialog-message {
+                margin: 0;
+                color: #475569;
+                line-height: 1.55;
+                white-space: pre-wrap;
+            }
+
+            .pal-dialog-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+                margin-top: 22px;
+                flex-wrap: wrap;
+            }
+
+            .pal-dialog-btn {
+                border: 0;
+                border-radius: 12px;
+                padding: 11px 16px;
+                font: inherit;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+            }
+
+            .pal-dialog-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            }
+
+            .pal-dialog-btn.secondary {
+                background: #e2e8f0;
+                color: #334155;
+            }
+
+            .pal-dialog-btn.primary {
+                background: #2563eb;
+                color: #ffffff;
+            }
+
+            .pal-dialog-btn.danger {
+                background: #dc2626;
+                color: #ffffff;
+            }
+
+            @keyframes palDialogIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(12px) scale(0.98);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            @media (max-width: 640px) {
+                .pal-toast-container {
+                    left: 12px;
+                    right: 12px;
+                    bottom: 12px;
+                    max-width: none;
+                }
+
+                .pal-dialog-panel {
+                    width: calc(100vw - 24px);
+                    margin-top: 18vh;
+                    padding: 20px;
+                }
+
+                .pal-dialog-actions {
+                    flex-direction: column-reverse;
+                }
+
+                .pal-dialog-btn {
+                    width: 100%;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function ensureDialogRoot() {
+        let root = document.getElementById("pal-dialog-root");
+        if (root) return root;
+
+        root = document.createElement("div");
+        root.id = "pal-dialog-root";
+        root.className = "pal-dialog-root";
+        root.innerHTML = `
+            <div class="pal-dialog-backdrop"></div>
+            <div class="pal-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="pal-dialog-title" aria-describedby="pal-dialog-message" tabindex="-1">
+                <div class="pal-dialog-badge" id="pal-dialog-badge">i</div>
+                <h3 class="pal-dialog-title" id="pal-dialog-title">Notice</h3>
+                <p class="pal-dialog-message" id="pal-dialog-message"></p>
+                <div class="pal-dialog-actions" id="pal-dialog-actions"></div>
+            </div>
+        `;
+        document.body.appendChild(root);
+        return root;
     }
 
     function isInternal(url) {
@@ -107,38 +382,213 @@
         return div.innerHTML;
     }
 
-    window.showToast = function(message, typeOrUrl = null) {
+    function dismissToast(toast) {
+        if (!toast || toast.dataset.closing === "true") return;
+        toast.dataset.closing = "true";
+        toast.classList.add("is-leaving");
+        window.setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 220);
+    }
+
+    function resolveToastOptions(message, typeOrUrl, options) {
+        const opts = options && typeof options === "object" ? { ...options } : {};
+        const isUrlArg = typeof typeOrUrl === "string" && (typeOrUrl.startsWith("/") || typeOrUrl.startsWith("http"));
+        const variant = isUrlArg ? (opts.type || "info") : (typeof typeOrUrl === "string" && typeOrUrl ? typeOrUrl : (opts.type || "info"));
+
+        return {
+            message: String(message || ""),
+            variant,
+            targetUrl: isUrlArg ? typeOrUrl : (opts.url || null),
+            duration: typeof opts.duration === "number" ? opts.duration : 4000
+        };
+    }
+
+    window.showToast = function(message, typeOrUrl = null, options = {}) {
+        ensureGlobalUIStyles();
         const container = ensureToastContainer();
         const toast = document.createElement("div");
-        toast.className = "game-toast";
+        const { message: safeMessage, variant, targetUrl, duration } = resolveToastOptions(message, typeOrUrl, options);
+        const icons = {
+            success: "OK",
+            error: "!",
+            warning: "!",
+            info: "i"
+        };
 
-        const isUrl = typeof typeOrUrl === "string" && (typeOrUrl.startsWith("/") || typeOrUrl.startsWith("http"));
-        const safeMessage = String(message || "");
+        toast.className = "pal-toast";
+        toast.dataset.variant = variant;
+        toast.dataset.clickable = targetUrl ? "true" : "false";
+        toast.dataset.toastId = String(++toastCounter);
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        toast.innerHTML = `
+            <span class="pal-toast-icon" aria-hidden="true">${icons[variant] || icons.info}</span>
+            <div class="pal-toast-content">
+                <p class="pal-toast-message">${escapeHtml(safeMessage)}</p>
+                ${targetUrl ? '<div class="pal-toast-hint">Click to open</div>' : ''}
+            </div>
+            <button type="button" class="pal-toast-close" aria-label="Dismiss notification">&times;</button>
+        `;
 
-        if (typeOrUrl === "error") toast.style.borderLeft = "4px solid #ef4444";
-        if (typeOrUrl === "success") toast.style.borderLeft = "4px solid #10b981";
+        const closeBtn = toast.querySelector(".pal-toast-close");
+        closeBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            dismissToast(toast);
+        });
 
-        if (isUrl) {
-            toast.style.cursor = "pointer";
-            toast.innerHTML = `
-                <div>${escapeHtml(safeMessage)}</div>
-                <div class="toast-hint">Click to view -></div>
-            `;
+        if (targetUrl) {
             toast.addEventListener("click", () => {
                 allowExit = true;
                 window.allowExit = true;
-                window.location.href = typeOrUrl;
+                window.location.href = targetUrl;
             });
-        } else {
-            toast.textContent = safeMessage;
         }
 
         container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = "0";
-            toast.style.transform = "translateX(50px)";
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
+        if (duration > 0) {
+            window.setTimeout(() => dismissToast(toast), duration);
+        }
+        return toast;
+    };
+
+    function closeDialog(result) {
+        if (!dialogState) return;
+
+        const { root, cleanup, resolve } = dialogState;
+        dialogState = null;
+        root.classList.remove("is-open");
+        cleanup();
+        resolve(result);
+    }
+
+    function showDialog(options) {
+        ensureGlobalUIStyles();
+        const root = ensureDialogRoot();
+        const panel = root.querySelector(".pal-dialog-panel");
+        const badge = root.querySelector("#pal-dialog-badge");
+        const titleEl = root.querySelector("#pal-dialog-title");
+        const messageEl = root.querySelector("#pal-dialog-message");
+        const actions = root.querySelector("#pal-dialog-actions");
+
+        if (dialogState) {
+            closeDialog(false);
+        }
+
+        const {
+            title = "Notice",
+            message = "",
+            confirmText = "OK",
+            cancelText = "",
+            variant = "info",
+            dismissOnBackdrop = cancelText !== "",
+            dismissOnEscape = true
+        } = options || {};
+
+        panel.dataset.variant = variant;
+        badge.textContent = variant === "danger" ? "!" : "i";
+        titleEl.textContent = title;
+        messageEl.textContent = String(message || "");
+        actions.innerHTML = "";
+
+        return new Promise((resolve) => {
+            const buttons = [];
+
+            if (cancelText) {
+                const cancelBtn = document.createElement("button");
+                cancelBtn.type = "button";
+                cancelBtn.className = "pal-dialog-btn secondary";
+                cancelBtn.textContent = cancelText;
+                cancelBtn.addEventListener("click", () => closeDialog(false));
+                actions.appendChild(cancelBtn);
+                buttons.push(cancelBtn);
+            }
+
+            const confirmBtn = document.createElement("button");
+            confirmBtn.type = "button";
+            confirmBtn.className = `pal-dialog-btn ${variant === "danger" ? "danger" : "primary"}`;
+            confirmBtn.textContent = confirmText;
+            confirmBtn.addEventListener("click", () => closeDialog(true));
+            actions.appendChild(confirmBtn);
+            buttons.push(confirmBtn);
+
+            const handleBackdrop = (event) => {
+                if (event.target === root.querySelector(".pal-dialog-backdrop") && dismissOnBackdrop) {
+                    closeDialog(false);
+                }
+            };
+
+            const handleKeydown = (event) => {
+                if (event.key === "Escape" && dismissOnEscape) {
+                    event.preventDefault();
+                    closeDialog(false);
+                    return;
+                }
+
+                if (event.key !== "Tab" || buttons.length === 0) return;
+                const focusable = buttons.filter(Boolean);
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            };
+
+            const cleanup = () => {
+                root.removeEventListener("click", handleBackdrop);
+                document.removeEventListener("keydown", handleKeydown);
+                document.body.style.overflow = "";
+            };
+
+            dialogState = { root, cleanup, resolve };
+            root.addEventListener("click", handleBackdrop);
+            document.addEventListener("keydown", handleKeydown);
+            root.classList.add("is-open");
+            document.body.style.overflow = "hidden";
+            window.setTimeout(() => confirmBtn.focus(), 0);
+        });
+    }
+
+    window.palAlert = function(message, title = "Alert", options = {}) {
+        return showDialog({
+            ...options,
+            title,
+            message,
+            confirmText: options.confirmText || "OK",
+            cancelText: ""
+        });
+    };
+
+    window.palConfirm = function(message, title = "Confirm Action", options = {}) {
+        return showDialog({
+            ...options,
+            title,
+            message,
+            confirmText: options.confirmText || "Confirm",
+            cancelText: options.cancelText || "Cancel",
+            variant: options.variant || "danger"
+        });
+    };
+
+    window.gameAlert = window.palAlert;
+    window.gameConfirm = window.palConfirm;
+    window.showAlert = window.palAlert;
+    window.showConfirm = window.palConfirm;
+    window.replaceNativeDialogs = () => {
+        window.nativeAlert = window.alert;
+        window.nativeConfirm = window.confirm;
+        window.alert = (message, title) => window.palAlert(message, title);
+        window.confirm = (message, title) => window.palConfirm(message, title);
+    };
+
+    window.PalUI = {
+        toast: window.showToast,
+        alert: window.palAlert,
+        confirm: window.palConfirm
     };
 
     async function maybeShowBrowserNotification(title, options, targetUrl) {
@@ -459,5 +909,6 @@
     restartAlertPolling();
     setInterval(checkBanStatus, 30000);
     checkBanStatus();
+    ensureGlobalUIStyles();
     ensureToastContainer();
 })();

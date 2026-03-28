@@ -339,7 +339,11 @@ async function resolveReport(reportId) {
 }
 
 async function deleteReport(reportId) {
-    if (!confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
+    if (!await window.palConfirm('Are you sure you want to delete this report? This action cannot be undone.', 'Delete Report', {
+        confirmText: 'Delete Report',
+        cancelText: 'Keep Report',
+        variant: 'danger'
+    })) {
         return;
     }
 
@@ -429,30 +433,18 @@ document.getElementById('confirm-ban')?.addEventListener('click', async () => {
     }
 });
 
-function showUnbanModal(username, displayName) {
-    const modal = document.getElementById('unban-modal');
-    const nameSpan = document.getElementById('unban-username');
+async function showUnbanModal(username, displayName) {
+    const confirmed = await window.palConfirm(`Are you sure you want to unban ${displayName}?`, 'Unban User', {
+        confirmText: 'Unban User',
+        cancelText: 'Cancel',
+        variant: 'info'
+    });
 
-        const confirmBtn = document.getElementById('confirm-unban');
-    confirmBtn.setAttribute('data-target-username', username);
-
-        nameSpan.textContent = displayName;
-    modal.style.display = 'flex';
-
-        const handleEscape = (e) => {
-        if (e.key === 'Escape') {
-            closeUnbanModal();
-            document.removeEventListener('keydown', handleEscape);
-        }
-    };
-    document.addEventListener('keydown', handleEscape);
+    if (!confirmed) return;
+    await confirmUnban(username, displayName);
 }
 
-document.getElementById('confirm-unban')?.addEventListener('click', async () => {
-    const confirmBtn = document.getElementById('confirm-unban');
-    const targetUsername = confirmBtn.getAttribute('data-target-username');
-    const displayName = document.getElementById('unban-username').textContent;
-
+async function confirmUnban(targetUsername, displayName) {
     if (!targetUsername) {
         showToast('Error: No target username found', 'error');
         return;
@@ -470,11 +462,10 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
             })
         });
 
-                const result = await response.json();
+        const result = await response.json();
 
         if (response.ok) {
             showToast(`Successfully unbanned ${displayName}`, 'success');
-            closeUnbanModal();
             await loadBannedUsers();
             updateQuickStats();
         } else {
@@ -484,12 +475,12 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
         console.error('Unban error:', error);
         showToast('Connection error. Please check your internet.', 'error');
     }
-});
-document.getElementById('cancel-unban')?.addEventListener('click', closeUnbanModal);
+}
+
 document.getElementById('cancel-ban')?.addEventListener('click', closeBanModal);
 
 function closeUnbanModal() {
-    document.getElementById('unban-modal').style.display = 'none';
+    return;
 }
 
 function updateQuickStats() {
@@ -583,37 +574,6 @@ function escapeHTML(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-}
-
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-
-    let icon = '';
-    switch(type) {
-        case 'success': icon = '✅ '; break;
-        case 'error': icon = '❌ '; break;
-        case 'info': icon = 'ℹ️ '; break;
-        default: icon = '';
-    }
-    toast.textContent = icon + message;
-
-        const container = document.getElementById('toast-container');
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 100);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            if (container.contains(toast)) {
-                container.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
 }
 
 function showReportsError() {
