@@ -189,9 +189,10 @@ async function validateImageUrl(url) {
             urlObj.hostname.includes(host)
         );
 
-        // More flexible validation - allow if it has image extension OR is from known host
+        // More flexible validation - allow if it has image extension OR passes content validation
         if (!hasImageExtension && !hasAllowedHost) {
-            return { valid: false, error: "URL must be from a recognized image host or end with an image extension." };
+            // Don't reject based on host alone - let content validation decide
+            console.log("Unknown host, proceeding with content validation");
         }
 
         // Enhanced validation with multiple methods
@@ -231,12 +232,19 @@ async function validateImageUrl(url) {
         }
 
         if (!response || !response.ok) {
-            return { 
-                valid: false, 
-                error: lastError?.message.includes('cors') 
-                    ? "CORS error - try a different image host or copy image to imgur.com"
-                    : "Cannot access image URL. Check if the link is correct and publicly accessible." 
-            };
+            let errorMessage = "Cannot access image URL. Check if the link is correct and publicly accessible.";
+            
+            if (lastError?.message.includes('cors')) {
+                if (hasAllowedHost) {
+                    errorMessage = "CORS error - the image host doesn't allow direct linking. Try a different image or copy it to imgur.com";
+                } else {
+                    errorMessage = "CORS error - this host doesn't allow direct linking. Try uploading to imgur.com or use a different image URL";
+                }
+            } else if (lastError?.message.includes('network') || lastError?.message.includes('fetch')) {
+                errorMessage = "Network error - cannot reach the image server. Check the URL and your internet connection";
+            }
+            
+            return { valid: false, error: errorMessage };
         }
 
         const contentType = response.headers.get('content-type') || '';
@@ -429,10 +437,12 @@ async function handleAvatarInput() {
             let errorMessage = `❌ ${validation.error}`;
             
             // Add helpful suggestions for common issues
-            if (validation.error.includes('recognized image host')) {
-                errorMessage += " Try: imgur.com, discord.com, twitter.com, instagram.com, reddit.com, github.com, or gravatar.com";
-            } else if (validation.error.includes('CORS error')) {
-                errorMessage += " Upload to imgur.com for best results";
+            if (validation.error.includes('CORS error')) {
+                errorMessage += " Upload to imgur.com or use an image from a major hosting service";
+            } else if (validation.error.includes('Cannot access image URL')) {
+                errorMessage += " Make sure the link is public and not behind a login/firewall";
+            } else if (validation.error.includes('Network error')) {
+                errorMessage += " Check if the website is down or the URL is correct";
             }
             
             updatePreview("", errorMessage);
