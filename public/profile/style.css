@@ -370,12 +370,72 @@
     color: #ef4444;
 }
 
-.preview-status.loading {
-    color: #f59e0b;
-}
-
 .preview-status.validating {
     color: #64748b;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.preview-status.loading {
+    color: #f59e0b;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Enhanced error and success states */
+.preview-status.error {
+    color: #ef4444;
+    animation: shake 0.5s ease-in-out;
+}
+
+.preview-status.success {
+    color: #22c55e;
+    animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes fadeInScale {
+    from { 
+        opacity: 0; 
+        transform: scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+/* Improved loading spinner for preview image */
+#previewImage.loading {
+    opacity: 0.6;
+    filter: blur(2px);
+}
+
+#previewImage.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f59e0b;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @media (max-width: 480px) {

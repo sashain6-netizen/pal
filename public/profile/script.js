@@ -153,37 +153,139 @@ async function validateImageUrl(url) {
             return { valid: false, error: "Invalid protocol. Only HTTP/HTTPS allowed." };
         }
 
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+        // Expanded list of common image hosting services and file extensions
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.avif', '.ico', '.tiff', '.tif'];
         const hasImageExtension = imageExtensions.some(ext =>
             urlObj.pathname.toLowerCase().endsWith(ext)
         );
 
-        const allowedHosts = ['imgur.com', 'discord.com', 'cdn.discordapp.com'];
+        // Expanded list of allowed image hosting services
+        const allowedHosts = [
+            'imgur.com', 'i.imgur.com', 'discord.com', 'cdn.discordapp.com',
+            'twitter.com', 'pbs.twimg.com', 'x.com',
+            'instagram.com', 'cdn.instagram.com',
+            'facebook.com', 'scontent.cdninstagram.com',
+            'reddit.com', 'i.redd.it', 'preview.redd.it',
+            'github.com', 'avatars.githubusercontent.com',
+            'gravatar.com', 'www.gravatar.com',
+            'cloudinary.com', 'res.cloudinary.com',
+            'aws.amazon.com', 's3.amazonaws.com',
+            'googleusercontent.com', 'lh3.googleusercontent.com',
+            'youtube.com', 'i.ytimg.com',
+            'twitch.tv', 'static-cdn.jtvnw.net',
+            'steamcdn-a.akamaihd.net', 'cdn.akamai.steamstatic.com',
+            'pixiv.net', 'i.pximg.net',
+            'artstation.com', 'cdnb.artstation.com',
+            'deviantart.net', 'images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com',
+            'tenor.com', 'c.tenor.com',
+            'giphy.com', 'media.giphy.com',
+            'imgflip.com', 'i.imgflip.com',
+            'cheezburger.com', 'i.chzbgr.com',
+            'prnt.sc', 'image.prntscr.com',
+            'pasteboard.co', 'cdn pasteboard.co'
+        ];
+
         const hasAllowedHost = allowedHosts.some(host =>
             urlObj.hostname.includes(host)
         );
 
+        // More flexible validation - allow if it has image extension OR is from known host
         if (!hasImageExtension && !hasAllowedHost) {
-            return { valid: false, error: "URL must point to a valid image file." };
+            return { valid: false, error: "URL must be from a recognized image host or end with an image extension." };
         }
 
-        const response = await fetch(url, {
-            method: 'HEAD',
-            headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' }
-        });
+        // Enhanced validation with multiple methods
+        const validationMethods = [
+            // Method 1: HEAD request (fastest)
+            () => fetch(url, {
+                method: 'HEAD',
+                headers: { 
+                    'User-Agent': 'Pal-Profile-Validator/1.0',
+                    'Accept': 'image/*'
+                },
+                mode: 'cors'
+            }),
+            // Method 2: GET request with range (for servers that don't support HEAD)
+            () => fetch(url, {
+                method: 'GET',
+                headers: { 
+                    'User-Agent': 'Pal-Profile-Validator/1.0',
+                    'Accept': 'image/*',
+                    'Range': 'bytes=0-1024'
+                },
+                mode: 'cors'
+            })
+        ];
 
-        if (!response.ok) {
-            return { valid: false, error: "Cannot access image URL." };
+        let response = null;
+        let lastError = null;
+
+        for (const method of validationMethods) {
+            try {
+                response = await method();
+                if (response.ok) break;
+            } catch (err) {
+                lastError = err;
+                continue;
+            }
+        }
+
+        if (!response || !response.ok) {
+            return { 
+                valid: false, 
+                error: lastError?.message.includes('cors') 
+                    ? "CORS error - try a different image host or copy image to imgur.com"
+                    : "Cannot access image URL. Check if the link is correct and publicly accessible." 
+            };
         }
 
         const contentType = response.headers.get('content-type') || '';
-        if (!contentType.startsWith('image/')) {
-            return { valid: false, error: "URL does not point to an image." };
+        const contentLength = response.headers.get('content-length');
+        
+        // More comprehensive content type checking
+        const validContentTypes = [
+            'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 
+            'image/webp', 'image/bmp', 'image/svg+xml', 'image/avif',
+            'image/x-icon', 'image/vnd.microsoft.icon', 'image/tiff'
+        ];
+
+        const isValidContentType = validContentTypes.some(type => 
+            contentType.toLowerCase().includes(type)
+        );
+
+        if (!isValidContentType && !contentType.startsWith('image/')) {
+            return { valid: false, error: `URL does not point to a supported image format. Found: ${contentType || 'unknown'}` };
+        }
+
+        // Check file size (limit to 10MB)
+        if (contentLength && parseInt(contentLength) > 10 * 1024 * 1024) {
+            return { valid: false, error: "Image file is too large (max 10MB)." };
+        }
+
+        // Additional validation for SVG files (security)
+        if (urlObj.pathname.toLowerCase().endsWith('.svg') || contentType.includes('svg')) {
+            try {
+                const svgResponse = await fetch(url, {
+                    headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' },
+                    mode: 'cors'
+                });
+                const svgText = await svgResponse.text();
+                
+                // Basic SVG security check
+                if (svgText.includes('<script>') || svgText.includes('javascript:')) {
+                    return { valid: false, error: "SVG contains potentially unsafe content." };
+                }
+            } catch (err) {
+                return { valid: false, error: "Cannot validate SVG content." };
+            }
         }
 
         return { valid: true };
     } catch (error) {
-        return { valid: false, error: "Invalid URL format." };
+        if (error.message.includes('URL constructor')) {
+            return { valid: false, error: "Invalid URL format. Please check the link and try again." };
+        }
+        return { valid: false, error: "Validation failed. Please try a different image URL." };
     }
 }
 
@@ -195,6 +297,13 @@ function updatePreview(url, status, keepCurrentImage = false) {
     if (!previewImage || !previewStatus || !avatarUrlGroup) return;
 
     avatarUrlGroup.classList.remove('has-success', 'has-error');
+
+    // Apply loading state to image when validating
+    if (status.includes("⏳") || status.includes("🔍")) {
+        previewImage.classList.add('loading');
+    } else {
+        previewImage.classList.remove('loading');
+    }
 
     if (!keepCurrentImage) {
         if (url && url !== currentAvatarUrl) {
@@ -216,6 +325,8 @@ function updatePreview(url, status, keepCurrentImage = false) {
         previewStatus.classList.add("error");
         avatarUrlGroup.classList.add('has-error');
     } else if (status.includes("⏳")) {
+        previewStatus.classList.add("validating");
+    } else if (status.includes("🔍")) {
         previewStatus.classList.add("loading");
     } else {
         previewStatus.classList.add("validating");
@@ -243,18 +354,88 @@ async function handleAvatarInput() {
         const validation = await validateImageUrl(url);
 
         if (validation.valid) {
-            updatePreview(url, "✅ Valid image URL");
+            updatePreview(url, "🔍 Loading image...");
 
-            const img = new Image();
-            img.onload = () => {
+            // Enhanced image loading with retry mechanism
+            const loadImageWithRetry = async (imageUrl, maxRetries = 3) => {
+                for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                    try {
+                        const img = new Image();
+                        
+                        // Set up timeout for image loading
+                        const timeoutPromise = new Promise((_, reject) => {
+                            setTimeout(() => reject(new Error('Image load timeout')), 10000);
+                        });
+
+                        const loadPromise = new Promise((resolve, reject) => {
+                            img.onload = () => resolve(img);
+                            img.onerror = () => reject(new Error('Image load failed'));
+                            img.src = imageUrl;
+                        });
+
+                        const loadedImg = await Promise.race([loadPromise, timeoutPromise]);
+                        
+                        // Additional validation that the image actually loaded
+                        if (loadedImg.naturalWidth === 0 || loadedImg.naturalHeight === 0) {
+                            throw new Error('Invalid image dimensions');
+                        }
+
+                        // Check minimum dimensions (at least 20x20)
+                        if (loadedImg.naturalWidth < 20 || loadedImg.naturalHeight < 20) {
+                            throw new Error('Image too small (minimum 20x20 pixels)');
+                        }
+
+                        // Check maximum dimensions (prevent extremely large images)
+                        if (loadedImg.naturalWidth > 4096 || loadedImg.naturalHeight > 4096) {
+                            throw new Error('Image too large (maximum 4096x4096 pixels)');
+                        }
+
+                        return loadedImg;
+                    } catch (error) {
+                        console.warn(`Image load attempt ${attempt} failed:`, error.message);
+                        if (attempt === maxRetries) {
+                            throw error;
+                        }
+                        // Wait before retry (exponential backoff)
+                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                    }
+                }
+            };
+
+            try {
+                await loadImageWithRetry(url);
                 updatePreview(url, "✅ Image loaded successfully");
-            };
-            img.onerror = () => {
-                updatePreview("", "❌ Failed to load image");
-            };
-            img.src = url;
+            } catch (error) {
+                let errorMessage = "❌ Failed to load image";
+                
+                // Provide specific error messages
+                if (error.message.includes('timeout')) {
+                    errorMessage = "❌ Image load timed out - try a faster host or smaller image";
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = "❌ CORS blocked - try imgur.com or copy image to another host";
+                } else if (error.message.includes('too small')) {
+                    errorMessage = "❌ Image too small (minimum 20x20 pixels)";
+                } else if (error.message.includes('too large')) {
+                    errorMessage = "❌ Image too large (maximum 4096x4096 pixels)";
+                } else if (error.message.includes('Invalid image dimensions')) {
+                    errorMessage = "❌ Invalid image file - may be corrupted";
+                } else {
+                    errorMessage = "❌ Cannot load image - try a different URL or host";
+                }
+                
+                updatePreview("", errorMessage);
+            }
         } else {
-            updatePreview("", `❌ ${validation.error}`);
+            let errorMessage = `❌ ${validation.error}`;
+            
+            // Add helpful suggestions for common issues
+            if (validation.error.includes('recognized image host')) {
+                errorMessage += " Try: imgur.com, discord.com, twitter.com, instagram.com, reddit.com, github.com, or gravatar.com";
+            } else if (validation.error.includes('CORS error')) {
+                errorMessage += " Upload to imgur.com for best results";
+            }
+            
+            updatePreview("", errorMessage);
         }
     }, 500);
 }
