@@ -105,6 +105,19 @@
     </div>
 
     <div class="test-controls">
+        <h3>Avatar Controls</h3>
+        <button onclick="setColoredAvatar()">Use Colored SVG Avatar</button>
+        <button onclick="setDefaultAvatar()">Use Default Avatar</button>
+        <label>
+            Theme Color:
+            <input type="color" id="themeColor" value="#2563eb" onchange="updateThemeColor()">
+        </label>
+        <label>
+            Username:
+            <input type="text" id="username" value="TestUser" onchange="updateColoredAvatar()">
+        </label>
+        
+        <h3>Accessory Controls</h3>
         <button onclick="testAccessory('hats', 'cap')">Test Cap</button>
         <button onclick="testAccessory('glasses', 'sunglasses')">Test Sunglasses</button>
         <button onclick="testAccessory('mouths', 'smile')">Test Smile</button>
@@ -163,6 +176,124 @@
             }
         }
 
+        // Include the colored avatar functions from script.js
+        function generateColoredAvatarSVG(username, themeColor) {
+            const hash = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const baseColor = themeColor || "#2563eb";
+            const lightColor = adjustColorBrightness(baseColor, 40);
+            const darkColor = adjustColorBrightness(baseColor, -20);
+            
+            const patternType = hash % 4;
+            
+            let pattern = '';
+            switch (patternType) {
+                case 0:
+                    pattern = `
+                        <defs>
+                            <pattern id="stripes" patternUnits="userSpaceOnUse" width="20" height="20">
+                                <rect width="10" height="20" fill="${lightColor}"/>
+                                <rect x="10" width="10" height="20" fill="${darkColor}"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100" height="100" fill="url(#stripes)"/>
+                    `;
+                    break;
+                case 1:
+                    pattern = `
+                        <defs>
+                            <pattern id="dots" patternUnits="userSpaceOnUse" width="25" height="25">
+                                <rect width="25" height="25" fill="${lightColor}"/>
+                                <circle cx="12.5" cy="12.5" r="4" fill="${darkColor}"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100" height="100" fill="url(#dots)"/>
+                    `;
+                    break;
+                case 2:
+                    pattern = `
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:${lightColor};stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:${darkColor};stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="100" height="100" fill="url(#gradient)"/>
+                    `;
+                    break;
+                case 3:
+                    pattern = `
+                        <rect width="100" height="100" fill="${lightColor}"/>
+                        <polygon points="0,0 50,50 0,100" fill="${darkColor}"/>
+                        <polygon points="100,0 50,50 100,100" fill="${darkColor}"/>
+                    `;
+                    break;
+            }
+            
+            const initials = username
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase())
+                .slice(0, 2)
+                .join('');
+            
+            const svg = `
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    ${pattern}
+                    <circle cx="50" cy="50" r="45" fill="${baseColor}" fill-opacity="0.9"/>
+                    <text x="50" y="50" 
+                          text-anchor="middle" 
+                          dominant-baseline="central" 
+                          font-family="Arial, sans-serif" 
+                          font-size="28" 
+                          font-weight="bold" 
+                          fill="white">${initials}</text>
+                </svg>
+            `;
+            
+            return `data:image/svg+xml;base64,${btoa(svg)}`;
+        }
+
+        function adjustColorBrightness(color, percent) {
+            color = color.replace('#', '');
+            const num = parseInt(color, 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            
+            const newR = Math.max(0, Math.min(255, R));
+            const newG = Math.max(0, Math.min(255, G));
+            const newB = Math.max(0, Math.min(255, B));
+            
+            return '#' + (0x1000000 + newR * 0x10000 + newG * 0x100 + newB).toString(16).slice(1);
+        }
+
+        function setColoredAvatar() {
+            const username = document.getElementById('username').value;
+            const themeColor = document.getElementById('themeColor').value;
+            const coloredAvatar = generateColoredAvatarSVG(username, themeColor);
+            document.getElementById('previewImage').src = coloredAvatar;
+            console.log(`Set colored avatar for ${username} with color ${themeColor}`);
+        }
+
+        function setDefaultAvatar() {
+            document.getElementById('previewImage').src = "/default-avatar.png";
+            console.log('Set default avatar');
+        }
+
+        function updateThemeColor() {
+            const previewImage = document.getElementById('previewImage');
+            if (previewImage.src && !previewImage.src.includes('default-avatar.png')) {
+                setColoredAvatar();
+            }
+        }
+
+        function updateColoredAvatar() {
+            const previewImage = document.getElementById('previewImage');
+            if (previewImage.src && !previewImage.src.includes('default-avatar.png')) {
+                setColoredAvatar();
+            }
+        }
+
         // Wait for accessory manager to be ready
         window.addEventListener('accessoryManagerReady', () => {
             console.log('Accessory manager is ready!');
@@ -172,7 +303,11 @@
         // Test with some default accessories after a short delay
         setTimeout(() => {
             if (window.accessoryManager) {
-                console.log('Testing with default accessories...');
+                console.log('Testing with colored avatar and accessories...');
+                // Set colored avatar first
+                setColoredAvatar();
+                
+                // Then add accessories
                 window.accessoryManager.setAccessoriesData({
                     hats: 'cap',
                     glasses: 'sunglasses',

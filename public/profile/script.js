@@ -31,6 +31,12 @@ async function loadProfile() {
 
             if (avatarUrl) {
                 updatePreview(avatarUrl, "✅ Current profile picture");
+            } else {
+                // Show colored SVG by default
+                const username = user.username || user.displayName || 'User';
+                const themeColor = user.themeColor || "#2563eb";
+                const coloredAvatar = generateColoredAvatarSVG(username, themeColor);
+                updatePreview(coloredAvatar, "🎨 Generated avatar from your profile");
             }
         }
 
@@ -356,6 +362,107 @@ async function validateImageUrl(url) {
     }
 }
 
+function generateColoredAvatarSVG(username, themeColor) {
+    // Generate consistent colors based on username
+    const hash = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hue = (hash * 137.5) % 360; // Golden angle for better distribution
+    
+    // Create complementary colors
+    const baseColor = themeColor || "#2563eb";
+    const lightColor = adjustColorBrightness(baseColor, 40);
+    const darkColor = adjustColorBrightness(baseColor, -20);
+    
+    // Generate pattern based on username
+    const patternType = hash % 4;
+    
+    let pattern = '';
+    switch (patternType) {
+        case 0: // Diagonal stripes
+            pattern = `
+                <defs>
+                    <pattern id="stripes" patternUnits="userSpaceOnUse" width="20" height="20">
+                        <rect width="10" height="20" fill="${lightColor}"/>
+                        <rect x="10" width="10" height="20" fill="${darkColor}"/>
+                    </pattern>
+                </defs>
+                <rect width="100" height="100" fill="url(#stripes)"/>
+            `;
+            break;
+        case 1: // Dots
+            pattern = `
+                <defs>
+                    <pattern id="dots" patternUnits="userSpaceOnUse" width="25" height="25">
+                        <rect width="25" height="25" fill="${lightColor}"/>
+                        <circle cx="12.5" cy="12.5" r="4" fill="${darkColor}"/>
+                    </pattern>
+                </defs>
+                <rect width="100" height="100" fill="url(#dots)"/>
+            `;
+            break;
+        case 2: // Gradient
+            pattern = `
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${lightColor};stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:${darkColor};stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="100" height="100" fill="url(#gradient)"/>
+            `;
+            break;
+        case 3: // Geometric
+            pattern = `
+                <rect width="100" height="100" fill="${lightColor}"/>
+                <polygon points="0,0 50,50 0,100" fill="${darkColor}"/>
+                <polygon points="100,0 50,50 100,100" fill="${darkColor}"/>
+            `;
+            break;
+    }
+    
+    // Get initials
+    const initials = username
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase())
+        .slice(0, 2)
+        .join('');
+    
+    const svg = `
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            ${pattern}
+            <circle cx="50" cy="50" r="45" fill="${baseColor}" fill-opacity="0.9"/>
+            <text x="50" y="50" 
+                  text-anchor="middle" 
+                  dominant-baseline="central" 
+                  font-family="Arial, sans-serif" 
+                  font-size="28" 
+                  font-weight="bold" 
+                  fill="white">${initials}</text>
+        </svg>
+    `;
+    
+    return `data:image/svg+xml;base64,${btoa(svg)}`;
+}
+
+function adjustColorBrightness(color, percent) {
+    // Remove the # if present
+    color = color.replace('#', '');
+    
+    // Parse the color
+    const num = parseInt(color, 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    
+    // Ensure values stay within 0-255
+    const newR = Math.max(0, Math.min(255, R));
+    const newG = Math.max(0, Math.min(255, G));
+    const newB = Math.max(0, Math.min(255, B));
+    
+    // Convert back to hex
+    return '#' + (0x1000000 + newR * 0x10000 + newG * 0x100 + newB).toString(16).slice(1);
+}
+
 function updatePreview(url, status, keepCurrentImage = false) {
     const previewImage = document.getElementById('previewImage');
     const previewStatus = document.getElementById('previewStatus');
@@ -376,7 +483,11 @@ function updatePreview(url, status, keepCurrentImage = false) {
             previewImage.src = url;
             currentAvatarUrl = url;
         } else if (!url) {
-            previewImage.src = "/default-avatar.png";
+            // Generate colored SVG avatar
+            const username = document.getElementById('display-username')?.textContent?.replace('@', '') || 'User';
+            const themeColor = document.getElementById('themeColor')?.value || '#2563eb';
+            const coloredAvatar = generateColoredAvatarSVG(username, themeColor);
+            previewImage.src = coloredAvatar;
             currentAvatarUrl = "";
         }
     }
@@ -523,5 +634,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (avatarUrlInput) {
         avatarUrlInput.addEventListener('input', handleAvatarInput);
+    }
+
+    // Add theme color change listener to update colored avatar
+    const themeColorInput = document.getElementById('themeColor');
+    if (themeColorInput) {
+        themeColorInput.addEventListener('change', () => {
+            const avatarUrl = document.getElementById('avatarUrl')?.value?.trim();
+            if (!avatarUrl) {
+                // Only update if no custom avatar URL is set
+                const username = document.getElementById('display-username')?.textContent?.replace('@', '') || 'User';
+                const coloredAvatar = generateColoredAvatarSVG(username, themeColorInput.value);
+                updatePreview(coloredAvatar, "🎨 Updated avatar color");
+            }
+        });
     }
 });
