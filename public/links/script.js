@@ -1,7 +1,5 @@
-// Links Page JavaScript
 let links = [];
 
-// Load links from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadLinks();
     renderLinks();
@@ -13,7 +11,6 @@ function loadLinks() {
     if (storedLinks) {
         links = JSON.parse(storedLinks);
     } else {
-        // Add some default links for demonstration
         links = [
             {
                 id: Date.now() + 1,
@@ -48,20 +45,20 @@ function saveLinks() {
 function renderLinks() {
     const linksGrid = document.getElementById('linksGrid');
     const emptyState = document.getElementById('emptyState');
-    
+
     if (links.length === 0) {
         linksGrid.style.display = 'none';
         emptyState.style.display = 'block';
     } else {
         linksGrid.style.display = 'grid';
         emptyState.style.display = 'none';
-        
+
         linksGrid.innerHTML = links.map(link => createLinkCard(link)).join('');
     }
 }
 
 function createLinkCard(link) {
-    const imageContent = link.image 
+    const imageContent = link.image
         ? `<img src="${link.image}" alt="${link.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -71,7 +68,7 @@ function createLinkCard(link) {
                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
            </svg>`;
-    
+
     return `
         <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="link-card" onclick="handleLinkClick(event, '${link.id}')">
             <div class="link-card-header">
@@ -103,7 +100,6 @@ function createLinkCard(link) {
 }
 
 function handleLinkClick(event, linkId) {
-    // Allow the link to open in a new tab normally
     event.stopPropagation();
 }
 
@@ -128,13 +124,13 @@ function closeAddLinkModal() {
 function openEditLinkModal(linkId) {
     const link = links.find(l => l.id == linkId);
     if (!link) return;
-    
+
     document.getElementById('editLinkId').value = link.id;
     document.getElementById('editLinkTitle').value = link.title;
     document.getElementById('editLinkUrl').value = link.url;
     document.getElementById('editLinkDescription').value = link.description || '';
     document.getElementById('editLinkImage').value = link.image || '';
-    
+
     const preview = document.getElementById('editImagePreview');
     if (link.image) {
         preview.innerHTML = `<img src="${link.image}" alt="Preview" onerror="this.style.display='none'">`;
@@ -142,7 +138,7 @@ function openEditLinkModal(linkId) {
     } else {
         preview.style.display = 'none';
     }
-    
+
     document.getElementById('editLinkModal').style.display = 'block';
 }
 
@@ -152,7 +148,7 @@ function closeEditLinkModal() {
 
 function deleteLink() {
     const linkId = document.getElementById('editLinkId').value;
-    
+
     if (confirm('Are you sure you want to delete this link?')) {
         links = links.filter(l => l.id != linkId);
         saveLinks();
@@ -163,10 +159,9 @@ function deleteLink() {
 }
 
 function setupEventListeners() {
-    // Add link form
     document.getElementById('addLinkForm').addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         const newLink = {
             id: Date.now(),
             title: document.getElementById('linkTitle').value.trim(),
@@ -174,32 +169,29 @@ function setupEventListeners() {
             description: document.getElementById('linkDescription').value.trim(),
             image: document.getElementById('linkImage').value.trim()
         };
-        
-        // Validate URL
+
         try {
             new URL(newLink.url);
         } catch {
             showToast('Please enter a valid URL', 'error');
             return;
         }
-        
+
         links.unshift(newLink);
         saveLinks();
         renderLinks();
         closeAddLinkModal();
         showToast('Link added successfully', 'success');
     });
-    
-    // Edit link form
+
     document.getElementById('editLinkForm').addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         const linkId = document.getElementById('editLinkId').value;
         const linkIndex = links.findIndex(l => l.id == linkId);
-        
+
         if (linkIndex === -1) return;
-        
-        // Validate URL
+
         const url = document.getElementById('editLinkUrl').value.trim();
         try {
             new URL(url);
@@ -207,7 +199,7 @@ function setupEventListeners() {
             showToast('Please enter a valid URL', 'error');
             return;
         }
-        
+
         links[linkIndex] = {
             id: parseInt(linkId),
             title: document.getElementById('editLinkTitle').value.trim(),
@@ -215,18 +207,17 @@ function setupEventListeners() {
             description: document.getElementById('editLinkDescription').value.trim(),
             image: document.getElementById('editLinkImage').value.trim()
         };
-        
+
         saveLinks();
         renderLinks();
         closeEditLinkModal();
         showToast('Link updated successfully', 'success');
     });
-    
-    // Image preview for add form
+
     document.getElementById('linkImage').addEventListener('input', (e) => {
         const preview = document.getElementById('imagePreview');
         const url = e.target.value.trim();
-        
+
         if (url) {
             preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.style.display='none'; this.parentElement.style.display='none'">`;
             preview.style.display = 'block';
@@ -234,12 +225,11 @@ function setupEventListeners() {
             preview.style.display = 'none';
         }
     });
-    
-    // Image preview for edit form
+
     document.getElementById('editLinkImage').addEventListener('input', (e) => {
         const preview = document.getElementById('editImagePreview');
         const url = e.target.value.trim();
-        
+
         if (url) {
             preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.style.display='none'; this.parentElement.style.display='none'">`;
             preview.style.display = 'block';
@@ -247,15 +237,13 @@ function setupEventListeners() {
             preview.style.display = 'none';
         }
     });
-    
-    // Close modals when clicking outside
+
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal')) {
             e.target.style.display = 'none';
         }
     });
-    
-    // Keyboard shortcuts
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeAddLinkModal();
@@ -270,14 +258,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Toast notification function (fallback if global toast isn't available)
 function showToast(message, type = 'info') {
     if (window.showToast && typeof window.showToast === 'function') {
         window.showToast(message, type);
         return;
     }
-    
-    // Simple fallback toast
+
     const toast = document.createElement('div');
     toast.style.cssText = `
         position: fixed;
@@ -293,16 +279,15 @@ function showToast(message, type = 'info') {
         animation: slideIn 0.3s ease;
     `;
     toast.textContent = message;
-    
+
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => document.body.removeChild(toast), 300);
     }, 3000);
 }
 
-// Add slide animations
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {

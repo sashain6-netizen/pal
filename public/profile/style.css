@@ -133,7 +133,6 @@
   margin-bottom: 25px;
 }
 
-
 .upload-label {
   font-size: 0.85rem;
   color: var(--blue-primary);
@@ -309,7 +308,6 @@
     border-left-color: #10b981;
 }
 
-/* Enhanced Profile Picture Preview Styles for Premium Users */
 .avatar-preview {
     display: flex;
     align-items: center;
@@ -380,37 +378,35 @@
     color: #64748b;
 }
 
-/* Enhanced Responsive adjustments */
 @media (max-width: 480px) {
     .auth-card {
         padding: 30px 20px;
     }
-    
-    .avatar-preview {
+
+        .avatar-preview {
         flex-direction: column;
         text-align: center;
         padding: 16px;
         gap: 16px;
     }
-    
-    #previewImage {
+
+        #previewImage {
         width: 90px;
         height: 90px;
         border-width: 3px;
     }
-    
-    .preview-status {
+
+        .preview-status {
         width: 100%;
         text-align: center;
         font-size: 0.85rem;
     }
-    
-    .avatar-preview::before {
+
+        .avatar-preview::before {
         height: 3px;
     }
 }
 
-/* Premium badge styling for avatar input group */
 #avatarUrlGroup {
     position: relative;
 }
@@ -437,7 +433,6 @@
     50% { opacity: 1; transform: scale(1.05); }
 }
 
-/* Enhanced input styling for premium avatar URL */
 #avatarUrlGroup input[type="url"] {
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     border: 2px solid rgba(251, 191, 36, 0.2);
@@ -469,7 +464,6 @@
     font-style: italic;
 }
 
-/* Input validation states */
 #avatarUrlGroup.has-success input[type="url"] {
     border-color: #22c55e;
     background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
@@ -480,7 +474,6 @@
     background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
 }
 
-/* Add icon indicator for input field */
 #avatarUrlGroup {
     position: relative;
 }
@@ -489,9 +482,6 @@
     padding-left: 16px;
 }
 
-/* Remove the emoji icon completely */
-
-/* Premium glow effect on valid image */
 .preview-status.success + #previewImage {
     animation: premium-glow 2s ease-in-out infinite alternate;
 }

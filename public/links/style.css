@@ -1,4 +1,3 @@
-/* Links Page Styles */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -173,7 +172,6 @@
     font-size: 1.1rem;
 }
 
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -304,33 +302,31 @@
     background: #dc2626;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .container {
         padding: 80px 15px 30px;
     }
-    
-    .links-header h1 {
+
+        .links-header h1 {
         font-size: 2rem;
     }
-    
-    .links-grid {
+
+        .links-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
-    .modal-content {
+
+        .modal-content {
         margin: 10% auto;
         padding: 25px;
         width: 95%;
     }
-    
-    .link-actions {
+
+        .link-actions {
         opacity: 1;
     }
 }
 
-/* Loading Spinner */
 .loading {
     display: flex;
     justify-content: center;

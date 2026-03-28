@@ -22,14 +22,13 @@ async function loadProfile() {
         updateEl('displayName', user.displayName || user.username);
         updateEl('bio', user.bio || "");
 
-        // Show avatar URL field for premium users
         const avatarUrlGroup = document.getElementById('avatarUrlGroup');
         if (user.isPremium && avatarUrlGroup) {
             avatarUrlGroup.style.display = 'block';
-            
+
             const avatarUrl = user.avatar && user.avatar !== "/default-avatar.png" ? user.avatar : "";
             updateEl('avatarUrl', avatarUrl);
-            
+
             if (avatarUrl) {
                 updatePreview(avatarUrl, "✅ Current profile picture");
             }
@@ -96,13 +95,11 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         themeColor: document.getElementById('themeColor').value
     };
 
-    // Handle avatar URL - send empty string to revert to default if field is cleared
     const avatarUrlInput = document.getElementById('avatarUrl');
     if (avatarUrlInput) {
         if (avatarUrlInput.value.trim()) {
             updatedData.avatarUrl = avatarUrlInput.value.trim();
         } else {
-            // Explicitly send empty string to revert to default avatar
             updatedData.avatarUrl = "";
         }
     }
@@ -134,25 +131,24 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
 document.addEventListener('DOMContentLoaded', loadProfile);
 
-// Profile Picture Functions
 let currentAvatarUrl = "";
 let previewTimeout = null;
 
 async function validateImageUrl(url) {
     try {
         const urlObj = new URL(url);
-        
+
         if (!['http:', 'https:'].includes(urlObj.protocol)) {
             return { valid: false, error: "Invalid protocol. Only HTTP/HTTPS allowed." };
         }
 
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
-        const hasImageExtension = imageExtensions.some(ext => 
+        const hasImageExtension = imageExtensions.some(ext =>
             urlObj.pathname.toLowerCase().endsWith(ext)
         );
 
         const allowedHosts = ['imgur.com', 'discord.com', 'cdn.discordapp.com'];
-        const hasAllowedHost = allowedHosts.some(host => 
+        const hasAllowedHost = allowedHosts.some(host =>
             urlObj.hostname.includes(host)
         );
 
@@ -160,8 +156,7 @@ async function validateImageUrl(url) {
             return { valid: false, error: "URL must point to a valid image file." };
         }
 
-        // Test if image loads
-        const response = await fetch(url, { 
+        const response = await fetch(url, {
             method: 'HEAD',
             headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' }
         });
@@ -181,27 +176,28 @@ async function validateImageUrl(url) {
     }
 }
 
-function updatePreview(url, status) {
+function updatePreview(url, status, keepCurrentImage = false) {
     const previewImage = document.getElementById('previewImage');
     const previewStatus = document.getElementById('previewStatus');
     const avatarUrlGroup = document.getElementById('avatarUrlGroup');
-    
+
     if (!previewImage || !previewStatus || !avatarUrlGroup) return;
-    
-    // Clear validation states
+
     avatarUrlGroup.classList.remove('has-success', 'has-error');
-    
-    if (url && url !== currentAvatarUrl) {
-        previewImage.src = url;
-        currentAvatarUrl = url;
-    } else if (!url) {
-        previewImage.src = "/default-avatar.png";
-        currentAvatarUrl = "";
+
+    if (!keepCurrentImage) {
+        if (url && url !== currentAvatarUrl) {
+            previewImage.src = url;
+            currentAvatarUrl = url;
+        } else if (!url) {
+            previewImage.src = "/default-avatar.png";
+            currentAvatarUrl = "";
+        }
     }
 
     previewStatus.textContent = status;
     previewStatus.className = "preview-status";
-    
+
     if (status.includes("✅")) {
         previewStatus.classList.add("success");
         avatarUrlGroup.classList.add('has-success');
@@ -218,27 +214,26 @@ function updatePreview(url, status) {
 async function handleAvatarInput() {
     const avatarUrlInput = document.getElementById('avatarUrl');
     if (!avatarUrlInput) return;
-    
+
     const url = avatarUrlInput.value.trim();
-    
+
     if (!url) {
         updatePreview("", "🔄 Will revert to default avatar");
         return;
     }
 
-    updatePreview(url, "⏳ Validating URL...");
-    
+    updatePreview(currentAvatarUrl, "⏳ Validating URL...", true);
+
     if (previewTimeout) {
         clearTimeout(previewTimeout);
     }
 
     previewTimeout = setTimeout(async () => {
         const validation = await validateImageUrl(url);
-        
+
         if (validation.valid) {
             updatePreview(url, "✅ Valid image URL");
-            
-            // Test if image actually loads
+
             const img = new Image();
             img.onload = () => {
                 updatePreview(url, "✅ Image loaded successfully");
@@ -253,13 +248,12 @@ async function handleAvatarInput() {
     }, 500);
 }
 
-// Add event listener for avatar URL input
 document.addEventListener('DOMContentLoaded', () => {
     const avatarUrlInput = document.getElementById('avatarUrl');
-    
+
     if (avatarUrlInput) {
         avatarUrlInput.addEventListener('input', handleAvatarInput);
     }
-    
+
     loadProfile();
 });
