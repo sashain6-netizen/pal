@@ -96,10 +96,15 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         themeColor: document.getElementById('themeColor').value
     };
 
-    // Add avatar URL if field exists and has value
+    // Handle avatar URL - send empty string to revert to default if field is cleared
     const avatarUrlInput = document.getElementById('avatarUrl');
-    if (avatarUrlInput && avatarUrlInput.value.trim()) {
-        updatedData.avatarUrl = avatarUrlInput.value.trim();
+    if (avatarUrlInput) {
+        if (avatarUrlInput.value.trim()) {
+            updatedData.avatarUrl = avatarUrlInput.value.trim();
+        } else {
+            // Explicitly send empty string to revert to default avatar
+            updatedData.avatarUrl = "";
+        }
     }
 
     try {
@@ -179,8 +184,12 @@ async function validateImageUrl(url) {
 function updatePreview(url, status) {
     const previewImage = document.getElementById('previewImage');
     const previewStatus = document.getElementById('previewStatus');
+    const avatarUrlGroup = document.getElementById('avatarUrlGroup');
     
-    if (!previewImage || !previewStatus) return;
+    if (!previewImage || !previewStatus || !avatarUrlGroup) return;
+    
+    // Clear validation states
+    avatarUrlGroup.classList.remove('has-success', 'has-error');
     
     if (url && url !== currentAvatarUrl) {
         previewImage.src = url;
@@ -195,8 +204,10 @@ function updatePreview(url, status) {
     
     if (status.includes("✅")) {
         previewStatus.classList.add("success");
+        avatarUrlGroup.classList.add('has-success');
     } else if (status.includes("❌") || status.includes("⚠️")) {
         previewStatus.classList.add("error");
+        avatarUrlGroup.classList.add('has-error');
     } else if (status.includes("⏳")) {
         previewStatus.classList.add("loading");
     } else {
@@ -211,7 +222,7 @@ async function handleAvatarInput() {
     const url = avatarUrlInput.value.trim();
     
     if (!url) {
-        updatePreview("", "");
+        updatePreview("", "🔄 Will revert to default avatar");
         return;
     }
 
@@ -245,8 +256,23 @@ async function handleAvatarInput() {
 // Add event listener for avatar URL input
 document.addEventListener('DOMContentLoaded', () => {
     const avatarUrlInput = document.getElementById('avatarUrl');
+    const avatarUrlGroup = document.getElementById('avatarUrlGroup');
+    
     if (avatarUrlInput) {
         avatarUrlInput.addEventListener('input', handleAvatarInput);
+        
+        // Add focus/blur events for icon animation
+        avatarUrlInput.addEventListener('focus', () => {
+            if (avatarUrlGroup) {
+                avatarUrlGroup.classList.add('focused');
+            }
+        });
+        
+        avatarUrlInput.addEventListener('blur', () => {
+            if (avatarUrlGroup) {
+                avatarUrlGroup.classList.remove('focused');
+            }
+        });
     }
     
     loadProfile();
