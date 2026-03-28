@@ -40,6 +40,13 @@ async function loadProfile() {
         // Load accessories if available
         if (user.accessories && window.accessoryManager) {
             window.accessoryManager.setAccessoriesData(user.accessories);
+        } else if (user.accessories) {
+            // Wait for accessory manager to be initialized
+            setTimeout(() => {
+                if (window.accessoryManager) {
+                    window.accessoryManager.setAccessoriesData(user.accessories);
+                }
+            }, 100);
         }
 
         updateEl('stat-rank', user.rank || "Member");
@@ -113,7 +120,10 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
     // Add accessories data if available
     if (window.accessoryManager) {
-        updatedData.accessories = window.accessoryManager.getAccessoriesData().accessories;
+        const accessoriesData = window.accessoryManager.getAccessoriesData();
+        if (accessoriesData && accessoriesData.accessories) {
+            updatedData.accessories = accessoriesData.accessories;
+        }
     }
 
     const avatarUrlInput = document.getElementById('avatarUrl');

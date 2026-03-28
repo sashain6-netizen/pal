@@ -15,11 +15,14 @@ class AccessoryManager {
     setupAccessoryGrids() {
         // Setup each category grid
         Object.keys(ACCESSORY_LIBRARY).forEach(category => {
+            // Convert category name to match HTML IDs (face_accessories -> face-accessories)
             const gridId = `${category.replace('_', '-')}-grid`;
             const grid = document.getElementById(gridId);
             
             if (grid) {
                 this.populateGrid(grid, ACCESSORY_LIBRARY[category], category);
+            } else {
+                console.warn(`Grid not found: ${gridId} for category: ${category}`);
             }
         });
     }
@@ -57,6 +60,8 @@ class AccessoryManager {
     }
 
     selectAccessory(category, accessoryKey) {
+        console.log(`Selecting accessory: ${category} -> ${accessoryKey}`);
+        
         // Update selection state
         this.accessories[category] = accessoryKey;
         this.selectedCategory = category;
@@ -67,6 +72,8 @@ class AccessoryManager {
         
         // Update preview
         this.updatePreview();
+        
+        console.log('Current accessories:', this.accessories);
     }
 
     updateSelectionUI(category, accessoryKey) {
@@ -139,6 +146,7 @@ class AccessoryManager {
 
     // Get accessories data for profile saving
     getAccessoriesData() {
+        console.log('Getting accessories data:', this.accessories);
         return {
             accessories: this.accessories
         };
@@ -146,6 +154,8 @@ class AccessoryManager {
 
     // Set accessories from loaded profile
     setAccessoriesData(data) {
+        console.log('Setting accessories data:', data);
+        
         if (data && typeof data === 'object') {
             // Map the data to ensure correct category names
             const mappedAccessories = {
@@ -156,6 +166,8 @@ class AccessoryManager {
                 backgrounds: data.backgrounds || data.background || 'none'
             };
             
+            console.log('Mapped accessories:', mappedAccessories);
+            
             this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
             
             // Update UI for each category
@@ -165,6 +177,8 @@ class AccessoryManager {
             
             // Update preview
             this.updatePreview();
+            
+            console.log('Final accessories state:', this.accessories);
         }
     }
 }
@@ -175,6 +189,8 @@ let accessoryManager;
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     accessoryManager = new AccessoryManager();
+    // Expose to global scope for profile script
+    window.accessoryManager = accessoryManager;
 });
 
 // Export for use in other scripts
