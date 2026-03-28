@@ -279,7 +279,11 @@ async function validateImageUrl(url) {
         if (!response || !response.ok) {
             let errorMessage = "Cannot access image URL. Check if the link is correct and publicly accessible.";
 
-            if (lastError?.message.includes('cors')) {
+            if (response.status === 404) {
+                errorMessage = "❌ Image not found (404). The URL may be incorrect or the image may have been moved. Try a different image URL.";
+            } else if (response.status === 403) {
+                errorMessage = "❌ Access forbidden (403). This image may require authentication or be private.";
+            } else if (lastError?.message.includes('cors')) {
                 errorMessage = "CORS error - the image host doesn't allow direct linking. Try a different image or upload it to a service like imgur.com";
             } else if (lastError?.message.includes('network') || lastError?.message.includes('fetch')) {
                 errorMessage = "Network error - cannot reach the image server. Check the URL and your internet connection";
@@ -470,6 +474,8 @@ async function handleAvatarInput() {
                     errorMessage = "❌ Image load timed out - try a faster host or smaller image";
                 } else if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
                     errorMessage = "❌ CORS blocked - the image host doesn't allow direct linking. Try a different image or upload it to a public hosting service";
+                } else if (error.message.includes('404') || error.message.includes('not found')) {
+                    errorMessage = "❌ Image not found. The URL may be incorrect or the image may have been moved.";
                 } else if (error.message.includes('too small')) {
                     errorMessage = "❌ Image too small (minimum 20x20 pixels)";
                 } else if (error.message.includes('too large')) {
