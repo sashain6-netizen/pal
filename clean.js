@@ -57,13 +57,27 @@ function main() {
     process.exit(0);
   }
 
+  console.log('🧹 Starting clean process...');
+  
   const targets = options.targets.length > 0 ? options.targets : ['.'];
+  console.log(`📁 Scanning targets: ${targets.join(', ')}`);
+  
   const files = collectFiles(targets, options);
+  console.log(`📄 Found ${files.length} files to process`);
+  
   const results = [];
   const errors = [];
+  let processedCount = 0;
 
+  console.log('🔄 Processing files...');
+  
   for (const filePath of files) {
     try {
+      processedCount++;
+      if (!options.verbose && processedCount % 10 === 0 || processedCount === files.length) {
+        process.stdout.write(`\r⏳ Progress: ${processedCount}/${files.length} files (${Math.round(processedCount/files.length*100)}%)`);
+      }
+      
       const result = processFile(filePath, options);
       if (result) {
         results.push(result);
@@ -75,6 +89,11 @@ function main() {
       });
     }
   }
+  
+  if (!options.verbose) {
+    process.stdout.write('\r');
+  }
+  console.log('✅ Processing complete!');
 
   printSummary(results, errors, options);
 
@@ -170,6 +189,7 @@ Examples:
 
 function collectFiles(targets, options) {
   const files = [];
+  console.log('🔍 Collecting files...');
 
   for (const target of targets) {
     if (!target) {
@@ -179,12 +199,14 @@ function collectFiles(targets, options) {
     const absoluteTarget = path.resolve(ROOT, target);
 
     if (!fs.existsSync(absoluteTarget)) {
+      console.log(`⚠️  Path does not exist: ${target}`);
       continue;
     }
 
     const stats = fs.statSync(absoluteTarget);
 
     if (stats.isDirectory()) {
+      console.log(`📂 Scanning directory: ${target}`);
       walkDirectory(absoluteTarget, files, options);
       continue;
     }
@@ -194,6 +216,7 @@ function collectFiles(targets, options) {
     }
   }
 
+  console.log(`✅ Found ${files.length} eligible files`);
   return files.sort();
 }
 
@@ -291,7 +314,8 @@ function processFile(filePath, options) {
 
   if (options.verbose) {
     const mode = options.check ? 'Would clean' : 'Cleaned';
-    console.log(`${mode}: ${toDisplayPath(filePath)} (${result.bytesSaved} bytes saved)`);
+    const icon = options.check ? '👁️' : '✨';
+    console.log(`${icon} ${mode}: ${toDisplayPath(filePath)} (${result.bytesSaved} bytes saved)`);
   }
 
   return result;
@@ -985,16 +1009,30 @@ function printSummary(results, errors, options) {
   const bytesSaved = results.reduce((sum, result) => sum + result.bytesSaved, 0);
   const mode = options.check ? 'check' : 'write';
 
-  console.log(`Clean ${mode} complete.`);
-  console.log(`Files changed: ${changedCount}`);
-  console.log(`Bytes removed: ${bytesSaved}`);
+  console.log('\n📊 CLEAN SUMMARY');
+ console.log('='.repeat(50));
+ console.log(`✨ Mode: ${mode}`);
+  console.log(`📝 Files processed: ${changedCount}`);
+  console.log(`💾 Bytes removed: ${bytesSaved.toLocaleString()}`);
+  
+  if (bytesSaved > 0) {
+    console.log(`📉 Space saved: ${(bytesSaved / 1024).toFixed(2)} KB`);
+  }
 
   if (errors.length > 0) {
-    console.log(`Errors: ${errors.length}`);
+    console.log(`\n❌ Errors encountered: ${errors.length}`);
     for (const error of errors) {
-      console.log(`- ${toDisplayPath(error.filePath)}: ${error.message}`);
+      console.log(`   • ${toDisplayPath(error.filePath)}: ${error.message}`);
     }
   }
+  
+  if (changedCount === 0) {
+    console.log('\n🎉 All files are already clean!');
+  } else {
+    console.log(`\n🎯 Successfully cleaned ${changedCount} file${changedCount === 1 ? '' : 's'}!`);
+  }
+  
+  console.log('='.repeat(50));
 }
 
 function toDisplayPath(filePath) {
