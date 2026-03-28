@@ -160,13 +160,14 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
     const avatarUrlInput = document.getElementById('avatarUrl');
     if (avatarUrlInput) {
         if (avatarUrlInput.value.trim()) {
-            updatedData.avatarUrl = avatarUrlInput.value.trim();
+            updatedData.avatar = avatarUrlInput.value.trim();
         } else {
-            updatedData.avatarUrl = "";
+            updatedData.avatar = "";
         }
     }
 
     try {
+        console.log('Sending profile update data:', updatedData);
         const res = await fetch('/api/update-profile', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -188,6 +189,7 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
             showToast(successMessage);
             document.documentElement.style.setProperty('--blue-primary', updatedData.themeColor);
         } else {
+            console.error('Save failed with response:', result);
             showToast(`⚠️ ${result.error || "Failed to update profile."}`);
         }
     } catch (err) {
@@ -215,41 +217,8 @@ async function validateImageUrl(url) {
 
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.avif', '.ico', '.tiff', '.tif'];
         const hasImageExtension = imageExtensions.some(ext =>
-            urlObj.pathname.toLowerCase().endsWith(ext)
+            url.toLowerCase().includes(ext)
         );
-
-        const allowedHosts = [
-            'imgur.com', 'i.imgur.com', 'discord.com', 'cdn.discordapp.com',
-            'twitter.com', 'pbs.twimg.com', 'x.com',
-            'instagram.com', 'cdn.instagram.com',
-            'facebook.com', 'scontent.cdninstagram.com',
-            'reddit.com', 'i.redd.it', 'preview.redd.it',
-            'github.com', 'avatars.githubusercontent.com',
-            'gravatar.com', 'www.gravatar.com',
-            'cloudinary.com', 'res.cloudinary.com',
-            'aws.amazon.com', 's3.amazonaws.com',
-            'googleusercontent.com', 'lh3.googleusercontent.com',
-            'youtube.com', 'i.ytimg.com',
-            'twitch.tv', 'static-cdn.jtvnw.net',
-            'steamcdn-a.akamaihd.net', 'cdn.akamai.steamstatic.com',
-            'pixiv.net', 'i.pximg.net',
-            'artstation.com', 'cdnb.artstation.com',
-            'deviantart.net', 'images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com',
-            'tenor.com', 'c.tenor.com',
-            'giphy.com', 'media.giphy.com',
-            'imgflip.com', 'i.imgflip.com',
-            'cheezburger.com', 'i.chzbgr.com',
-            'prnt.sc', 'image.prntscr.com',
-            'pasteboard.co', 'cdn pasteboard.co'
-        ];
-
-        const hasAllowedHost = allowedHosts.some(host =>
-            urlObj.hostname.includes(host)
-        );
-
-        if (!hasImageExtension && !hasAllowedHost) {
-            console.log("Unknown host, proceeding with content validation");
-        }
 
         const validationMethods = [
             () => fetch(url, {
@@ -302,11 +271,7 @@ async function validateImageUrl(url) {
             let errorMessage = "Cannot access image URL. Check if the link is correct and publicly accessible.";
 
             if (lastError?.message.includes('cors')) {
-                if (hasAllowedHost) {
-                    errorMessage = "CORS error - the image host doesn't allow direct linking. Try a different image or copy it to imgur.com";
-                } else {
-                    errorMessage = "CORS error - this host doesn't allow direct linking. Try uploading to imgur.com or use a different image URL";
-                }
+                errorMessage = "CORS error - the image host doesn't allow direct linking. Try a different image or upload it to a service like imgur.com";
             } else if (lastError?.message.includes('network') || lastError?.message.includes('fetch')) {
                 errorMessage = "Network error - cannot reach the image server. Check the URL and your internet connection";
             }
@@ -492,7 +457,7 @@ async function handleAvatarInput() {
                 if (error.message.includes('timeout')) {
                     errorMessage = "❌ Image load timed out - try a faster host or smaller image";
                 } else if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
-                    errorMessage = "❌ CORS blocked - the image host doesn't allow direct linking. Try imgur.com or copy the image";
+                    errorMessage = "❌ CORS blocked - the image host doesn't allow direct linking. Try a different image or upload it to a public hosting service";
                 } else if (error.message.includes('too small')) {
                     errorMessage = "❌ Image too small (minimum 20x20 pixels)";
                 } else if (error.message.includes('too large')) {
@@ -509,7 +474,7 @@ async function handleAvatarInput() {
             let errorMessage = `❌ ${validation.error}`;
 
             if (validation.error.includes('CORS error')) {
-                errorMessage += " Upload to imgur.com or use an image from a major hosting service";
+                errorMessage += " Try uploading to a public image hosting service or using a different image";
             } else if (validation.error.includes('Cannot access image URL')) {
                 errorMessage += " Make sure the link is public and not behind a login/firewall";
             } else if (validation.error.includes('Network error')) {
