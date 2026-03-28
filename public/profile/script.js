@@ -210,7 +210,6 @@ let previewTimeout = null;
 async function validateImageUrl(url) {
     console.log('Validating URL:', url);
     try {
-        // Check if URL is already encoded to prevent double encoding
         const isAlreadyEncoded = url !== decodeURI(url);
         const encodedUrl = isAlreadyEncoded ? url : encodeURI(url);
         console.log('Is already encoded:', isAlreadyEncoded);
@@ -467,6 +466,7 @@ async function handleAvatarInput() {
             try {
                 await loadImageWithRetry(url);
                 updatePreview(url, "✅ Image loaded successfully");
+                return;
             } catch (error) {
                 let errorMessage = "❌ Failed to load image";
 
