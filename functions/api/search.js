@@ -23,7 +23,7 @@ export async function onRequestGet(context) {
             if (!userData) return null;
             const user = JSON.parse(userData);
 
-                        return {
+            return {
                 username: user.username,
                 displayName: user.displayName,
                 avatar: user.avatarUrl || "/default-avatar.png",
