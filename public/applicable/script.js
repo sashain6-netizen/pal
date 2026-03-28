@@ -1,12 +1,11 @@
 const apps = [
     { name: "Calculator", desc: "Advanced math tool", cat: "Utility", icon: "±", url: "https://www.desmos.com/scientific" },
-    { name: "Pal Chat", desc: "Private community messaging", cat: "Fun", icon: "P", url: "/pages" },
     { name: "Whiteboard", desc: "Sketch out your ideas", cat: "Study", icon: "✎", url: "https://excalidraw.com" },
     { name: "Timer", desc: "Focus with Pomodoro", cat: "Study", icon: "⏱", url: "https://pomofocus.io" },
     { name: "YouTube", desc: "Watch Videos", cat: "Fun", icon: "▷", url: "https://youtube.com", extrnal: true},
     { name: "ChatGPT", desc: "You know what to do", cat: "Utility", icon: "AI", url: "https://chatgpt.com", extrnal: true },
-    { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", icon: "xyz", url: "https://www.canvascalculator.xyz/"}
-
+    { name: "CanvasCalculator", desc: "Shows Hidden Grades", cat: "Utility", icon: "xyz", url: "https://www.canvascalculator.xyz/"},
+    { name: "Chatify", desc: "Chat with your friends", cat: "Fun", icon: "💬", url: "https://plane65k.github.io/chatify-public" }
     ];
 
 function loadApps(filter = 'All') {
