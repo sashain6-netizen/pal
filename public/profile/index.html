@@ -27,16 +27,24 @@
                 <input type="text" id="displayName" placeholder="Your name">
             </div>
 
-            <div class="input-group" id="avatarUrlGroup">
-                <label for="avatarUrl">Profile Picture URL</label>
-                <input type="text" id="avatarUrl" placeholder="https://example.com/your-image.png">
-                <div class="avatar-preview" id="avatarPreview">
-                    <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
-                    <div class="preview-status" id="previewStatus"></div>
+            <div class="dropdown-section">
+                <div class="dropdown-header" onclick="toggleDropdown('profileDropdown')">
+                    <span>📷 Profile Picture</span>
+                    <span class="dropdown-arrow" id="profileDropdown-arrow">▼</span>
                 </div>
-                <small style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">
-                    Enter the web address of your profile picture. Supports JPG, PNG, GIF, WebP, BMP, SVG formats. Real-time validation included.
-                </small>
+                <div class="dropdown-content" id="profileDropdown" style="display: none;">
+                    <div class="input-group" id="avatarUrlGroup">
+                        <label for="avatarUrl">Profile Picture URL</label>
+                        <input type="text" id="avatarUrl" placeholder="https://example.com/your-image.png">
+                        <div class="avatar-preview" id="avatarPreview">
+                            <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+                            <div class="preview-status" id="previewStatus"></div>
+                        </div>
+                        <small style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">
+                            Enter the web address of your profile picture. Supports JPG, PNG, GIF, WebP, BMP, SVG formats. Real-time validation included.
+                        </small>
+                    </div>
+                </div>
             </div>
 
             <div class="input-group">

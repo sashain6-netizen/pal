@@ -79,6 +79,17 @@ async function loadProfile() {
     }
 }
 
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const arrow = document.getElementById(dropdownId + '-arrow');
+    
+    if (dropdown && arrow) {
+        const isHidden = dropdown.style.display === 'none';
+        dropdown.style.display = isHidden ? 'block' : 'none';
+        arrow.textContent = isHidden ? '▲' : '▼';
+    }
+}
+
 document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
