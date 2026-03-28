@@ -41,6 +41,7 @@ async function loadProfile() {
             const loadAccessories = () => {
                 if (window.accessoryManager) {
                     try {
+                        console.log('Loading user accessories:', user.accessories);
                         window.accessoryManager.setAccessoriesData(user.accessories);
                     } catch (error) {
                         console.error('Error loading accessories:', error);
@@ -51,8 +52,8 @@ async function loadProfile() {
             if (window.accessoryManager) {
                 loadAccessories();
             } else {
-                const maxWaitTime = 2000;
-                const checkInterval = 100;
+                const maxWaitTime = 3000; // Increased timeout
+                const checkInterval = 50;  // More frequent checks
                 let waitedTime = 0;
 
                 const waitForManager = setInterval(() => {

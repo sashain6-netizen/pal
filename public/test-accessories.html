@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessory Test • Pal</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/profile/style.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="auth-page">
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="auth-card profile-card">
+        <div class="auth-logo"><a href="/">PAL</a></div>
+        <h1>Accessory Test</h1>
+
+        <div class="dropdown-section">
+            <div class="dropdown-header" onclick="toggleDropdown('accessoriesDropdown')">
+                <span>🎨 Avatar Accessories</span>
+                <span class="dropdown-arrow" id="accessoriesDropdown-arrow">▼</span>
+            </div>
+            <div class="dropdown-content" id="accessoriesDropdown" style="display: block;">
+                <div class="accessories-container">
+                    <div class="accessory-category">
+                        <h4>🎩 Hats</h4>
+                        <div class="accessory-grid" id="hats-grid"></div>
+                    </div>
+
+                    <div class="accessory-category">
+                        <h4>🕶️ Glasses</h4>
+                        <div class="accessory-grid" id="glasses-grid"></div>
+                    </div>
+
+                    <div class="accessory-category">
+                        <h4>😊 Mouth</h4>
+                        <div class="accessory-grid" id="mouths-grid"></div>
+                    </div>
+
+                    <div class="accessory-category">
+                        <h4>✨ Face Accessories</h4>
+                        <div class="accessory-grid" id="face-accessories-grid"></div>
+                    </div>
+
+                    <div class="accessory-category">
+                        <h4>🌟 Backgrounds</h4>
+                        <div class="accessory-grid" id="backgrounds-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="avatar-preview" id="avatarPreview">
+            <div class="avatar-preview-container">
+                <div class="avatar-with-accessories" id="avatarWithAccessories">
+                    <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+                    <div class="accessory-layer" id="accessoryLayer"></div>
+                </div>
+            </div>
+            <div class="preview-status" id="previewStatus"></div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button onclick="testUserAccessories()" class="auth-btn">Test User Accessories</button>
+            <button onclick="clearAccessories()" class="auth-btn" style="margin-left: 10px;">Clear All</button>
+        </div>
+
+        <div id="debug-info" style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px; font-family: monospace; font-size: 12px;"></div>
+    </div>
+
+    <script src="/global-settings.js"></script>
+    <script src="/profile/accessories.js"></script>
+    <script src="/profile/accessory-manager.js"></script>
+    <script>
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const arrow = document.getElementById(dropdownId + '-arrow');
+            if (dropdown && arrow) {
+                const isHidden = dropdown.style.display === 'none';
+                dropdown.style.display = isHidden ? 'block' : 'none';
+                arrow.textContent = isHidden ? '▲' : '▼';
+            }
+        }
+
+        function testUserAccessories() {
+            const userAccessories = {
+                "hats": "wizard_hat",
+                "glasses": "sunglasses", 
+                "mouths": "surprised",
+                "face_accessories": "mustache",
+                "backgrounds": "stars"
+            };
+
+            console.log('Testing user accessories:', userAccessories);
+            updateDebugInfo('Loading user accessories...');
+
+            if (window.accessoryManager) {
+                window.accessoryManager.setAccessoriesData(userAccessories);
+                updateDebugInfo('✅ Accessories loaded successfully!');
+            } else {
+                updateDebugInfo('❌ Accessory manager not found');
+            }
+        }
+
+        function clearAccessories() {
+            const clearAccessories = {
+                "hats": "none",
+                "glasses": "none",
+                "mouths": "none", 
+                "face_accessories": "none",
+                "backgrounds": "none"
+            };
+
+            if (window.accessoryManager) {
+                window.accessoryManager.setAccessoriesData(clearAccessories);
+                updateDebugInfo('✅ Accessories cleared!');
+            }
+        }
+
+        function updateDebugInfo(message) {
+            const debugEl = document.getElementById('debug-info');
+            if (debugEl) {
+                const timestamp = new Date().toLocaleTimeString();
+                debugEl.innerHTML = `[${timestamp}] ${message}<br>` + debugEl.innerHTML;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDebugInfo('DOM loaded, checking accessory manager...');
+            
+            setTimeout(() => {
+                if (window.accessoryManager) {
+                    updateDebugInfo('✅ Accessory manager ready');
+                } else {
+                    updateDebugInfo('❌ Accessory manager not found after timeout');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

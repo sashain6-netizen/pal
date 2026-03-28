@@ -9,6 +9,26 @@ class AccessoryManager {
     init() {
         this.setupAccessoryGrids();
         this.updatePreview();
+        
+        // Add a small delay to ensure DOM is fully ready
+        setTimeout(() => {
+            this.ensureUIReady();
+        }, 50);
+    }
+
+    ensureUIReady() {
+        // Check if all grids exist and are populated
+        const categories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
+        const allGridsReady = categories.every(category => {
+            const gridId = `${category.replace('_', '-')}-grid`;
+            const grid = document.getElementById(gridId);
+            return grid && grid.children.length > 0;
+        });
+
+        if (!allGridsReady) {
+            console.log('Re-initializing accessory grids...');
+            this.setupAccessoryGrids();
+        }
     }
 
     setupAccessoryGrids() {
@@ -75,6 +95,8 @@ class AccessoryManager {
         const selectedItem = document.querySelector(`[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
         if (selectedItem) {
             selectedItem.classList.add('selected');
+        } else {
+            console.warn(`Accessory element not found: category="${category}", key="${accessoryKey}"`);
         }
     }
 
@@ -157,9 +179,23 @@ class AccessoryManager {
 
             this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
 
-            Object.keys(this.accessories).forEach(category => {
-                this.updateSelectionUI(category, this.accessories[category]);
-            });
+            // Try to update UI immediately, or wait if DOM isn't ready
+            const tryUpdateUI = () => {
+                Object.keys(this.accessories).forEach(category => {
+                    this.updateSelectionUI(category, this.accessories[category]);
+                });
+            };
+
+            // Check if grids exist
+            const gridsExist = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds']
+                .some(category => document.getElementById(`${category.replace('_', '-')}-grid`));
+
+            if (gridsExist) {
+                tryUpdateUI();
+            } else {
+                // Wait a bit for DOM to be ready
+                setTimeout(tryUpdateUI, 100);
+            }
 
             this.updatePreview();
 
