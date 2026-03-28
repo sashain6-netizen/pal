@@ -82,13 +82,14 @@ export async function onRequestGet(context) {
                 ...post,
                 displayName: user.displayName || post.username,
                 themeColor: user.themeColor || "#2563eb",
-                forumColor: isPremium ? (user.forumColor || user.themeColor || "#2563eb") : "#2563eb",
+                forumColor: user.forumColor || user.themeColor || "#2563eb",
                 rank: user.rank || "Member",
                 prefix: user.currentPrefix || user.prefix || "",
                 premiumGlowAlpha: typeof user.premiumGlowAlpha === "number" ? user.premiumGlowAlpha : 0.8,
                 postCaption: isPremium ? String(user.postCaption || "") : "",
                 postAnimation: isPremium ? String(user.postAnimation || "none") : "none",
-                isPremium
+                isPremium,
+                avatar: user.avatarUrl || "/default-avatar.png"
             };
         });
 
