@@ -69,6 +69,15 @@
     flex-shrink: 0;
 }
 
+.thread-avatar-svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+}
+
 .thread-user-details {
     display: flex;
     align-items: center;
@@ -300,6 +309,15 @@
     object-fit: cover;
     border: 1px solid #e2e8f0;
     flex-shrink: 0;
+}
+
+.search-avatar-svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
 }
 
 .user-search-wrapper { position: relative; margin: 10px 0; }
