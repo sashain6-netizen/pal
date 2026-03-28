@@ -104,8 +104,14 @@ class AccessoryManager {
     }
 
     updateSelectionUI(category, accessoryKey) {
+        console.log(`Updating selection for ${category} -> ${accessoryKey}`);
+        
         // Remove existing selection
-        document.querySelectorAll(`[data-category="${category}"].accessory-item.selected`).forEach(item => {
+        const existingSelected = document.querySelectorAll(`[data-category="${category}"].accessory-item.selected`);
+        console.log(`Found ${existingSelected.length} existing selected items for ${category}`);
+        
+        existingSelected.forEach(item => {
+            console.log(`Removing selected from: ${item.dataset.accessoryKey}`);
             item.classList.remove('selected');
         });
 
@@ -113,24 +119,27 @@ class AccessoryManager {
         const selectedItem = document.querySelector(`[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
         if (selectedItem) {
             selectedItem.classList.add('selected');
-            console.log(`Successfully selected: ${category} -> ${accessoryKey}`);
+            console.log(`✅ Successfully selected: ${category} -> ${accessoryKey}`);
+            console.log(`Element classes after selection: ${selectedItem.className}`);
+            console.log(`Element styles:`, window.getComputedStyle(selectedItem));
         } else {
-            console.warn(`Accessory element not found: category="${category}", key="${accessoryKey}"`);
+            console.warn(`❌ Accessory element not found: category="${category}", key="${accessoryKey}"`);
             
             // Try to find the element with a more specific selector
             const fallbackSelector = `[data-accessory-key="${accessoryKey}"]`;
             const fallbackItem = document.querySelector(fallbackSelector);
             if (fallbackItem && fallbackItem.dataset.category === category) {
                 fallbackItem.classList.add('selected');
-                console.log(`Fallback selection successful: ${category} -> ${accessoryKey}`);
+                console.log(`✅ Fallback selection successful: ${category} -> ${accessoryKey}`);
             } else {
-                console.warn(`Fallback also failed for: category="${category}", key="${accessoryKey}"`);
+                console.warn(`❌ Fallback also failed for: category="${category}", key="${accessoryKey}"`);
                 
                 // Log all available items for debugging
                 const allItems = document.querySelectorAll(`[data-category="${category}"]`);
                 console.log(`Available items for category ${category}:`, Array.from(allItems).map(item => ({
                     key: item.dataset.accessoryKey,
-                    classes: item.className
+                    classes: item.className,
+                    element: item
                 })));
             }
         }
