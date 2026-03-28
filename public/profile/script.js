@@ -513,8 +513,12 @@ async function handleAvatarInput() {
                     }
                 };
                 img.onerror = () => {
-                    updatePreview("", errorMessage);
+                    console.log('Direct image load failed for:', url);
+                    updatePreview("", "❌ Failed to load image directly");
                 };
+                
+                // Fallback: try loading with crossorigin attribute
+                img.crossOrigin = 'anonymous';
                 img.src = url;
             } else {
                 updatePreview("", errorMessage);
