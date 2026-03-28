@@ -49,9 +49,55 @@ export async function onRequestPost(context) {
             });
         }
 
+        let avatarUrl = user.avatarUrl || "/default-avatar.png";
+        
+        // Handle avatar URL updates for premium users
+        if (updates.avatarUrl && isPremium) {
+            const urlStr = String(updates.avatarUrl).trim();
+            
+            // Validate URL format
+            try {
+                const url = new URL(urlStr);
+                
+                // Only allow HTTP/HTTPS protocols
+                if (!['http:', 'https:'].includes(url.protocol)) {
+                    return new Response(JSON.stringify({ error: "Invalid URL protocol. Only HTTP and HTTPS are allowed." }), {
+                        status: 400,
+                        headers: { "Content-Type": "application/json" }
+                    });
+                }
+                
+                // Basic file extension check for common image formats
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+                const hasImageExtension = imageExtensions.some(ext => 
+                    url.pathname.toLowerCase().endsWith(ext)
+                );
+                
+                if (!hasImageExtension && !url.hostname.includes('imgur.com') && !url.hostname.includes('discord.com') && !url.hostname.includes('cdn.discordapp.com')) {
+                    return new Response(JSON.stringify({ error: "URL must point to a valid image file (jpg, png, gif, webp, bmp, svg)" }), {
+                        status: 400,
+                        headers: { "Content-Type": "application/json" }
+                    });
+                }
+                
+                avatarUrl = urlStr;
+                
+            } catch (urlError) {
+                return new Response(JSON.stringify({ error: "Invalid URL format" }), {
+                    status: 400,
+                    headers: { "Content-Type": "application/json" }
+                });
+            }
+        } else if (updates.avatarUrl && !isPremium) {
+            return new Response(JSON.stringify({ error: "Premium membership required to set custom profile picture" }), {
+                status: 403,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
         const updatedUser = {
             ...user,
-            avatarUrl: user.avatarUrl || "/default-avatar.png",
+            avatarUrl: avatarUrl,
 
             displayName: (updates.displayName || "").trim().substring(0, 16),
 

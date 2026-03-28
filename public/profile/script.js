@@ -22,6 +22,13 @@ async function loadProfile() {
         updateEl('displayName', user.displayName || user.username);
         updateEl('bio', user.bio || "");
 
+        // Show avatar URL field for premium users
+        const avatarUrlGroup = document.getElementById('avatarUrlGroup');
+        if (user.isPremium && avatarUrlGroup) {
+            avatarUrlGroup.style.display = 'block';
+            updateEl('avatarUrl', user.avatar && user.avatar !== "/default-avatar.png" ? user.avatar : "");
+        }
+
                 const themeEl = document.getElementById('themeColor');
         if (themeEl) themeEl.value = user.themeColor || "#2563eb";
 
@@ -83,6 +90,12 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         themeColor: document.getElementById('themeColor').value
     };
 
+    // Add avatar URL if field exists and has value
+    const avatarUrlInput = document.getElementById('avatarUrl');
+    if (avatarUrlInput && avatarUrlInput.value.trim()) {
+        updatedData.avatarUrl = avatarUrlInput.value.trim();
+    }
+
     try {
         const res = await fetch('/api/update-profile', {
             method: 'POST',
@@ -90,11 +103,13 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
             body: JSON.stringify(updatedData)
         });
 
+        const result = await res.json();
+
         if (res.ok) {
             showToast("Profile updated successfully! ✨");
             document.documentElement.style.setProperty('--blue-primary', updatedData.themeColor);
         } else {
-            showToast("⚠️ Failed to update profile.");
+            showToast(`⚠️ ${result.error || "Failed to update profile."}`);
         }
     } catch (err) {
         showToast("🛑 Error saving changes.");
