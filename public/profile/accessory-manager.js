@@ -185,21 +185,17 @@ class AccessoryManager {
 
 let accessoryManager;
 
-// Initialize immediately when script loads
 (() => {
     accessoryManager = new AccessoryManager();
     window.accessoryManager = accessoryManager;
-    
-    // Try to set up grids immediately if DOM is ready
+
     if (document.readyState === 'loading') {
-        // DOM still loading, wait for it
         document.addEventListener('DOMContentLoaded', () => {
             accessoryManager.setupAccessoryGrids();
             accessoryManager.updatePreview();
             window.dispatchEvent(new CustomEvent('accessoryManagerReady'));
         });
     } else {
-        // DOM already loaded, set up immediately
         setTimeout(() => {
             accessoryManager.setupAccessoryGrids();
             accessoryManager.updatePreview();

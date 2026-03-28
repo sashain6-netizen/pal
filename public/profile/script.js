@@ -49,14 +49,11 @@ async function loadProfile() {
                 }
             };
 
-            // Check if manager already exists
             if (window.accessoryManager) {
                 loadAccessories();
             } else {
-                // Listen for the accessory manager to be ready
                 window.addEventListener('accessoryManagerReady', loadAccessories);
-                
-                // Quick fallback timeout
+
                 setTimeout(() => {
                     if (window.accessoryManager) {
                         loadAccessories();

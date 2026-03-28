@@ -59,7 +59,7 @@ function main() {
 
   console.log('🧹 Starting clean process...');
   
-  const targets = options.targets.length > 0 ? options.targets : ['.'];
+  const targets = options.targets.length > 0 ? options.targets : ['functions', 'public'];
   console.log(`📁 Scanning targets: ${targets.join(', ')}`);
   
   const files = collectFiles(targets, options);
@@ -112,7 +112,7 @@ function parseArgs(args) {
     check: false,
     verbose: false,
     include: [],
-    exclude: [],
+    exclude: ['public/assist/games'],
     targets: [],
     help: false,
   };
