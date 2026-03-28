@@ -210,8 +210,10 @@ let previewTimeout = null;
 async function validateImageUrl(url) {
     console.log('Validating URL:', url);
     try {
-        // Ensure URL is properly encoded
-        const encodedUrl = encodeURI(url);
+        // Check if URL is already encoded to prevent double encoding
+        const isAlreadyEncoded = url !== decodeURI(url);
+        const encodedUrl = isAlreadyEncoded ? url : encodeURI(url);
+        console.log('Is already encoded:', isAlreadyEncoded);
         console.log('Encoded URL:', encodedUrl);
         const urlObj = new URL(encodedUrl);
         console.log('URL object:', urlObj);
