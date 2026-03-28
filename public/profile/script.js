@@ -197,7 +197,7 @@ async function validateImageUrl(url) {
 
         // Enhanced validation with multiple methods
         const validationMethods = [
-            // Method 1: HEAD request (fastest)
+            // Method 1: HEAD request with CORS (fastest for CORS-enabled servers)
             () => fetch(url, {
                 method: 'HEAD',
                 headers: { 
@@ -206,7 +206,7 @@ async function validateImageUrl(url) {
                 },
                 mode: 'cors'
             }),
-            // Method 2: GET request with range (for servers that don't support HEAD)
+            // Method 2: GET request with CORS (for servers that don't support HEAD)
             () => fetch(url, {
                 method: 'GET',
                 headers: { 
@@ -215,15 +215,31 @@ async function validateImageUrl(url) {
                     'Range': 'bytes=0-1024'
                 },
                 mode: 'cors'
+            }),
+            // Method 3: GET request with no-cors (fallback for restrictive servers)
+            () => fetch(url, {
+                method: 'GET',
+                headers: { 
+                    'User-Agent': 'Pal-Profile-Validator/1.0',
+                    'Accept': 'image/*'
+                },
+                mode: 'no-cors'
             })
         ];
 
         let response = null;
         let lastError = null;
 
-        for (const method of validationMethods) {
+        for (const [index, method] of validationMethods.entries()) {
             try {
                 response = await method();
+                
+                // For no-cors requests, we can't check response.ok or headers
+                if (index === 2) { // no-cors method
+                    console.log("Using no-cors fallback - assuming valid if request succeeded");
+                    return { valid: true, noCors: true };
+                }
+                
                 if (response.ok) break;
             } catch (err) {
                 lastError = err;
@@ -378,6 +394,8 @@ async function handleAvatarInput() {
                         const loadPromise = new Promise((resolve, reject) => {
                             img.onload = () => resolve(img);
                             img.onerror = () => reject(new Error('Image load failed'));
+                            
+                            // First try without crossOrigin for no-cors validated images
                             img.src = imageUrl;
                         });
 
@@ -419,8 +437,8 @@ async function handleAvatarInput() {
                 // Provide specific error messages
                 if (error.message.includes('timeout')) {
                     errorMessage = "❌ Image load timed out - try a faster host or smaller image";
-                } else if (error.message.includes('CORS')) {
-                    errorMessage = "❌ CORS blocked - try imgur.com or copy image to another host";
+                } else if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
+                    errorMessage = "❌ CORS blocked - the image host doesn't allow direct linking. Try imgur.com or copy the image";
                 } else if (error.message.includes('too small')) {
                     errorMessage = "❌ Image too small (minimum 20x20 pixels)";
                 } else if (error.message.includes('too large')) {
@@ -445,7 +463,25 @@ async function handleAvatarInput() {
                 errorMessage += " Check if the website is down or the URL is correct";
             }
             
-            updatePreview("", errorMessage);
+            // As a last resort, try to load the image directly without validation
+            if (validation.error.includes('Network error') || validation.error.includes('Cannot access image URL')) {
+                updatePreview(url, "🔄 Attempting direct load...", true);
+                
+                const img = new Image();
+                img.onload = () => {
+                    if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                        updatePreview(url, "✅ Image loaded (direct access)");
+                    } else {
+                        updatePreview("", "❌ Invalid image - try a different URL");
+                    }
+                };
+                img.onerror = () => {
+                    updatePreview("", errorMessage);
+                };
+                img.src = url;
+            } else {
+                updatePreview("", errorMessage);
+            }
         }
     }, 500);
 }
