@@ -41,6 +41,7 @@ async function loadProfile() {
             const loadAccessories = () => {
                 if (window.accessoryManager) {
                     try {
+                        console.log('Loading user accessories:', user.accessories);
                         window.accessoryManager.setAccessoriesData(user.accessories);
                     } catch (error) {
                         console.error('Error loading accessories:', error);
@@ -51,20 +52,13 @@ async function loadProfile() {
             if (window.accessoryManager) {
                 loadAccessories();
             } else {
-                const maxWaitTime = 2000;
-                const checkInterval = 100;
-                let waitedTime = 0;
+                window.addEventListener('accessoryManagerReady', loadAccessories);
 
-                const waitForManager = setInterval(() => {
+                setTimeout(() => {
                     if (window.accessoryManager) {
-                        clearInterval(waitForManager);
                         loadAccessories();
-                    } else if (waitedTime >= maxWaitTime) {
-                        clearInterval(waitForManager);
-                        console.warn('Accessory manager failed to initialize within timeout');
                     }
-                    waitedTime += checkInterval;
-                }, checkInterval);
+                }, 200);
             }
         }
 
@@ -183,7 +177,7 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
             if (updatedData.accessories) {
                 const accessoryCount = Object.values(updatedData.accessories).filter(key => key !== 'none').length;
                 if (accessoryCount > 0) {
-                    successMessage = `Profile and ${accessoryCount} accessory${accessoryCount > 1 ? 'es' : ''} saved! ✨`;
+                    successMessage = `Profile saved! ✨`;
                 }
             }
 
@@ -530,6 +524,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (avatarUrlInput) {
         avatarUrlInput.addEventListener('input', handleAvatarInput);
     }
-
-    loadProfile();
 });

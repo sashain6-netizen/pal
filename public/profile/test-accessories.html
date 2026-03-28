@@ -3,192 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accessory Save Test • Pal</title>
+    <title>Accessory Test</title>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
-        .test-result { margin: 10px 0; padding: 10px; border-radius: 4px; }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; background: #007bff; color: white; }
-        button:hover { background: #0056b3; }
-        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
-</style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .avatar-preview-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+        }
+        .avatar-with-accessories {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #previewImage {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+        }
+        .accessory-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .accessory-element {
+            position: absolute;
+            transform-origin: center;
+            transition: all 0.2s ease;
+        }
+        .accessory-element.hat {
+            animation: hatFloat 3s ease-in-out infinite;
+        }
+        .accessory-element.glasses {
+            animation: glassesShine 4s ease-in-out infinite;
+        }
+        .accessory-element.mouth {
+            animation: mouthPulse 2s ease-in-out infinite;
+        }
+        .accessory-element.face-accessory {
+            animation: faceAccessoryWiggle 5s ease-in-out infinite;
+        }
+        .accessory-element.background {
+            animation: backgroundTwinkle 6s linear infinite;
+        }
+        @keyframes hatFloat {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+            50% { transform: translate(-50%, -50%) translateY(-2px); }
+        }
+        @keyframes glassesShine {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+        @keyframes mouthPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+        @keyframes faceAccessoryWiggle {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) rotate(1deg); }
+            75% { transform: translate(-50%, -50%) rotate(-1deg); }
+        }
+        @keyframes backgroundTwinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        .test-controls {
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>🧪 Accessory Save/Load Test</h1>
-
-    <div class="test-section">
-        <h2>Test Configuration</h2>
-        <button onclick="runFullTest()">🔄 Run Full Test Suite</button>
-        <button onclick="testDataStructure()">📋 Test Data Structure</button>
-        <button onclick="testBackendValidation()">🔒 Test Backend Validation</button>
-        <button onclick="simulateUserFlow()">👤 Simulate User Flow</button>
+    <h1>Accessory Test Page</h1>
+    
+    <div class="avatar-preview-container">
+        <div class="avatar-with-accessories" id="avatarWithAccessories">
+            <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+            <div class="accessory-layer" id="accessoryLayer"></div>
+        </div>
     </div>
 
-    <div id="testResults"></div>
+    <div class="test-controls">
+        <button onclick="testAccessory('hats', 'cap')">Test Cap</button>
+        <button onclick="testAccessory('glasses', 'sunglasses')">Test Sunglasses</button>
+        <button onclick="testAccessory('mouths', 'smile')">Test Smile</button>
+        <button onclick="testAccessory('face_accessories', 'mustache')">Test Mustache</button>
+        <button onclick="testAccessory('backgrounds', 'sparkles')">Test Sparkles</button>
+        <button onclick="clearAccessories()">Clear All</button>
+    </div>
 
+    <div id="console-output" style="background: #f5f5f5; padding: 10px; margin-top: 20px; font-family: monospace; max-height: 200px; overflow-y: auto;"></div>
+
+    <script src="accessories.js"></script>
+    <script src="accessory-manager.js"></script>
     <script>
-        const ACCESSORY_LIBRARY = {
-            hats: { none: { name: 'None' }, cap: { name: 'Baseball Cap' } },
-            glasses: { none: { name: 'None' }, sunglasses: { name: 'Sunglasses' } },
-            mouths: { none: { name: 'None' }, smile: { name: 'Smile' } },
-            face_accessories: { none: { name: 'None' }, mustache: { name: 'Mustache' } },
-            backgrounds: { none: { name: 'None' }, sparkles: { name: 'Sparkles' } }
+        // Override console.log to show in page
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addToConsole(message, type = 'log') {
+            const div = document.createElement('div');
+            div.style.color = type === 'warn' ? 'orange' : 'black';
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
         };
 
-        const DEFAULT_ACCESSORIES = {
-            hats: 'none',
-            glasses: 'none',
-            mouths: 'none',
-            face_accessories: 'none',
-            backgrounds: 'none'
-        };
-
-        function addResult(message, type = 'info') {
-            const resultsDiv = document.getElementById('testResults');
-            const result = document.createElement('div');
-            result.className = `test-result ${type}`;
-            result.innerHTML = message;
-            resultsDiv.appendChild(result);
-            resultsDiv.scrollTop = resultsDiv.scrollHeight;
-        }
-
-        function clearResults() {
-            document.getElementById('testResults').innerHTML = '';
-        }
-
-        function testDataStructure() {
-            clearResults();
-            addResult('📋 Testing Data Structure Consistency...', 'info');
-
-            const testAccessories = {
-                hats: 'cap',
-                glasses: 'sunglasses',
-                mouths: 'smile',
-                face_accessories: 'mustache',
-                backgrounds: 'sparkles'
-            };
-
-            addResult('✅ Frontend data structure valid', 'success');
-            addResult('<pre>' + JSON.stringify(testAccessories, null, 2) + '</pre>', 'info');
-
-            const expectedStructure = {
-                hats: 'string',
-                glasses: 'string',
-                mouths: 'string',
-                face_accessories: 'string',
-                backgrounds: 'string'
-            };
-
-            addResult('✅ Backend expects consistent structure', 'success');
-            addResult('<pre>' + JSON.stringify(expectedStructure, null, 2) + '</pre>', 'info');
-
-            const frontendCategories = Object.keys(testAccessories);
-            const backendCategories = Object.keys(expectedStructure);
-            const categoriesMatch = JSON.stringify(frontendCategories.sort()) === JSON.stringify(backendCategories.sort());
-
-            if (categoriesMatch) {
-                addResult('✅ Category names match between frontend and backend', 'success');
+        function testAccessory(category, accessoryKey) {
+            console.log(`Testing accessory: ${category} -> ${accessoryKey}`);
+            if (window.accessoryManager) {
+                window.accessoryManager.selectAccessory(category, accessoryKey);
             } else {
-                addResult('❌ Category names mismatch!', 'error');
+                console.error('Accessory manager not ready');
             }
         }
 
-        function testBackendValidation() {
-            clearResults();
-            addResult('🔒 Testing Backend Validation Rules...', 'info');
-
-            const validAccessories = {
-                hats: 'cap',
-                glasses: 'sunglasses',
-                mouths: 'smile',
-                face_accessories: 'mustache',
-                backgrounds: 'sparkles'
-            };
-
-            addResult('✅ Valid accessories data structure', 'success');
-            addResult('<pre>' + JSON.stringify(validAccessories, null, 2) + '</pre>', 'info');
-
-            const invalidCategory = {
-                hats: 'cap',
-                invalid_category: 'test'
-            };
-
-            addResult('⚠️ Invalid category test (should be rejected):', 'info');
-            addResult('<pre>' + JSON.stringify(invalidCategory, null, 2) + '</pre>', 'info');
-
-            const invalidAccessory = {
-                hats: 'invalid_hat'
-            };
-
-            addResult('⚠️ Invalid accessory key test (should be rejected):', 'info');
-            addResult('<pre>' + JSON.stringify(invalidAccessory, null, 2) + '</pre>', 'info');
-
-            addResult('✅ Backend validation rules properly defined', 'success');
+        function clearAccessories() {
+            console.log('Clearing all accessories');
+            if (window.accessoryManager) {
+                window.accessoryManager.setAccessoriesData({
+                    hats: 'none',
+                    glasses: 'none',
+                    mouths: 'none',
+                    face_accessories: 'none',
+                    backgrounds: 'none'
+                });
+            }
         }
 
-        function simulateUserFlow() {
-            clearResults();
-            addResult('👤 Simulating User Accessory Selection Flow...', 'info');
-
-            let currentAccessories = { ...DEFAULT_ACCESSORIES };
-            addResult('📥 Profile loaded with default accessories', 'info');
-            addResult('<pre>' + JSON.stringify(currentAccessories, null, 2) + '</pre>', 'info');
-
-            currentAccessories = {
-                hats: 'cap',
-                glasses: 'sunglasses',
-                mouths: 'smile',
-                face_accessories: 'mustache',
-                backgrounds: 'sparkles'
-            };
-
-            addResult('🎨 User selected accessories', 'info');
-            addResult('<pre>' + JSON.stringify(currentAccessories, null, 2) + '</pre>', 'info');
-
-            const saveData = {
-                displayName: 'Test User',
-                bio: 'Testing accessory save functionality',
-                themeColor: '#2563eb',
-                accessories: currentAccessories
-            };
-
-            addResult('💾 Preparing data for backend save...', 'info');
-            addResult('<pre>' + JSON.stringify(saveData, null, 2) + '</pre>', 'info');
-
-            addResult('✅ Accessories saved successfully!', 'success');
-            addResult('📊 Saved 5 accessories', 'info');
-
-            addResult('🔄 Simulating profile reload...', 'info');
-            const loadedAccessories = currentAccessories;
-            addResult('✅ Accessories loaded correctly', 'success');
-            addResult('<pre>' + JSON.stringify(loadedAccessories, null, 2) + '</pre>', 'info');
-
-            addResult('🎉 User flow simulation completed successfully!', 'success');
-        }
-
-        function runFullTest() {
-            clearResults();
-            addResult('🔄 Running Full Test Suite...', 'info');
-
-            setTimeout(() => {
-                testDataStructure();
-                setTimeout(() => {
-                    testBackendValidation();
-                    setTimeout(() => {
-                        simulateUserFlow();
-                        addResult('🎉 All tests completed! Check results above.', 'success');
-                    }, 2000);
-                }, 2000);
-            }, 500);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            addResult('🧪 Accessory Save Test Page Loaded', 'info');
-            addResult('Click the buttons above to run specific tests or the full test suite.', 'info');
+        // Wait for accessory manager to be ready
+        window.addEventListener('accessoryManagerReady', () => {
+            console.log('Accessory manager is ready!');
+            console.log('Available accessories:', Object.keys(ACCESSORY_LIBRARY));
         });
-</script>
+
+        // Test with some default accessories after a short delay
+        setTimeout(() => {
+            if (window.accessoryManager) {
+                console.log('Testing with default accessories...');
+                window.accessoryManager.setAccessoriesData({
+                    hats: 'cap',
+                    glasses: 'sunglasses',
+                    mouths: 'smile',
+                    face_accessories: 'none',
+                    backgrounds: 'sparkles'
+                });
+            }
+        }, 1000);
+    </script>
 </body>
 </html>

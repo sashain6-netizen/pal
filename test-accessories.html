@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessory Test</title>
+    <style>
+        .accessory-item {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .accessory-item.selected {
+            border-color: #2563eb;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .accessory-preview {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto;
+        }
+        .accessory-name {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .category-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .category-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Accessory Selection Test</h1>
+    <div id="test-results"></div>
+    
+    <div class="category-section">
+        <div class="category-title">Hats</div>
+        <div id="hats-grid" class="grid"></div>
+    </div>
+    
+    <div class="category-section">
+        <div class="category-title">Glasses</div>
+        <div id="glasses-grid" class="grid"></div>
+    </div>
+    
+    <div class="category-section">
+        <div class="category-title">Mouths</div>
+        <div id="mouths-grid" class="grid"></div>
+    </div>
+    
+    <div class="category-section">
+        <div class="category-title">Face Accessories</div>
+        <div id="face-accessories-grid" class="grid"></div>
+    </div>
+    
+    <div class="category-section">
+        <div class="category-title">Backgrounds</div>
+        <div id="backgrounds-grid" class="grid"></div>
+    </div>
+
+    <script>
+        // Mock ACCESSORY_LIBRARY (simplified version)
+        const ACCESSORY_LIBRARY = {
+            hats: {
+                none: { name: 'None', svg: '', category: 'hats' },
+                cap: { name: 'Cap', svg: '<div style="width:100%;height:100%;background:red;border-radius:50%;"></div>', category: 'hats' },
+                crown: { name: 'Crown', svg: '<div style="width:100%;height:100%;background:gold;border-radius:50%;"></div>', category: 'hats' }
+            },
+            glasses: {
+                none: { name: 'None', svg: '', category: 'glasses' },
+                heart_glasses: { name: 'Heart Glasses', svg: '<div style="width:100%;height:100%;background:pink;border-radius:50%;"></div>', category: 'glasses' },
+                sunglasses: { name: 'Sunglasses', svg: '<div style="width:100%;height:100%;background:black;border-radius:50%;"></div>', category: 'glasses' }
+            },
+            mouths: {
+                none: { name: 'None', svg: '', category: 'mouths' },
+                tongue_out: { name: 'Tongue Out', svg: '<div style="width:100%;height:100%;background:red;border-radius:50%;"></div>', category: 'mouths' },
+                smile: { name: 'Smile', svg: '<div style="width:100%;height:100%;background:yellow;border-radius:50%;"></div>', category: 'mouths' }
+            },
+            face_accessories: {
+                none: { name: 'None', svg: '', category: 'face_accessories' },
+                freckles: { name: 'Freckles', svg: '<div style="width:100%;height:100%;background:brown;border-radius:50%;"></div>', category: 'face_accessories' },
+                blush: { name: 'Blush', svg: '<div style="width:100%;height:100%;background:pink;border-radius:50%;"></div>', category: 'face_accessories' }
+            },
+            backgrounds: {
+                none: { name: 'None', svg: '', category: 'backgrounds' },
+                hearts: { name: 'Hearts', svg: '<div style="width:100%;height:100%;background:pink;border-radius:50%;"></div>', category: 'backgrounds' },
+                stars: { name: 'Stars', svg: '<div style="width:100%;height:100%;background:blue;border-radius:50%;"></div>', category: 'backgrounds' }
+            }
+        };
+
+        const DEFAULT_ACCESSORIES = {
+            hats: 'none',
+            glasses: 'none',
+            mouths: 'none',
+            face_accessories: 'none',
+            backgrounds: 'none'
+        };
+
+        // Simplified AccessoryManager for testing
+        class TestAccessoryManager {
+            constructor() {
+                this.accessories = { ...DEFAULT_ACCESSORIES };
+            }
+
+            setupAccessoryGrids() {
+                Object.keys(ACCESSORY_LIBRARY).forEach(category => {
+                    const gridId = `${category.replace('_', '-')}-grid`;
+                    const grid = document.getElementById(gridId);
+                    if (grid) {
+                        this.populateGrid(grid, ACCESSORY_LIBRARY[category], category);
+                    }
+                });
+            }
+
+            populateGrid(grid, items, category) {
+                grid.innerHTML = '';
+                Object.keys(items).forEach(key => {
+                    const item = items[key];
+                    const accessoryItem = document.createElement('div');
+                    accessoryItem.className = 'accessory-item';
+                    accessoryItem.dataset.accessoryKey = key;
+                    accessoryItem.dataset.category = category;
+
+                    const preview = document.createElement('div');
+                    preview.className = 'accessory-preview';
+                    if (item.svg) {
+                        preview.innerHTML = item.svg;
+                    }
+
+                    const name = document.createElement('div');
+                    name.className = 'accessory-name';
+                    name.textContent = item.name;
+
+                    accessoryItem.appendChild(preview);
+                    accessoryItem.appendChild(name);
+                    grid.appendChild(accessoryItem);
+                });
+            }
+
+            setAccessoriesData(data) {
+                console.log('Setting accessories data:', data);
+                
+                const mappedAccessories = {
+                    hats: data.hats || 'none',
+                    glasses: data.glasses || 'none',
+                    mouths: data.mouths || 'none',
+                    face_accessories: data.face_accessories || 'none',
+                    backgrounds: data.backgrounds || 'none'
+                };
+
+                console.log('Mapped accessories:', mappedAccessories);
+                this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
+
+                // Update selection UI
+                Object.keys(this.accessories).forEach(category => {
+                    this.updateSelectionUI(category, this.accessories[category]);
+                });
+
+                console.log('Final accessories state:', this.accessories);
+            }
+
+            updateSelectionUI(category, accessoryKey) {
+                // Remove existing selection
+                document.querySelectorAll(`[data-category="${category}"].accessory-item.selected`).forEach(item => {
+                    item.classList.remove('selected');
+                });
+
+                // Add new selection
+                const selectedItem = document.querySelector(`[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
+                if (selectedItem) {
+                    selectedItem.classList.add('selected');
+                    console.log(`Successfully selected: ${category} -> ${accessoryKey}`);
+                } else {
+                    console.warn(`Accessory element not found: category="${category}", key="${accessoryKey}"`);
+                }
+            }
+        }
+
+        // Test the functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const manager = new TestAccessoryManager();
+            
+            // Setup grids
+            manager.setupAccessoryGrids();
+            
+            // Test with user data (your actual accessories)
+            const userAccessories = {
+                hats: "cap",
+                glasses: "heart_glasses", 
+                mouths: "tongue_out",
+                face_accessories: "freckles",
+                backgrounds: "hearts"
+            };
+            
+            // Set the user's accessories
+            setTimeout(() => {
+                manager.setAccessoriesData(userAccessories);
+                
+                // Verify the results
+                const results = document.getElementById('test-results');
+                let html = '<h2>Test Results:</h2><ul>';
+                
+                Object.keys(userAccessories).forEach(category => {
+                    const key = userAccessories[category];
+                    const element = document.querySelector(`[data-category="${category}"][data-accessory-key="${key}"]`);
+                    const isSelected = element && element.classList.contains('selected');
+                    html += `<li>${category}: ${key} - ${isSelected ? '✅ SELECTED' : '❌ NOT SELECTED'}</li>`;
+                });
+                
+                html += '</ul>';
+                results.innerHTML = html;
+            }, 100);
+        });
+    </script>
+</body>
+</html>
