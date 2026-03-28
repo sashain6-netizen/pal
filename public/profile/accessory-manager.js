@@ -136,7 +136,10 @@ class AccessoryManager {
 
     updatePreview() {
         const accessoryLayer = document.getElementById('accessoryLayer');
-        if (!accessoryLayer) return;
+        if (!accessoryLayer) {
+            console.warn('Accessory layer not found');
+            return;
+        }
 
         accessoryLayer.innerHTML = '';
 
@@ -145,7 +148,10 @@ class AccessoryManager {
             const accessory = ACCESSORY_LIBRARY[category]?.[accessoryKey];
 
             if (accessory && accessory.svg) {
+                console.log(`Rendering accessory: ${category} -> ${accessoryKey}`);
                 this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
+            } else {
+                console.log(`Skipping accessory: ${category} -> ${accessoryKey} (no SVG)`);
             }
         });
     }
@@ -156,7 +162,14 @@ class AccessoryManager {
         element.dataset.category = category;
         element.dataset.accessoryKey = accessoryKey;
 
-        const animationClass = category.replace('_', '');
+        const animationClassMap = {
+            'hats': 'hat',
+            'glasses': 'glasses', 
+            'mouths': 'mouth',
+            'face_accessories': 'face-accessory',
+            'backgrounds': 'background'
+        };
+        const animationClass = animationClassMap[category] || category;
         element.classList.add(animationClass);
 
         element.innerHTML = accessory.svg;

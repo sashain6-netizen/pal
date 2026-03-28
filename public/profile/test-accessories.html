@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessory Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .avatar-preview-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+        }
+        .avatar-with-accessories {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #previewImage {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+        }
+        .accessory-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .accessory-element {
+            position: absolute;
+            transform-origin: center;
+            transition: all 0.2s ease;
+        }
+        .accessory-element.hat {
+            animation: hatFloat 3s ease-in-out infinite;
+        }
+        .accessory-element.glasses {
+            animation: glassesShine 4s ease-in-out infinite;
+        }
+        .accessory-element.mouth {
+            animation: mouthPulse 2s ease-in-out infinite;
+        }
+        .accessory-element.face-accessory {
+            animation: faceAccessoryWiggle 5s ease-in-out infinite;
+        }
+        .accessory-element.background {
+            animation: backgroundTwinkle 6s linear infinite;
+        }
+        @keyframes hatFloat {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+            50% { transform: translate(-50%, -50%) translateY(-2px); }
+        }
+        @keyframes glassesShine {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+        @keyframes mouthPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+        @keyframes faceAccessoryWiggle {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) rotate(1deg); }
+            75% { transform: translate(-50%, -50%) rotate(-1deg); }
+        }
+        @keyframes backgroundTwinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        .test-controls {
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Accessory Test Page</h1>
+    
+    <div class="avatar-preview-container">
+        <div class="avatar-with-accessories" id="avatarWithAccessories">
+            <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+            <div class="accessory-layer" id="accessoryLayer"></div>
+        </div>
+    </div>
+
+    <div class="test-controls">
+        <button onclick="testAccessory('hats', 'cap')">Test Cap</button>
+        <button onclick="testAccessory('glasses', 'sunglasses')">Test Sunglasses</button>
+        <button onclick="testAccessory('mouths', 'smile')">Test Smile</button>
+        <button onclick="testAccessory('face_accessories', 'mustache')">Test Mustache</button>
+        <button onclick="testAccessory('backgrounds', 'sparkles')">Test Sparkles</button>
+        <button onclick="clearAccessories()">Clear All</button>
+    </div>
+
+    <div id="console-output" style="background: #f5f5f5; padding: 10px; margin-top: 20px; font-family: monospace; max-height: 200px; overflow-y: auto;"></div>
+
+    <script src="accessories.js"></script>
+    <script src="accessory-manager.js"></script>
+    <script>
+        // Override console.log to show in page
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addToConsole(message, type = 'log') {
+            const div = document.createElement('div');
+            div.style.color = type === 'warn' ? 'orange' : 'black';
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+
+        function testAccessory(category, accessoryKey) {
+            console.log(`Testing accessory: ${category} -> ${accessoryKey}`);
+            if (window.accessoryManager) {
+                window.accessoryManager.selectAccessory(category, accessoryKey);
+            } else {
+                console.error('Accessory manager not ready');
+            }
+        }
+
+        function clearAccessories() {
+            console.log('Clearing all accessories');
+            if (window.accessoryManager) {
+                window.accessoryManager.setAccessoriesData({
+                    hats: 'none',
+                    glasses: 'none',
+                    mouths: 'none',
+                    face_accessories: 'none',
+                    backgrounds: 'none'
+                });
+            }
+        }
+
+        // Wait for accessory manager to be ready
+        window.addEventListener('accessoryManagerReady', () => {
+            console.log('Accessory manager is ready!');
+            console.log('Available accessories:', Object.keys(ACCESSORY_LIBRARY));
+        });
+
+        // Test with some default accessories after a short delay
+        setTimeout(() => {
+            if (window.accessoryManager) {
+                console.log('Testing with default accessories...');
+                window.accessoryManager.setAccessoriesData({
+                    hats: 'cap',
+                    glasses: 'sunglasses',
+                    mouths: 'smile',
+                    face_accessories: 'none',
+                    backgrounds: 'sparkles'
+                });
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
