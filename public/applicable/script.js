@@ -8,6 +8,9 @@ const apps = [
     { name: "Chatify", desc: "Chat with your friends", cat: "Fun", icon: "💬", url: "https://plane65k.github.io/chatify-public" }
     ];
 
+let currentApp = null;
+let isFullscreen = false;
+
 function loadApps(filter = 'All') {
     const grid = document.getElementById('appsGrid');
     grid.innerHTML = '';
@@ -30,6 +33,7 @@ function loadApps(filter = 'All') {
 }
 
 function openApp(app) {
+    currentApp = app;
     document.getElementById('activeAppName').innerText = app.name;
     if (app.extrnal) {
         window.open(app.url, "_blank");
@@ -42,6 +46,46 @@ function openApp(app) {
 function closeApp() {
     document.getElementById('appOverlay').style.display = 'none';
     document.getElementById('appFrame').src = '';
+    currentApp = null;
+    if (isFullscreen) {
+        exitFullscreen();
+    }
+}
+
+function toggleFullscreen() {
+    if (!currentApp) return;
+
+    const overlay = document.getElementById('appOverlay');
+    const window = overlay.querySelector('.app-window');
+
+    if (isFullscreen) {
+        exitFullscreen();
+    } else {
+        enterFullscreen();
+    }
+}
+
+function enterFullscreen() {
+    const overlay = document.getElementById('appOverlay');
+    const window = overlay.querySelector('.app-window');
+
+    overlay.classList.add('fullscreen');
+    window.classList.add('fullscreen');
+    isFullscreen = true;
+}
+
+function exitFullscreen() {
+    const overlay = document.getElementById('appOverlay');
+    const window = overlay.querySelector('.app-window');
+
+    overlay.classList.remove('fullscreen');
+    window.classList.remove('fullscreen');
+    isFullscreen = false;
+}
+
+function goToSource() {
+    if (!currentApp) return;
+    window.open(currentApp.url, '_blank');
 }
 
 function filterCategory(cat) {

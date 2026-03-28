@@ -35,7 +35,9 @@
             <div class="app-header-bar">
                 <span id="activeAppName">App Name</span>
                 <div class="window-controls">
-                    <button class="min-btn" onclick="closeApp()">×</button>
+                    <button class="control-btn fullscreen-btn" onclick="toggleFullscreen()" title="Full Screen">⛶</button>
+                    <button class="control-btn source-btn" onclick="goToSource()" title="Go To Source">↗</button>
+                    <button class="control-btn min-btn" onclick="closeApp()">×</button>
                 </div>
             </div>
             <iframe id="appFrame" src=""></iframe>
