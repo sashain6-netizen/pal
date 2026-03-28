@@ -168,13 +168,18 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
     try {
         console.log('Sending profile update data:', updatedData);
+        console.log('Updated data details:', JSON.stringify(updatedData, null, 2));
         const res = await fetch('/api/update-profile', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedData)
         });
 
+        console.log('Save response status:', res.status);
+        console.log('Save response headers:', Object.fromEntries(res.headers.entries()));
+
         const result = await res.json();
+        console.log('Save response body:', result);
 
         if (res.ok) {
             let successMessage = "Profile updated successfully! ✨";
