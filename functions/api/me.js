@@ -33,6 +33,7 @@ export async function onRequestGet(context) {
       displayName: user.displayName,
       rank: user.rank || "Member",
       themeColor: user.themeColor || "#2563eb",
+      avatarUrl: user.avatarUrl || "/default-avatar.png",
       isPremium: isPremium
     }), {
       headers: { "Content-Type": "application/json" }
