@@ -106,42 +106,31 @@ class AccessoryManager {
     updateSelectionUI(category, accessoryKey) {
         console.log(`Updating selection for ${category} -> ${accessoryKey}`);
         
-        // Remove existing selection
-        const existingSelected = document.querySelectorAll(`[data-category="${category}"].accessory-item.selected`);
-        console.log(`Found ${existingSelected.length} existing selected items for ${category}`);
+        // Remove existing selection from GRID items only
+        const existingSelected = document.querySelectorAll(`.accessory-item[data-category="${category}"].selected`);
+        console.log(`Found ${existingSelected.length} existing selected grid items for ${category}`);
         
         existingSelected.forEach(item => {
-            console.log(`Removing selected from: ${item.dataset.accessoryKey}`);
+            console.log(`Removing selected from grid item: ${item.dataset.accessoryKey}`);
             item.classList.remove('selected');
         });
 
-        // Add new selection
-        const selectedItem = document.querySelector(`[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
+        // Add new selection to GRID item only
+        const selectedItem = document.querySelector(`.accessory-item[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
         if (selectedItem) {
             selectedItem.classList.add('selected');
-            console.log(`✅ Successfully selected: ${category} -> ${accessoryKey}`);
-            console.log(`Element classes after selection: ${selectedItem.className}`);
-            console.log(`Element styles:`, window.getComputedStyle(selectedItem));
+            console.log(`✅ Successfully selected grid item: ${category} -> ${accessoryKey}`);
+            console.log(`Grid item classes after selection: ${selectedItem.className}`);
         } else {
-            console.warn(`❌ Accessory element not found: category="${category}", key="${accessoryKey}"`);
+            console.warn(`❌ Grid item not found: category="${category}", key="${accessoryKey}"`);
             
-            // Try to find the element with a more specific selector
-            const fallbackSelector = `[data-accessory-key="${accessoryKey}"]`;
-            const fallbackItem = document.querySelector(fallbackSelector);
-            if (fallbackItem && fallbackItem.dataset.category === category) {
-                fallbackItem.classList.add('selected');
-                console.log(`✅ Fallback selection successful: ${category} -> ${accessoryKey}`);
-            } else {
-                console.warn(`❌ Fallback also failed for: category="${category}", key="${accessoryKey}"`);
-                
-                // Log all available items for debugging
-                const allItems = document.querySelectorAll(`[data-category="${category}"]`);
-                console.log(`Available items for category ${category}:`, Array.from(allItems).map(item => ({
-                    key: item.dataset.accessoryKey,
-                    classes: item.className,
-                    element: item
-                })));
-            }
+            // Log all available grid items for debugging
+            const allGridItems = document.querySelectorAll(`.accessory-item[data-category="${category}"]`);
+            console.log(`Available grid items for category ${category}:`, Array.from(allGridItems).map(item => ({
+                key: item.dataset.accessoryKey,
+                classes: item.className,
+                element: item
+            })));
         }
     }
 
