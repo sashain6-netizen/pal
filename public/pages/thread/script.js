@@ -228,44 +228,30 @@ async function postReply() {
     }
 }
 
-function openDeleteModal(threadId) {
-    const modal = document.getElementById('deleteModal');
-    const confirmBtn = document.getElementById('confirmDeleteBtn');
+async function openDeleteModal(threadId) {
+    if (!await window.gameConfirm('Are you sure you want to delete this thread? This action cannot be undone.', 'Delete Thread')) {
+        return;
+    }
 
-    confirmBtn.onclick = async () => {
-        if (!await window.gameConfirm('Are you sure you want to delete this thread? This action cannot be undone.', 'Delete Thread')) {
-            return;
+    try {
+        const res = await fetch('/api/delete-thread', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ threadId }),
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            await window.gameAlert('Thread deleted successfully', 'Success');
+            window.location.href = '/pages';
+        } else {
+            const error = await res.json();
+            await window.gameAlert(error.error || 'Failed to delete thread', 'Error');
         }
-
-                try {
-            const res = await fetch('/api/delete-thread', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ threadId }),
-                credentials: 'include'
-            });
-
-                        if (res.ok) {
-                await window.gameAlert('Thread deleted successfully', 'Success');
-                window.location.href = '/pages';
-            } else {
-                const error = await res.json();
-                await window.gameAlert(error.error || 'Failed to delete thread', 'Error');
-            }
-        } catch (e) {
-            console.error('Delete thread error:', e);
-            await window.gameAlert('Error deleting thread', 'Error');
-        }
-
-                closeDeleteModal();
-    };
-
-        modal.style.display = 'flex';
-}
-
-function closeDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    modal.style.display = 'none';
+    } catch (e) {
+        console.error('Delete thread error:', e);
+        await window.gameAlert('Error deleting thread', 'Error');
+    }
 }
 
 function escapeHTML(str) {
