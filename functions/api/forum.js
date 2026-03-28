@@ -122,7 +122,8 @@ export async function onRequest(context) {
                         forumColor: premiumSet.has(creatorUsername)
                             ? (userData.forumColor || userData.themeColor || "#2563eb")
                             : "#2563eb",
-                        premiumGlowAlpha: typeof userData.premiumGlowAlpha === "number" ? userData.premiumGlowAlpha : 0.8
+                        premiumGlowAlpha: typeof userData.premiumGlowAlpha === "number" ? userData.premiumGlowAlpha : 0.8,
+                        avatar: userData.avatarUrl || "/default-avatar.png"
                     };
                 })
             );
