@@ -173,7 +173,7 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         console.log('  bio:', document.getElementById('bio')?.value);
         console.log('  themeColor:', document.getElementById('themeColor')?.value);
         console.log('  avatarUrl input:', document.getElementById('avatarUrl')?.value?.trim());
-        
+
         console.log('Sending profile update data:', updatedData);
         console.log('Updated data details:', JSON.stringify(updatedData, null, 2));
         const res = await fetch('/api/update-profile', {
@@ -202,19 +202,17 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
             showToast(successMessage);
             document.documentElement.style.setProperty('--blue-primary', updatedData.themeColor);
-            
-            // Client-side verification: check if our changes are reflected
+
             setTimeout(() => {
                 const currentAvatarUrlInput = document.getElementById('avatarUrl')?.value?.trim();
                 console.log('Post-save verification - Current avatar URL input:', currentAvatarUrlInput);
                 console.log('Post-save verification - Sent avatar URL:', updatedData.avatarUrl || '');
                 console.log('Post-save verification - URLs match:', currentAvatarUrlInput === (updatedData.avatarUrl || ''));
-                
+
                 if (updatedData.avatarUrl && currentAvatarUrlInput !== updatedData.avatarUrl) {
                     console.warn('⚠️ Avatar URL mismatch - input shows different value than what was sent');
                 }
-                
-                // Check if theme color was updated
+
                 const currentThemeInput = document.getElementById('themeColor')?.value;
                 console.log('Post-save verification - Current theme input:', currentThemeInput);
                 console.log('Post-save verification - Sent theme color:', updatedData.themeColor);
@@ -498,7 +496,7 @@ async function handleAvatarInput() {
             try {
                 await loadImageWithRetry(url);
                 updatePreview(url, "✅ Image loaded successfully");
-                return; // Success - exit function
+                return;
             } catch (error) {
                 let errorMessage = "❌ Failed to load image";
 
@@ -548,8 +546,7 @@ async function handleAvatarInput() {
                     console.log('Direct image load failed for:', url);
                     updatePreview("", "❌ Failed to load image directly");
                 };
-                
-                // Fallback: try loading with crossorigin attribute
+
                 img.crossOrigin = 'anonymous';
                 img.src = url;
             } else {
