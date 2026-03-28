@@ -85,7 +85,7 @@
         function testUserAccessories() {
             const userAccessories = {
                 "hats": "wizard_hat",
-                "glasses": "sunglasses", 
+                "glasses": "sunglasses",
                 "mouths": "surprised",
                 "face_accessories": "mustache",
                 "backgrounds": "stars"
@@ -106,7 +106,7 @@
             const clearAccessories = {
                 "hats": "none",
                 "glasses": "none",
-                "mouths": "none", 
+                "mouths": "none",
                 "face_accessories": "none",
                 "backgrounds": "none"
             };
@@ -127,24 +127,21 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             updateDebugInfo('DOM loaded, waiting for accessory manager...');
-            
-            // Listen for the accessory manager to be ready
+
             window.addEventListener('accessoryManagerReady', () => {
                 updateDebugInfo('✅ Accessory manager ready');
-                // Auto-load user accessories for testing
-                setTimeout(testUserAccessories, 500);
+                testUserAccessories();
             });
-            
-            // Fallback timeout
+
             setTimeout(() => {
                 if (window.accessoryManager) {
                     updateDebugInfo('✅ Accessory manager found via fallback');
-                    setTimeout(testUserAccessories, 500);
+                    testUserAccessories();
                 } else {
                     updateDebugInfo('❌ Accessory manager not found after timeout');
                 }
-            }, 2000);
+            }, 1000);
         });
-    </script>
+</script>
 </body>
 </html>

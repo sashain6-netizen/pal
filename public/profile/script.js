@@ -52,10 +52,8 @@ async function loadProfile() {
             if (window.accessoryManager) {
                 loadAccessories();
             } else {
-                // Listen for the accessory manager to be ready
                 window.addEventListener('accessoryManagerReady', loadAccessories);
-                
-                // Fallback timeout in case the event doesn't fire
+
                 setTimeout(() => {
                     if (window.accessoryManager) {
                         loadAccessories();

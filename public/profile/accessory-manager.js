@@ -3,21 +3,14 @@ class AccessoryManager {
         this.accessories = { ...DEFAULT_ACCESSORIES };
         this.selectedCategory = null;
         this.selectedAccessory = null;
-        this.init();
     }
 
     init() {
         this.setupAccessoryGrids();
         this.updatePreview();
-        
-        // Add a small delay to ensure DOM is fully ready
-        setTimeout(() => {
-            this.ensureUIReady();
-        }, 50);
     }
 
     ensureUIReady() {
-        // Check if all grids exist and are populated
         const categories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
         const allGridsReady = categories.every(category => {
             const gridId = `${category.replace('_', '-')}-grid`;
@@ -179,23 +172,9 @@ class AccessoryManager {
 
             this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
 
-            // Try to update UI immediately, or wait if DOM isn't ready
-            const tryUpdateUI = () => {
-                Object.keys(this.accessories).forEach(category => {
-                    this.updateSelectionUI(category, this.accessories[category]);
-                });
-            };
-
-            // Check if grids exist
-            const gridsExist = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds']
-                .some(category => document.getElementById(`${category.replace('_', '-')}-grid`));
-
-            if (gridsExist) {
-                tryUpdateUI();
-            } else {
-                // Wait a bit for DOM to be ready
-                setTimeout(tryUpdateUI, 100);
-            }
+            Object.keys(this.accessories).forEach(category => {
+                this.updateSelectionUI(category, this.accessories[category]);
+            });
 
             this.updatePreview();
 
@@ -209,8 +188,10 @@ let accessoryManager;
 document.addEventListener('DOMContentLoaded', () => {
     accessoryManager = new AccessoryManager();
     window.accessoryManager = accessoryManager;
-    
-    // Dispatch an event to let other scripts know the manager is ready
+
+    accessoryManager.setupAccessoryGrids();
+    accessoryManager.updatePreview();
+
     window.dispatchEvent(new CustomEvent('accessoryManagerReady'));
 });
 
