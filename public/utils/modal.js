@@ -19,7 +19,7 @@ class GameModal {
                         </div>
                     </div>
                 </div>
-                
+
                 <div id="game-confirm-modal" class="game-modal-overlay" style="display: none;">
                     <div class="game-modal-box">
                         <h3 id="game-confirm-title">Confirm Action</h3>

@@ -38,17 +38,16 @@ export async function onRequestGet(context) {
             health: {}
         };
 
-        // Online Users (estimated from recent activity)
         try {
             const allUsersIndex = await env.USERS_KV.get("all_users_index", { cacheTtl: 3600 });
             const allUsers = allUsersIndex ? JSON.parse(allUsersIndex) : [];
-            
+
             const recentlyActive = new Set();
-            
+
             const { results: recentThreads } = await env.DB.prepare(
                 "SELECT creator_username FROM threads WHERE created_at >= ?"
             ).bind(oneHourAgo.toISOString()).all();
-            
+
             recentThreads.forEach(thread => {
                 recentlyActive.add(thread.creator_username.toLowerCase());
             });
@@ -56,7 +55,7 @@ export async function onRequestGet(context) {
             const { results: recentPosts } = await env.DB.prepare(
                 "SELECT username FROM thread_posts WHERE created_at >= ?"
             ).bind(oneHourAgo.toISOString()).all();
-            
+
             recentPosts.forEach(post => {
                 recentlyActive.add(post.username.toLowerCase());
             });
@@ -64,14 +63,14 @@ export async function onRequestGet(context) {
             const { results: recentMessages } = await env.DB.prepare(
                 "SELECT username FROM chat_messages WHERE created_at >= ?"
             ).bind(oneHourAgo.toISOString()).all();
-            
+
             recentMessages.forEach(message => {
                 recentlyActive.add(message.username.toLowerCase());
             });
 
             realtimeStats.online.currentUsers = recentlyActive.size;
             realtimeStats.online.totalUsers = allUsers.length;
-            realtimeStats.online.percentage = allUsers.length > 0 ? 
+            realtimeStats.online.percentage = allUsers.length > 0 ?
                 Math.round((recentlyActive.size / allUsers.length) * 100) : 0;
 
         } catch (error) {
@@ -83,11 +82,11 @@ export async function onRequestGet(context) {
             const { results: threadsLastHour } = await env.DB.prepare(
                 "SELECT COUNT(*) as count FROM threads WHERE created_at >= ?"
             ).bind(oneHourAgo.toISOString()).all();
-            
+
             const { results: postsLastHour } = await env.DB.prepare(
                 "SELECT COUNT(*) as count FROM thread_posts WHERE created_at >= ?"
             ).bind(oneHourAgo.toISOString()).all();
-            
+
             const { results: messagesLastHour } = await env.DB.prepare(
                 "SELECT COUNT(*) as count FROM chat_messages WHERE created_at >= ?"
             ).bind(oneHourAgo.toISOString()).all();
@@ -98,7 +97,7 @@ export async function onRequestGet(context) {
 
             const reportsList = await env.USERS_KV.get("reports_list");
             const reportIds = reportsList ? JSON.parse(reportsList) : [];
-            
+
             let reportsLastHour = 0;
             for (const reportId of reportIds) {
                 const reportData = await env.USERS_KV.get(`report:${reportId}`);
@@ -114,11 +113,11 @@ export async function onRequestGet(context) {
             const { results: threadsLastDay } = await env.DB.prepare(
                 "SELECT COUNT(*) as count FROM threads WHERE created_at >= ?"
             ).bind(oneDayAgo.toISOString()).all();
-            
+
             const { results: postsLastDay } = await env.DB.prepare(
                 "SELECT COUNT(*) as count FROM thread_posts WHERE created_at >= ?"
             ).bind(oneDayAgo.toISOString()).all();
-            
+
             const { results: messagesLastDay } = await env.DB.prepare(
                 "SELECT COUNT(*) as count FROM chat_messages WHERE created_at >= ?"
             ).bind(oneDayAgo.toISOString()).all();
@@ -132,19 +131,18 @@ export async function onRequestGet(context) {
             realtimeStats.activity.error = error.message;
         }
 
-        // System Performance Metrics
         try {
             const dbStartTime = performance.now();
             await env.DB.prepare("SELECT 1").first();
             const dbResponseTime = Math.round(performance.now() - dbStartTime);
-            
+
             const kvStartTime = performance.now();
             await env.USERS_KV.get("all_users_index");
             const kvResponseTime = Math.round(performance.now() - kvStartTime);
 
             realtimeStats.performance.dbResponseTime = dbResponseTime;
             realtimeStats.performance.kvResponseTime = kvResponseTime;
-            realtimeStats.performance.overallHealth = 
+            realtimeStats.performance.overallHealth =
                 (dbResponseTime < 100 && kvResponseTime < 50) ? 'Good' : 'Degraded';
 
         } catch (error) {
@@ -153,7 +151,6 @@ export async function onRequestGet(context) {
             realtimeStats.performance.overallHealth = 'Poor';
         }
 
-        // System Health Checks
         try {
             const healthChecks = {
                 database: false,
@@ -166,7 +163,6 @@ export async function onRequestGet(context) {
                 newsSystem: false
             };
 
-            // Database health
             try {
                 await env.DB.prepare("SELECT 1").first();
                 healthChecks.database = true;
@@ -174,7 +170,6 @@ export async function onRequestGet(context) {
                 healthChecks.database = false;
             }
 
-            // KV Storage health
             try {
                 await env.USERS_KV.get("all_users_index");
                 healthChecks.kvStorage = true;
@@ -182,7 +177,6 @@ export async function onRequestGet(context) {
                 healthChecks.kvStorage = false;
             }
 
-            // User Index health
             try {
                 const userIndex = await env.USERS_KV.get("all_users_index");
                 healthChecks.userIndex = !!(userIndex && JSON.parse(userIndex).length > 0);
@@ -190,7 +184,6 @@ export async function onRequestGet(context) {
                 healthChecks.userIndex = false;
             }
 
-            // Premium System health
             try {
                 const premiumData = await env.USERS_KV.get("pal_premium");
                 healthChecks.premiumSystem = !!premiumData;
@@ -198,7 +191,6 @@ export async function onRequestGet(context) {
                 healthChecks.premiumSystem = false;
             }
 
-            // Report System health
             try {
                 const reportsList = await env.USERS_KV.get("reports_list");
                 healthChecks.reportSystem = !!reportsList;
@@ -206,7 +198,6 @@ export async function onRequestGet(context) {
                 healthChecks.reportSystem = false;
             }
 
-            // Forum System health
             try {
                 await env.DB.prepare("SELECT COUNT(*) as count FROM threads LIMIT 1").first();
                 healthChecks.forumSystem = true;
@@ -214,7 +205,6 @@ export async function onRequestGet(context) {
                 healthChecks.forumSystem = false;
             }
 
-            // Chat System health
             try {
                 await env.DB.prepare("SELECT COUNT(*) as count FROM chat_rooms LIMIT 1").first();
                 healthChecks.chatSystem = true;
@@ -222,7 +212,6 @@ export async function onRequestGet(context) {
                 healthChecks.chatSystem = false;
             }
 
-            // News System health
             try {
                 await env.DB.prepare("SELECT COUNT(*) as count FROM news_articles LIMIT 1").first();
                 healthChecks.newsSystem = true;
@@ -232,7 +221,7 @@ export async function onRequestGet(context) {
 
             const passedChecks = Object.values(healthChecks).filter(check => check === true).length;
             const totalChecks = Object.keys(healthChecks).length;
-            
+
             realtimeStats.health.checks = healthChecks;
             realtimeStats.health.overallScore = Math.round((passedChecks / totalChecks) * 100);
             realtimeStats.health.status = realtimeStats.health.overallScore >= 90 ? 'Excellent' :

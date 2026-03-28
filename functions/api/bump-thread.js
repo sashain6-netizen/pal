@@ -51,15 +51,15 @@ export async function onRequestPost(context) {
     }
 
     await env.DB.prepare(`
-      UPDATE threads 
-      SET last_activity_at = CURRENT_TIMESTAMP 
+      UPDATE threads
+      SET last_activity_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `).bind(threadId).run();
 
     await env.USERS_KV.put(`pal_thread_bump_last:${username}`, String(now));
 
-    return new Response(JSON.stringify({ success: true }), { 
-      headers: { "Content-Type": "application/json" } 
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { "Content-Type": "application/json" }
     });
 
   } catch (err) {

@@ -17,7 +17,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding-top: 80px; 
+    padding-top: 80px;
     background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
 }
 

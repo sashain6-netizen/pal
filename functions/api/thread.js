@@ -5,7 +5,7 @@ export async function onRequestGet(context) {
     const url = new URL(request.url);
 
         const threadId = url.searchParams.get("id");
-    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 100); 
+    const limit = Math.min(parseInt(url.searchParams.get("limit")) || 50, 100);
     const offset = parseInt(url.searchParams.get("offset")) || 0;
 
     if (!threadId) return new Response("ID Required", { status: 400 });
@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
                 await env.DB.prepare(`
                     INSERT INTO last_read (user_username, item_id, item_type, last_viewed_at)
                     VALUES (?, ?, 'thread', CURRENT_TIMESTAMP)
-                    ON CONFLICT(user_username, item_id, item_type) 
+                    ON CONFLICT(user_username, item_id, item_type)
                     DO UPDATE SET last_viewed_at = CURRENT_TIMESTAMP
                 `).bind(user.username, threadId).run();
             } catch (e) { console.error("Mark-read background error", e); }
@@ -34,9 +34,9 @@ export async function onRequestGet(context) {
         if (!thread) return new Response("Thread not found", { status: 404 });
 
         const { results: posts } = await env.DB.prepare(`
-            SELECT * FROM thread_posts 
-            WHERE thread_id = ? 
-            ORDER BY created_at ASC 
+            SELECT * FROM thread_posts
+            WHERE thread_id = ?
+            ORDER BY created_at ASC
             LIMIT ? OFFSET ?
         `).bind(threadId, limit + 1, offset).all();
 
@@ -92,10 +92,10 @@ export async function onRequestGet(context) {
             };
         });
 
-        return new Response(JSON.stringify({ 
-            title: thread.title, 
-            author_username: thread.creator_username, 
-            posts: decoratedPosts, 
+        return new Response(JSON.stringify({
+            title: thread.title,
+            author_username: thread.creator_username,
+            posts: decoratedPosts,
             hasMore: hasMore
         }), { headers: { "Content-Type": "application/json" } });
 

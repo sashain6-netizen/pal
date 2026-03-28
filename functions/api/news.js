@@ -4,9 +4,8 @@ export async function onRequest(context) {
     const { request, env } = context;
     const url = new URL(request.url);
     const id = url.searchParams.get('id');
-    const secret = env.JWT_SECRET; 
+    const secret = env.JWT_SECRET;
 
-    // --- Helper: Verify Staff Rank via Cookies & USERS_KV ---
     async function getStaffUser(request, env, secret) {
         const cookieHeader = request.headers.get("Cookie") || "";
         if (!cookieHeader.includes("pal_session=")) return null;
@@ -32,20 +31,19 @@ export async function onRequest(context) {
         }
     }
 
-    // --- 1. GET: Fetch Article(s) ---
     if (request.method === "GET") {
         if (id) {
             const article = await env.DB.prepare("SELECT * FROM news_articles WHERE id = ?").bind(id).first();
             return article ? Response.json(article) : new Response("Not Found", { status: 404 });
         }
 
-        const limit = parseInt(url.searchParams.get("limit")) || 10; 
+        const limit = parseInt(url.searchParams.get("limit")) || 10;
         const offset = parseInt(url.searchParams.get("offset")) || 0;
 
         const { results: articles } = await env.DB.prepare(`
-            SELECT * FROM news_articles 
-            WHERE is_published = 1 
-            ORDER BY created_at DESC 
+            SELECT * FROM news_articles
+            WHERE is_published = 1
+            ORDER BY created_at DESC
             LIMIT ? OFFSET ?
         `).bind(limit + 1, offset).all();
 
@@ -58,7 +56,6 @@ export async function onRequest(context) {
         });
     }
 
-    // --- 2. PATCH: Update Article (Staff Only) ---
     if (request.method === "PATCH") {
         const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
@@ -84,7 +81,6 @@ export async function onRequest(context) {
         }
     }
 
-    // --- 3. POST: Create Article (Staff Only) ---
     if (request.method === "POST") {
         const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });
@@ -92,12 +88,12 @@ export async function onRequest(context) {
         const data = await request.json();
         try {
             await env.DB.prepare(
-                `INSERT INTO news_articles 
-                (title, slug, content, author_name, author_rank, category, is_published) 
+                `INSERT INTO news_articles
+                (title, slug, content, author_name, author_rank, category, is_published)
                 VALUES (?, ?, ?, ?, ?, ?, ?)`
             ).bind(
-                data.title, data.slug, data.content, 
-                user.username, user.rank, 
+                data.title, data.slug, data.content,
+                user.username, user.rank,
                 data.category || 'General', 1
             ).run();
 
@@ -107,7 +103,6 @@ export async function onRequest(context) {
         }
     }
 
-    // --- 4. DELETE: Remove Article (Staff Only) ---
     if (request.method === "DELETE") {
         const user = await getStaffUser(request, env, secret);
         if (!user) return new Response("Unauthorized", { status: 401 });

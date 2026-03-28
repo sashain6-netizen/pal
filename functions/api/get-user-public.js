@@ -1,7 +1,7 @@
 export async function onRequestGet(context) {
     const { request, env } = context;
     const url = new URL(request.url);
-    const username = url.searchParams.get("id"); 
+    const username = url.searchParams.get("id");
 
     if (!username) return new Response("Missing ID", { status: 400 });
 
@@ -10,7 +10,6 @@ export async function onRequestGet(context) {
 
     const user = JSON.parse(rawData);
 
-    // --- CHECK PREMIUM STATUS ---
     const premiumData = await env.USERS_KV.get("pal_premium");
     const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
     const isPremium = premiumUsers.includes(username.toLowerCase());
@@ -24,7 +23,7 @@ export async function onRequestGet(context) {
         rank: user.rank || "Member",
         xp: user.xp || 0,
         currency: user.currency || 0,
-        followers: user.followers || 0, 
+        followers: user.followers || 0,
         following: user.following || [],
         isPremium: isPremium
     };

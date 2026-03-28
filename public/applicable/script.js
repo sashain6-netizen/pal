@@ -62,12 +62,4 @@ function filterApps() {
     });
 }
 
-
 loadApps();
-
-
-
-
-
-
-

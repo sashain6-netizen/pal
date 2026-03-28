@@ -1,8 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
-let currentRawContent = ""; 
-let isStaff = false; 
-
+let currentRawContent = "";
+let isStaff = false;
 
 function parseMarkup(text) {
     if (!text) return "";
@@ -23,7 +22,7 @@ function handleAuthDetection(userData) {
     const staffRanks = ['Owner', 'Admin', 'Moderator'];
     if (userData && userData.loggedIn && staffRanks.includes(userData.rank)) {
         isStaff = true;
-        renderEditButton(); 
+        renderEditButton();
     }
 }
 
@@ -31,8 +30,8 @@ window.addEventListener('authReady', (e) => {
     handleAuthDetection(e.detail);
 });
 
-if (window.currentUserData) { 
-    handleAuthDetection(window.currentUserData); 
+if (window.currentUserData) {
+    handleAuthDetection(window.currentUserData);
 }
 
 function renderEditButton() {

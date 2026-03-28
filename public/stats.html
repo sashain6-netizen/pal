@@ -417,7 +417,6 @@
             }
         }
 
-        /* Additional Styles for Debugging Sections */
         .metrics-grid,
         .monitoring-grid {
             display: grid;
@@ -504,7 +503,7 @@
         .log-controls:hover {
             background: var(--blue-deep);
         }
-    </style>
+</style>
 </head>
 <body>
     <div id="navbar-placeholder"></div>
@@ -886,16 +885,13 @@
         let requestCount = 0;
         let errorCount = 0;
 
-        // Performance monitoring
         function startPerformanceMonitoring() {
-            // Page load time
             window.addEventListener('load', () => {
                 const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
                 document.getElementById('page-load-time').textContent = `${loadTime}ms`;
                 addLog('INFO', `Page load time: ${loadTime}ms`);
             });
 
-            // Memory usage (if available)
             if (performance.memory) {
                 setInterval(() => {
                     const memoryMB = Math.round(performance.memory.usedJSHeapSize / 1048576);
@@ -903,11 +899,9 @@
                 }, 5000);
             }
 
-            // Monitor API calls
             monitorAPICalls();
         }
 
-        // Monitor API calls for performance
         function monitorAPICalls() {
             const originalFetch = window.fetch;
             window.fetch = async function(...args) {
@@ -919,10 +913,8 @@
                     const endTime = performance.now();
                     const responseTime = Math.round(endTime - startTime);
 
-                                        // Update API response time
                     document.getElementById('api-response-time').textContent = `${responseTime}ms`;
 
-                                        // Log successful API call
                     if (args[0].includes('/api/')) {
                         addLog('INFO', `API call to ${args[0]}: ${responseTime}ms`);
                     }
@@ -933,14 +925,12 @@
                     const endTime = performance.now();
                     const responseTime = Math.round(endTime - startTime);
 
-                                        // Log failed API call
                     addLog('ERROR', `API call to ${args[0]} failed: ${error.message} (${responseTime}ms)`);
                     throw error;
                 }
             };
         }
 
-        // Test API endpoints with detailed status
         async function testAPIEndpoints() {
             addLog('INFO', 'Starting individual endpoint status tests...');
             const endpoints = [
@@ -993,7 +983,7 @@
             const endpointItems = document.querySelectorAll('.endpoint-item');
             console.log('Looking for:', name);
             console.log('Found items:', endpointItems.length);
-            
+
             for (const item of endpointItems) {
                 const descElement = item.querySelector('.endpoint-description');
                 console.log('Description:', descElement ? descElement.textContent : 'not found');
@@ -1008,12 +998,11 @@
 
         function findEndpointStatusElement(url) {
             const endpointItems = document.querySelectorAll('.endpoint-item');
-            
+
             for (const item of endpointItems) {
                 const nameElement = item.querySelector('.endpoint-name');
                 if (nameElement) {
                     const endpointName = nameElement.textContent;
-                    // Match by endpoint name
                     if ((url.includes('/api/me') && endpointName === '/api/me') ||
                         (url.includes('/api/forum') && endpointName === '/api/forum') ||
                         (url.includes('/api/users-search') && endpointName === '/api/users-search') ||
@@ -1069,7 +1058,7 @@
 
         async function testUserIndex() {
             const res = await fetch('/api/user-stats', { credentials: 'include' });
-            return res.ok || res.status === 403; // 403 is expected for non-admins
+            return res.ok || res.status === 403;
         }
 
         async function testForumStorage() {
@@ -1077,7 +1066,6 @@
             return res.ok;
         }
 
-        // Test all database connections
         async function testDatabaseConnections() {
             const databases = [
                 { name: 'KV Storage', test: testKVStorageDetailed },
@@ -1090,27 +1078,23 @@
             }
         }
 
-        // Real-time monitoring
         function startRealTimeMonitoring() {
             setInterval(() => {
                 updateRealTimeMetrics();
-            }, 10000); // Update every 10 seconds
+            }, 10000);
         }
 
         function updateRealTimeMetrics() {
-            // Update requests per minute (actual tracking)
             const requestsPerMinute = Math.round(requestCount / (Date.now() / 60000) % 60);
             document.getElementById('requests-per-minute').textContent = requestsPerMinute;
 
-            // Update error rate (actual tracking)
             const totalRequests = Math.max(requestCount, 1);
             const errorRate = Math.round((errorCount / totalRequests) * 100);
             document.getElementById('error-rate').textContent = `${errorRate}%`;
 
-            // Update system load based on error rate and response times
             const apiResponseTime = document.getElementById('api-response-time').textContent;
             const responseTimeMs = parseInt(apiResponseTime) || 0;
-            
+
             let loadStatus = 'Normal';
             if (errorRate > 10 || responseTimeMs > 1000) {
                 loadStatus = 'High';
@@ -1119,12 +1103,10 @@
             }
             document.getElementById('system-load').textContent = loadStatus;
 
-            // Update active connections (estimated from recent activity)
             const activeConnections = Math.max(1, Math.floor(requestCount / 10));
             document.getElementById('active-connections').textContent = activeConnections;
         }
 
-        // Enhanced log functions
         function clearLogs() {
             const logContainer = document.getElementById('system-logs');
             logContainer.innerHTML = '';
@@ -1151,13 +1133,11 @@
             addLog('INFO', 'Logs exported to file');
         }
 
-        // Format timestamp for consistent display
         function formatTimestamp(dateString) {
             const date = new Date(dateString);
             return date.toLocaleString();
         }
 
-        // Get current user
         async function getCurrentUser() {
             try {
                 const res = await fetch('/api/me', { credentials: 'include' });
@@ -1169,12 +1149,10 @@
             }
         }
 
-        // Check if user has admin privileges
         function hasAdminPrivileges() {
             return currentUser && ['Owner', 'Admin', 'Moderator', 'Manager'].includes(currentUser.rank);
         }
 
-        // Refresh all statistics
         async function refreshAllStats() {
             if (!hasAdminPrivileges()) {
                 showError('Access denied. Admin privileges required.');
@@ -1198,89 +1176,87 @@
                 if (!res.ok) {
                     throw new Error(`HTTP ${res.status}`);
                 }
-                
+
                 const stats = await res.json();
-                
+
                 document.getElementById('total-users').textContent = stats.users.total || 0;
                 document.getElementById('users-change').textContent = `${stats.users.activeLastWeek || 0} active this week`;
-                
+
                 document.getElementById('premium-users').textContent = stats.premium.total || 0;
                 document.getElementById('premium-change').textContent = `${stats.premium.percentage || 0}% of users`;
-                
+
                 document.getElementById('total-threads').textContent = stats.forum.totalThreads || 0;
                 document.getElementById('threads-change').textContent = `${stats.forum.threadsThisWeek || 0} this week`;
                 document.getElementById('posts-this-week').textContent = stats.forum.postsThisWeek || 0;
-                
+
                 document.getElementById('total-chat-rooms').textContent = stats.chats.totalRooms || 0;
                 document.getElementById('total-chat-messages').textContent = stats.chats.totalMessages || 0;
                 document.getElementById('messages-this-week').textContent = stats.chats.messagesThisWeek || 0;
-                
+
                 document.getElementById('total-articles').textContent = stats.news.totalArticles || 0;
                 document.getElementById('published-articles').textContent = stats.news.publishedArticles || 0;
                 document.getElementById('articles-this-week').textContent = stats.news.articlesThisWeek || 0;
-                
+
                 document.getElementById('total-banned').textContent = stats.bans.total || 0;
                 document.getElementById('permanent-bans').textContent = stats.bans.permanent || 0;
                 document.getElementById('temporary-bans').textContent = stats.bans.temporary || 0;
                 document.getElementById('reports-this-week').textContent = stats.reports.thisWeek || 0;
-                
+
                 updateRankDistribution(stats.users.byRank || {});
-                
+
                 if (stats.activity.last7Days) {
                     updateActivityChart(stats.activity.last7Days);
                 }
-                
+
                 addLog('SUCCESS', 'Comprehensive statistics loaded successfully');
-                
+
             } catch (error) {
                 console.error('Error loading comprehensive stats:', error);
                 addLog('ERROR', `Failed to load comprehensive stats: ${error.message}`);
             }
         }
 
-        // Load real-time statistics
         async function loadRealtimeStats() {
             try {
                 const res = await fetch('/api/realtime-stats', { credentials: 'include' });
                 if (!res.ok) {
                     throw new Error(`HTTP ${res.status}`);
                 }
-                
+
                 const stats = await res.json();
-                
+
                 document.getElementById('active-users').textContent = stats.online.currentUsers || 0;
                 document.getElementById('active-change').textContent = 'Currently active';
-                
+
                 document.getElementById('messages-last-hour').textContent = stats.activity.messagesLastHour || 0;
-                
+
                 document.getElementById('system-health').textContent = `${stats.health.overallScore || 0}%`;
                 document.getElementById('health-status').textContent = stats.health.status || 'Unknown';
-                document.getElementById('health-status').className = 
+                document.getElementById('health-status').className =
                     `stat-change ${stats.health.overallScore >= 75 ? 'positive' : stats.health.overallScore >= 50 ? 'warning' : 'negative'}`;
-                
+
                 if (stats.performance.dbResponseTime) {
                     document.getElementById('api-response-time').textContent = `${stats.performance.dbResponseTime}ms`;
                 }
-                
+
                 addLog('SUCCESS', 'Real-time statistics loaded successfully');
-                
+
             } catch (error) {
                 console.error('Error loading realtime stats:', error);
                 addLog('ERROR', `Failed to load realtime stats: ${error.message}`);
             }
         }
 
-        // Update rank distribution display
         function updateRankDistribution(rankCounts) {
             const container = document.getElementById('rank-distribution');
             container.innerHTML = '';
-            
+
             const totalUsers = Object.values(rankCounts).reduce((sum, count) => sum + count, 0);
-            
+
             Object.entries(rankCounts).forEach(([rank, count]) => {
                 const percentage = totalUsers > 0 ? Math.round((count / totalUsers) * 100) : 0;
                 const rankColor = getRankColor(rank);
-                
+
                 const metricItem = document.createElement('div');
                 metricItem.className = 'metric-item';
                 metricItem.innerHTML = `
@@ -1292,11 +1268,10 @@
             });
         }
 
-        // Get rank color for display
         function getRankColor(rank) {
             const colors = {
                 'Owner': '#dc2626',
-                'Admin': '#ea580c', 
+                'Admin': '#ea580c',
                 'Manager': '#ca8a04',
                 'Moderator': '#65a30d',
                 'Member': '#2563eb'
@@ -1306,20 +1281,20 @@
 
         function updateActivityChart(activityData) {
             const chartContainer = document.getElementById('activity-chart');
-            
+
             if (!activityData || activityData.length === 0) {
                 chartContainer.innerHTML = '<div style="text-align: center; color: #64748b; padding: 40px;">No activity data available</div>';
                 return;
             }
-            
+
             const maxValue = Math.max(
                 ...activityData.map(day => Math.max(day.threads, day.posts, day.messages, day.reports))
             );
-            
+
             const barsHTML = activityData.map((day, index) => {
                 const totalActivity = day.threads + day.posts + day.messages + day.reports;
                 const height = maxValue > 0 ? (totalActivity / maxValue) * 100 : 0;
-                
+
                 return `
                     <div class="bar" style="height: ${height}%; background: linear-gradient(135deg, #3b82f6, #1d4ed8)" title="${day.dayName}: ${totalActivity} activities">
                         <div class="bar-value">${totalActivity}</div>
@@ -1327,7 +1302,7 @@
                     </div>
                 `;
             }).join('');
-            
+
             chartContainer.innerHTML = barsHTML;
         }
 
@@ -1378,7 +1353,6 @@
             }
         }
 
-        // Run all diagnostics
         async function runAllDiagnostics() {
             if (!hasAdminPrivileges()) {
                 showError('Access denied. Admin privileges required.');
@@ -1405,7 +1379,6 @@
             addLog('INFO', 'System diagnostics completed');
         }
 
-        // Run individual diagnostic
         async function runDiagnostic(name, testFunction) {
             const diagnosticItems = document.querySelectorAll('.diagnostic-item');
             let statusElement = null;
@@ -1467,7 +1440,7 @@
 
         async function testAPIEndpoints() {
             const endpoints = ['/api/forum', '/api/users-search?q=', '/api/me'];
-            const results = await Promise.all(endpoints.map(endpoint => 
+            const results = await Promise.all(endpoints.map(endpoint =>
                 fetch(endpoint, { credentials: 'include' }).then(res => res.ok).catch(() => false)
             ));
             return results.every(result => result);
@@ -1487,10 +1460,10 @@
         }
 
         async function testReportSystem() {
-            if (!hasAdminPrivileges()) return true; 
+            if (!hasAdminPrivileges()) return true;
             try {
                 const res = await fetch('/api/report-user', { credentials: 'include' });
-                return res.ok || res.status === 403; 
+                return res.ok || res.status === 403;
             } catch (error) {
                 return false;
             }
@@ -1531,7 +1504,6 @@
                 return [];
             }
         }
-
 
         function addLog(level, message) {
             const logContainer = document.getElementById('system-logs');
@@ -1646,11 +1618,11 @@
 
         setInterval(() => {
             if (hasAdminPrivileges()) {
-                loadRealtimeStats(); 
+                loadRealtimeStats();
             }
         }, 30000);
 
         document.addEventListener('DOMContentLoaded', initializePage);
-    </script>
+</script>
 </body>
 </html>

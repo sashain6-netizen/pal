@@ -53,7 +53,7 @@ export async function onRequestPost(context) {
     }
 
     const dbResult = await env.DB.prepare(`
-      INSERT INTO gift_locks (recipient, last_received) 
+      INSERT INTO gift_locks (recipient, last_received)
       VALUES (?, CURRENT_TIMESTAMP)
       ON CONFLICT(recipient) DO UPDATE SET last_received = CURRENT_TIMESTAMP
       WHERE (strftime('%s', 'now') - strftime('%s', last_received)) > 30
@@ -97,9 +97,9 @@ export async function onRequestPost(context) {
       env.USERS_KV.put(senderCooldownKey, "true", { expirationTtl: 60 })
     ]);
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: `Successfully gifted ${recipientUsername}!` 
+    return new Response(JSON.stringify({
+      success: true,
+      message: `Successfully gifted ${recipientUsername}!`
     }), { headers: { "Content-Type": "application/json" } });
 
   } catch (err) {

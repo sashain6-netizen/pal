@@ -53,7 +53,7 @@ export async function onRequestGet(context) {
                 const user = JSON.parse(userData);
                 const rank = user.rank || 'Member';
                 rankCounts[rank] = (rankCounts[rank] || 0) + 1;
-                
+
                 if (user.lastActivity && new Date(user.lastActivity) >= oneWeekAgo) {
                     activeUsers.add(username);
                 }
@@ -62,13 +62,11 @@ export async function onRequestGet(context) {
         stats.users.byRank = rankCounts;
         stats.users.activeLastWeek = activeUsers.size;
 
-        // Premium Users
         const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
         const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
         stats.premium.total = premiumUsers.length;
         stats.premium.percentage = stats.users.total > 0 ? Math.round((premiumUsers.length / stats.users.total) * 100) : 0;
 
-        // Forum Statistica
         try {
             const { results: threads } = await env.DB.prepare("SELECT COUNT(*) as count FROM threads").all();
             stats.forum.totalThreads = threads[0]?.count || 0;
@@ -87,11 +85,11 @@ export async function onRequestGet(context) {
             stats.forum.postsThisWeek = recentPosts[0]?.count || 0;
 
             const { results: activeThreads } = await env.DB.prepare(`
-                SELECT t.id, t.title, COUNT(tp.id) as post_count 
-                FROM threads t 
-                LEFT JOIN thread_posts tp ON t.id = tp.thread_id 
-                GROUP BY t.id, t.title 
-                ORDER BY post_count DESC 
+                SELECT t.id, t.title, COUNT(tp.id) as post_count
+                FROM threads t
+                LEFT JOIN thread_posts tp ON t.id = tp.thread_id
+                GROUP BY t.id, t.title
+                ORDER BY post_count DESC
                 LIMIT 10
             `).all();
             stats.forum.mostActiveThreads = activeThreads;
@@ -101,7 +99,6 @@ export async function onRequestGet(context) {
             stats.forum.error = error.message;
         }
 
-        // Chat Statistics
         try {
             const { results: chatRooms } = await env.DB.prepare("SELECT COUNT(*) as count FROM chat_rooms").all();
             stats.chats.totalRooms = chatRooms[0]?.count || 0;
@@ -115,11 +112,11 @@ export async function onRequestGet(context) {
             stats.chats.messagesThisWeek = recentMessages[0]?.count || 0;
 
             const { results: activeRooms } = await env.DB.prepare(`
-                SELECT r.id, r.room_name, COUNT(cm.id) as message_count 
-                FROM chat_rooms r 
-                LEFT JOIN chat_messages cm ON r.id = cm.room_id 
-                GROUP BY r.id, r.room_name 
-                ORDER BY message_count DESC 
+                SELECT r.id, r.room_name, COUNT(cm.id) as message_count
+                FROM chat_rooms r
+                LEFT JOIN chat_messages cm ON r.id = cm.room_id
+                GROUP BY r.id, r.room_name
+                ORDER BY message_count DESC
                 LIMIT 10
             `).all();
             stats.chats.mostActiveRooms = activeRooms;
@@ -129,11 +126,10 @@ export async function onRequestGet(context) {
             stats.chats.error = error.message;
         }
 
-        // Reports Statistics
         try {
             const reportsList = await env.USERS_KV.get("reports_list");
             const reportIds = reportsList ? JSON.parse(reportsList) : [];
-            
+
             stats.reports.total = reportIds.length;
             stats.reports.pending = 0;
             stats.reports.resolved = 0;
@@ -148,13 +144,12 @@ export async function onRequestGet(context) {
                     } else if (report.status === 'resolved') {
                         stats.reports.resolved++;
                     }
-                    
+
                     const reason = report.reason || 'other';
                     stats.reports.byReason[reason] = (stats.reports.byReason[reason] || 0) + 1;
                 }
             }
 
-            // Reports this week
             const reportsThisWeek = [];
             for (const reportId of reportIds) {
                 const reportData = await env.USERS_KV.get(`report:${reportId}`);
@@ -172,7 +167,6 @@ export async function onRequestGet(context) {
             stats.reports.error = error.message;
         }
 
-        // News Statistics
         try {
             const { results: totalArticles } = await env.DB.prepare("SELECT COUNT(*) as count FROM news_articles").all();
             stats.news.totalArticles = totalArticles[0]?.count || 0;
@@ -188,9 +182,9 @@ export async function onRequestGet(context) {
             stats.news.articlesThisWeek = recentArticles[0]?.count || 0;
 
             const { results: articlesByCategory } = await env.DB.prepare(`
-                SELECT category, COUNT(*) as count 
-                FROM news_articles 
-                WHERE is_published = 1 
+                SELECT category, COUNT(*) as count
+                FROM news_articles
+                WHERE is_published = 1
                 GROUP BY category
             `).all();
             stats.news.byCategory = articlesByCategory;
@@ -200,7 +194,6 @@ export async function onRequestGet(context) {
             stats.news.error = error.message;
         }
 
-        // Ban Statistics
         try {
             const bannedUsers = [];
             for (const username of allUsers) {
@@ -222,7 +215,7 @@ export async function onRequestGet(context) {
             stats.bans.permanent = bannedUsers.filter(b => b.banStatus === 'Permanent').length;
             stats.bans.temporary = bannedUsers.filter(b => b.banStatus === 'Temporary').length;
 
-            const bansThisWeek = bannedUsers.filter(b => 
+            const bansThisWeek = bannedUsers.filter(b =>
                 b.banDate && new Date(b.banDate) >= oneWeekAgo
             ).length;
             stats.bans.thisWeek = bansThisWeek;
@@ -239,14 +232,13 @@ export async function onRequestGet(context) {
             stats.bans.error = error.message;
         }
 
-        // System Statistics
         try {
             const kvKeys = [
                 "all_users_index",
-                "pal_premium", 
+                "pal_premium",
                 "reports_list"
             ];
-            
+
             let totalKVSize = 0;
             for (const key of kvKeys) {
                 const data = await env.USERS_KV.get(key);
@@ -254,9 +246,8 @@ export async function onRequestGet(context) {
                     totalKVSize += data.length;
                 }
             }
-            stats.system.kvStorageEstimate = Math.round(totalKVSize / 1024); // KB
+            stats.system.kvStorageEstimate = Math.round(totalKVSize / 1024);
 
-            // Database table counts
             const tables = [
                 'threads', 'thread_posts', 'thread_bumps', 'pinned_threads',
                 'last_read', 'chat_rooms', 'chat_members', 'chat_messages',
@@ -278,14 +269,13 @@ export async function onRequestGet(context) {
             stats.system.error = error.message;
         }
 
-        // Activity Timeline (last 7 days)
         try {
             const activityData = [];
             for (let i = 6; i >= 0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
                 const dateStr = date.toISOString().split('T')[0];
-                
+
                 activityData.push({
                     date: dateStr,
                     dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
@@ -297,36 +287,36 @@ export async function onRequestGet(context) {
             }
 
             const { results: threadActivity } = await env.DB.prepare(`
-                SELECT DATE(created_at) as date, COUNT(*) as count 
-                FROM threads 
-                WHERE created_at >= ? 
+                SELECT DATE(created_at) as date, COUNT(*) as count
+                FROM threads
+                WHERE created_at >= ?
                 GROUP BY DATE(created_at)
             `).bind(oneWeekAgo.toISOString()).all();
-            
+
             threadActivity.forEach(item => {
                 const dayData = activityData.find(d => d.date === item.date);
                 if (dayData) dayData.threads = item.count;
             });
 
             const { results: postActivity } = await env.DB.prepare(`
-                SELECT DATE(created_at) as date, COUNT(*) as count 
-                FROM thread_posts 
-                WHERE created_at >= ? 
+                SELECT DATE(created_at) as date, COUNT(*) as count
+                FROM thread_posts
+                WHERE created_at >= ?
                 GROUP BY DATE(created_at)
             `).bind(oneWeekAgo.toISOString()).all();
-            
+
             postActivity.forEach(item => {
                 const dayData = activityData.find(d => d.date === item.date);
                 if (dayData) dayData.posts = item.count;
             });
 
             const { results: messageActivity } = await env.DB.prepare(`
-                SELECT DATE(created_at) as date, COUNT(*) as count 
-                FROM chat_messages 
-                WHERE created_at >= ? 
+                SELECT DATE(created_at) as date, COUNT(*) as count
+                FROM chat_messages
+                WHERE created_at >= ?
                 GROUP BY DATE(created_at)
             `).bind(oneWeekAgo.toISOString()).all();
-            
+
             messageActivity.forEach(item => {
                 const dayData = activityData.find(d => d.date === item.date);
                 if (dayData) dayData.messages = item.count;
@@ -334,7 +324,7 @@ export async function onRequestGet(context) {
 
             const reportsList = await env.USERS_KV.get("reports_list");
             const reportIds = reportsList ? JSON.parse(reportsList) : [];
-            
+
             for (const reportId of reportIds) {
                 const reportData = await env.USERS_KV.get(`report:${reportId}`);
                 if (reportData) {

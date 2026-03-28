@@ -15,7 +15,7 @@ async function checkPremium() {
         if (myData.isPremium) {
             if (window.location.pathname.includes('/premium') && !window.location.pathname.includes('/features')) {
                 window.location.replace('/premium/features');
-                return; 
+                return;
             }
         }
 

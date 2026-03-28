@@ -16,7 +16,7 @@ function parseMarkup(text) {
 const titleInput = document.getElementById('title');
 const contentInput = document.getElementById('content');
 const previewTitle = document.getElementById('preview-title');
-const previewBody = document.getElementById('article-body'); 
+const previewBody = document.getElementById('article-body');
 const previewHr = document.getElementById('preview-hr');
 
 function updatePreview() {
@@ -46,14 +46,14 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
     btn.innerText = "Publishing...";
     btn.disabled = true;
 
-    const payload = { 
-        title, 
+    const payload = {
+        title,
         content,
         category,
         is_published: 1,
         slug: title.toLowerCase()
                   .replace(/[^a-z0-9 ]/g, '')
-                  .replace(/\s+/g, '-') 
+                  .replace(/\s+/g, '-')
     };
 
     try {

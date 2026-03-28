@@ -1,4 +1,4 @@
-import { verifyAndDecodeToken } from "./_jwt.js"; 
+import { verifyAndDecodeToken } from "./_jwt.js";
 
 export async function onRequestPost(context) {
     const { request, env } = context;
@@ -8,7 +8,7 @@ export async function onRequestPost(context) {
     if (!token) return new Response("Unauthorized", { status: 401 });
 
     try {
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env); 
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username;
 
         const baseBioMaxLen = 200;
@@ -28,19 +28,18 @@ export async function onRequestPost(context) {
         }
         const bioMaxLen = isPremium ? premiumBioMaxLen : baseBioMaxLen;
 
-                // --- THE FIX: Use the prefixed key ---
-        const kvKey = `user:${username}`; 
+        const kvKey = `user:${username}`;
 
         const updates = await request.json();
 
         const rawData = await env.USERS_KV.get(kvKey, { cacheTtl: 1800 });
 
-        const user = rawData ? JSON.parse(rawData) : { 
-            username: username, 
-            xp: 0, 
-            rank: "Member", 
-            currency: 0 
-        }; 
+        const user = rawData ? JSON.parse(rawData) : {
+            username: username,
+            xp: 0,
+            rank: "Member",
+            currency: 0
+        };
 
         const bioStr = String(updates.bio || "");
         if (bioStr.length > bioMaxLen) {
@@ -51,7 +50,7 @@ export async function onRequestPost(context) {
         }
 
         const updatedUser = {
-            ...user, 
+            ...user,
             avatarUrl: user.avatarUrl || "/default-avatar.png",
 
             displayName: (updates.displayName || "").trim().substring(0, 16),

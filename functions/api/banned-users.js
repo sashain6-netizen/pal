@@ -38,7 +38,6 @@ export async function onRequestGet(context) {
                 const targetUser = JSON.parse(targetData);
 
                                 if (targetUser.isBanned === true) {
-                    // --- NEW LOGIC: Find the Ban ID for the frontend ---
                     const userBansRecord = await env.USERS_KV.get(`bans:${targetUsername.toLowerCase()}`);
                     const banIds = userBansRecord ? JSON.parse(userBansRecord) : [];
                     let banId = null;
@@ -75,8 +74,8 @@ export async function onRequestGet(context) {
                         banStatus: banStatus,
                         timeRemaining: timeRemaining,
                         banDate: targetUser.banDate || "Unknown",
-                        id: banId, 
-                        active: true 
+                        id: banId,
+                        active: true
                     });
                 }
             }
@@ -88,7 +87,7 @@ export async function onRequestGet(context) {
             return new Date(b.banDate) - new Date(a.banDate);
         });
 
-        return new Response(JSON.stringify({ 
+        return new Response(JSON.stringify({
             bannedUsers: bannedUsers,
             totalBanned: bannedUsers.length
         }), {

@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
     user.notifications.unshift({
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         from: from,
-        fromId: fromId, 
+        fromId: fromId,
         text: text,
         type: type || "message",
         date: new Date().toISOString()

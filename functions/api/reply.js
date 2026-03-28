@@ -3,7 +3,6 @@ import { verifyAndDecodeToken } from "./_jwt.js";
 export async function onRequestPost(context) {
     const { request, env } = context;
 
-    // --- 1. AUTH CHECK ---
     const cookie = request.headers.get("Cookie") || "";
     const token = cookie.split('pal_session=')[1]?.split(';')[0];
 
@@ -15,7 +14,6 @@ export async function onRequestPost(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const { threadId, content } = await request.json();
 
-        // --- 2. VALIDATION ---
         const contentStr = String(content || "");
         if (!threadId || !contentStr.trim()) {
             return new Response(JSON.stringify({ error: "Reply cannot be empty." }), { status: 400 });
@@ -50,7 +48,6 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Thread not found." }), { status: 404 });
         }
 
-        // --- 3. INSERT REPLY & JUMP TO TOP ---
         await env.DB.batch([
             env.DB.prepare(
                 "INSERT INTO thread_posts (thread_id, username, content) VALUES (?, ?, ?)"

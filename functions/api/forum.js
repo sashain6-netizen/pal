@@ -77,22 +77,22 @@ export async function onRequest(context) {
             );
 
             const sql = `
-                SELECT 
+                SELECT
                     t.id, t.title, t.creator_username, t.created_at,
                     t.last_activity_at,
                     CASE WHEN p.thread_id IS NOT NULL THEN 1 ELSE 0 END as is_pinned,
-                    CASE 
+                    CASE
                         WHEN p.thread_id IS NOT NULL AND (
-                            lr.last_viewed_at IS NULL OR 
+                            lr.last_viewed_at IS NULL OR
                             (SELECT MAX(created_at) FROM thread_posts WHERE thread_id = t.id) > lr.last_viewed_at
                         ) THEN 1
-                        ELSE 0 
+                        ELSE 0
                     END as has_unread
                 FROM threads t
                 LEFT JOIN pinned_threads p ON t.id = p.thread_id AND p.user_username = ?
                 LEFT JOIN last_read lr ON t.id = lr.item_id AND lr.user_username = ? AND lr.item_type = 'thread'
                 -- SORT BY PINNED FIRST, THEN BY NEWEST ACTIVITY
-                ORDER BY is_pinned DESC, t.last_activity_at DESC 
+                ORDER BY is_pinned DESC, t.last_activity_at DESC
                 LIMIT ? OFFSET ?
             `;
 
@@ -103,7 +103,7 @@ export async function onRequest(context) {
             const threads = await Promise.all(
                 rawThreads.map(async (t) => {
                     const creatorUsername = String(t.creator_username || "").toLowerCase();
-                    
+
                     if (creatorUsername === "[deleted]") {
                         return {
                             ...t,
@@ -112,7 +112,7 @@ export async function onRequest(context) {
                             premiumGlowAlpha: 0.8
                         };
                     }
-                    
+
                     const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`, { cacheTtl: 1800 });
                     const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
 

@@ -13,7 +13,6 @@ export async function onRequest(context) {
     let user = JSON.parse(await env.USERS_KV.get(userKey, { cacheTtl: 1800 }));
 
     const shopItems = {
-    // --- COMMON (500 - 2,000) ---
     "VIP":      { price: 500,   label: "👑", name: "VIP" },
     "STAR":     { price: 600,   label: "⭐", name: "Rising Star" },
     "CHERRY":   { price: 700,   label: "🍒", name: "Sweet" },
@@ -26,7 +25,6 @@ export async function onRequest(context) {
     "ALIEN":    { price: 1800,  label: "👽", name: "Visitor" },
     "MOON":     { price: 2000,  label: "🌙", name: "Night Owl" },
 
-    // --- ELITE (2,500 - 9,500) ---
     "PRO":      { price: 2500,  label: "⚡", name: "Pro Skill" },
     "ROCKET":   { price: 3000,  label: "🚀", name: "Fast Lane" },
     "MONEY":    { price: 3500,  label: "💸", name: "Big Spender" },
@@ -38,7 +36,6 @@ export async function onRequest(context) {
     "NINJA":    { price: 8000,  label: "🥷", name: "Shadow Walker" },
     "TIGER":    { price: 9500,  label: "🐅", name: "Predator" },
 
-    // --- LEGENDARY (10,000 - 35,000) ---
     "DEMON":    { price: 12000, label: "👹", name: "Demon Mode" },
     "CRYSTAL":  { price: 14000, label: "🔮", name: "Oracle" },
     "ROBOT":    { price: 16000, label: "🤖", name: "Automaton" },
@@ -49,7 +46,6 @@ export async function onRequest(context) {
     "CROWN_V":  { price: 30000, label: "💎👑", name: "Royal Blood" },
     "KNIGHT":   { price: 35000, label: "⚔️🛡️", name: "Champion" },
 
-    // --- MYTHIC (40,000 - 95,000) ---
     "PHOENIX":  { price: 45000, label: "🔥🐦🔥", name: "Eternal Phoenix" },
     "STORM":    { price: 50000, label: "⛈️⚡⛈️", name: "Tempest" },
     "VOID":     { price: 60000, label: "🌑🌀", name: "The Void" },
@@ -58,13 +54,11 @@ export async function onRequest(context) {
     "AURA":     { price: 85000, label: "✨💎✨", name: "Diamond Aura" },
     "REAPER":   { price: 95000, label: "⚖️💀⌛", name: "Soul Taker" },
 
-    // --- EXOTIC (100,000 - 250,000) ---
     "GOD":      { price: 150000,label: "🌌🔱🌌", name: "God Emperor" },
     "SOLAR":    { price: 175000,label: "☀️🔥☀️", name: "Solar Deity" },
     "NEBULA":   { price: 200000,label: "🔮💫🌌", name: "Nebula Walker" },
     "CHRONO":   { price: 250000,label: "⏳🕰️🌀", name: "Time Master" },
 
-    // --- THE DIVINE TIER (300,000 - 500,000) ---
     "UNIVERSE": { price: 300000,label: "⭐🪐☄️", name: "Universalist" },
     "ANGELIC":  { price: 350000,label: "🪽🔱🪽", name: "Seraphim" },
     "ETERNAL":  { price: 400000,label: "♾️💎♾️", name: "Absolute" },
@@ -77,19 +71,17 @@ export async function onRequest(context) {
 
     if (!item) return new Response(JSON.stringify({ error: "Invalid Item" }), { status: 400 });
 
-    // --- EQUIP LOGIC ---
     if (action === "equip") {
         if (!user.ownedPrefixes.includes(item.label)) {
             return new Response(JSON.stringify({ error: "You don't own this!" }), { status: 400 });
         }
 
-                user.currentPrefix = item.label; 
+                user.currentPrefix = item.label;
 
                 await env.USERS_KV.put(userKey, JSON.stringify(user));
         return new Response(JSON.stringify({ success: true, user }));
     }
 
-    // --- PURCHASE LOGIC ---
     if (user.ownedPrefixes.includes(item.label)) {
         return new Response(JSON.stringify({ error: "Already owned" }), { status: 400 });
     }
@@ -101,7 +93,7 @@ export async function onRequest(context) {
     user.currency -= item.price;
 
     user.ownedPrefixes.push(item.label);
-    user.currentPrefix = item.label; 
+    user.currentPrefix = item.label;
 
         await env.USERS_KV.put(userKey, JSON.stringify(user));
     return new Response(JSON.stringify({ success: true, user }));

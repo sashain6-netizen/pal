@@ -1,5 +1,5 @@
 async function loadProfile() {
-    const publicPages = ['/login', '/signup', '/index.html', '/']; 
+    const publicPages = ['/login', '/signup', '/index.html', '/'];
     const isPublicPage = publicPages.some(path => window.location.pathname.endsWith(path));
 
     try {
@@ -9,7 +9,7 @@ async function loadProfile() {
             if (!isPublicPage) {
                 window.location.href = "/";
             }
-            return; 
+            return;
         }
 
         const user = await res.json();
@@ -23,7 +23,7 @@ async function loadProfile() {
     } catch (err) {
         console.error("Auth error:", err);
         if (!isPublicPage) {
-            window.location.href = "/"; 
+            window.location.href = "/";
         }
     }
 }
@@ -65,16 +65,16 @@ document.addEventListener('click', async (e) => {
     const logoutBtn = e.target.closest('#logoutLink');
 
         if (logoutBtn) {
-        e.preventDefault(); 
+        e.preventDefault();
 
                 try {
             const res = await fetch('/api/logout');
 
                         if (res.ok) {
-                localStorage.clear(); 
+                localStorage.clear();
 
                 if (typeof updateGlobalUI === 'function') {
-                    updateGlobalUI(false); 
+                    updateGlobalUI(false);
                 }
 
                 showToast("Logged out successfully", "success");
@@ -87,7 +87,7 @@ document.addEventListener('click', async (e) => {
 });
 
 async function handleSignup(event) {
-    event.preventDefault(); 
+    event.preventDefault();
 
     const form = event.target;
     const btn = form.querySelector('button');

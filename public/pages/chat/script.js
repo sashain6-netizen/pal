@@ -3,7 +3,7 @@ const chatId = params.get('id');
 const display = document.getElementById('messageDisplay');
 
 let currentUser = null;
-let currentPage = 0; 
+let currentPage = 0;
 let isInitialLoad = true;
 
 async function loadMessages(page = 0) {
@@ -69,7 +69,6 @@ async function loadMore() {
     await loadMessages(currentPage);
 }
 
-// --- INITIALIZATION ---
 async function initChat() {
     try {
         const meRes = await fetch('/api/get-profile');
@@ -146,7 +145,6 @@ async function initChat() {
     } catch (err) { console.error("Init failed:", err); }
 }
 
-// --- SEND MESSAGE ---
 async function sendMessage(e) {
     if (e) e.preventDefault();
     const input = document.getElementById('msgInput');
@@ -163,7 +161,6 @@ async function sendMessage(e) {
     } catch (e) { console.error("Send failed", e); }
 }
 
-// --- INVITE LOGIC ---
 async function inviteUser() {
     const inviteModal = document.getElementById('inviteModal');
     const inviteInput = document.getElementById('inviteInput');
@@ -192,7 +189,6 @@ async function inviteUser() {
     };
 }
 
-// --- KICK LOGIC ---
 function openKickModal() {
     const kickModal = document.getElementById('kickModal');
     const kickInput = document.getElementById('kickInput');

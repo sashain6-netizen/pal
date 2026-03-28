@@ -11,14 +11,14 @@ export async function onRequestPost(context) {
         return new Response(JSON.stringify({ error: "All fields are required" }), { status: 400 });
     }
 
-    const displayName = username.trim(); 
-    const canonicalUsername = displayName.toLowerCase(); 
+    const displayName = username.trim();
+    const canonicalUsername = displayName.toLowerCase();
     const cleanEmail = email.trim().toLowerCase();
 
     const userRegex = /^[a-zA-Z0-9_]{3,20}$/;
     if (!userRegex.test(displayName)) {
-      return new Response(JSON.stringify({ 
-        error: "Username must be 3-20 characters and contain only letters, numbers, or underscores" 
+      return new Response(JSON.stringify({
+        error: "Username must be 3-20 characters and contain only letters, numbers, or underscores"
       }), { status: 400 });
     }
 
@@ -31,7 +31,7 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Password must be between 8 and 100 characters" }), { status: 400 });
     }
 
-    const usernameKey = `user:${canonicalUsername}`; 
+    const usernameKey = `user:${canonicalUsername}`;
     const existingUser = await env.USERS_KV.get(usernameKey);
     if (existingUser) {
       return new Response(JSON.stringify({ error: "Username already taken" }), { status: 409 });
@@ -46,8 +46,8 @@ export async function onRequestPost(context) {
     const { hash, salt } = await hashPassword(password);
 
     const userData = {
-      username: canonicalUsername, 
-      displayName: displayName,    
+      username: canonicalUsername,
+      displayName: displayName,
       email: cleanEmail,
       hash,
       salt,
@@ -61,7 +61,7 @@ export async function onRequestPost(context) {
       followers: 0,
       following: [],
       notifications: [{
-          id: Date.now(), 
+          id: Date.now(),
           text: `Welcome to PAL, ${displayName}! We're glad to have you here.`,
           date: new Date().toISOString(),
           read: false
@@ -70,7 +70,6 @@ export async function onRequestPost(context) {
       currentPrefix: ""
     };
 
-    // --- SEARCH INDEX UPDATE ---
     const indexRaw = await env.USERS_KV.get("all_users_index") || "[]";
     let index = JSON.parse(indexRaw);
     if (!index.includes(canonicalUsername)) {

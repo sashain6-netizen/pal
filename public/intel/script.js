@@ -14,7 +14,7 @@ function appendMessage(role, text) {
         msgDiv.querySelectorAll('pre').forEach(block => {
             const copyBtn = document.createElement('button');
             copyBtn.innerText = 'Copy';
-            copyBtn.className = 'copy-code-btn'; 
+            copyBtn.className = 'copy-code-btn';
 
                         copyBtn.onclick = () => {
                 const codeText = block.querySelector('code').innerText;
@@ -51,12 +51,12 @@ async function handleChat() {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 
     try {
-        const response = await fetch('/api/ask-pal', { 
+        const response = await fetch('/api/ask-pal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 userMessage: text,
-                history: chatHistory 
+                history: chatHistory
             })
         });
 

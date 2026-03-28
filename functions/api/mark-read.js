@@ -9,12 +9,12 @@ export async function onRequestPost(context) {
 
     try {
         const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
-        const { itemId, type } = await request.json(); 
+        const { itemId, type } = await request.json();
 
         await env.DB.prepare(`
             INSERT INTO last_read (user_username, item_id, item_type, last_viewed_at)
             VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-            ON CONFLICT(user_username, item_id, item_type) 
+            ON CONFLICT(user_username, item_id, item_type)
             DO UPDATE SET last_viewed_at = CURRENT_TIMESTAMP
         `).bind(user.username, itemId, type).run();
 

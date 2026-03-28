@@ -21,7 +21,6 @@ async function initPremiumFeatures() {
 
     document.body.classList.add('authorized');
 
-    // --- Selectors ---
     const postCaptionInput = document.getElementById('postCaptionInput');
     const postAnimationSelect = document.getElementById('postAnimationSelect');
     const animationShop = document.getElementById('animationShop');
@@ -33,7 +32,6 @@ async function initPremiumFeatures() {
     const saveGlowBtn = document.getElementById('saveGlowBtn');
     const saveAnimBtn = document.getElementById('saveAnimBtn');
 
-    // --- 2. Identity & Style Initialization ---
     if (forumColorPicker) {
         forumColorPicker.value = myData.forumColor || '#2563eb';
     }
@@ -49,7 +47,6 @@ async function initPremiumFeatures() {
         });
     }
 
-    // --- 3. Animation Lab & Shop ---
     async function loadAnimations() {
         try {
             const res = await fetch('/api/animations', { credentials: 'include' });
@@ -78,7 +75,7 @@ async function initPremiumFeatures() {
                     return `
                         <div class="shop-item" style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px; padding:0 5px;">
                             <span style="font-size:0.75rem; font-weight:700;">${item.name}</span>
-                            <button class="buy-btn" data-item-id="${item.id}" ${isOwned ? 'disabled' : ''} 
+                            <button class="buy-btn" data-item-id="${item.id}" ${isOwned ? 'disabled' : ''}
                                     style="background:none; border:none; color:var(--primary); font-weight:900; cursor:pointer; font-size:0.7rem;">
                                 ${isOwned ? 'OWNED' : `${item.price} 🪙`}
                             </button>
@@ -105,7 +102,6 @@ async function initPremiumFeatures() {
         }
     }
 
-    // --- 4. Unified Save Handler ---
     async function handlePremiumSave(btn) {
         const originalText = btn.textContent;
         btn.disabled = true;
@@ -124,7 +120,7 @@ async function initPremiumFeatures() {
                     credentials: 'include',
                     body: JSON.stringify({ forumColor, glowAlpha })
                 });
-            } 
+            }
 
             else {
                 const postCaption = postCaptionInput?.value || '';
@@ -141,16 +137,16 @@ async function initPremiumFeatures() {
             if (!res || !res.ok) throw new Error('Save failed');
 
             btn.textContent = 'Saved!';
-            btn.style.backgroundColor = '#22c55e'; 
+            btn.style.backgroundColor = '#22c55e';
         } catch (err) {
             console.error("Save Error:", err);
             btn.textContent = 'Error';
-            btn.style.backgroundColor = '#ef4444'; 
+            btn.style.backgroundColor = '#ef4444';
         } finally {
             setTimeout(() => {
                 btn.disabled = false;
                 btn.textContent = originalText;
-                btn.style.backgroundColor = ''; 
+                btn.style.backgroundColor = '';
             }, 2000);
         }
     }
@@ -159,7 +155,6 @@ async function initPremiumFeatures() {
         if (btn) btn.onclick = () => handlePremiumSave(btn);
     });
 
-    // --- 5. Jackpot ---
     const jackpotPotAmount = document.getElementById('jackpotPotAmount');
     const jackpotRefreshBtn = document.getElementById('jackpotRefreshBtn');
     const jackpotSpinBtn = document.getElementById('jackpotSpinBtn');
@@ -200,7 +195,6 @@ async function initPremiumFeatures() {
         };
     }
 
-    // --- 6. Peer Gifting ---
     const sendGiftBtn = document.getElementById('sendGiftBtn');
     if (sendGiftBtn) {
         sendGiftBtn.onclick = async () => {

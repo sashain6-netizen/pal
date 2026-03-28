@@ -11,7 +11,7 @@ export async function onRequestPost(context) {
         const token = cookie.split('pal_session=')[1]?.split(';')[0];
 
         if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), { 
+            return new Response(JSON.stringify({ error: "Unauthorized" }), {
                 status: 401,
                 headers: { "Content-Type": "application/json" }
             });
@@ -25,12 +25,11 @@ export async function onRequestPost(context) {
         ).bind(chatId, username).first();
 
         if (!isMember) {
-            return new Response(JSON.stringify({ 
-                error: "Access Denied: You are not a member of this conversation." 
+            return new Response(JSON.stringify({
+                error: "Access Denied: You are not a member of this conversation."
             }), { status: 403 });
         }
 
-        // --- ACTION: LEAVE (Available to any member) ---
         if (action === "leave") {
             await env.DB.batch([
                 env.DB.prepare("INSERT INTO chat_messages (room_id, username, content, created_at) VALUES (?, 'System', ?, CURRENT_TIMESTAMP)")
@@ -48,7 +47,6 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ error: "Only the chat creator can do this." }), { status: 403 });
         }
 
-        // --- ACTION: DELETE ---
         if (action === "delete") {
             await env.DB.batch([
                 env.DB.prepare("DELETE FROM chat_messages WHERE room_id = ?").bind(chatId),
@@ -58,7 +56,6 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: true }));
         }
 
-        // --- ACTION: INVITE ---
         if (action === "invite") {
             if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
 
@@ -85,7 +82,6 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: true }));
         }
 
-        // --- ACTION: KICK ---
         if (action === "kick") {
             if (!targetUsername) return new Response(JSON.stringify({ error: "Username required" }), { status: 400 });
 

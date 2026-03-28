@@ -21,16 +21,16 @@ function formatTimestamp(dateString) {
     const isToday = postDateLocal.getTime() === today.getTime();
 
     if (isToday) {
-        return postDate.toLocaleTimeString([], { 
-            hour: '2-digit', 
+        return postDate.toLocaleTimeString([], {
+            hour: '2-digit',
             minute: '2-digit',
-            hour12: true 
+            hour12: true
         });
     } else {
-        return postDate.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: '2-digit', 
-            day: '2-digit' 
+        return postDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
         });
     }
 }

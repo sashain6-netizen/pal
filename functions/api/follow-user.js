@@ -28,11 +28,9 @@ export async function onRequestPost(context) {
     const isAlreadyFollowing = me.following.includes(targetIdLower);
 
     if (isAlreadyFollowing) {
-        // --- UNFOLLOW ---
         me.following = me.following.filter(id => id !== targetIdLower);
         them.followers = Math.max(0, (them.followers || 0) - 1);
     } else {
-        // --- FOLLOW ---
         me.following.push(targetIdLower);
         them.followers = (them.followers || 0) + 1;
 
@@ -40,7 +38,7 @@ export async function onRequestPost(context) {
             id: Date.now().toString(),
             type: "follow",
             from: me.displayName || me.username,
-            fromId: myId, 
+            fromId: myId,
             text: "started following you!",
             date: new Date().toISOString()
         });
@@ -51,10 +49,10 @@ export async function onRequestPost(context) {
         env.USERS_KV.put(`user:${targetIdLower}`, JSON.stringify(them))
     ]);
 
-    return new Response(JSON.stringify({ 
-        success: true, 
+    return new Response(JSON.stringify({
+        success: true,
         following: !isAlreadyFollowing,
-        newCount: them.followers 
+        newCount: them.followers
     }), {
         headers: { "Content-Type": "application/json" }
     });

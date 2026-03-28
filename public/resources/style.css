@@ -25,7 +25,6 @@ body {
   line-height: 1.6;
 }
 
-/* ---- Navigation Bar ---- */
 .navbar {
   position: fixed;
   top: 0;
@@ -84,7 +83,6 @@ body {
   box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
-/* ---- Contacts Layout ---- */
 .container {
   max-width: 1100px;
   margin: 0 auto;
@@ -92,7 +90,7 @@ body {
 }
 
 .contacts-page {
-  padding-top: 140px; 
+  padding-top: 140px;
   padding-bottom: 80px;
 }
 
@@ -114,13 +112,12 @@ body {
   text-align: center;
 }
 
-/* ---- Staff Grid ---- */
 .staff-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
-  gap: 30px;            
+  gap: 30px;
   width: 100%;
   padding: 20px 0;
 }
@@ -133,11 +130,11 @@ body {
   border: 1px solid rgba(37, 99, 235, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-  flex: 0 1 300px;  
-  width: 300px;     
-  max-width: 300px; 
+  flex: 0 1 300px;
+  width: 300px;
+  max-width: 300px;
 
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 
 .staff-card:hover {
@@ -166,7 +163,6 @@ body {
   margin-bottom: 5px;
 }
 
-/* ---- Socials Grid ---- */
 .socials-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -197,7 +193,6 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* ---- Footer ---- */
 .main-footer {
   background: var(--white);
   padding: 40px 20px;
@@ -205,7 +200,6 @@ body {
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* ---- Responsive ---- */
 @media (max-width: 768px) {
   .navbar { padding: 15px 20px; }
   .nav-links { display: none; }
@@ -219,7 +213,7 @@ body {
   border-radius: 50%;
   margin: 0 auto 20px;
   border: 2px solid var(--blue-primary);
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -228,11 +222,9 @@ body {
 .staff-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover;
   display: block;
 }
-
-/* ---- Profile & Dropdown (Optimized & Non-Glitchy) ---- */
 
 .nav-right {
   display: flex;
@@ -251,7 +243,7 @@ body {
   top: 100%;
   left: 0;
   width: 100%;
-  height: 20px; 
+  height: 20px;
   display: none;
 }
 
@@ -268,7 +260,7 @@ body {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
-  display: flex; 
+  display: flex;
 }
 
 .profile-icon img {
@@ -281,7 +273,7 @@ body {
   display: none;
   position: absolute;
   right: 0;
-  top: calc(100% + 10px); 
+  top: calc(100% + 10px);
   width: 180px;
   z-index: 2000;
   animation: slideDown 0.2s ease-out forwards;
@@ -335,8 +327,6 @@ body {
   .nav-links { display: none; }
   .dropdown-menu { right: -10px; }
 }
-/* ---- QR Modal ---- */
-
 .qr-modal {
   position: fixed;
   top: 0;

@@ -4,7 +4,7 @@ export async function onRequest(context) {
     const query = url.searchParams.get("q");
 
     if (!query) {
-        return new Response(JSON.stringify({ error: "No query" }), { 
+        return new Response(JSON.stringify({ error: "No query" }), {
             status: 400,
             headers: { "Content-Type": "application/json" }
         });
@@ -39,7 +39,7 @@ export async function onRequest(context) {
                         url: item.FirstURL,
                         content: item.Text
                     });
-                } 
+                }
                 else if (item.Topics) {
                     item.Topics.forEach(sub => {
                         if (sub.FirstURL) {
@@ -55,14 +55,14 @@ export async function onRequest(context) {
         }
 
         return new Response(JSON.stringify({ results }), {
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*" 
+                "Access-Control-Allow-Origin": "*"
             }
         });
 
     } catch (e) {
-        return new Response(JSON.stringify({ error: "API connection failed", details: e.message }), { 
+        return new Response(JSON.stringify({ error: "API connection failed", details: e.message }), {
             status: 500,
             headers: { "Content-Type": "application/json" }
         });

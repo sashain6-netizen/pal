@@ -3,8 +3,8 @@ export async function onRequestGet(context) {
   const cookieHeader = request.headers.get("Cookie") || "";
 
     if (!cookieHeader.includes("pal_session=")) {
-    return new Response(JSON.stringify({ loggedIn: false }), { 
-      headers: { "Content-Type": "application/json" } 
+    return new Response(JSON.stringify({ loggedIn: false }), {
+      headers: { "Content-Type": "application/json" }
     });
   }
 
@@ -18,12 +18,11 @@ export async function onRequestGet(context) {
     const user = rawData ? JSON.parse(rawData) : null;
 
     if (!user) {
-      return new Response(JSON.stringify({ loggedIn: false }), { 
-        headers: { "Content-Type": "application/json" } 
+      return new Response(JSON.stringify({ loggedIn: false }), {
+        headers: { "Content-Type": "application/json" }
       });
     }
 
-    // --- NEW PREMIUM CHECK ---
     const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
     const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
     const isPremium = Array.isArray(premiumUsers) && premiumUsers.includes(user.username);
@@ -34,13 +33,13 @@ export async function onRequestGet(context) {
       displayName: user.displayName,
       rank: user.rank || "Member",
       themeColor: user.themeColor || "#2563eb",
-      isPremium: isPremium 
-    }), { 
-      headers: { "Content-Type": "application/json" } 
+      isPremium: isPremium
+    }), {
+      headers: { "Content-Type": "application/json" }
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ loggedIn: false, error: err.message }), { 
+    return new Response(JSON.stringify({ loggedIn: false, error: err.message }), {
       headers: { "Content-Type": "application/json" }
     });
   }

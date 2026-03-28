@@ -18,7 +18,7 @@ async function loadProfile() {
             }
         };
 
-        updateEl('display-username', `@${user.username}`); 
+        updateEl('display-username', `@${user.username}`);
         updateEl('displayName', user.displayName || user.username);
         updateEl('bio', user.bio || "");
 
@@ -35,7 +35,6 @@ async function loadProfile() {
         const following = user.followingCount ?? (Array.isArray(user.following) ? user.following.length : 0);
         updateEl('stat-following', following.toLocaleString());
 
-        // --- XP BAR LADDER LOGIC ---
         const xpBar = document.getElementById('xp-bar-fill');
         if (xpBar) {
             const ladder = [
@@ -68,7 +67,6 @@ async function loadProfile() {
     }
 }
 
-// --- SAVE CHANGES LOGIC ---
 document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 

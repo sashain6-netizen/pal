@@ -15,7 +15,7 @@ export async function onRequestPost(context) {
       return new Response("Please enter both fields", { status: 400 });
     }
 
-    const cleanIdentifier = identifier.trim().toLowerCase(); 
+    const cleanIdentifier = identifier.trim().toLowerCase();
     let userKey = "";
 
     if (cleanIdentifier.includes('@')) {
@@ -52,11 +52,11 @@ export async function onRequestPost(context) {
       if (user.banExpiration) {
         const expirationTime = new Date(user.banExpiration).getTime();
         if (expirationTime > Date.now()) {
-          return new Response(JSON.stringify({ 
+          return new Response(JSON.stringify({
             error: "Account banned",
             reason: user.banReason || "No reason provided",
             expires: user.banExpiration
-          }), { 
+          }), {
             status: 403,
             headers: { "Content-Type": "application/json" }
           });
@@ -84,10 +84,10 @@ export async function onRequestPost(context) {
           }
         }
       } else {
-        return new Response(JSON.stringify({ 
+        return new Response(JSON.stringify({
           error: "Account permanently banned",
           reason: user.banReason || "No reason provided"
-        }), { 
+        }), {
           status: 403,
           headers: { "Content-Type": "application/json" }
         });
@@ -96,9 +96,9 @@ export async function onRequestPost(context) {
 
     const token = await createToken(user.username, env.JWT_SECRET);
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      username: user.displayName 
+    return new Response(JSON.stringify({
+      success: true,
+      username: user.displayName
     }), {
       headers: {
         "Content-Type": "application/json",

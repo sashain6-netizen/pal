@@ -173,8 +173,8 @@ export async function onRequestDelete(context) {
 
         if (unbanner.rank === "Moderator") {
             if (!banData) {
-                return new Response(JSON.stringify({ 
-                    error: "Ban log missing. Moderators cannot force-unban without a record." 
+                return new Response(JSON.stringify({
+                    error: "Ban log missing. Moderators cannot force-unban without a record."
                 }), { status: 403 });
             }
 
@@ -182,9 +182,9 @@ export async function onRequestDelete(context) {
             const banDate = new Date(banData.timestamp).getTime();
             const expiryDate = banData.banExpiration ? new Date(banData.banExpiration).getTime() : null;
 
-            if (!expiryDate || (expiryDate - banDate) > (oneDayMs + 5000)) { 
-                return new Response(JSON.stringify({ 
-                    error: "Moderators cannot lift permanent or long-term bans." 
+            if (!expiryDate || (expiryDate - banDate) > (oneDayMs + 5000)) {
+                return new Response(JSON.stringify({
+                    error: "Moderators cannot lift permanent or long-term bans."
                 }), { status: 403 });
             }
         }
@@ -230,9 +230,9 @@ export async function onRequestDelete(context) {
 
         await Promise.all(cleanupTasks);
 
-        return new Response(JSON.stringify({ 
-            success: true, 
-            message: `User ${targetUsername} successfully unbanned.` 
+        return new Response(JSON.stringify({
+            success: true,
+            message: `User ${targetUsername} successfully unbanned.`
         }), { headers: { "Content-Type": "application/json" } });
 
     } catch (e) {

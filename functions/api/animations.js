@@ -78,7 +78,6 @@ export async function onRequest(context) {
     const premiumData = await env.USERS_KV.get("pal_premium");
     const premium = isPremium(premiumData, uname);
 
-    // --- GET METHOD ---
     if (method === "GET") {
       const owned = Array.isArray(user.ownedAnimations) ? user.ownedAnimations : ["none"];
       const current = String(user.postAnimation || "none");
@@ -93,7 +92,6 @@ export async function onRequest(context) {
       }), { headers: { "Content-Type": "application/json" } });
     }
 
-    // --- POST METHOD ---
     if (method === "POST") {
       const body = await request.json();
       const action = body.action;

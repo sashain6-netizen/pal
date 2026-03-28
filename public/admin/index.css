@@ -24,7 +24,7 @@
 .admin-dashboard {
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
   min-height: 100vh;
-  padding: 100px 20px 20px; 
+  padding: 100px 20px 20px;
 }
 
 .admin-header {

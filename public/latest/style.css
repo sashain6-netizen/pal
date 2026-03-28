@@ -1,5 +1,5 @@
 .news-page-wrapper {
-    padding-top: 80px; 
+    padding-top: 80px;
     min-height: 100vh;
 }
 
@@ -36,7 +36,7 @@
 
 .filter-bar {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     gap: 12px;
     margin-bottom: 35px;
     flex-wrap: wrap;
@@ -139,16 +139,15 @@
 
 .hidden { display: none; }
 
-/* --- LOAD MORE NEWS BUTTON --- */
 .load-more-btn {
     display: block;
     width: fit-content;
-    margin: 30px auto 60px; 
+    margin: 30px auto 60px;
     padding: 14px 40px;
     background: white;
     color: var(--blue-primary);
     border: 2px solid var(--blue-primary);
-    border-radius: 50px; 
+    border-radius: 50px;
     font-family: 'Varela Round', sans-serif;
     font-weight: 700;
     font-size: 1rem;

@@ -1,4 +1,4 @@
-import { verifyAndDecodeToken } from './_jwt.js'; 
+import { verifyAndDecodeToken } from './_jwt.js';
 
 export async function onRequestPost(context) {
     const { request, env } = context;
@@ -13,21 +13,21 @@ export async function onRequestPost(context) {
             })
         );
 
-        const token = cookies['pal_session']; 
+        const token = cookies['pal_session'];
 
         if (!token) {
-            return new Response(JSON.stringify({ success: false, error: "Not logged in" }), { 
+            return new Response(JSON.stringify({ success: false, error: "Not logged in" }), {
                 status: 401,
                 headers: { "Content-Type": "application/json" }
             });
         }
 
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET);
-        const username = payload.username; 
+        const username = payload.username;
 
         const rawUser = await env.USERS_KV.get(`user:${username}`);
         if (!rawUser) {
-            return new Response(JSON.stringify({ success: false, error: "User not found" }), { 
+            return new Response(JSON.stringify({ success: false, error: "User not found" }), {
                 status: 404,
                 headers: { "Content-Type": "application/json" }
             });
@@ -35,20 +35,19 @@ export async function onRequestPost(context) {
 
         let user = JSON.parse(rawUser);
 
-        // --- REWARD LOGIC ---
         const now = Date.now();
         const oneDay = 24 * 60 * 60 * 1000;
         const lastClaim = user.lastClaim || 0;
 
         if (now - lastClaim < oneDay) {
-            return new Response(JSON.stringify({ 
-                success: false, 
+            return new Response(JSON.stringify({
+                success: false,
                 error: "Too early!",
                 lastClaim: lastClaim,
                 streak: user.streak
-            }), { 
+            }), {
                 status: 400,
-                headers: { "Content-Type": "application/json" } 
+                headers: { "Content-Type": "application/json" }
             });
         }
 
@@ -91,13 +90,13 @@ await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
 return new Response(JSON.stringify({
     success: true,
     amount: reward,
-    xpGained: xpReward, 
+    xpGained: xpReward,
     streak: user.streak,
     newTotal: user.currency,
     newXP: user.xp
 }), { headers: { "Content-Type": "application/json" } });
-    } catch (err) { 
-        return new Response(JSON.stringify({ success: false, error: "Session expired or invalid" }), { 
+    } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: "Session expired or invalid" }), {
             status: 401,
             headers: { "Content-Type": "application/json" }
         });

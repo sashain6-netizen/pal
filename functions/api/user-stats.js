@@ -29,9 +29,9 @@ export async function onRequestGet(context) {
         const allUsersIndex = await env.USERS_KV.get("all_users_index", { cacheTtl: 3600 });
         const allUsers = allUsersIndex ? JSON.parse(allUsersIndex) : [];
 
-                return new Response(JSON.stringify({ 
+                return new Response(JSON.stringify({
             count: allUsers.length,
-            users: allUsers 
+            users: allUsers
         }), {
             headers: { "Content-Type": "application/json" }
         });

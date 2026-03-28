@@ -17,10 +17,10 @@ export async function onRequestGet(context) {
         const searchTerm = `%${query}%`;
 
         const { results: rawResults } = await env.DB.prepare(`
-            SELECT DISTINCT 
-                t.id, 
-                t.title, 
-                t.creator_username, 
+            SELECT DISTINCT
+                t.id,
+                t.title,
+                t.creator_username,
                 t.created_at,
                 (CASE WHEN t.title LIKE ? THEN 2 ELSE 1 END) as match_score
             FROM threads t

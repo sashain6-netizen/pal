@@ -130,7 +130,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 25px; 
+  margin-bottom: 25px;
 }
 
 .avatar-preview {
@@ -243,28 +243,28 @@
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px; 
+    gap: 10px;
     margin: 20px 0;
     width: 100%;
     box-sizing: border-box;
 }
 
 .stat-box {
-    padding: 12px 5px; 
-    min-width: 0;      
-    overflow: hidden;  
-    background: #f8fafc; 
+    padding: 12px 5px;
+    min-width: 0;
+    overflow: hidden;
+    background: #f8fafc;
 }
 
 .stat-label {
-    font-size: 0.65rem; 
+    font-size: 0.65rem;
     letter-spacing: 0.5px;
-    white-space: nowrap; 
+    white-space: nowrap;
 }
 
 .stat-value {
-    font-size: 1rem; 
-    word-break: break-all; 
+    font-size: 1rem;
+    word-break: break-all;
 }
 
 @media (max-width: 480px) {
@@ -273,11 +273,10 @@
     }
 
         .stats-grid {
-        grid-template-columns: repeat(2, 1fr); 
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* --- TOAST NOTIFICATIONS --- */
 #toast-container {
     position: fixed;
     bottom: 20px;
@@ -286,11 +285,11 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .game-toast {
-    background: #1e293b; 
+    background: #1e293b;
     color: white;
     padding: 12px 20px;
     border-radius: 8px;
@@ -300,7 +299,7 @@
     font-weight: 500;
     min-width: 200px;
     max-width: 300px;
-    pointer-events: auto; 
+    pointer-events: auto;
 
     animation: toast-in 0.3s ease forwards;
     transition: opacity 0.5s ease, transform 0.5s ease;

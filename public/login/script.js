@@ -32,7 +32,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 }
                 showToast(message, "error");
             } else {
-                showToast(data.error || data || "Login failed", "error"); 
+                showToast(data.error || data || "Login failed", "error");
             }
 
                         btn.innerText = "Log In";

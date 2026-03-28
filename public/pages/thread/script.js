@@ -1,10 +1,9 @@
 const params = new URLSearchParams(window.location.search);
 const threadId = params.get('id');
 
-// --- PAGINATION & CACHING STATE ---
 let currentOffset = 0;
 const limit = 50;
-let currentUser = null; 
+let currentUser = null;
 
 async function loadThread(append = false) {
     if (!threadId) return window.location.href = '/pages';
@@ -12,7 +11,7 @@ async function loadThread(append = false) {
     if (!append) {
         currentOffset = 0;
         const container = document.getElementById('posts-container');
-        if (container) container.innerHTML = ''; 
+        if (container) container.innerHTML = '';
     }
 
     try {
@@ -33,7 +32,7 @@ async function loadThread(append = false) {
         const container = document.getElementById('posts-container');
 
         const postsHTML = (data.posts || []).map(post => {
-        const baseThemeColor = post.themeColor || "#2563eb"; 
+        const baseThemeColor = post.themeColor || "#2563eb";
         const forumColor = post.forumColor || baseThemeColor;
         const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
@@ -42,20 +41,20 @@ async function loadThread(append = false) {
         const animClass = hasAnim ? `post-anim-${animType}` : '';
         const showPremiumBg = post.isPremium && !hasAnim;
 
-        const divineExtras = animType === 'divine' 
+        const divineExtras = animType === 'divine'
             ? `<div class="nebula"></div>
             <div class="shooting-star"></div>
-            <div class="planet p-orange"></div>` 
+            <div class="planet p-orange"></div>`
             : '';
 
         const canDeletePost = currentUser && (
-            currentUser.username === post.username || 
+            currentUser.username === post.username ||
             ["Owner", "Admin", "Moderator", "Staff", "Manager"].includes(currentUser.rank)
         );
 
         return `
     <div class="compact-post-row ${showPremiumBg ? 'premium-post' : ''} ${animClass}"
-        style="--premium-forum-color: ${forumColor};" 
+        style="--premium-forum-color: ${forumColor};"
         data-animation="${animType}"
         data-post-id="${post.id}">
 
@@ -100,8 +99,6 @@ async function loadThread(append = false) {
         console.error("Load error:", err);
     }
 }
-
-// --- UI HELPERS ---
 
 function toggleLoadMoreButton(hasMore) {
     let btn = document.getElementById('load-more-btn');
@@ -174,8 +171,6 @@ function renderDeleteButton(user, authorUsername) {
     }
 }
 
-// --- MODAL & REPLIES ---
-
 async function deletePost(postId) {
     if (!await window.gameConfirm('Are you sure you want to delete this post? This action cannot be undone.', 'Delete Post')) {
         return;
@@ -221,9 +216,9 @@ async function postReply() {
         });
 
         if (res.ok) {
-            replyInput.value = ''; 
+            replyInput.value = '';
             if (window.showToast) showToast("Reply posted!");
-            loadThread(false); 
+            loadThread(false);
         } else {
             const errData = await res.json();
             await window.gameAlert(errData.error || "Failed to post reply.", "Error");
@@ -232,8 +227,6 @@ async function postReply() {
         console.error(e);
     }
 }
-
-// --- DELETE MODAL FUNCTIONS ---
 
 function openDeleteModal(threadId) {
     const modal = document.getElementById('deleteModal');
@@ -274,8 +267,6 @@ function closeDeleteModal() {
     const modal = document.getElementById('deleteModal');
     modal.style.display = 'none';
 }
-
-// --- HELPERS ---
 
 function escapeHTML(str) {
     if (!str) return "";

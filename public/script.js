@@ -26,11 +26,11 @@
     smilePath.style.strokeDashoffset = length;
 
     palText.classList.remove('squeezing');
-    void palText.offsetWidth; 
+    void palText.offsetWidth;
     palText.classList.add('squeezing');
 
     shineEl.classList.remove('shining');
-    void shineEl.offsetWidth; 
+    void shineEl.offsetWidth;
     shineEl.classList.add('shining');
 
     setTimeout(() => {
@@ -40,7 +40,7 @@
             setTimeout(() => {
         tagline.classList.add('visible');
       }, 500);
-    }, 400); 
+    }, 400);
   };
 
   if (hasHeroAnimation) {
@@ -51,7 +51,7 @@
     logoContainer.addEventListener('mouseleave', () => logoContainer.style.transform = 'translateY(0)');
 
         logoContainer.addEventListener('click', (e) => {
-      if (e.target.closest('a')) return; 
+      if (e.target.closest('a')) return;
       e.stopPropagation();
       window.playFullSequence();
     });

@@ -41,17 +41,17 @@ function renderGames(gamesList) {
     grid.innerHTML = gamesList.map((game) => {
         const originalIndex = allGames.indexOf(game);
         return `
-            <article class="game-card" 
-                     role="button" 
-                     tabindex="0" 
+            <article class="game-card"
+                     role="button"
+                     tabindex="0"
                      aria-label="Play ${game.title}"
                      onclick="openGame(${originalIndex})"
                      onkeydown="if(event.key==='Enter') openGame(${originalIndex})">
                 <div class="thumb-container">
-                    <img src="${game.thumb}" 
-                         class="game-thumb" 
-                         alt="" 
-                         loading="lazy" 
+                    <img src="${game.thumb}"
+                         class="game-thumb"
+                         alt=""
+                         loading="lazy"
                          onerror="this.src='/assist/default-thumb.jpg'">
                 </div>
                 <div class="game-info">
@@ -130,7 +130,7 @@ function closeGame() {
 
 function filterGames() {
     const query = document.getElementById('gameSearch').value.toLowerCase().trim();
-    const filtered = allGames.filter(game => 
+    const filtered = allGames.filter(game =>
         game.title.toLowerCase().includes(query)
     );
     renderGames(filtered);
@@ -142,7 +142,7 @@ document.addEventListener('keydown', (e) => {
 
 document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        closeGame(); 
+        closeGame();
     }
 });
 

@@ -260,28 +260,28 @@
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 10px; 
+    gap: 10px;
     margin: 20px 0;
     width: 100%;
     box-sizing: border-box;
 }
 
 .stat-box {
-    padding: 12px 5px; 
-    min-width: 0;      
-    overflow: hidden;  
-    background: #f8fafc; 
+    padding: 12px 5px;
+    min-width: 0;
+    overflow: hidden;
+    background: #f8fafc;
 }
 
 .stat-label {
-    font-size: 0.65rem; 
+    font-size: 0.65rem;
     letter-spacing: 0.5px;
-    white-space: nowrap; 
+    white-space: nowrap;
 }
 
 .stat-value {
-    font-size: 1rem; 
-    word-break: break-all; 
+    font-size: 1rem;
+    word-break: break-all;
 }
 
 @media (max-width: 480px) {
@@ -290,7 +290,7 @@
     }
 
         .stats-grid {
-        grid-template-columns: repeat(2, 1fr); 
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -346,15 +346,15 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .game-toast {
-    background: rgba(30, 41, 59, 0.95); 
+    background: rgba(30, 41, 59, 0.95);
     color: white;
     padding: 12px 20px;
     border-radius: 10px;
-    border-left: 4px solid #2563eb; 
+    border-left: 4px solid #2563eb;
     font-family: 'Varela Round', sans-serif;
     font-size: 0.9rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -405,7 +405,7 @@
 }
 
 .premium-user-text {
-    color: #b8860b !important; 
+    color: #b8860b !important;
     font-weight: 800;
     text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
 }

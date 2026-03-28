@@ -64,7 +64,7 @@ function renderReports() {
     });
 
         const reportsHTML = sortedReports.map(report => {
-        const statusClass = report.status === 'pending' ? 'pending' : 
+        const statusClass = report.status === 'pending' ? 'pending' :
                            report.status === 'resolved' ? 'resolved' : 'deleted';
         const statusText = report.status.charAt(0).toUpperCase() + report.status.slice(1);
         const isResolved = report.status === 'resolved';
@@ -80,7 +80,7 @@ function renderReports() {
                     </div>
                     <div class="report-date">${formatDate(report.date)}</div>
                 </div>
-                
+
                 <div class="report-content">
                     <div class="report-details">
                         <p><strong>Reported:</strong> ${escapeHTML(report.reportedUsername)}</p>
@@ -90,7 +90,7 @@ function renderReports() {
                         ${isResolved && report.resolvedAt ? `<p><strong>Resolved:</strong> ${formatDate(report.resolvedAt)}</p>` : ''}
                         ${isResolved && report.resolvedBy ? `<p><strong>Resolved By:</strong> ${escapeHTML(report.resolvedBy)}</p>` : ''}
                     </div>
-                    
+
                     <div class="report-actions">
                         ${isResolved ? `
                             <a href="/users?id=${escapeHTML(report.reportedUsername)}" class="admin-btn primary-btn">
@@ -166,13 +166,13 @@ function renderBannedUsers(myRank) {
     const timeDisplay = formatTimeRemaining(user.timeRemaining);
     const banStatusClass = user.banStatus === 'Permanent' ? 'permanent' : 'temporary';
 
-    const rankHierarchy = { 
+    const rankHierarchy = {
         "Owner": 3, "Admin": 2, "Manager": 2, "Moderator": 1, "Staff": 0,
-        "Member": -7 
+        "Member": -7
     };
 
-    let canUnban = myRank === "Owner" ? 
-        (user.rank !== "Owner") : 
+    let canUnban = myRank === "Owner" ?
+        (user.rank !== "Owner") :
         (rankHierarchy[user.rank] < rankHierarchy[myRank]);
 
     if (canUnban && myRank === "Moderator") {
@@ -182,7 +182,7 @@ function renderBannedUsers(myRank) {
             const oneDayMs = 24 * 60 * 60 * 1000;
 
             if (user.banDate === "Unknown") {
-                canUnban = false; 
+                canUnban = false;
             } else {
                 const banStart = new Date(user.banDate).getTime();
                 const banEnd = new Date(user.timeRemaining.expirationDate).getTime();
@@ -206,20 +206,20 @@ function renderBannedUsers(myRank) {
                         <span class="user-rank">${escapeHTML(user.rank)}</span>
                     </div>
                 </div>
-                
+
                 <div class="ban-info">
                     <div class="ban-reason">
                         <strong>Reason:</strong> ${escapeHTML(user.banReason)}
                     </div>
                     <div class="ban-time">
-                        <strong>Status:</strong> 
+                        <strong>Status:</strong>
                         <span class="ban-status ${banStatusClass}">
                             ${user.banStatus}
                         </span>
                     </div>
                     ${user.timeRemaining ? `
                         <div class="time-remaining">
-                            <strong>Time remaining:</strong> 
+                            <strong>Time remaining:</strong>
                             <span class="countdown" data-expiration="${user.timeRemaining.expirationDate}">
                                 ${timeDisplay}
                             </span>
@@ -229,7 +229,7 @@ function renderBannedUsers(myRank) {
                         <strong>Banned on:</strong> ${formatDate(user.banDate)}
                     </div>
                 </div>
-                
+
                 <div class="user-actions">
                     <a href="/users?id=${user.username}" class="admin-btn secondary-btn">
                         👁️ View
@@ -309,7 +309,7 @@ function filterBannedUsers() {
         })
         .catch(error => {
             console.error('Error getting user profile:', error);
-            renderBannedUsers('Member'); 
+            renderBannedUsers('Member');
         });
 }
 
@@ -465,7 +465,7 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                banId: userEntry ? userEntry.id : null, 
+                banId: userEntry ? userEntry.id : null,
                 targetUsername: targetUsername
             })
         });
@@ -475,7 +475,7 @@ document.getElementById('confirm-unban')?.addEventListener('click', async () => 
         if (response.ok) {
             showToast(`Successfully unbanned ${displayName}`, 'success');
             closeUnbanModal();
-            await loadBannedUsers(); 
+            await loadBannedUsers();
             updateQuickStats();
         } else {
             showToast(result.error || 'Failed to unban user', 'error');

@@ -29,7 +29,7 @@ export async function onRequestGet(context) {
                 avatarUrl: user.avatarUrl || "/default-avatar.png",
                 prefix: user.currentPrefix || "",
                 themeColor: user.themeColor || "#2563eb",
-                isPremium: premiumUsers.includes(username.toLowerCase()) 
+                isPremium: premiumUsers.includes(username.toLowerCase())
             };
         }));
 

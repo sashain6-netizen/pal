@@ -56,14 +56,14 @@ async function handleAction(itemId, action) {
         const res = await fetch('/api/shop', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId, action }) 
+            body: JSON.stringify({ itemId, action })
         });
         const data = await res.json();
 
         if (data.success) {
             const msg = action === 'buy' ? `Purchased ${itemId}!` : `Equipped ${itemId}!`;
             showToast(msg, "success");
-            loadShop(); 
+            loadShop();
         } else {
             showToast(data.error || "Action failed", "error");
         }

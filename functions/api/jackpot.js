@@ -1,6 +1,5 @@
 import { verifyAndDecodeToken } from "./_jwt.js";
 
-/* --- 1. ROBUST HELPERS --- */
 function parseCookiePalSession(cookieHeader) {
   const tokenPart = (cookieHeader || "")
     .split(";")
@@ -31,13 +30,11 @@ function isPremiumUser(premiumUsersRaw, username) {
 async function loadPot(env) {
   const raw = await env.USERS_KV.get("pal_jackpot_pot");
   const parsed = safeParseJson(raw, { pot: 0 });
-  return { 
-    pot: Number(parsed.pot) || 0, 
-    updatedAt: parsed.updatedAt || Date.now() 
+  return {
+    pot: Number(parsed.pot) || 0,
+    updatedAt: parsed.updatedAt || Date.now()
   };
 }
-
-/* --- 2. API HANDLERS --- */
 
 export async function onRequestGet(context) {
   const { env } = context;
@@ -85,9 +82,9 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ error: "Insufficient funds" }), { status: 400 });
     }
 
-    const winChance = 0.02; 
+    const winChance = 0.02;
     const potState = await loadPot(env);
-    const potAfterFee = potState.pot + spinCost; 
+    const potAfterFee = potState.pot + spinCost;
 
         const didWin = Math.random() < winChance;
     let winAmount = 0;
@@ -96,7 +93,7 @@ export async function onRequestPost(context) {
 
     if (didWin) {
       winAmount = potAfterFee;
-      userData.currency += winAmount; 
+      userData.currency += winAmount;
     }
 
     const nextPot = didWin ? 0 : potAfterFee;

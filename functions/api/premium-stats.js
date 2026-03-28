@@ -29,9 +29,9 @@ export async function onRequestGet(context) {
         const premiumData = await env.USERS_KV.get("pal_premium", { cacheTtl: 3600 });
         const premiumUsers = premiumData ? JSON.parse(premiumData) : [];
 
-        return new Response(JSON.stringify({ 
+        return new Response(JSON.stringify({
             count: premiumUsers.length,
-            users: premiumUsers 
+            users: premiumUsers
         }), {
             headers: { "Content-Type": "application/json" }
         });

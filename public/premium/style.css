@@ -10,7 +10,7 @@ body.authorized {
 
 .premium-container {
     max-width: 1000px;
-    margin: 140px auto 80px; 
+    margin: 140px auto 80px;
     padding: 0 20px;
     text-align: center;
 }
@@ -64,7 +64,7 @@ body.authorized {
     left: 50%;
     transform: translateX(-50%);
     background: #FFD700;
-    color: #8B6914; 
+    color: #8B6914;
     padding: 6px 20px;
     border-radius: 50px;
     font-size: 0.75rem;
@@ -88,7 +88,7 @@ body.authorized {
 }
 
 .premium-featured .price {
-    color: #D4AF37; 
+    color: #D4AF37;
 }
 
 .price span {

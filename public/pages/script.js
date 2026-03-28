@@ -1,18 +1,15 @@
 let currentTab = 'public';
-let invitedUsers = []; 
+let invitedUsers = [];
 let searchTimeout;
 
-// --- PAGINATION STATE ---
 let currentOffset = 0;
-const limit = 50; 
+const limit = 50;
 
 async function init() {
     loadPublicThreads();
     loadPrivateChats();
 }
 
-// --- FORUM DATA LOADING ---
-// --- UPDATE: loadPublicThreads ---
 async function loadPublicThreads(append = false) {
     const container = document.getElementById('thread-list');
     if (!append) {
@@ -44,12 +41,12 @@ async function loadPublicThreads(append = false) {
                         ${t.has_unread ? '<span class="unread-dot" title="New activity!"></span>' : ''}
                     </h3>
                     <div class="thread-controls">
-                        <button id="pin-icon-${t.id}" class="pin-btn ${t.is_pinned ? 'active' : ''}" 
+                        <button id="pin-icon-${t.id}" class="pin-btn ${t.is_pinned ? 'active' : ''}"
                                 onclick="togglePin(${t.id}, event)">
                             📌
                         </button>
-                        <button id="delete-icon-${t.id}" class="delete-btn" 
-                                onclick="deleteThread(${t.id}, '${t.title.replace(/'/g, "\\'")}', event)" 
+                        <button id="delete-icon-${t.id}" class="delete-btn"
+                                onclick="deleteThread(${t.id}, '${t.title.replace(/'/g, "\\'")}', event)"
                                 style="display: none; margin-left: 8px; color: #dc2626; background: none; border: none; cursor: pointer; font-size: 16px;">
                             🗑️
                         </button>
@@ -59,7 +56,7 @@ async function loadPublicThreads(append = false) {
                     By <span class="user-mention ${t.isPremium ? 'premium-user-text' : ''}"
                         ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
                         @${t.creator_username} ${t.isPremium ? '⭐' : ''}
-                    </span> 
+                    </span>
                     • ${formatTimestamp(t.created_at)}
                 </div>
             </div>
@@ -75,9 +72,8 @@ async function loadPublicThreads(append = false) {
     } catch (e) { console.error(e); }
 }
 
-// --- PINNING LOGIC ---
 window.togglePin = async (threadId, event) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
     const btn = document.getElementById(`pin-icon-${threadId}`);
 
     btn.classList.toggle('active');
@@ -95,7 +91,7 @@ window.togglePin = async (threadId, event) => {
         } else {
             const data = await res.json();
             await window.gameAlert(data.error || "Login required to pin threads.", "Permission Error");
-            loadPublicThreads(false); 
+            loadPublicThreads(false);
         }
     } catch (e) {
         console.error("Pinning error:", e);
@@ -103,7 +99,6 @@ window.togglePin = async (threadId, event) => {
     }
 };
 
-// --- PAGINATION HELPER ---
 function toggleLoadMoreButton(hasMore) {
     let btn = document.getElementById('load-more-threads-btn');
     const listSection = document.getElementById('public-section');
@@ -111,7 +106,7 @@ function toggleLoadMoreButton(hasMore) {
     if (!btn && listSection) {
         btn = document.createElement('button');
         btn.id = 'load-more-threads-btn';
-        btn.className = 'load-more-btn'; 
+        btn.className = 'load-more-btn';
         btn.innerText = "Load More Threads";
         btn.onclick = () => loadPublicThreads(true);
         listSection.appendChild(btn);
@@ -122,7 +117,6 @@ function toggleLoadMoreButton(hasMore) {
     }
 }
 
-// --- TAB SWITCHING ---
 function switchTab(tab, e) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -133,7 +127,7 @@ function switchTab(tab, e) {
     const searchResults = document.getElementById('searchResults');
 
         searchInput.placeholder = isPublic ? "Search public threads..." : "Filter my private chats...";
-    searchInput.value = ""; 
+    searchInput.value = "";
     if (searchResults) searchResults.classList.remove('active');
 
         if (!isPublic) {
@@ -141,7 +135,7 @@ function switchTab(tab, e) {
         const btn = document.getElementById('load-more-threads-btn');
         if (btn) btn.style.display = 'none';
     } else {
-        loadPublicThreads(false); 
+        loadPublicThreads(false);
     }
 
     document.getElementById('public-section').style.display = isPublic ? 'block' : 'none';
@@ -149,8 +143,6 @@ function switchTab(tab, e) {
     document.getElementById('modalTitle').innerText = isPublic ? 'Create New Thread' : 'Start Private Chat';
 }
 
-// --- PRIVATE CHATS ---
-// --- UPDATE: loadPrivateChats ---
 async function loadPrivateChats() {
     const container = document.getElementById('chat-list');
     try {
@@ -172,7 +164,6 @@ async function loadPrivateChats() {
     } catch (e) { console.error(e); }
 }
 
-// --- MODAL HANDLING ---
 function openModal() {
     document.getElementById('postModal').style.display = 'flex';
     document.getElementById('publicFields').style.display = currentTab === 'public' ? 'block' : 'none';
@@ -217,13 +208,11 @@ async function submitPost() {
             const errData = await res.json();
             await window.gameAlert(`Error: ${errData.error}`, "Error");
         }
-    } catch (e) { 
-        await window.gameAlert("Server connection failed.", "Connection Error"); 
+    } catch (e) {
+        await window.gameAlert("Server connection failed.", "Connection Error");
     }
 }
 
-// --- SEARCH LOGIC ---
-// --- SEARCH LOGIC ---
 async function handleSearch() {
     const query = document.getElementById('forumSearch').value.toLowerCase().trim();
     const forumResultsDiv = document.getElementById('searchResults');
@@ -234,7 +223,7 @@ async function handleSearch() {
             const text = chat.innerText.toLowerCase();
             chat.style.display = text.includes(query) ? 'block' : 'none';
         });
-        return; 
+        return;
     }
 
     clearTimeout(searchTimeout);
@@ -267,7 +256,6 @@ async function handleSearch() {
     }, 300);
 }
 
-// --- USER INVITE SEARCH ---
 async function searchUsersForInvite() {
     const query = document.getElementById('userSearchInput').value.toLowerCase().trim();
     const resultsDiv = document.getElementById('userSearchResults');
@@ -310,7 +298,6 @@ function removeUser(username) {
     renderUserTags();
 }
 
-// --- CLICK-OUTSIDE DISMISSAL ---
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.search-container')) {
         const sr = document.getElementById('searchResults');
@@ -322,7 +309,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// --- ADMIN CONTROLS ---
 async function checkAdminPermissions() {
     try {
         const res = await fetch('/api/get-profile', { credentials: 'include' });
@@ -357,7 +343,7 @@ window.deleteThread = async (threadId, threadTitle, event) => {
 
                 if (res.ok) {
             showToast("Thread deleted successfully");
-            loadPublicThreads(false); 
+            loadPublicThreads(false);
         } else {
             const error = await res.json();
             showToast(error.error || "Failed to delete thread");

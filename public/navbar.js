@@ -56,30 +56,30 @@ function injectNavbar() {
     }
 
     #profile-icon { position: relative !important; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: visible !important; transition: all 0.3s ease; }
-    #profile-notif-dot { 
-        position: absolute !important; 
-        top: -2px !important; 
-        right: -2px !important; 
-        width: 12px !important; 
-        height: 12px !important; 
-        background-color: #ef4444 !important; 
-        border-radius: 50% !important; 
-        border: 2px solid #0f172a !important; 
-        z-index: 2147483647 !important; 
+    #profile-notif-dot {
+        position: absolute !important;
+        top: -2px !important;
+        right: -2px !important;
+        width: 12px !important;
+        height: 12px !important;
+        background-color: #ef4444 !important;
+        border-radius: 50% !important;
+        border: 2px solid #0f172a !important;
+        z-index: 2147483647 !important;
         pointer-events: none;
-        display: none; 
+        display: none;
     }
     #avatar-container { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     #avatar-container img { width: 100%; height: 100%; object-fit: cover; }
 
-    .nav-icons { 
-        display: flex; 
-        align-items: center; 
-        gap: 20px; 
-        margin-left: 25px; 
-        margin-right: 35px; 
+    .nav-icons {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-left: 25px;
+        margin-right: 35px;
     }
-    
+
     .nav-links {
         display: flex;
         gap: 20px;
@@ -88,18 +88,18 @@ function injectNavbar() {
         margin: 0;
     }
 
-    .nav-icons a, 
-    .nav-icons a:visited { 
-        color: #64748b; 
-        transition: color 0.2s, transform 0.2s; 
-        display: flex; 
-        align-items: center; 
+    .nav-icons a,
+    .nav-icons a:visited {
+        color: #64748b;
+        transition: color 0.2s, transform 0.2s;
+        display: flex;
+        align-items: center;
         text-decoration: none;
     }
 
-    .nav-icons a:hover { 
-        color: #2563eb !important; 
-        transform: translateY(-2px); 
+    .nav-icons a:hover {
+        color: #2563eb !important;
+        transform: translateY(-2px);
     }
 
     /* --- RESPONSIVE LOGIC --- */
@@ -154,7 +154,7 @@ function injectNavbar() {
             <div class="profile-dropdown">
                 <div class="profile-icon" id="profile-icon">
                     <div id="profile-notif-dot"></div>
-                    <div id="avatar-container"></div> 
+                    <div id="avatar-container"></div>
                 </div>
                 <div class="dropdown-menu">
                     <div class="dropdown-arrow"></div>
@@ -162,7 +162,7 @@ function injectNavbar() {
                         <div id="loggedOutLinks"><a href="/login">Login</a><a href="/signup">Sign Up</a></div>
                         <div id="loggedInLinks" style="display: none;">
                             <a href="/profile">My Profile</a>
-                            <a href="/settings">Settings</a> 
+                            <a href="/settings">Settings</a>
                             <a href="/notifications">Notifications</a>
                             <hr>
                             <a href="/premium" class="premium-text" id="premiumLink">Premium</a>
@@ -206,10 +206,8 @@ function injectNavbar() {
 
     checkPremium();
 
-    // --- CHECK ADMIN STATUS ---
     checkAdminStatus();
 
-    // --- MOBILE TOGGLE LOGIC ---
     const menuToggle = document.getElementById('mobile-menu-toggle');
     const navLinks = document.getElementById('nav-links');
     if (menuToggle && navLinks) {
@@ -218,7 +216,6 @@ function injectNavbar() {
         });
     }
 
-    // --- STEALTH LOGIC ---
     const eyeBtn = document.getElementById('stealth-launch-btn');
     if (eyeBtn) {
         eyeBtn.addEventListener('click', () => {
@@ -231,7 +228,7 @@ function injectNavbar() {
                 link.rel = 'icon'; link.href = 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico';
                 doc.head.appendChild(link);
                 const iframe = doc.createElement('iframe');
-                iframe.src = window.location.origin + "/"; 
+                iframe.src = window.location.origin + "/";
                 iframe.style.cssText = "width:100vw; height:100vh; border:none; position:fixed; top:0; left:0; margin:0; padding:0;";
                 doc.body.style.margin = '0'; doc.body.style.overflow = 'hidden'; doc.body.appendChild(iframe);
                 win.focus(); window.location.replace("https://google.com");
@@ -250,7 +247,6 @@ function injectNavbar() {
     });
 }
 
-// --- ADMIN STATUS CHECK ---
 async function checkAdminStatus() {
     try {
         const res = await fetch('/api/get-profile', { credentials: 'include' });
@@ -266,7 +262,6 @@ async function checkAdminStatus() {
     }
 }
 
-// --- MOBILE MENU TOGGLE ---
 function setupMobileMenu() {
     const navbar = document.querySelector('.navbar');
     const menuToggle = document.getElementById('mobile-menu-toggle');
@@ -277,7 +272,7 @@ function setupMobileMenu() {
         });
 
         document.addEventListener('click', (e) => {
-            if (navbar.classList.contains('mobile-active') && 
+            if (navbar.classList.contains('mobile-active') &&
                 !navbar.contains(e.target)) {
                 navbar.classList.remove('mobile-active');
             }
@@ -291,7 +286,6 @@ function setupMobileMenu() {
     }
 }
 
-// --- ADD ADMIN BUTTON ---
 function addAdminButton() {
     const navLinks = document.getElementById('nav-links');
     if (navLinks && !document.getElementById('admin-link')) {

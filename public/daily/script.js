@@ -3,7 +3,7 @@ async function checkRewardStatus() {
     const statusText = document.getElementById('reward-status');
 
         try {
-        const res = await fetch('/api/get-profile'); 
+        const res = await fetch('/api/get-profile');
         const user = await res.json();
 
                 const lastClaim = user.lastClaim || 0;
@@ -37,7 +37,7 @@ document.getElementById('claim-btn').onclick = async () => {
         if (data.success) {
             showToast(`Success! +${data.amount} 💰 & +${data.xpGained} XP ⭐`, "success");
 
-                        updateUI(Date.now(), data.streak); 
+                        updateUI(Date.now(), data.streak);
         } else {
             showToast(data.error || "Too early!", "error");
             if (data.lastClaim) {
@@ -94,6 +94,6 @@ function startTimer(ms) {
     };
     update();
     setInterval(update, 60000);
-} 
+}
 
 document.addEventListener('DOMContentLoaded', checkRewardStatus);

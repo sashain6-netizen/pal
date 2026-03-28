@@ -81,7 +81,6 @@
     transition: all 0.3s ease;
 }
 
-
 .preview-container {
     position: sticky;
     top: 100px;
@@ -89,7 +88,7 @@
 }
 
 .preview-container h3 {
-    all: initial; 
+    all: initial;
     display: block;
     color: var(--blue-soft) !important;
     font-size: 0.8rem !important;
@@ -106,10 +105,8 @@
     padding: 40px;
     height: 100%;
     overflow-y: auto;
-    max-width: 740px; 
+    max-width: 740px;
 }
-
-/* --- THE ARTICLE SYNC OVERRIDES --- */
 
 #article-content #preview-title {
     all: initial;
@@ -134,7 +131,7 @@
 }
 
 #article-content #article-body h3 {
-    all: revert; 
+    all: revert;
     display: block !important;
     color: #000000 !important;
     font-size: 1.3rem !important;
@@ -145,7 +142,7 @@
     text-transform: none !important;
 }
 
-#article-content #article-body strong { 
+#article-content #article-body strong {
     color: var(--blue-deep) !important;
     font-weight: 700 !important;
 }

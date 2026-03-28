@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newsContainer = document.getElementById('news-container');
     const adminControls = document.getElementById('admin-controls');
 
-        // --- STATE MANAGEMENT ---
-    let allArticles = []; 
+    let allArticles = [];
     let currentOffset = 0;
     let isLoading = false;
     let isStaffMember = false;
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function fetchNews(append = false) {
-        if (isLoading) return; 
+        if (isLoading) return;
         if (!append) currentOffset = 0;
 
         isLoading = true;
@@ -40,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/api/news?limit=${LIMIT}&offset=${currentOffset}`);
             if (!response.ok) throw new Error('Network response was not ok');
 
-                        const data = await response.json(); 
-            serverHasMore = data.hasMore; 
+                        const data = await response.json();
+            serverHasMore = data.hasMore;
             toggleLoadMoreButton(serverHasMore);
             const newArticles = data.articles || [];
 
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <h2><a href="article/?id=${art.id}">${escapeHTML(art.title)}</a></h2>
                 <div class="meta">
-                    By <strong>${escapeHTML(art.author_name)}</strong> (${escapeHTML(art.author_rank)}) • 
+                    By <strong>${escapeHTML(art.author_name)}</strong> (${escapeHTML(art.author_rank)}) •
                     ${formatTimestamp(art.created_at)}
                 </div>
             </div>
@@ -111,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await fetch(`/api/news?id=${id}`, { method: 'DELETE' });
                 if (res.ok) {
                     allArticles = allArticles.filter(a => a.id != id);
-                    card.remove(); 
+                    card.remove();
                 } else {
                     await window.gameAlert("Failed to delete.", "Delete Error");
                 }
@@ -121,12 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const filterContainer = document.querySelector('.filter-container'); 
+    const filterContainer = document.querySelector('.filter-container');
     if (filterContainer) {
         filterContainer.addEventListener('click', (e) => {
             if (!e.target.classList.contains('filter-btn')) return;
 
-            const category = e.target.innerText; 
+            const category = e.target.innerText;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
 

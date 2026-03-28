@@ -1,4 +1,4 @@
-import { verifyAndDecodeToken } from "./_jwt.js"; 
+import { verifyAndDecodeToken } from "./_jwt.js";
 
 export async function onRequestGet(context) {
     const { request, env } = context;
@@ -13,13 +13,13 @@ export async function onRequestGet(context) {
         const username = payload.username;
 
         const sql = `
-            SELECT 
+            SELECT
                 r.id, r.room_name, r.creator_username, r.created_at,
-                CASE 
-                    WHEN lr.last_viewed_at IS NULL OR 
-                    (SELECT MAX(created_at) FROM chat_messages WHERE room_id = r.id) > lr.last_viewed_at 
+                CASE
+                    WHEN lr.last_viewed_at IS NULL OR
+                    (SELECT MAX(created_at) FROM chat_messages WHERE room_id = r.id) > lr.last_viewed_at
                     THEN 1
-                    ELSE 0 
+                    ELSE 0
                 END as has_unread
             FROM chat_rooms r
             JOIN chat_members m ON r.id = m.room_id

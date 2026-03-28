@@ -17,7 +17,7 @@ html, body {
   width: 100%;
   height: auto;
   overflow-y: auto;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   background: var(--off-white);
   font-family: 'Varela Round', sans-serif;
   scroll-behavior: smooth;
@@ -98,7 +98,7 @@ html, body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 2px solid var(--blue-primary); 
+  border: 2px solid var(--blue-primary);
   background: var(--white);
   overflow: hidden;
   cursor: pointer;
@@ -118,15 +118,15 @@ html, body {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover;
 }
 
 .dropdown-menu {
   display: none;
   position: absolute;
   right: 0;
-  top: 100%; 
-  padding-top: 10px; 
+  top: 100%;
+  padding-top: 10px;
   width: 200px;
   z-index: 2000;
   animation: slideDown 0.2s ease-out forwards;
@@ -143,7 +143,7 @@ html, body {
   border: 1px solid rgba(37, 99, 235, 0.1);
   padding: 8px 0;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -153,7 +153,7 @@ html, body {
   color: var(--blue-soft);
   padding: 12px 18px;
   text-decoration: none;
-  display: block; 
+  display: block;
   width: 100%;
   font-size: 0.9rem;
   font-weight: 500;
@@ -195,13 +195,13 @@ html, body {
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
   overflow: hidden;
   padding-top: 80px;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .bg-circle {
   position: absolute;
-  z-index: -1; 
-  pointer-events: none; 
+  z-index: -1;
+  pointer-events: none;
 }
 
 .logo-wrapper {
@@ -219,7 +219,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  pointer-events: auto; 
+  pointer-events: auto;
 }
 
 @keyframes fadeIn {
@@ -232,11 +232,11 @@ html, body {
   max-width: 90vw;
   height: auto;
   display: block;
-  transform-origin: 50% 95%; 
+  transform-origin: 50% 95%;
   will-change: transform;
   transform: skewX(-7deg);
   stroke: none !important;
-  paint-order: fill; 
+  paint-order: fill;
 }
 
 .smile-svg {
@@ -312,7 +312,7 @@ html, body {
   padding: 80px 20px;
   display: flex;
   justify-content: center;
-  pointer-events: auto; 
+  pointer-events: auto;
 }
 
 .container {
@@ -340,15 +340,15 @@ html, body {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
   position: relative;
-  z-index: 30; 
+  z-index: 30;
 }
 
 .feature-card-link {
   text-decoration: none;
   color: inherit;
   display: block !important;
-  position: relative; 
-  z-index: 40; 
+  position: relative;
+  z-index: 40;
   transition: transform 0.2s ease;
 }
 
@@ -357,7 +357,7 @@ html, body {
 }
 
 .feature-card {
-  box-sizing: border-box; 
+  box-sizing: border-box;
   padding: 40px;
   background: var(--off-white);
   border-radius: 24px;
@@ -367,7 +367,7 @@ html, body {
 }
 
 .feature-card:hover {
-  transform: translateY(-5px); 
+  transform: translateY(-5px);
   box-shadow: 0 20px 40px rgba(10, 45, 143, 0.05);
   background: #ffffff;
 }
@@ -424,7 +424,7 @@ html, body {
   }
 
     .nav-links {
-    display: none; 
+    display: none;
   }
 
   .menu-toggle {
@@ -458,8 +458,8 @@ html, body {
     transform: rotate(-45deg) translate(7px, -6px);
   }
 
-  .dropdown-menu { 
-    right: -10px; 
+  .dropdown-menu {
+    right: -10px;
   }
 
   .pal-text {
@@ -492,15 +492,15 @@ html, body {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    z-index: 9999; 
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .game-toast {
-    background: #1e293b; 
+    background: #1e293b;
     color: #ffffff;
     padding: 16px 24px;
     border-radius: 12px;
@@ -510,7 +510,7 @@ html, body {
     font-weight: 500;
     min-width: 280px;
     max-width: 400px;
-    pointer-events: auto; 
+    pointer-events: auto;
     cursor: pointer;
 
     animation: toast-slide-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -542,10 +542,10 @@ html, body {
 }
 
 .toast-hint {
-    font-size: 0.75rem; 
-    color: var(--blue-primary); 
-    font-weight: 700; 
-    border-top: 1px solid rgba(255,255,255,0.1); 
-    padding-top: 4px; 
+    font-size: 0.75rem;
+    color: var(--blue-primary);
+    font-weight: 700;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 4px;
     margin-top: 4px;
 }

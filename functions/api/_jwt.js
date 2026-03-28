@@ -20,7 +20,7 @@ export async function createToken(username, secret) {
     const header = JSON.stringify({ alg: "HS256", typ: "JWT" });
     const payload = JSON.stringify({
         username,
-        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), 
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60),
     });
 
     const encodedHeader = base64UrlEncode(header);
@@ -28,10 +28,10 @@ export async function createToken(username, secret) {
     const data = `${encodedHeader}.${encodedPayload}`;
 
     const key = await crypto.subtle.importKey(
-        "raw", 
+        "raw",
         encoder.encode(secret),
         { name: "HMAC", hash: "SHA-256" },
-        false, 
+        false,
         ["sign"]
     );
 
@@ -116,7 +116,7 @@ export async function verifyAndDecodeToken(token, secret, env = null) {
                 return payload;
     } catch (e) {
         if (e.message === "Account Banned") {
-            throw e; 
+            throw e;
         }
         throw new Error("Malformed Token Payload");
     }

@@ -20,8 +20,6 @@
       observer.observe(card);
     });
 
-
-
     const modal = document.getElementById('qr-modal');
     const qrImage = document.getElementById('qr-image');
     const closeBtn = document.getElementById('qr-close');

@@ -21,7 +21,7 @@ export async function onRequest(context) {
             if (clearAll === true) {
                 user.notifications = [];
             } else if (notifId !== undefined) {
-                user.notifications = (user.notifications || []).filter(n => 
+                user.notifications = (user.notifications || []).filter(n =>
                     String(n.id) !== String(notifId)
                 );
             }

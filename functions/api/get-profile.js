@@ -10,14 +10,14 @@ export async function onRequestGet(context) {
         ?.split('=')[1];
 
     if (!token) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), { 
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" }
         });
     }
 
     try {
-        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env); 
+        const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username;
 
         const rawUserData = await env.USERS_KV.get(`user:${username}`);
@@ -28,16 +28,16 @@ export async function onRequestGet(context) {
           if (user.banExpiration) {
             const expirationTime = new Date(user.banExpiration).getTime();
             if (expirationTime > Date.now()) {
-              return new Response(JSON.stringify({ 
+              return new Response(JSON.stringify({
                 error: "Account banned",
                 reason: user.banReason || "No reason provided",
                 expires: user.banExpiration,
                 kicked: true
-              }), { 
+              }), {
                 status: 403,
-                headers: { 
+                headers: {
                   "Content-Type": "application/json",
-                  "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" 
+                  "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"
                 }
               });
             } else {
@@ -63,15 +63,15 @@ export async function onRequestGet(context) {
               }
             }
           } else {
-            return new Response(JSON.stringify({ 
+            return new Response(JSON.stringify({
               error: "Account permanently banned",
               reason: user.banReason || "No reason provided",
               kicked: true
-            }), { 
+            }), {
               status: 403,
-              headers: { 
+              headers: {
                 "Content-Type": "application/json",
-                "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0" 
+                "Set-Cookie": "pal_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"
               }
             });
           }
@@ -85,7 +85,7 @@ export async function onRequestGet(context) {
 
                         if (Array.isArray(premiumList)) {
                 isPremiumUser = premiumList.includes(username);
-            } 
+            }
             else {
                 isPremiumUser = !!premiumList[username];
             }
@@ -125,7 +125,7 @@ export async function onRequestGet(context) {
             displayName: user.displayName || user.username,
             bio: user.bio || "",
             rank: user.rank || "Member",
-            isPremium: isPremiumUser, 
+            isPremium: isPremiumUser,
             avatar: user.avatarUrl || "/default-avatar.png",
             following: user.following || [],
             xp: user.xp || 0,

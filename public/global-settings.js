@@ -189,14 +189,14 @@
             browserTitle = `🔔 ${item.from || "New Alert"}`;
             browserBody = truncateText(item.text, 120);
             targetUrl = "/notifications";
-        } 
-        
+        }
+
         else if (kind === "chat" && prefs.privateChats) {
             message = `💬 ${item.roomName} | ${speaker}: ${truncateText(item.latestContent, 50)}`;
             browserTitle = `💬 ${item.roomName}`;
             browserBody = `${speaker}: ${truncateText(item.latestContent, 100)}`;
-        } 
-        
+        }
+
         else if (kind === "pinnedThread" && prefs.pinnedForums) {
             message = `📌 ${item.title} | ${speaker}: ${truncateText(item.latestContent, 50)}`;
             browserTitle = `📌 ${item.title}`;
@@ -206,7 +206,7 @@
         if (!message) return;
 
         if (shouldToast) window.showToast(message, targetUrl);
-        
+
         if (shouldBrowserNotify) {
             await maybeShowBrowserNotification(browserTitle, {
                 body: browserBody,

@@ -13,7 +13,6 @@ export async function onRequest(context) {
                 const user = await verifyAndDecodeToken(token, env.JWT_SECRET);
         const username = user.username;
 
-        // --- GET: Fetch Messages ---
         if (method === "GET") {
             const chatId = url.searchParams.get("id");
             const page = parseInt(url.searchParams.get("page") || "0");
@@ -28,21 +27,20 @@ export async function onRequest(context) {
 
             if (!membership) return new Response(JSON.stringify({ error: "Access Denied" }), { status: 403 });
 
-            // --- AUTO MARK AS READ ---
             context.waitUntil(
                 env.DB.prepare(`
                     INSERT INTO last_read (user_username, item_id, item_type, last_viewed_at)
                     VALUES (?, ?, 'chat', CURRENT_TIMESTAMP)
-                    ON CONFLICT(user_username, item_id, item_type) 
+                    ON CONFLICT(user_username, item_id, item_type)
                     DO UPDATE SET last_viewed_at = CURRENT_TIMESTAMP
                 `).bind(username, chatId).run()
             );
 
             const result = await env.DB.prepare(
-                `SELECT username, content, created_at 
-                 FROM chat_messages 
-                 WHERE room_id = ? 
-                 ORDER BY created_at DESC 
+                `SELECT username, content, created_at
+                 FROM chat_messages
+                 WHERE room_id = ?
+                 ORDER BY created_at DESC
                  LIMIT ? OFFSET ?`
             ).bind(chatId, limit, offset).all();
 
@@ -52,15 +50,14 @@ export async function onRequest(context) {
                 .bind(chatId)
                 .first();
 
-            return new Response(JSON.stringify({ 
-                roomName: room?.room_name, 
-                createdBy: room?.creator_username, 
+            return new Response(JSON.stringify({
+                roomName: room?.room_name,
+                createdBy: room?.creator_username,
                 messages: messages,
                 currentPage: page
             }), { headers: { "Content-Type": "application/json" } });
         }
 
-        // --- POST: Send Message ---
         if (method === "POST") {
             const { chatId, content } = await request.json();
 
@@ -107,7 +104,7 @@ export async function onRequest(context) {
         }
 
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), { 
+        return new Response(JSON.stringify({ error: err.message }), {
             status: 500,
             headers: { "Content-Type": "application/json" }
         });

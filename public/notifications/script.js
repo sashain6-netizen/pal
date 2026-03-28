@@ -1,4 +1,3 @@
-// --- LOAD NOTIFICATIONS ---
 
 async function loadNotifications() {
     const list = document.getElementById('notif-list');
@@ -26,7 +25,7 @@ async function loadNotifications() {
             <div class="notif-card" id="notif-${n.id}">
                 <div class="notif-fcontent">
                     <p>
-                        ${senderHTML} 
+                        ${senderHTML}
                         <span class="notif-text">${n.text}</span>
                     </p>
                     <span class="notif-date">${formatTimestamp(n.date)}</span>
@@ -40,12 +39,11 @@ async function loadNotifications() {
     }
 }
 
-// --- CLEAR ALL (CUSTOM MODAL) ---
 const modal = document.getElementById('custom-modal');
 const clearBtn = document.getElementById('clear-all-btn');
 
 clearBtn.onclick = () => {
-    modal.style.display = 'flex'; 
+    modal.style.display = 'flex';
 };
 
 document.getElementById('modal-cancel').onclick = () => {
@@ -69,7 +67,6 @@ document.getElementById('modal-confirm').onclick = async () => {
     }
 };
 
-// --- DELETE INDIVIDUAL ---
 async function deleteNotif(id) {
     const el = document.getElementById(`notif-${id}`);
     if (el) el.style.opacity = '0.3';

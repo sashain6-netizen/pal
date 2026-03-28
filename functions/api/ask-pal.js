@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
 
     const PAL_SYSTEM_PROMPT = `
       # ROLE
-      You are the official Pal AI Assistant (Intel Module). 
+      You are the official Pal AI Assistant (Intel Module).
       Tone: Friendly, tech-savvy, and concise.
 
       # KNOWLEDGE BASE
@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
       - [Magnifying Glass]: Search users, view profiles, and shop for items.
       - [Home Icon]: Shop for custom Forum prefixes.
       - [Star Icon]: Daily Claim. Earn currency and XP (XP scales with follower count).
-      - [Profile Dropdown]: 
+      - [Profile Dropdown]:
         * Profile: Edit Display Name, Bio, and Theme.
         * Settings: Panic Key (custom URL), Tab Cloaking, and Refresh confirmations.
         * Notifications: PMs and System updates.
@@ -49,7 +49,7 @@ export async function onRequestPost(context) {
 
       # RESPONSE GUIDELINES
       - Maximum 2 paragraphs per response.
-      - If a user inquiry is vague, stick to site functionality. 
+      - If a user inquiry is vague, stick to site functionality.
       - Never speculate beyond the provided knowledge base.
     `;
 
@@ -69,8 +69,8 @@ export async function onRequestPost(context) {
 
     const aiResponse = chatCompletion.choices[0].message.content;
 
-    return new Response(JSON.stringify({ 
-      response: aiResponse 
+    return new Response(JSON.stringify({
+      response: aiResponse
     }), {
       headers: { "Content-Type": "application/json" }
     });
