@@ -80,6 +80,61 @@ export async function onRequestPost(context) {
                     });
                 }
                 
+                // Enhanced PNG validation - fetch and check content
+                try {
+                    const imageResponse = await fetch(urlStr, { 
+                        method: 'HEAD',
+                        headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' }
+                    });
+                    
+                    if (!imageResponse.ok) {
+                        return new Response(JSON.stringify({ error: "Unable to access the image URL. Please check if the URL is valid and accessible." }), {
+                            status: 400,
+                            headers: { "Content-Type": "application/json" }
+                        });
+                    }
+                    
+                    const contentType = imageResponse.headers.get('content-type') || '';
+                    if (!contentType.startsWith('image/')) {
+                        return new Response(JSON.stringify({ error: "URL does not point to a valid image file." }), {
+                            status: 400,
+                            headers: { "Content-Type": "application/json" }
+                        });
+                    }
+                    
+                    // For PNG files, do additional validation
+                    if (urlStr.toLowerCase().includes('.png') || contentType === 'image/png') {
+                        // Fetch first few bytes to verify PNG signature
+                        const pngResponse = await fetch(urlStr, { 
+                            method: 'GET',
+                            headers: { 'Range': 'bytes=0-8', 'User-Agent': 'Pal-Profile-Validator/1.0' }
+                        });
+                        
+                        if (pngResponse.ok) {
+                            const buffer = await pngResponse.arrayBuffer();
+                            const bytes = new Uint8Array(buffer);
+                            
+                            // PNG signature: 89 50 4E 47 0D 0A 1A 0A
+                            const pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+                            const isValidPng = bytes.length >= 8 && 
+                                pngSignature.every((byte, index) => bytes[index] === byte);
+                            
+                            if (!isValidPng) {
+                                return new Response(JSON.stringify({ error: "The file is not a valid PNG image. Please use a genuine PNG file." }), {
+                                    status: 400,
+                                    headers: { "Content-Type": "application/json" }
+                                });
+                            }
+                        }
+                    }
+                    
+                } catch (fetchError) {
+                    return new Response(JSON.stringify({ error: "Failed to validate the image URL. Please ensure it's accessible and a valid image." }), {
+                        status: 400,
+                        headers: { "Content-Type": "application/json" }
+                    });
+                }
+                
                 avatarUrl = urlStr;
                 
             } catch (urlError) {

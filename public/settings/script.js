@@ -21,6 +21,12 @@ const notifMenu = document.getElementById("notifMenu");
 const browserPermissionState = document.getElementById("browserPermissionState");
 const browserButton = document.getElementById("enableBrowserNotificationsBtn");
 
+// Profile picture elements
+const avatarUrlInput = document.getElementById("avatarUrlInput");
+const previewImage = document.getElementById("previewImage");
+const previewStatus = document.getElementById("previewStatus");
+const profilePictureSection = document.getElementById("profilePictureSection");
+
 const notificationToggles = {
     enabled: document.getElementById("notificationsEnabledToggle"),
     inbox: document.getElementById("notificationInboxToggle"),
@@ -31,6 +37,8 @@ const notificationToggles = {
 };
 
 let isRecording = false;
+let currentAvatarUrl = "";
+let previewTimeout = null;
 
 function mergeSettings(savedSettings) {
     const parsed = savedSettings && typeof savedSettings === "object" ? savedSettings : {};
@@ -210,3 +218,158 @@ saveBtn.addEventListener("click", () => {
         saveBtn.style.background = "";
     }, 2000);
 });
+
+// Profile Picture Functions
+async function validateImageUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        
+        if (!['http:', 'https:'].includes(urlObj.protocol)) {
+            return { valid: false, error: "Invalid protocol. Only HTTP/HTTPS allowed." };
+        }
+
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+        const hasImageExtension = imageExtensions.some(ext => 
+            urlObj.pathname.toLowerCase().endsWith(ext)
+        );
+
+        const allowedHosts = ['imgur.com', 'discord.com', 'cdn.discordapp.com'];
+        const hasAllowedHost = allowedHosts.some(host => 
+            urlObj.hostname.includes(host)
+        );
+
+        if (!hasImageExtension && !hasAllowedHost) {
+            return { valid: false, error: "URL must point to a valid image file." };
+        }
+
+        // Test if image loads
+        const response = await fetch(url, { 
+            method: 'HEAD',
+            headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' }
+        });
+
+        if (!response.ok) {
+            return { valid: false, error: "Cannot access image URL." };
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.startsWith('image/')) {
+            return { valid: false, error: "URL does not point to an image." };
+        }
+
+        return { valid: true };
+    } catch (error) {
+        return { valid: false, error: "Invalid URL format." };
+    }
+}
+
+function updatePreview(url, status) {
+    if (url && url !== currentAvatarUrl) {
+        previewImage.src = url;
+        currentAvatarUrl = url;
+    } else if (!url) {
+        previewImage.src = "/default-avatar.png";
+        currentAvatarUrl = "";
+    }
+
+    previewStatus.textContent = status;
+    previewStatus.className = "preview-status";
+    
+    if (status.includes("✅")) {
+        previewStatus.classList.add("success");
+    } else if (status.includes("❌") || status.includes("⚠️")) {
+        previewStatus.classList.add("error");
+    } else if (status.includes("⏳")) {
+        previewStatus.classList.add("loading");
+    } else {
+        previewStatus.classList.add("validating");
+    }
+}
+
+async function handleAvatarInput() {
+    const url = avatarUrlInput.value.trim();
+    
+    if (!url) {
+        updatePreview("", "");
+        return;
+    }
+
+    updatePreview(url, "⏳ Validating URL...");
+    
+    if (previewTimeout) {
+        clearTimeout(previewTimeout);
+    }
+
+    previewTimeout = setTimeout(async () => {
+        const validation = await validateImageUrl(url);
+        
+        if (validation.valid) {
+            updatePreview(url, "✅ Valid image URL");
+            
+            // Test if image actually loads
+            const img = new Image();
+            img.onload = () => {
+                updatePreview(url, "✅ Image loaded successfully");
+            };
+            img.onerror = () => {
+                updatePreview("", "❌ Failed to load image");
+            };
+            img.src = url;
+        } else {
+            updatePreview("", `❌ ${validation.error}`);
+        }
+    }, 500);
+}
+
+async function loadUserProfile() {
+    try {
+        const res = await fetch('/api/get-profile');
+        if (res.ok) {
+            const user = await res.json();
+            
+            if (user.isPremium && profilePictureSection) {
+                profilePictureSection.style.display = 'block';
+                
+                if (user.avatar && user.avatar !== "/default-avatar.png") {
+                    avatarUrlInput.value = user.avatar;
+                    updatePreview(user.avatar, "✅ Current profile picture");
+                }
+            }
+        }
+    } catch (error) {
+        console.log("Failed to load user profile for avatar settings");
+    }
+}
+
+async function saveAvatarUrl() {
+    const url = avatarUrlInput.value.trim();
+    
+    if (!url) return;
+
+    try {
+        const res = await fetch('/api/update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatarUrl: url })
+        });
+
+        const result = await res.json();
+        
+        if (res.ok) {
+            window.showToast("Profile picture updated successfully! ✨", "success");
+        } else {
+            window.showToast(`⚠️ ${result.error}`, "error");
+        }
+    } catch (error) {
+        window.showToast("🛑 Failed to update profile picture.", "error");
+    }
+}
+
+// Initialize profile picture functionality
+if (avatarUrlInput) {
+    avatarUrlInput.addEventListener('input', handleAvatarInput);
+    avatarUrlInput.addEventListener('blur', saveAvatarUrl);
+    
+    // Load user profile on page load
+    loadUserProfile();
+}
