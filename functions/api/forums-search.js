@@ -39,9 +39,7 @@ export async function onRequestGet(context) {
                 return {
                     ...t,
                     isPremium: premiumSet.has(creatorUsername),
-                    forumColor: premiumSet.has(creatorUsername)
-                        ? (userData.forumColor || userData.themeColor || "#2563eb")
-                        : "#2563eb",
+                    forumColor: userData.forumColor || userData.themeColor || "#2563eb",
                     premiumGlowAlpha: typeof userData.premiumGlowAlpha === "number" ? userData.premiumGlowAlpha : 0.8,
                     avatar: userData.avatarUrl || "/default-avatar.png"
                 };
