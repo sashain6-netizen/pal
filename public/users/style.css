@@ -8,6 +8,89 @@
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e9ff 100%);
 }
 
+/* Avatar with Accessories Support */
+.avatar-with-accessories {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#display-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.accessory-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.accessory-element {
+    position: absolute;
+    transform-origin: center;
+}
+
+/* Animation effects for accessories */
+.accessory-element.hat {
+    animation: hatFloat 3s ease-in-out infinite;
+}
+
+.accessory-element.glasses {
+    animation: glassesShine 4s ease-in-out infinite;
+}
+
+.accessory-element.mouth {
+    animation: mouthPulse 2s ease-in-out infinite;
+}
+
+.accessory-element.face-accessory {
+    animation: faceAccessoryWiggle 5s ease-in-out infinite;
+}
+
+.accessory-element.background {
+    animation: backgroundTwinkle 6s linear infinite;
+}
+
+@keyframes hatFloat {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+    50% { transform: translate(-50%, -50%) translateY(-2px); }
+}
+
+@keyframes glassesShine {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.9; }
+}
+
+@keyframes mouthPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes faceAccessoryWiggle {
+    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+    25% { transform: translate(-50%, -50%) rotate(1deg); }
+    75% { transform: translate(-50%, -50%) rotate(-1deg); }
+}
+
+@keyframes backgroundTwinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
 .auth-card {
   background: var(--white);
   width: 100%;

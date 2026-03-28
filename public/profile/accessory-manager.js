@@ -2,7 +2,6 @@
 class AccessoryManager {
     constructor() {
         this.accessories = { ...DEFAULT_ACCESSORIES };
-        this.accessorySettings = {};
         this.selectedCategory = null;
         this.selectedAccessory = null;
         this.init();
@@ -10,8 +9,6 @@ class AccessoryManager {
 
     init() {
         this.setupAccessoryGrids();
-        this.setupControls();
-        this.loadSavedAccessories();
         this.updatePreview();
     }
 
@@ -68,9 +65,6 @@ class AccessoryManager {
         // Update UI selection
         this.updateSelectionUI(category, accessoryKey);
         
-        // Show controls for this accessory
-        this.showAccessoryControls(category, accessoryKey);
-        
         // Update preview
         this.updatePreview();
     }
@@ -88,93 +82,7 @@ class AccessoryManager {
         }
     }
 
-    showAccessoryControls(category, accessoryKey) {
-        const controls = document.getElementById('accessoryControls');
-        if (!controls) return;
-        
-        const accessory = ACCESSORY_LIBRARY[category]?.[accessoryKey];
-        if (!accessory || !accessory.svg) {
-            controls.style.display = 'none';
-            return;
-        }
-        
-        controls.style.display = 'block';
-        
-        // Load saved settings or use defaults
-        const settingsKey = `${category}_${accessoryKey}`;
-        const settings = this.accessorySettings[settingsKey] || { ...accessory.defaultPosition };
-        
-        // Update control values
-        this.updateControlValues(settings);
-    }
-
-    updateControlValues(settings) {
-        const controls = ['posX', 'posY', 'scale', 'rotation', 'opacity'];
-        
-        controls.forEach(control => {
-            const element = document.getElementById(control);
-            const valueElement = document.getElementById(`${control}Value`);
-            
-            if (element && valueElement) {
-                let value = settings[control] || 0;
-                
-                // Handle default values
-                if (control === 'scale' && value === 0) value = 1;
-                if (control === 'opacity' && value === 0) value = 1;
-                
-                element.value = value;
-                
-                // Update display value
-                let displayValue = value;
-                if (control === 'scale') displayValue = parseFloat(value).toFixed(1);
-                if (control === 'rotation') displayValue = `${value}°`;
-                if (control === 'opacity') displayValue = `${Math.round(value * 100)}%`;
-                
-                valueElement.textContent = displayValue;
-            }
-        });
-    }
-
-    setupControls() {
-        const controls = ['posX', 'posY', 'scale', 'rotation', 'opacity'];
-        
-        controls.forEach(control => {
-            const element = document.getElementById(control);
-            const valueElement = document.getElementById(`${control}Value`);
-            
-            if (element && valueElement) {
-                element.addEventListener('input', (e) => {
-                    const value = parseFloat(e.target.value);
-                    
-                    // Update display
-                    let displayValue = value;
-                    if (control === 'scale') displayValue = value.toFixed(1);
-                    if (control === 'rotation') displayValue = `${value}°`;
-                    if (control === 'opacity') displayValue = `${Math.round(value * 100)}%`;
-                    
-                    valueElement.textContent = displayValue;
-                    
-                    // Save settings
-                    this.saveAccessorySettings(control, value);
-                    
-                    // Update preview
-                    this.updatePreview();
-                });
-            }
-        });
-    }
-
-    saveAccessorySettings(control, value) {
-        if (!this.selectedCategory || !this.selectedAccessory) return;
-        
-        const settingsKey = `${this.selectedCategory}_${this.selectedAccessory}`;
-        if (!this.accessorySettings[settingsKey]) {
-            this.accessorySettings[settingsKey] = {};
-        }
-        
-        this.accessorySettings[settingsKey][control] = value;
-    }
-
+    
     updatePreview() {
         const accessoryLayer = document.getElementById('accessoryLayer');
         if (!accessoryLayer) return;
@@ -206,78 +114,33 @@ class AccessoryManager {
         // Set SVG content
         element.innerHTML = accessory.svg;
         
-        // Get settings
-        const settingsKey = `${category}_${accessoryKey}`;
-        const settings = this.accessorySettings[settingsKey] || { ...accessory.defaultPosition };
+        // Use default positioning from the accessory definition
+        const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
         
-        // Apply transformations
-        const x = (settings.x || 0) + 50; // Center at 50%
-        const y = (settings.y || 0) + 50; // Center at 50%
-        const scale = settings.scale || 1;
-        const rotation = settings.rotation || 0;
-        const opacity = settings.opacity || 1;
-        
-        element.style.left = `${x}%`;
-        element.style.top = `${y}%`;
-        element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg)`;
-        element.style.opacity = opacity;
+        element.style.left = `${defaultPos.x}%`;
+        element.style.top = `${defaultPos.y}%`;
+        element.style.transform = `translate(-50%, -50%) scale(${defaultPos.scale}) rotate(${defaultPos.rotation}deg)`;
+        element.style.opacity = defaultPos.opacity;
         
         container.appendChild(element);
     }
 
     loadSavedAccessories() {
-        // Load from localStorage or user profile
-        const saved = localStorage.getItem('avatarAccessories');
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                this.accessories = { ...DEFAULT_ACCESSORIES, ...data.accessories };
-                this.accessorySettings = data.settings || {};
-                
-                // Update UI selections
-                Object.keys(this.accessories).forEach(category => {
-                    this.updateSelectionUI(category, this.accessories[category]);
-                });
-            } catch (e) {
-                console.error('Failed to load saved accessories:', e);
-            }
-        }
+        // Load from user profile data
+        // This will be called by the profile script with the loaded data
     }
 
     saveAccessories() {
-        const data = {
-            accessories: this.accessories,
-            settings: this.accessorySettings
+        // Return just the accessories data for profile saving
+        return {
+            accessories: this.accessories
         };
-        
-        localStorage.setItem('avatarAccessories', JSON.stringify(data));
-        
-        // Also save to user profile when saving profile
-        return data;
-    }
-
-    resetAccessoryControls() {
-        if (!this.selectedCategory || !this.selectedAccessory) return;
-        
-        const accessory = ACCESSORY_LIBRARY[this.selectedCategory]?.[this.selectedAccessory];
-        if (!accessory || !accessory.defaultPosition) return;
-        
-        // Reset to defaults
-        const settingsKey = `${this.selectedCategory}_${this.selectedAccessory}`;
-        this.accessorySettings[settingsKey] = { ...accessory.defaultPosition };
-        
-        // Update controls
-        this.updateControlValues(accessory.defaultPosition);
-        
-        // Update preview
-        this.updatePreview();
     }
 
     // Get accessories data for profile saving
     getAccessoriesData() {
         return {
-            accessories: this.accessories,
-            settings: this.accessorySettings
+            accessories: this.accessories
         };
     }
 
@@ -285,7 +148,6 @@ class AccessoryManager {
     setAccessoriesData(data) {
         if (data && data.accessories) {
             this.accessories = { ...DEFAULT_ACCESSORIES, ...data.accessories };
-            this.accessorySettings = data.settings || {};
             
             // Update UI
             Object.keys(this.accessories).forEach(category => {
@@ -305,13 +167,6 @@ let accessoryManager;
 document.addEventListener('DOMContentLoaded', () => {
     accessoryManager = new AccessoryManager();
 });
-
-// Global function for reset button
-function resetAccessoryControls() {
-    if (accessoryManager) {
-        accessoryManager.resetAccessoryControls();
-    }
-}
 
 // Export for use in other scripts
 if (typeof module !== 'undefined' && module.exports) {

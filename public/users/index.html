@@ -6,6 +6,8 @@
     <title>User Profile • Pal</title>
     <script src="/global-settings.js" defer></script>
     <script src="/utils/modal.js" defer></script>
+    <script src="/profile/accessories.js" defer></script>
+    <script src="/profile/accessory-manager.js" defer></script>
     <script src="/users/script.js" defer></script>
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="/favicon.png" type="image/png">
@@ -19,7 +21,10 @@
 
                 <div class="profile-header" style="display: flex; flex-direction: column; align-items: center;">
             <div class="avatar-container" id="avatar-wrapper">
-                <img id="display-avatar" src="/default-avatar.png" alt="Profile Picture">
+                <div class="avatar-with-accessories" id="userAvatarWithAccessories">
+                    <img id="display-avatar" src="/default-avatar.png" alt="Profile Picture">
+                    <div class="accessory-layer" id="userAccessoryLayer"></div>
+                </div>
             </div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                 <h1 id="display-name">Loading...</h1>
