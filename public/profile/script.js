@@ -177,7 +177,7 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
             if (updatedData.accessories) {
                 const accessoryCount = Object.values(updatedData.accessories).filter(key => key !== 'none').length;
                 if (accessoryCount > 0) {
-                    successMessage = `Profile and ${accessoryCount} accessory${accessoryCount > 1 ? 'es' : ''} saved! ✨`;
+                    successMessage = `Profile saved! ✨`;
                 }
             }
 
@@ -524,6 +524,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (avatarUrlInput) {
         avatarUrlInput.addEventListener('input', handleAvatarInput);
     }
-
-    loadProfile();
 });

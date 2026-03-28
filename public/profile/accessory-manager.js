@@ -203,16 +203,18 @@ class AccessoryManager {
         console.log('Setting accessories data:', data);
 
         if (data && typeof data === 'object') {
+            // Only use defaults for categories that are completely missing from user data
             const mappedAccessories = {
-                hats: data.hats || 'none',
-                glasses: data.glasses || 'none',
-                mouths: data.mouths || 'none',
-                face_accessories: data.face_accessories || 'none',
-                backgrounds: data.backgrounds || 'none'
+                hats: data.hats !== undefined ? data.hats : 'none',
+                glasses: data.glasses !== undefined ? data.glasses : 'none',
+                mouths: data.mouths !== undefined ? data.mouths : 'none',
+                face_accessories: data.face_accessories !== undefined ? data.face_accessories : 'none',
+                backgrounds: data.backgrounds !== undefined ? data.backgrounds : 'none'
             };
 
             console.log('Mapped accessories:', mappedAccessories);
 
+            // Start with defaults, then override with user's actual selections
             this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
 
             // Ensure grids are populated before updating selection UI
