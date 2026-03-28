@@ -193,6 +193,24 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
             showToast(successMessage);
             document.documentElement.style.setProperty('--blue-primary', updatedData.themeColor);
+            
+            // Client-side verification: check if our changes are reflected
+            setTimeout(() => {
+                const currentAvatarUrlInput = document.getElementById('avatarUrl')?.value?.trim();
+                console.log('Post-save verification - Current avatar URL input:', currentAvatarUrlInput);
+                console.log('Post-save verification - Sent avatar URL:', updatedData.avatar || '');
+                console.log('Post-save verification - URLs match:', currentAvatarUrlInput === (updatedData.avatar || ''));
+                
+                if (updatedData.avatar && currentAvatarUrlInput !== updatedData.avatar) {
+                    console.warn('⚠️ Avatar URL mismatch - input shows different value than what was sent');
+                }
+                
+                // Check if theme color was updated
+                const currentThemeInput = document.getElementById('themeColor')?.value;
+                console.log('Post-save verification - Current theme input:', currentThemeInput);
+                console.log('Post-save verification - Sent theme color:', updatedData.themeColor);
+                console.log('Post-save verification - Theme colors match:', currentThemeInput === updatedData.themeColor);
+            }, 1000);
         } else {
             console.error('Save failed with response:', result);
             showToast(`⚠️ ${result.error || "Failed to update profile."}`);
