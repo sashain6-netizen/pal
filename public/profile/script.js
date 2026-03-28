@@ -113,7 +113,7 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
     // Add accessories data if available
     if (window.accessoryManager) {
-        updatedData.accessories = window.accessoryManager.getAccessoriesData();
+        updatedData.accessories = window.accessoryManager.getAccessoriesData().accessories;
     }
 
     const avatarUrlInput = document.getElementById('avatarUrl');

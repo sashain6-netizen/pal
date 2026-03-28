@@ -70,8 +70,8 @@ class AccessoryManager {
     }
 
     updateSelectionUI(category, accessoryKey) {
-        // Clear previous selections
-        document.querySelectorAll('.accessory-item.selected').forEach(item => {
+        // Clear previous selections only in the same category
+        document.querySelectorAll(`[data-category="${category}"].accessory-item.selected`).forEach(item => {
             item.classList.remove('selected');
         });
         
@@ -146,10 +146,19 @@ class AccessoryManager {
 
     // Set accessories from loaded profile
     setAccessoriesData(data) {
-        if (data && data.accessories) {
-            this.accessories = { ...DEFAULT_ACCESSORIES, ...data.accessories };
+        if (data && typeof data === 'object') {
+            // Map the data to ensure correct category names
+            const mappedAccessories = {
+                hats: data.hats || 'none',
+                glasses: data.glasses || 'none', 
+                mouths: data.mouths || 'none',
+                face_accessories: data.face_accessories || data.faceAccessory || 'none',
+                backgrounds: data.backgrounds || data.background || 'none'
+            };
             
-            // Update UI
+            this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
+            
+            // Update UI for each category
             Object.keys(this.accessories).forEach(category => {
                 this.updateSelectionUI(category, this.accessories[category]);
             });

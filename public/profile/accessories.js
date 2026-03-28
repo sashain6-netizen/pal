@@ -295,11 +295,11 @@ const ACCESSORY_LIBRARY = {
 
 // Accessory configuration structure
 const DEFAULT_ACCESSORIES = {
-    hat: 'none',
-    glasses: 'none',
-    mouth: 'none',
-    faceAccessory: 'none',
-    background: 'none'
+    hats: 'none',
+    glasses: 'none', 
+    mouths: 'none',
+    face_accessories: 'none',
+    backgrounds: 'none'
 };
 
 // Position and customization options
