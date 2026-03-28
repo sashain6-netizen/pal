@@ -160,13 +160,20 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
     const avatarUrlInput = document.getElementById('avatarUrl');
     if (avatarUrlInput) {
         if (avatarUrlInput.value.trim()) {
-            updatedData.avatar = avatarUrlInput.value.trim();
+            updatedData.avatarUrl = avatarUrlInput.value.trim();
         } else {
-            updatedData.avatar = "";
+            updatedData.avatarUrl = "";
         }
     }
 
     try {
+        console.log('=== STARTING PROFILE SAVE ===');
+        console.log('Form data before processing:');
+        console.log('  displayName:', document.getElementById('displayName')?.value);
+        console.log('  bio:', document.getElementById('bio')?.value);
+        console.log('  themeColor:', document.getElementById('themeColor')?.value);
+        console.log('  avatarUrl input:', document.getElementById('avatarUrl')?.value?.trim());
+        
         console.log('Sending profile update data:', updatedData);
         console.log('Updated data details:', JSON.stringify(updatedData, null, 2));
         const res = await fetch('/api/update-profile', {
@@ -177,9 +184,11 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
         console.log('Save response status:', res.status);
         console.log('Save response headers:', Object.fromEntries(res.headers.entries()));
+        console.log('Save response ok:', res.ok);
 
         const result = await res.json();
         console.log('Save response body:', result);
+        console.log('=== ENDING PROFILE SAVE ===');
 
         if (res.ok) {
             let successMessage = "Profile updated successfully! ✨";
@@ -198,10 +207,10 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
             setTimeout(() => {
                 const currentAvatarUrlInput = document.getElementById('avatarUrl')?.value?.trim();
                 console.log('Post-save verification - Current avatar URL input:', currentAvatarUrlInput);
-                console.log('Post-save verification - Sent avatar URL:', updatedData.avatar || '');
-                console.log('Post-save verification - URLs match:', currentAvatarUrlInput === (updatedData.avatar || ''));
+                console.log('Post-save verification - Sent avatar URL:', updatedData.avatarUrl || '');
+                console.log('Post-save verification - URLs match:', currentAvatarUrlInput === (updatedData.avatarUrl || ''));
                 
-                if (updatedData.avatar && currentAvatarUrlInput !== updatedData.avatar) {
+                if (updatedData.avatarUrl && currentAvatarUrlInput !== updatedData.avatarUrl) {
                     console.warn('⚠️ Avatar URL mismatch - input shows different value than what was sent');
                 }
                 
