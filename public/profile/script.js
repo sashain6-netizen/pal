@@ -23,7 +23,7 @@ async function loadProfile() {
         updateEl('bio', user.bio || "");
 
         const avatarUrlGroup = document.getElementById('avatarUrlGroup');
-        if (user.isPremium && avatarUrlGroup) {
+        if (avatarUrlGroup) {
             avatarUrlGroup.style.display = 'block';
 
             const avatarUrl = user.avatar && user.avatar !== "/default-avatar.png" ? user.avatar : "";
