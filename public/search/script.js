@@ -32,7 +32,7 @@ async function performSearch() {
             resultsArea.innerHTML += `
                 <div class="${cardClass}">
                     <div class="${iconClass}" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}">
-                        <img src="${user.avatarUrl || '/default-avatar.png'}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                        <img src="${user.avatar || '/default-avatar.png'}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
                     </div>
                     <h3 class="${nameClass}">${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}${star}</h3>
                     <p style="color: var(--blue-soft);">@${user.username}</p>

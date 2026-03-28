@@ -26,7 +26,7 @@ export async function onRequestGet(context) {
                         return {
                 username: user.username,
                 displayName: user.displayName,
-                avatarUrl: user.avatarUrl || "/default-avatar.png",
+                avatar: user.avatarUrl || "/default-avatar.png",
                 prefix: user.currentPrefix || "",
                 themeColor: user.themeColor || "#2563eb",
                 isPremium: premiumUsers.includes(username.toLowerCase())
