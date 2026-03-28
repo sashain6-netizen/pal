@@ -411,23 +411,6 @@
     position: relative;
 }
 
-#avatarUrlGroup::after {
-    content: '👑 PREMIUM';
-    position: absolute;
-    top: -8px;
-    right: 12px;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: white;
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 12px;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
-    z-index: 10;
-    animation: shimmer 3s ease-in-out infinite;
-}
-
 @keyframes shimmer {
     0%, 100% { opacity: 0.9; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.05); }
@@ -480,13 +463,4 @@
 
 #avatarUrlGroup input[type="url"] {
     padding-left: 16px;
-}
-
-.preview-status.success + #previewImage {
-    animation: premium-glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes premium-glow {
-    from { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 20px rgba(251, 191, 36, 0.3); }
-    to { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 30px rgba(251, 191, 36, 0.5); }
 }
