@@ -256,23 +256,9 @@ async function handleAvatarInput() {
 // Add event listener for avatar URL input
 document.addEventListener('DOMContentLoaded', () => {
     const avatarUrlInput = document.getElementById('avatarUrl');
-    const avatarUrlGroup = document.getElementById('avatarUrlGroup');
     
     if (avatarUrlInput) {
         avatarUrlInput.addEventListener('input', handleAvatarInput);
-        
-        // Add focus/blur events for icon animation
-        avatarUrlInput.addEventListener('focus', () => {
-            if (avatarUrlGroup) {
-                avatarUrlGroup.classList.add('focused');
-            }
-        });
-        
-        avatarUrlInput.addEventListener('blur', () => {
-            if (avatarUrlGroup) {
-                avatarUrlGroup.classList.remove('focused');
-            }
-        });
     }
     
     loadProfile();
