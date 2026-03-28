@@ -38,16 +38,36 @@ async function loadProfile() {
         if (themeEl) themeEl.value = user.themeColor || "#2563eb";
 
         // Load accessories - always try since API now returns default accessories object
-        if (user.accessories) {
+        if (user.accessories && typeof user.accessories === 'object') {
+            const loadAccessories = () => {
+                if (window.accessoryManager) {
+                    try {
+                        window.accessoryManager.setAccessoriesData(user.accessories);
+                    } catch (error) {
+                        console.error('Error loading accessories:', error);
+                        // Don't fail the entire profile load for accessory issues
+                    }
+                }
+            };
+            
             if (window.accessoryManager) {
-                window.accessoryManager.setAccessoriesData(user.accessories);
+                loadAccessories();
             } else {
                 // Wait for accessory manager to be initialized
-                setTimeout(() => {
+                const maxWaitTime = 2000; // 2 seconds max wait
+                const checkInterval = 100;
+                let waitedTime = 0;
+                
+                const waitForManager = setInterval(() => {
                     if (window.accessoryManager) {
-                        window.accessoryManager.setAccessoriesData(user.accessories);
+                        clearInterval(waitForManager);
+                        loadAccessories();
+                    } else if (waitedTime >= maxWaitTime) {
+                        clearInterval(waitForManager);
+                        console.warn('Accessory manager failed to initialize within timeout');
                     }
-                }, 100);
+                    waitedTime += checkInterval;
+                }, checkInterval);
             }
         }
 
@@ -122,9 +142,26 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
     // Add accessories data if available
     if (window.accessoryManager) {
-        const accessoriesData = window.accessoryManager.getAccessoriesData();
-        if (accessoriesData && accessoriesData.accessories) {
-            updatedData.accessories = accessoriesData.accessories;
+        try {
+            const accessoriesData = window.accessoryManager.getAccessoriesData();
+            if (accessoriesData && accessoriesData.accessories) {
+                // Validate accessories data before sending
+                const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
+                const cleanAccessories = {};
+                
+                for (const [category, accessoryKey] of Object.entries(accessoriesData.accessories)) {
+                    if (validCategories.includes(category) && typeof accessoryKey === 'string') {
+                        cleanAccessories[category] = accessoryKey;
+                    }
+                }
+                
+                if (Object.keys(cleanAccessories).length > 0) {
+                    updatedData.accessories = cleanAccessories;
+                }
+            }
+        } catch (error) {
+            console.error('Error getting accessories data:', error);
+            // Continue without accessories data rather than failing the entire save
         }
     }
 
@@ -147,7 +184,17 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         const result = await res.json();
 
         if (res.ok) {
-            showToast("Profile updated successfully! ✨");
+            let successMessage = "Profile updated successfully! ✨";
+            
+            // Add specific mention of accessories if they were included
+            if (updatedData.accessories) {
+                const accessoryCount = Object.values(updatedData.accessories).filter(key => key !== 'none').length;
+                if (accessoryCount > 0) {
+                    successMessage = `Profile and ${accessoryCount} accessory${accessoryCount > 1 ? 'es' : ''} saved! ✨`;
+                }
+            }
+            
+            showToast(successMessage);
             document.documentElement.style.setProperty('--blue-primary', updatedData.themeColor);
         } else {
             showToast(`⚠️ ${result.error || "Failed to update profile."}`);

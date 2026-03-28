@@ -147,8 +147,19 @@ class AccessoryManager {
     // Get accessories data for profile saving
     getAccessoriesData() {
         console.log('Getting accessories data:', this.accessories);
+        
+        // Validate data before returning
+        const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
+        const cleanAccessories = {};
+        
+        for (const [category, accessoryKey] of Object.entries(this.accessories)) {
+            if (validCategories.includes(category) && typeof accessoryKey === 'string' && accessoryKey.trim()) {
+                cleanAccessories[category] = accessoryKey;
+            }
+        }
+        
         return {
-            accessories: this.accessories
+            accessories: cleanAccessories
         };
     }
 
@@ -157,13 +168,13 @@ class AccessoryManager {
         console.log('Setting accessories data:', data);
         
         if (data && typeof data === 'object') {
-            // Map the data to ensure correct category names
+            // Ensure consistent category names - the backend uses face_accessories
             const mappedAccessories = {
                 hats: data.hats || 'none',
                 glasses: data.glasses || 'none', 
                 mouths: data.mouths || 'none',
-                face_accessories: data.face_accessories || data.faceAccessory || 'none',
-                backgrounds: data.backgrounds || data.background || 'none'
+                face_accessories: data.face_accessories || 'none', // Keep consistent with backend
+                backgrounds: data.backgrounds || 'none'
             };
             
             console.log('Mapped accessories:', mappedAccessories);
