@@ -1,18 +1,14 @@
 function renderUserAccessories(accessoriesData) {
     const accessoryLayer = document.getElementById('userAccessoryLayer');
     if (!accessoryLayer || !accessoriesData) return;
-    
-    // Clear current accessories
+
     accessoryLayer.innerHTML = '';
-    
-    // Get accessories from data
+
     const accessories = accessoriesData.accessories || {};
-    
-    // Render each accessory
+
     Object.keys(accessories).forEach(category => {
         const accessoryKey = accessories[category];
-        
-        // Try to get from global ACCESSORY_LIBRARY if available
+
         if (window.ACCESSORY_LIBRARY && window.ACCESSORY_LIBRARY[category] && window.ACCESSORY_LIBRARY[category][accessoryKey]) {
             const accessory = window.ACCESSORY_LIBRARY[category][accessoryKey];
             if (accessory.svg) {
@@ -25,22 +21,19 @@ function renderUserAccessories(accessoriesData) {
 function renderAccessoryElement(container, accessory, category, accessoryKey) {
     const element = document.createElement('div');
     element.className = 'accessory-element';
-    
-    // Add animation class based on category
+
     const animationClass = category.replace('_', '');
     element.classList.add(animationClass);
-    
-    // Set SVG content
+
     element.innerHTML = accessory.svg;
-    
-    // Use default positioning from the accessory definition
+
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
-    
+
     element.style.left = `${defaultPos.x}%`;
     element.style.top = `${defaultPos.y}%`;
     element.style.transform = `translate(-50%, -50%) scale(${defaultPos.scale}) rotate(${defaultPos.rotation}deg)`;
     element.style.opacity = defaultPos.opacity;
-    
+
     container.appendChild(element);
 }
 
@@ -444,7 +437,6 @@ async function loadProfile() {
             }
         }
 
-        // Load and display accessories
         if (data.accessories) {
             renderUserAccessories(data.accessories);
         }

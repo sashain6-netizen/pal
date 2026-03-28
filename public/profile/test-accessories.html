@@ -14,11 +14,11 @@
         button { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; background: #007bff; color: white; }
         button:hover { background: #0056b3; }
         pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
-    </style>
+</style>
 </head>
 <body>
     <h1>🧪 Accessory Save/Load Test</h1>
-    
+
     <div class="test-section">
         <h2>Test Configuration</h2>
         <button onclick="runFullTest()">🔄 Run Full Test Suite</button>
@@ -30,7 +30,6 @@
     <div id="testResults"></div>
 
     <script>
-        // Mock accessory library for testing
         const ACCESSORY_LIBRARY = {
             hats: { none: { name: 'None' }, cap: { name: 'Baseball Cap' } },
             glasses: { none: { name: 'None' }, sunglasses: { name: 'Sunglasses' } },
@@ -64,7 +63,6 @@
             clearResults();
             addResult('📋 Testing Data Structure Consistency...', 'info');
 
-            // Test frontend data structure
             const testAccessories = {
                 hats: 'cap',
                 glasses: 'sunglasses',
@@ -76,10 +74,9 @@
             addResult('✅ Frontend data structure valid', 'success');
             addResult('<pre>' + JSON.stringify(testAccessories, null, 2) + '</pre>', 'info');
 
-            // Test backend expected structure
             const expectedStructure = {
                 hats: 'string',
-                glasses: 'string', 
+                glasses: 'string',
                 mouths: 'string',
                 face_accessories: 'string',
                 backgrounds: 'string'
@@ -88,7 +85,6 @@
             addResult('✅ Backend expects consistent structure', 'success');
             addResult('<pre>' + JSON.stringify(expectedStructure, null, 2) + '</pre>', 'info');
 
-            // Validate category names match
             const frontendCategories = Object.keys(testAccessories);
             const backendCategories = Object.keys(expectedStructure);
             const categoriesMatch = JSON.stringify(frontendCategories.sort()) === JSON.stringify(backendCategories.sort());
@@ -104,7 +100,6 @@
             clearResults();
             addResult('🔒 Testing Backend Validation Rules...', 'info');
 
-            // Test valid accessories
             const validAccessories = {
                 hats: 'cap',
                 glasses: 'sunglasses',
@@ -116,18 +111,16 @@
             addResult('✅ Valid accessories data structure', 'success');
             addResult('<pre>' + JSON.stringify(validAccessories, null, 2) + '</pre>', 'info');
 
-            // Test invalid category
             const invalidCategory = {
                 hats: 'cap',
-                invalid_category: 'test'  // This should be rejected
+                invalid_category: 'test'
             };
 
             addResult('⚠️ Invalid category test (should be rejected):', 'info');
             addResult('<pre>' + JSON.stringify(invalidCategory, null, 2) + '</pre>', 'info');
 
-            // Test invalid accessory key
             const invalidAccessory = {
-                hats: 'invalid_hat'  // This should be rejected
+                hats: 'invalid_hat'
             };
 
             addResult('⚠️ Invalid accessory key test (should be rejected):', 'info');
@@ -140,12 +133,10 @@
             clearResults();
             addResult('👤 Simulating User Accessory Selection Flow...', 'info');
 
-            // Step 1: User loads profile with default accessories
             let currentAccessories = { ...DEFAULT_ACCESSORIES };
             addResult('📥 Profile loaded with default accessories', 'info');
             addResult('<pre>' + JSON.stringify(currentAccessories, null, 2) + '</pre>', 'info');
 
-            // Step 2: User selects accessories
             currentAccessories = {
                 hats: 'cap',
                 glasses: 'sunglasses',
@@ -157,7 +148,6 @@
             addResult('🎨 User selected accessories', 'info');
             addResult('<pre>' + JSON.stringify(currentAccessories, null, 2) + '</pre>', 'info');
 
-            // Step 3: Prepare data for saving
             const saveData = {
                 displayName: 'Test User',
                 bio: 'Testing accessory save functionality',
@@ -168,13 +158,11 @@
             addResult('💾 Preparing data for backend save...', 'info');
             addResult('<pre>' + JSON.stringify(saveData, null, 2) + '</pre>', 'info');
 
-            // Step 4: Simulate successful save
             addResult('✅ Accessories saved successfully!', 'success');
             addResult('📊 Saved 5 accessories', 'info');
 
-            // Step 5: Simulate profile reload
             addResult('🔄 Simulating profile reload...', 'info');
-            const loadedAccessories = currentAccessories; // In real scenario, this comes from API
+            const loadedAccessories = currentAccessories;
             addResult('✅ Accessories loaded correctly', 'success');
             addResult('<pre>' + JSON.stringify(loadedAccessories, null, 2) + '</pre>', 'info');
 
@@ -197,11 +185,10 @@
             }, 500);
         }
 
-        // Auto-run basic test on page load
         document.addEventListener('DOMContentLoaded', () => {
             addResult('🧪 Accessory Save Test Page Loaded', 'info');
             addResult('Click the buttons above to run specific tests or the full test suite.', 'info');
         });
-    </script>
+</script>
 </body>
 </html>

@@ -151,7 +151,6 @@ export async function onRequestPost(context) {
             themeColor: updates.themeColor || "#2563eb"
         };
 
-        // Validate accessories data if provided
         if (updates.accessories && typeof updates.accessories === 'object') {
             const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
             const validAccessoryKeys = {
@@ -161,29 +160,27 @@ export async function onRequestPost(context) {
                 face_accessories: ['none', 'mustache', 'beard', 'blush', 'freckles', 'eye_patch', 'mask'],
                 backgrounds: ['none', 'sparkles', 'hearts', 'stars']
             };
-            
+
             const validatedAccessories = {};
-            
+
             for (const [category, accessoryKey] of Object.entries(updates.accessories)) {
-                // Validate category
                 if (!validCategories.includes(category)) {
                     return new Response(JSON.stringify({ error: `Invalid accessory category: ${category}` }), {
                         status: 400,
                         headers: { "Content-Type": "application/json" }
                     });
                 }
-                
-                // Validate accessory key
+
                 if (!validAccessoryKeys[category].includes(accessoryKey)) {
                     return new Response(JSON.stringify({ error: `Invalid accessory key "${accessoryKey}" for category "${category}"` }), {
                         status: 400,
                         headers: { "Content-Type": "application/json" }
                     });
                 }
-                
+
                 validatedAccessories[category] = accessoryKey;
             }
-            
+
             updatedUser.accessories = validatedAccessories;
         }
 

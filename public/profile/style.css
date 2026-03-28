@@ -385,7 +385,6 @@
     animation: pulse 1s ease-in-out infinite;
 }
 
-/* Enhanced error and success states */
 .preview-status.error {
     color: #ef4444;
     animation: shake 0.5s ease-in-out;
@@ -403,17 +402,16 @@
 }
 
 @keyframes fadeInScale {
-    from { 
-        opacity: 0; 
-        transform: scale(0.9); 
+    from {
+        opacity: 0;
+        transform: scale(0.9);
     }
-    to { 
-        opacity: 1; 
-        transform: scale(1); 
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
 }
 
-/* Improved loading spinner for preview image */
 #previewImage.loading {
     opacity: 0.6;
     filter: blur(2px);
@@ -525,7 +523,6 @@
     padding-left: 16px;
 }
 
-/* Dropdown Styles */
 .dropdown-section {
     margin: 20px 0;
     border: 1px solid #e2e8f0;
@@ -562,7 +559,6 @@
     background: white;
 }
 
-/* Accessory System Styles */
 .accessories-container {
     max-height: 400px;
     overflow-y: auto;
@@ -640,8 +636,6 @@
     word-break: break-word;
 }
 
-
-/* Enhanced Avatar Preview with Accessories */
 .avatar-preview {
     display: flex;
     align-items: center;
@@ -698,7 +692,6 @@
     transition: all 0.2s ease;
 }
 
-/* Animation effects for accessories */
 .accessory-element.hat {
     animation: hatFloat 3s ease-in-out infinite;
 }
@@ -745,7 +738,6 @@
     50% { opacity: 0.6; }
 }
 
-/* Hover effects for accessories in preview */
 .avatar-with-accessories:hover .accessory-element.hat {
     animation-duration: 1.5s;
 }
@@ -758,24 +750,23 @@
     animation-duration: 1s;
 }
 
-/* Responsive adjustments */
 @media (max-width: 480px) {
     .accessory-grid {
         grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
         gap: 8px;
     }
-    
-    .accessory-item {
+
+        .accessory-item {
         padding: 8px;
         min-height: 70px;
     }
-    
-    .accessory-preview {
+
+        .accessory-preview {
         width: 35px;
         height: 35px;
     }
-    
-    .accessory-name {
+
+        .accessory-name {
         font-size: 0.65rem;
     }
 }

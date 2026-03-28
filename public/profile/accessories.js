@@ -1,9 +1,8 @@
-// Avatar Accessories System
 const ACCESSORY_LIBRARY = {
     hats: {
         none: { name: 'None', svg: '', category: 'hats' },
-        cap: { 
-            name: 'Baseball Cap', 
+        cap: {
+            name: 'Baseball Cap',
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 35 Q50 25 80 35 L85 40 Q50 30 15 40 Z" fill="#ff0000" stroke="#cc0000" stroke-width="1"/>
@@ -65,7 +64,7 @@ const ACCESSORY_LIBRARY = {
             defaultPosition: { x: 50, y: 10, scale: 1.2, rotation: 0 }
         }
     },
-    
+
     glasses: {
         none: { name: 'None', svg: '', category: 'glasses' },
         sunglasses: {
@@ -123,7 +122,7 @@ const ACCESSORY_LIBRARY = {
             defaultPosition: { x: 50, y: 40, scale: 1, rotation: 0 }
         }
     },
-    
+
     mouths: {
         none: { name: 'None', svg: '', category: 'mouths' },
         smile: {
@@ -183,7 +182,7 @@ const ACCESSORY_LIBRARY = {
             defaultPosition: { x: 50, y: 60, scale: 1, rotation: 0 }
         }
     },
-    
+
     face_accessories: {
         none: { name: 'None', svg: '', category: 'face_accessories' },
         mustache: {
@@ -247,7 +246,7 @@ const ACCESSORY_LIBRARY = {
             defaultPosition: { x: 50, y: 60, scale: 1, rotation: 0 }
         }
     },
-    
+
     backgrounds: {
         none: { name: 'None', svg: '', category: 'backgrounds' },
         sparkles: {
@@ -293,16 +292,14 @@ const ACCESSORY_LIBRARY = {
     }
 };
 
-// Accessory configuration structure
 const DEFAULT_ACCESSORIES = {
     hats: 'none',
-    glasses: 'none', 
+    glasses: 'none',
     mouths: 'none',
     face_accessories: 'none',
     backgrounds: 'none'
 };
 
-// Position and customization options
 const ACCESSORY_CONTROLS = {
     position: { x: 0, y: 0, min: -50, max: 50 },
     scale: { value: 1, min: 0.5, max: 2, step: 0.1 },
@@ -310,7 +307,6 @@ const ACCESSORY_CONTROLS = {
     opacity: { value: 1, min: 0.3, max: 1, step: 0.1 }
 };
 
-// Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { ACCESSORY_LIBRARY, DEFAULT_ACCESSORIES, ACCESSORY_CONTROLS };
 }

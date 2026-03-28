@@ -37,7 +37,6 @@ async function loadProfile() {
                 const themeEl = document.getElementById('themeColor');
         if (themeEl) themeEl.value = user.themeColor || "#2563eb";
 
-        // Load accessories - always try since API now returns default accessories object
         if (user.accessories && typeof user.accessories === 'object') {
             const loadAccessories = () => {
                 if (window.accessoryManager) {
@@ -45,19 +44,17 @@ async function loadProfile() {
                         window.accessoryManager.setAccessoriesData(user.accessories);
                     } catch (error) {
                         console.error('Error loading accessories:', error);
-                        // Don't fail the entire profile load for accessory issues
                     }
                 }
             };
-            
+
             if (window.accessoryManager) {
                 loadAccessories();
             } else {
-                // Wait for accessory manager to be initialized
-                const maxWaitTime = 2000; // 2 seconds max wait
+                const maxWaitTime = 2000;
                 const checkInterval = 100;
                 let waitedTime = 0;
-                
+
                 const waitForManager = setInterval(() => {
                     if (window.accessoryManager) {
                         clearInterval(waitForManager);
@@ -116,7 +113,7 @@ async function loadProfile() {
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
     const arrow = document.getElementById(dropdownId + '-arrow');
-    
+
     if (dropdown && arrow) {
         const isHidden = dropdown.style.display === 'none';
         dropdown.style.display = isHidden ? 'block' : 'none';
@@ -140,28 +137,25 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         themeColor: document.getElementById('themeColor').value
     };
 
-    // Add accessories data if available
     if (window.accessoryManager) {
         try {
             const accessoriesData = window.accessoryManager.getAccessoriesData();
             if (accessoriesData && accessoriesData.accessories) {
-                // Validate accessories data before sending
                 const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
                 const cleanAccessories = {};
-                
+
                 for (const [category, accessoryKey] of Object.entries(accessoriesData.accessories)) {
                     if (validCategories.includes(category) && typeof accessoryKey === 'string') {
                         cleanAccessories[category] = accessoryKey;
                     }
                 }
-                
+
                 if (Object.keys(cleanAccessories).length > 0) {
                     updatedData.accessories = cleanAccessories;
                 }
             }
         } catch (error) {
             console.error('Error getting accessories data:', error);
-            // Continue without accessories data rather than failing the entire save
         }
     }
 
@@ -185,15 +179,14 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
         if (res.ok) {
             let successMessage = "Profile updated successfully! ✨";
-            
-            // Add specific mention of accessories if they were included
+
             if (updatedData.accessories) {
                 const accessoryCount = Object.values(updatedData.accessories).filter(key => key !== 'none').length;
                 if (accessoryCount > 0) {
                     successMessage = `Profile and ${accessoryCount} accessory${accessoryCount > 1 ? 'es' : ''} saved! ✨`;
                 }
             }
-            
+
             showToast(successMessage);
             document.documentElement.style.setProperty('--blue-primary', updatedData.themeColor);
         } else {
@@ -222,13 +215,11 @@ async function validateImageUrl(url) {
             return { valid: false, error: "Invalid protocol. Only HTTP/HTTPS allowed." };
         }
 
-        // Expanded list of common image hosting services and file extensions
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.avif', '.ico', '.tiff', '.tif'];
         const hasImageExtension = imageExtensions.some(ext =>
             urlObj.pathname.toLowerCase().endsWith(ext)
         );
 
-        // Expanded list of allowed image hosting services
         const allowedHosts = [
             'imgur.com', 'i.imgur.com', 'discord.com', 'cdn.discordapp.com',
             'twitter.com', 'pbs.twimg.com', 'x.com',
@@ -258,37 +249,31 @@ async function validateImageUrl(url) {
             urlObj.hostname.includes(host)
         );
 
-        // More flexible validation - allow if it has image extension OR passes content validation
         if (!hasImageExtension && !hasAllowedHost) {
-            // Don't reject based on host alone - let content validation decide
             console.log("Unknown host, proceeding with content validation");
         }
 
-        // Enhanced validation with multiple methods
         const validationMethods = [
-            // Method 1: HEAD request with CORS (fastest for CORS-enabled servers)
             () => fetch(url, {
                 method: 'HEAD',
-                headers: { 
+                headers: {
                     'User-Agent': 'Pal-Profile-Validator/1.0',
                     'Accept': 'image/*'
                 },
                 mode: 'cors'
             }),
-            // Method 2: GET request with CORS (for servers that don't support HEAD)
             () => fetch(url, {
                 method: 'GET',
-                headers: { 
+                headers: {
                     'User-Agent': 'Pal-Profile-Validator/1.0',
                     'Accept': 'image/*',
                     'Range': 'bytes=0-1024'
                 },
                 mode: 'cors'
             }),
-            // Method 3: GET request with no-cors (fallback for restrictive servers)
             () => fetch(url, {
                 method: 'GET',
-                headers: { 
+                headers: {
                     'User-Agent': 'Pal-Profile-Validator/1.0',
                     'Accept': 'image/*'
                 },
@@ -302,13 +287,12 @@ async function validateImageUrl(url) {
         for (const [index, method] of validationMethods.entries()) {
             try {
                 response = await method();
-                
-                // For no-cors requests, we can't check response.ok or headers
-                if (index === 2) { // no-cors method
+
+                if (index === 2) {
                     console.log("Using no-cors fallback - assuming valid if request succeeded");
                     return { valid: true, noCors: true };
                 }
-                
+
                 if (response.ok) break;
             } catch (err) {
                 lastError = err;
@@ -318,7 +302,7 @@ async function validateImageUrl(url) {
 
         if (!response || !response.ok) {
             let errorMessage = "Cannot access image URL. Check if the link is correct and publicly accessible.";
-            
+
             if (lastError?.message.includes('cors')) {
                 if (hasAllowedHost) {
                     errorMessage = "CORS error - the image host doesn't allow direct linking. Try a different image or copy it to imgur.com";
@@ -328,21 +312,20 @@ async function validateImageUrl(url) {
             } else if (lastError?.message.includes('network') || lastError?.message.includes('fetch')) {
                 errorMessage = "Network error - cannot reach the image server. Check the URL and your internet connection";
             }
-            
+
             return { valid: false, error: errorMessage };
         }
 
         const contentType = response.headers.get('content-type') || '';
         const contentLength = response.headers.get('content-length');
-        
-        // More comprehensive content type checking
+
         const validContentTypes = [
-            'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 
+            'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
             'image/webp', 'image/bmp', 'image/svg+xml', 'image/avif',
             'image/x-icon', 'image/vnd.microsoft.icon', 'image/tiff'
         ];
 
-        const isValidContentType = validContentTypes.some(type => 
+        const isValidContentType = validContentTypes.some(type =>
             contentType.toLowerCase().includes(type)
         );
 
@@ -350,12 +333,10 @@ async function validateImageUrl(url) {
             return { valid: false, error: `URL does not point to a supported image format. Found: ${contentType || 'unknown'}` };
         }
 
-        // Check file size (limit to 10MB)
         if (contentLength && parseInt(contentLength) > 10 * 1024 * 1024) {
             return { valid: false, error: "Image file is too large (max 10MB)." };
         }
 
-        // Additional validation for SVG files (security)
         if (urlObj.pathname.toLowerCase().endsWith('.svg') || contentType.includes('svg')) {
             try {
                 const svgResponse = await fetch(url, {
@@ -363,8 +344,7 @@ async function validateImageUrl(url) {
                     mode: 'cors'
                 });
                 const svgText = await svgResponse.text();
-                
-                // Basic SVG security check
+
                 if (svgText.includes('<script>') || svgText.includes('javascript:')) {
                     return { valid: false, error: "SVG contains potentially unsafe content." };
                 }
@@ -391,7 +371,6 @@ function updatePreview(url, status, keepCurrentImage = false) {
 
     avatarUrlGroup.classList.remove('has-success', 'has-error');
 
-    // Apply loading state to image when validating
     if (status.includes("⏳") || status.includes("🔍")) {
         previewImage.classList.add('loading');
     } else {
@@ -449,13 +428,11 @@ async function handleAvatarInput() {
         if (validation.valid) {
             updatePreview(url, "🔍 Loading image...");
 
-            // Enhanced image loading with retry mechanism
             const loadImageWithRetry = async (imageUrl, maxRetries = 3) => {
                 for (let attempt = 1; attempt <= maxRetries; attempt++) {
                     try {
                         const img = new Image();
-                        
-                        // Set up timeout for image loading
+
                         const timeoutPromise = new Promise((_, reject) => {
                             setTimeout(() => reject(new Error('Image load timeout')), 10000);
                         });
@@ -463,24 +440,20 @@ async function handleAvatarInput() {
                         const loadPromise = new Promise((resolve, reject) => {
                             img.onload = () => resolve(img);
                             img.onerror = () => reject(new Error('Image load failed'));
-                            
-                            // First try without crossOrigin for no-cors validated images
+
                             img.src = imageUrl;
                         });
 
                         const loadedImg = await Promise.race([loadPromise, timeoutPromise]);
-                        
-                        // Additional validation that the image actually loaded
+
                         if (loadedImg.naturalWidth === 0 || loadedImg.naturalHeight === 0) {
                             throw new Error('Invalid image dimensions');
                         }
 
-                        // Check minimum dimensions (at least 20x20)
                         if (loadedImg.naturalWidth < 20 || loadedImg.naturalHeight < 20) {
                             throw new Error('Image too small (minimum 20x20 pixels)');
                         }
 
-                        // Check maximum dimensions (prevent extremely large images)
                         if (loadedImg.naturalWidth > 4096 || loadedImg.naturalHeight > 4096) {
                             throw new Error('Image too large (maximum 4096x4096 pixels)');
                         }
@@ -491,7 +464,6 @@ async function handleAvatarInput() {
                         if (attempt === maxRetries) {
                             throw error;
                         }
-                        // Wait before retry (exponential backoff)
                         await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
                     }
                 }
@@ -502,8 +474,7 @@ async function handleAvatarInput() {
                 updatePreview(url, "✅ Image loaded successfully");
             } catch (error) {
                 let errorMessage = "❌ Failed to load image";
-                
-                // Provide specific error messages
+
                 if (error.message.includes('timeout')) {
                     errorMessage = "❌ Image load timed out - try a faster host or smaller image";
                 } else if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
@@ -517,13 +488,12 @@ async function handleAvatarInput() {
                 } else {
                     errorMessage = "❌ Cannot load image - try a different URL or host";
                 }
-                
+
                 updatePreview("", errorMessage);
             }
         } else {
             let errorMessage = `❌ ${validation.error}`;
-            
-            // Add helpful suggestions for common issues
+
             if (validation.error.includes('CORS error')) {
                 errorMessage += " Upload to imgur.com or use an image from a major hosting service";
             } else if (validation.error.includes('Cannot access image URL')) {
@@ -531,11 +501,10 @@ async function handleAvatarInput() {
             } else if (validation.error.includes('Network error')) {
                 errorMessage += " Check if the website is down or the URL is correct";
             }
-            
-            // As a last resort, try to load the image directly without validation
+
             if (validation.error.includes('Network error') || validation.error.includes('Cannot access image URL')) {
                 updatePreview(url, "🔄 Attempting direct load...", true);
-                
+
                 const img = new Image();
                 img.onload = () => {
                     if (img.naturalWidth > 0 && img.naturalHeight > 0) {
