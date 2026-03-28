@@ -208,8 +208,15 @@ let currentAvatarUrl = "";
 let previewTimeout = null;
 
 async function validateImageUrl(url) {
+    console.log('Validating URL:', url);
     try {
-        const urlObj = new URL(url);
+        // Ensure URL is properly encoded
+        const encodedUrl = encodeURI(url);
+        console.log('Encoded URL:', encodedUrl);
+        const urlObj = new URL(encodedUrl);
+        console.log('URL object:', urlObj);
+        console.log('URL pathname:', urlObj.pathname);
+        console.log('URL search:', urlObj.search);
 
         if (!['http:', 'https:'].includes(urlObj.protocol)) {
             return { valid: false, error: "Invalid protocol. Only HTTP/HTTPS allowed." };
@@ -221,7 +228,7 @@ async function validateImageUrl(url) {
         );
 
         const validationMethods = [
-            () => fetch(url, {
+            () => fetch(encodedUrl, {
                 method: 'HEAD',
                 headers: {
                     'User-Agent': 'Pal-Profile-Validator/1.0',
@@ -229,7 +236,7 @@ async function validateImageUrl(url) {
                 },
                 mode: 'cors'
             }),
-            () => fetch(url, {
+            () => fetch(encodedUrl, {
                 method: 'GET',
                 headers: {
                     'User-Agent': 'Pal-Profile-Validator/1.0',
@@ -238,7 +245,7 @@ async function validateImageUrl(url) {
                 },
                 mode: 'cors'
             }),
-            () => fetch(url, {
+            () => fetch(encodedUrl, {
                 method: 'GET',
                 headers: {
                     'User-Agent': 'Pal-Profile-Validator/1.0',
@@ -302,7 +309,7 @@ async function validateImageUrl(url) {
 
         if (urlObj.pathname.toLowerCase().endsWith('.svg') || contentType.includes('svg')) {
             try {
-                const svgResponse = await fetch(url, {
+                const svgResponse = await fetch(encodedUrl, {
                     headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' },
                     mode: 'cors'
                 });
@@ -316,7 +323,7 @@ async function validateImageUrl(url) {
             }
         }
 
-        return { valid: true };
+        return { valid: true, url: url };
     } catch (error) {
         if (error.message.includes('URL constructor')) {
             return { valid: false, error: "Invalid URL format. Please check the link and try again." };
@@ -356,6 +363,7 @@ function updatePreview(url, status, keepCurrentImage = false) {
 
     if (!keepCurrentImage) {
         if (url && url !== currentAvatarUrl) {
+            console.log('Setting preview image src to:', url);
             previewImage.src = url;
             currentAvatarUrl = url;
         } else if (!url) {
@@ -405,9 +413,11 @@ async function handleAvatarInput() {
         const validation = await validateImageUrl(url);
 
         if (validation.valid) {
-            updatePreview(url, "🔍 Loading image...");
+            const imageUrl = validation.url || url;
+            updatePreview(imageUrl, "🔍 Loading image...");
 
             const loadImageWithRetry = async (imageUrl, maxRetries = 3) => {
+                console.log('Loading image with retry:', imageUrl);
                 for (let attempt = 1; attempt <= maxRetries; attempt++) {
                     try {
                         const img = new Image();
