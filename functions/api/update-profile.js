@@ -51,7 +51,7 @@ export async function onRequestPost(context) {
 
         let avatarUrl = user.avatarUrl || "/default-avatar.png";
 
-        if (typeof updates.avatarUrl !== 'undefined' && isPremium) {
+        if (typeof updates.avatarUrl !== 'undefined') {
             const urlStr = String(updates.avatarUrl).trim();
 
             if (!urlStr) {
@@ -139,11 +139,6 @@ export async function onRequestPost(context) {
                     });
                 }
             }
-        } else if (typeof updates.avatarUrl !== 'undefined' && !isPremium) {
-            return new Response(JSON.stringify({ error: "Premium membership required to set custom profile picture" }), {
-                status: 403,
-                headers: { "Content-Type": "application/json" }
-            });
         }
 
         const updatedUser = {
