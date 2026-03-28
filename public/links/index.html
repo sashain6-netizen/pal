@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Links • Pal</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/links/style.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="links-header">
+            <h1>Quick Links</h1>
+            <p class="subtitle">Your collection of useful websites and resources</p>
+            <button class="nav-btn add-link-btn" onclick="openAddLinkModal()">+ Add Link</button>
+        </div>
+
+        <div class="links-grid" id="linksGrid">
+            <!-- Links will be dynamically added here -->
+        </div>
+
+        <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <h3>No links yet</h3>
+            <p>Start building your collection by adding your first link!</p>
+            <button class="nav-btn" onclick="openAddLinkModal()">Add Your First Link</button>
+        </div>
+    </div>
+
+    <!-- Add Link Modal -->
+    <div id="addLinkModal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Link</h3>
+            <form id="addLinkForm">
+                <div class="form-group">
+                    <label for="linkTitle">Title</label>
+                    <input type="text" id="linkTitle" required placeholder="Enter link title...">
+                </div>
+                <div class="form-group">
+                    <label for="linkUrl">URL</label>
+                    <input type="url" id="linkUrl" required placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label for="linkDescription">Description</label>
+                    <textarea id="linkDescription" placeholder="Brief description of this link..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="linkImage">Image URL (optional)</label>
+                    <input type="url" id="linkImage" placeholder="https://example.com/image.jpg">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeAddLinkModal()">Cancel</button>
+                    <button type="submit" class="nav-btn">Add Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Link Modal -->
+    <div id="editLinkModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Link</h3>
+            <form id="editLinkForm">
+                <input type="hidden" id="editLinkId">
+                <div class="form-group">
+                    <label for="editLinkTitle">Title</label>
+                    <input type="text" id="editLinkTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLinkUrl">URL</label>
+                    <input type="url" id="editLinkUrl" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLinkDescription">Description</label>
+                    <textarea id="editLinkDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editLinkImage">Image URL (optional)</label>
+                    <input type="url" id="editLinkImage">
+                    <div class="image-preview" id="editImagePreview"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeEditLinkModal()">Cancel</button>
+                    <button type="button" class="delete-btn" onclick="deleteLink()">Delete</button>
+                    <button type="submit" class="nav-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/global-settings.js"></script>
+    <script src="/global-auth.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="/links/script.js"></script>
+</body>
+</html>
