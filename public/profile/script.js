@@ -26,7 +26,13 @@ async function loadProfile() {
         const avatarUrlGroup = document.getElementById('avatarUrlGroup');
         if (user.isPremium && avatarUrlGroup) {
             avatarUrlGroup.style.display = 'block';
-            updateEl('avatarUrl', user.avatar && user.avatar !== "/default-avatar.png" ? user.avatar : "");
+            
+            const avatarUrl = user.avatar && user.avatar !== "/default-avatar.png" ? user.avatar : "";
+            updateEl('avatarUrl', avatarUrl);
+            
+            if (avatarUrl) {
+                updatePreview(avatarUrl, "✅ Current profile picture");
+            }
         }
 
                 const themeEl = document.getElementById('themeColor');
@@ -122,3 +128,126 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 });
 
 document.addEventListener('DOMContentLoaded', loadProfile);
+
+// Profile Picture Functions
+let currentAvatarUrl = "";
+let previewTimeout = null;
+
+async function validateImageUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        
+        if (!['http:', 'https:'].includes(urlObj.protocol)) {
+            return { valid: false, error: "Invalid protocol. Only HTTP/HTTPS allowed." };
+        }
+
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+        const hasImageExtension = imageExtensions.some(ext => 
+            urlObj.pathname.toLowerCase().endsWith(ext)
+        );
+
+        const allowedHosts = ['imgur.com', 'discord.com', 'cdn.discordapp.com'];
+        const hasAllowedHost = allowedHosts.some(host => 
+            urlObj.hostname.includes(host)
+        );
+
+        if (!hasImageExtension && !hasAllowedHost) {
+            return { valid: false, error: "URL must point to a valid image file." };
+        }
+
+        // Test if image loads
+        const response = await fetch(url, { 
+            method: 'HEAD',
+            headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' }
+        });
+
+        if (!response.ok) {
+            return { valid: false, error: "Cannot access image URL." };
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.startsWith('image/')) {
+            return { valid: false, error: "URL does not point to an image." };
+        }
+
+        return { valid: true };
+    } catch (error) {
+        return { valid: false, error: "Invalid URL format." };
+    }
+}
+
+function updatePreview(url, status) {
+    const previewImage = document.getElementById('previewImage');
+    const previewStatus = document.getElementById('previewStatus');
+    
+    if (!previewImage || !previewStatus) return;
+    
+    if (url && url !== currentAvatarUrl) {
+        previewImage.src = url;
+        currentAvatarUrl = url;
+    } else if (!url) {
+        previewImage.src = "/default-avatar.png";
+        currentAvatarUrl = "";
+    }
+
+    previewStatus.textContent = status;
+    previewStatus.className = "preview-status";
+    
+    if (status.includes("✅")) {
+        previewStatus.classList.add("success");
+    } else if (status.includes("❌") || status.includes("⚠️")) {
+        previewStatus.classList.add("error");
+    } else if (status.includes("⏳")) {
+        previewStatus.classList.add("loading");
+    } else {
+        previewStatus.classList.add("validating");
+    }
+}
+
+async function handleAvatarInput() {
+    const avatarUrlInput = document.getElementById('avatarUrl');
+    if (!avatarUrlInput) return;
+    
+    const url = avatarUrlInput.value.trim();
+    
+    if (!url) {
+        updatePreview("", "");
+        return;
+    }
+
+    updatePreview(url, "⏳ Validating URL...");
+    
+    if (previewTimeout) {
+        clearTimeout(previewTimeout);
+    }
+
+    previewTimeout = setTimeout(async () => {
+        const validation = await validateImageUrl(url);
+        
+        if (validation.valid) {
+            updatePreview(url, "✅ Valid image URL");
+            
+            // Test if image actually loads
+            const img = new Image();
+            img.onload = () => {
+                updatePreview(url, "✅ Image loaded successfully");
+            };
+            img.onerror = () => {
+                updatePreview("", "❌ Failed to load image");
+            };
+            img.src = url;
+        } else {
+            updatePreview("", `❌ ${validation.error}`);
+        }
+    }, 500);
+}
+
+// Add event listener for avatar URL input
+document.addEventListener('DOMContentLoaded', () => {
+    const avatarUrlInput = document.getElementById('avatarUrl');
+    if (avatarUrlInput) {
+        avatarUrlInput.addEventListener('input', handleAvatarInput);
+    }
+    
+    loadProfile();
+});

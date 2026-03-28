@@ -323,3 +323,65 @@
 .game-toast.success {
     border-left-color: #10b981;
 }
+
+/* Profile Picture Preview Styles */
+.avatar-preview {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    margin-top: 12px;
+}
+
+#previewImage {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+#previewImage:hover {
+    transform: scale(1.05);
+}
+
+.preview-status {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.preview-status.success {
+    color: #22c55e;
+}
+
+.preview-status.error {
+    color: #ef4444;
+}
+
+.preview-status.loading {
+    color: #f59e0b;
+}
+
+.preview-status.validating {
+    color: #64748b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .avatar-preview {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    #previewImage {
+        width: 80px;
+        height: 80px;
+    }
+}

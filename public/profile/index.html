@@ -29,9 +29,13 @@
 
             <div class="input-group" id="avatarUrlGroup" style="display: none;">
                 <label for="avatarUrl">Profile Picture URL (Premium Only)</label>
-                <input type="url" id="avatarUrl" placeholder="https://example.com/your-image.jpg">
+                <input type="url" id="avatarUrl" placeholder="https://example.com/your-image.png">
+                <div class="avatar-preview" id="avatarPreview">
+                    <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+                    <div class="preview-status" id="previewStatus"></div>
+                </div>
                 <small style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">
-                    Enter the web address of your profile picture. Supports JPG, PNG, GIF, WebP, BMP, SVG formats.
+                    Enter the web address of your profile picture. Supports JPG, PNG, GIF, WebP, BMP, SVG formats. Real-time validation included.
                 </small>
             </div>
 
