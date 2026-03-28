@@ -23,5 +23,12 @@
     "thumb": "/assist/mario.png",
     "url": "https://fullscreenmario.github.io/",
     "external": false
+  },
+  
+  {
+    "title": "Bitlife",
+    "thumb": "/assist/Bitlife-thumb.png",
+    "url": "https://nb-ga.github.io/games-site/projects/bitlife/index.html",
+    "external": false
   }
 ]
