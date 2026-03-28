@@ -29,8 +29,8 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
                 const userColor = userData.themeColor || "#2563eb";
         profileIcon.style.borderColor = userColor;
 
-        if (userData.avatarUrl && userData.avatarUrl !== "" && userData.avatarUrl !== "/default-avatar.png") {
-            avatarContainer.innerHTML = `<img src="${userData.avatarUrl}" id="nav-avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        if (userData.avatar && userData.avatar !== "" && userData.avatar !== "/default-avatar.png") {
+            avatarContainer.innerHTML = `<img src="${userData.avatar}" id="nav-avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         } else {
             avatarContainer.innerHTML = `
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:70%; height:70%;">

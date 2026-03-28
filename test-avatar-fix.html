@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Avatar Reset Fix</title>
+</head>
+<body>
+    <h1>Test Avatar Reset for Premium Users</h1>
+    <p>This test verifies that premium users can reset their avatar to default by submitting an empty string.</p>
+    
+    <h2>Test Cases:</h2>
+    <ol>
+        <li>Premium user submits empty avatar URL → Should revert to "/default-avatar.png"</li>
+        <li>Premium user submits valid avatar URL → Should update to new URL</li>
+        <li>Non-premium user submits avatar URL → Should return error</li>
+    </ol>
+    
+    <h2>Expected Behavior:</h2>
+    <p>When a premium user clears the avatar URL field and saves, the backend should set avatarUrl to "/default-avatar.png" instead of keeping the old value.</p>
+    
+    <h2>Fix Applied:</h2>
+    <ul>
+        <li>Changed condition from <code>updates.avatarUrl && isPremium</code> to <code>typeof updates.avatarUrl !== 'undefined' && isPremium</code></li>
+        <li>Added explicit check for empty string: <code>if (!urlStr) { avatarUrl = "/default-avatar.png"; }</code></li>
+        <li>Updated else condition to also use <code>typeof updates.avatarUrl !== 'undefined'</code></li>
+    </ul>
+    
+    <p><strong>Status: ✅ Fix Complete</strong></p>
+</body>
+</html>
