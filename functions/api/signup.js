@@ -1,4 +1,5 @@
 import { hashPassword } from "./_crypto.js";
+import { getDefaultOwnedAccessories } from "./_accessories.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -66,6 +67,14 @@ export async function onRequestPost(context) {
           date: new Date().toISOString(),
           read: false
         }],
+      accessories: {
+        hats: "none",
+        glasses: "none",
+        mouths: "none",
+        face_accessories: "none",
+        backgrounds: "none"
+      },
+      ownedAccessories: getDefaultOwnedAccessories(),
       ownedPrefixes: [],
       currentPrefix: ""
     };

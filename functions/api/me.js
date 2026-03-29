@@ -40,7 +40,14 @@ export async function onRequestGet(context) {
       rank: user.rank || "Member",
       themeColor: user.themeColor || "#2563eb",
       avatar: user.avatarUrl || "/default-avatar.png",
-      isPremium: isPremium
+      isPremium: isPremium,
+      accessories: user.accessories || {
+        hats: 'none',
+        glasses: 'none',
+        mouths: 'none',
+        face_accessories: 'none',
+        backgrounds: 'none'
+      }
     }), {
       headers: { "Content-Type": "application/json" }
     });

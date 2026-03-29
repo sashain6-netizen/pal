@@ -36,14 +36,24 @@ class UniversalAccessorySystem {
 
     async loadAccessoryLibrary() {
         try {
-            const response = await fetch('/profile/accessories.js');
-            const text = await response.text();
+            await new Promise((resolve, reject) => {
+                const existingScript = document.querySelector('script[data-accessory-library="true"]');
+                if (existingScript) {
+                    existingScript.addEventListener('load', resolve, { once: true });
+                    existingScript.addEventListener('error', reject, { once: true });
+                    if (window.ACCESSORY_LIBRARY) resolve();
+                    return;
+                }
 
-            const match = text.match(/const ACCESSORY_LIBRARY = ({[\s\S]*?});/);
-            if (match) {
-                this.accessoryLibrary = eval('(' + match[1] + ')');
-                window.ACCESSORY_LIBRARY = this.accessoryLibrary;
-            }
+                const script = document.createElement('script');
+                script.src = '/profile/accessories.js';
+                script.dataset.accessoryLibrary = 'true';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+
+            this.accessoryLibrary = window.ACCESSORY_LIBRARY;
         } catch (error) {
             console.error('Failed to load accessory library:', error);
         }

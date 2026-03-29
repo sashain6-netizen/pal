@@ -1,142 +1,264 @@
 class AccessoryManager {
     constructor() {
         this.accessories = { ...DEFAULT_ACCESSORIES };
-        this.selectedCategory = null;
-        this.selectedAccessory = null;
+        this.ownedAccessories = JSON.parse(JSON.stringify(DEFAULT_OWNED_ACCESSORIES));
+        this.currency = 0;
+        this.xp = 0;
+        this.activeCategory = 'hats';
+        this.activeAccessoryKey = 'none';
     }
 
     init() {
         this.setupAccessoryGrids();
+        this.updateSelectionUI();
         this.updatePreview();
+        this.renderActiveAccessoryDetails();
     }
 
-    ensureUIReady() {
-        const categories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
-        const allGridsReady = categories.every(category => {
-            const gridId = `${category.replace('_', '-')}-grid`;
-            const grid = document.getElementById(gridId);
-            const isReady = grid && grid.children.length > 0;
+    normalizeOwnedAccessories(data) {
+        const normalized = {};
 
-            if (!isReady) {
-                console.log(`Grid not ready: ${gridId} (found: ${!!grid}, children: ${grid ? grid.children.length : 0})`);
-            }
-
-            return isReady;
+        Object.keys(DEFAULT_OWNED_ACCESSORIES).forEach(category => {
+            const defaults = DEFAULT_OWNED_ACCESSORIES[category] || [];
+            const fromProfile = Array.isArray(data?.[category]) ? data[category] : [];
+            normalized[category] = [...new Set([...defaults, ...fromProfile])];
         });
 
-        if (!allGridsReady) {
-            console.log('Re-initializing accessory grids...');
-            this.setupAccessoryGrids();
-
-            setTimeout(() => {
-                const stillNotReady = categories.filter(category => {
-                    const gridId = `${category.replace('_', '-')}-grid`;
-                    const grid = document.getElementById(gridId);
-                    return !(grid && grid.children.length > 0);
-                });
-
-                if (stillNotReady.length > 0) {
-                    console.warn('Grids still not ready after re-initialization:', stillNotReady);
-                } else {
-                    console.log('All grids successfully initialized');
-                }
-            }, 100);
-        } else {
-            console.log('All grids already ready');
-        }
+        return normalized;
     }
 
     setupAccessoryGrids() {
         Object.keys(ACCESSORY_LIBRARY).forEach(category => {
-            const gridId = `${category.replace('_', '-')}-grid`;
-            const grid = document.getElementById(gridId);
-
+            const grid = document.getElementById(`${category.replace('_', '-')}-grid`);
             if (grid) {
-                this.populateGrid(grid, ACCESSORY_LIBRARY[category], category);
-            } else {
-                console.warn(`Grid not found: ${gridId} for category: ${category}`);
+                this.populateGrid(grid, category);
             }
         });
     }
 
-    populateGrid(grid, items, category) {
+    populateGrid(grid, category) {
         grid.innerHTML = '';
 
-        Object.keys(items).forEach(key => {
-            const item = items[key];
-            const accessoryItem = document.createElement('div');
+        Object.entries(ACCESSORY_LIBRARY[category]).forEach(([key, item]) => {
+            const accessoryItem = document.createElement('button');
+            accessoryItem.type = 'button';
             accessoryItem.className = 'accessory-item';
             accessoryItem.dataset.accessoryKey = key;
             accessoryItem.dataset.category = category;
 
             const preview = document.createElement('div');
             preview.className = 'accessory-preview';
-            if (item.svg) {
-                preview.innerHTML = item.svg;
-            }
+            preview.innerHTML = item.svg || '<span class="empty-accessory-preview"></span>';
+
+            const meta = document.createElement('div');
+            meta.className = 'accessory-meta';
 
             const name = document.createElement('div');
             name.className = 'accessory-name';
             name.textContent = item.name;
 
-            accessoryItem.appendChild(preview);
-            accessoryItem.appendChild(name);
+            const rarity = document.createElement('div');
+            rarity.className = 'accessory-rarity';
+            rarity.textContent = item.rarity || 'Item';
 
-            accessoryItem.addEventListener('click', () => this.selectAccessory(category, key));
+            meta.appendChild(name);
+            meta.appendChild(rarity);
+            accessoryItem.appendChild(preview);
+            accessoryItem.appendChild(meta);
+            accessoryItem.addEventListener('click', () => this.handleAccessoryClick(category, key));
 
             grid.appendChild(accessoryItem);
         });
+
+        this.refreshGridState();
     }
 
-    selectAccessory(category, accessoryKey) {
-        console.log(`Selecting accessory: ${category} -> ${accessoryKey}`);
+    setAccessoriesData(data) {
+        if (!data || typeof data !== 'object') return;
 
-        this.accessories[category] = accessoryKey;
-        this.selectedCategory = category;
-        this.selectedAccessory = accessoryKey;
+        this.accessories = {
+            hats: data.hats || 'none',
+            glasses: data.glasses || 'none',
+            mouths: data.mouths || 'none',
+            face_accessories: data.face_accessories || 'none',
+            backgrounds: data.backgrounds || 'none'
+        };
 
-        this.updateSelectionUI(category, accessoryKey);
-
+        this.updateSelectionUI();
         this.updatePreview();
-
-        console.log('Current accessories:', this.accessories);
     }
 
-    updateSelectionUI(category, accessoryKey) {
-        console.log(`Updating selection for ${category} -> ${accessoryKey}`);
+    setOwnershipData({ ownedAccessories, currency, xp }) {
+        this.ownedAccessories = this.normalizeOwnedAccessories(ownedAccessories);
+        this.currency = Number(currency || 0);
+        this.xp = Number(xp || 0);
+        this.refreshGridState();
+        this.renderActiveAccessoryDetails();
+    }
 
-        const existingSelected = document.querySelectorAll(`.accessory-item[data-category="${category}"].selected`);
-        console.log(`Found ${existingSelected.length} existing selected grid items for ${category}`);
+    isOwned(category, key) {
+        return (this.ownedAccessories[category] || []).includes(key);
+    }
 
-        existingSelected.forEach(item => {
-            console.log(`Removing selected from grid item: ${item.dataset.accessoryKey}`);
-            item.classList.remove('selected');
+    handleAccessoryClick(category, accessoryKey) {
+        this.activeCategory = category;
+        this.activeAccessoryKey = accessoryKey;
+
+        if (this.isOwned(category, accessoryKey)) {
+            this.accessories[category] = accessoryKey;
+            this.updatePreview();
+        }
+
+        this.updateSelectionUI();
+        this.renderActiveAccessoryDetails();
+    }
+
+    refreshGridState() {
+        Object.entries(ACCESSORY_LIBRARY).forEach(([category, items]) => {
+            Object.keys(items).forEach(key => {
+                const itemEl = document.querySelector(`.accessory-item[data-category="${category}"][data-accessory-key="${key}"]`);
+                if (!itemEl) return;
+
+                const item = items[key];
+                const owned = this.isOwned(category, key);
+                const canAfford = !item.price || this.currency >= item.price;
+                const statusText = owned
+                    ? 'Owned'
+                    : item.xpRequired > this.xp
+                        ? `Earn at ${item.xpRequired.toLocaleString()} XP`
+                        : item.price > 0
+                            ? `${item.price.toLocaleString()} coins`
+                            : 'Unlocks automatically';
+
+                itemEl.classList.toggle('locked', !owned);
+                itemEl.classList.toggle('affordable', !owned && canAfford && item.price > 0 && item.xpRequired <= this.xp);
+                itemEl.dataset.owned = owned ? 'true' : 'false';
+                itemEl.title = `${item.description || item.name}\n${statusText}`;
+
+                let badge = itemEl.querySelector('.accessory-status');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.className = 'accessory-status';
+                    itemEl.appendChild(badge);
+                }
+                badge.textContent = statusText;
+            });
         });
 
-        const selectedItem = document.querySelector(`.accessory-item[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
-        if (selectedItem) {
-            selectedItem.classList.add('selected');
-            console.log(`✅ Successfully selected grid item: ${category} -> ${accessoryKey}`);
-            console.log(`Grid item classes after selection: ${selectedItem.className}`);
-        } else {
-            console.warn(`❌ Grid item not found: category="${category}", key="${accessoryKey}"`);
+        this.updateSelectionUI();
+    }
 
-            // Log all available grid items for debugging
-            const allGridItems = document.querySelectorAll(`.accessory-item[data-category="${category}"]`);
-            console.log(`Available grid items for category ${category}:`, Array.from(allGridItems).map(item => ({
-                key: item.dataset.accessoryKey,
-                classes: item.className,
-                element: item
-            })));
+    updateSelectionUI() {
+        document.querySelectorAll('.accessory-item').forEach(item => {
+            const { category, accessoryKey } = item.dataset;
+            item.classList.toggle('selected', this.accessories[category] === accessoryKey);
+            item.classList.toggle('focused', this.activeCategory === category && this.activeAccessoryKey === accessoryKey);
+        });
+    }
+
+    getAccessoryState(category, accessoryKey) {
+        const item = ACCESSORY_LIBRARY?.[category]?.[accessoryKey];
+        if (!item) return null;
+
+        const owned = this.isOwned(category, accessoryKey);
+        const xpReady = this.xp >= (item.xpRequired || 0);
+        const affordable = this.currency >= (item.price || 0);
+
+        let actionLabel = 'Owned';
+        let disabled = false;
+        let helper = item.description || '';
+
+        if (!owned) {
+            if (!xpReady) {
+                actionLabel = `Reach ${(item.xpRequired || 0).toLocaleString()} XP`;
+                helper = `${item.description} Earn more XP to unlock this.`;
+                disabled = true;
+            } else if (item.price > 0) {
+                actionLabel = `Buy for ${item.price.toLocaleString()} coins`;
+                helper = `${item.description} Costs ${item.price.toLocaleString()} coins.`;
+                disabled = !affordable;
+            } else {
+                actionLabel = 'Earned automatically';
+                helper = `${item.description} This unlocks as you gain XP.`;
+                disabled = true;
+            }
         }
+
+        return { item, owned, xpReady, affordable, actionLabel, disabled, helper };
+    }
+
+    renderActiveAccessoryDetails() {
+        const state = this.getAccessoryState(this.activeCategory, this.activeAccessoryKey);
+        if (!state) return;
+
+        const title = document.getElementById('accessory-detail-title');
+        const rarity = document.getElementById('accessory-detail-rarity');
+        const helper = document.getElementById('accessory-detail-helper');
+        const button = document.getElementById('accessory-action-button');
+        const selection = document.getElementById('accessory-current-selection');
+
+        if (title) title.textContent = state.item.name;
+        if (rarity) rarity.textContent = `${state.item.rarity} • ${this.prettyCategoryName(this.activeCategory)}`;
+        if (helper) helper.textContent = state.helper;
+        if (selection) selection.textContent = `Wearing: ${ACCESSORY_LIBRARY[this.activeCategory][this.accessories[this.activeCategory]].name}`;
+
+        if (button) {
+            button.dataset.category = this.activeCategory;
+            button.dataset.accessoryKey = this.activeAccessoryKey;
+            button.textContent = state.owned ? 'Equip Now' : state.actionLabel;
+            button.disabled = state.disabled;
+            button.classList.toggle('is-buying', !state.owned);
+        }
+    }
+
+    prettyCategoryName(category) {
+        return category.replace('_', ' ');
+    }
+
+    async handleActionButton() {
+        const state = this.getAccessoryState(this.activeCategory, this.activeAccessoryKey);
+        if (!state) return { success: false };
+
+        if (state.owned) {
+            this.accessories[this.activeCategory] = this.activeAccessoryKey;
+            this.updateSelectionUI();
+            this.updatePreview();
+            this.renderActiveAccessoryDetails();
+            return { success: true, equipped: true };
+        }
+
+        const response = await fetch('/api/purchase-accessory', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                category: this.activeCategory,
+                accessoryKey: this.activeAccessoryKey
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            return { success: false, error: result.error || 'Purchase failed' };
+        }
+
+        this.setOwnershipData({
+            ownedAccessories: result.ownedAccessories,
+            currency: result.currency,
+            xp: this.xp
+        });
+
+        this.accessories[this.activeCategory] = this.activeAccessoryKey;
+        this.updateSelectionUI();
+        this.updatePreview();
+        this.renderActiveAccessoryDetails();
+
+        return { success: true, purchased: result.purchased, currency: result.currency };
     }
 
     updatePreview() {
         const accessoryLayer = document.getElementById('accessoryLayer');
-        if (!accessoryLayer) {
-            console.warn('Accessory layer not found');
-            return;
-        }
+        if (!accessoryLayer) return;
 
         accessoryLayer.innerHTML = '';
 
@@ -144,115 +266,32 @@ class AccessoryManager {
             const accessoryKey = this.accessories[category];
             const accessory = ACCESSORY_LIBRARY[category]?.[accessoryKey];
 
-            if (accessory && accessory.svg) {
-                console.log(`Rendering accessory: ${category} -> ${accessoryKey}`);
+            if (accessory?.svg) {
                 this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
-            } else {
-                console.log(`Skipping accessory: ${category} -> ${accessoryKey} (no SVG)`);
             }
         });
     }
 
     renderAccessory(container, accessory, category, accessoryKey) {
         const element = document.createElement('div');
-        element.className = 'accessory-element';
+        element.className = `accessory-element ${category.replace('_', '-')}`;
         element.dataset.category = category;
         element.dataset.accessoryKey = accessoryKey;
-
-        const animationClassMap = {
-            'hats': 'hat',
-            'glasses': 'glasses',
-            'mouths': 'mouth',
-            'face_accessories': 'face-accessory',
-            'backgrounds': 'background'
-        };
-        const animationClass = animationClassMap[category] || category;
-        element.classList.add(animationClass);
-
         element.innerHTML = accessory.svg;
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
-
         element.style.left = `${defaultPos.x}%`;
         element.style.top = `${defaultPos.y}%`;
         element.style.transform = `translate(-50%, -50%) scale(${defaultPos.scale}) rotate(${defaultPos.rotation}deg)`;
-        element.style.opacity = defaultPos.opacity;
+        element.style.opacity = defaultPos.opacity ?? 1;
 
         container.appendChild(element);
     }
 
-    loadSavedAccessories() {
-    }
-
-    saveAccessories() {
-        return {
-            accessories: this.accessories
-        };
-    }
-
     getAccessoriesData() {
-        console.log('Getting accessories data:', this.accessories);
-
-        const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
-        const cleanAccessories = {};
-
-        for (const [category, accessoryKey] of Object.entries(this.accessories)) {
-            if (validCategories.includes(category) && typeof accessoryKey === 'string' && accessoryKey.trim()) {
-                cleanAccessories[category] = accessoryKey;
-            }
-        }
-
         return {
-            accessories: cleanAccessories
+            accessories: { ...this.accessories }
         };
-    }
-
-    setAccessoriesData(data) {
-        console.log('Setting accessories data:', data);
-
-        if (data && typeof data === 'object') {
-            const mappedAccessories = {
-                hats: data.hats !== undefined ? data.hats : 'none',
-                glasses: data.glasses !== undefined ? data.glasses : 'none',
-                mouths: data.mouths !== undefined ? data.mouths : 'none',
-                face_accessories: data.face_accessories !== undefined ? data.face_accessories : 'none',
-                backgrounds: data.backgrounds !== undefined ? data.backgrounds : 'none'
-            };
-
-            console.log('Mapped accessories:', mappedAccessories);
-
-            this.accessories = { ...DEFAULT_ACCESSORIES, ...mappedAccessories };
-
-            this.ensureUIReady();
-
-            const updateSelectionWithRetry = (attempt = 1) => {
-                let successCount = 0;
-
-                Object.keys(this.accessories).forEach(category => {
-                    const accessoryKey = this.accessories[category];
-                    const selectedItem = document.querySelector(`[data-category="${category}"][data-accessory-key="${accessoryKey}"]`);
-
-                    if (selectedItem) {
-                        this.updateSelectionUI(category, accessoryKey);
-                        successCount++;
-                    }
-                });
-
-                if (successCount < Object.keys(this.accessories).length && attempt < 3) {
-                    console.log(`Retrying selection update (attempt ${attempt + 1})`);
-                    setTimeout(() => updateSelectionWithRetry(attempt + 1), 200);
-                } else if (successCount === Object.keys(this.accessories).length) {
-                    console.log('All accessories successfully selected');
-                } else {
-                    console.warn('Some accessories could not be selected after retries');
-                }
-            };
-
-            setTimeout(updateSelectionWithRetry, 50);
-            this.updatePreview();
-
-            console.log('Final accessories state:', this.accessories);
-        }
     }
 }
 
@@ -262,18 +301,15 @@ let accessoryManager;
     accessoryManager = new AccessoryManager();
     window.accessoryManager = accessoryManager;
 
+    const initialize = () => {
+        accessoryManager.init();
+        window.dispatchEvent(new CustomEvent('accessoryManagerReady'));
+    };
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            accessoryManager.setupAccessoryGrids();
-            accessoryManager.updatePreview();
-            window.dispatchEvent(new CustomEvent('accessoryManagerReady'));
-        });
+        document.addEventListener('DOMContentLoaded', initialize);
     } else {
-        setTimeout(() => {
-            accessoryManager.setupAccessoryGrids();
-            accessoryManager.updatePreview();
-            window.dispatchEvent(new CustomEvent('accessoryManagerReady'));
-        }, 0);
+        initialize();
     }
 })();
 

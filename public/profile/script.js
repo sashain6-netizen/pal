@@ -1,3 +1,5 @@
+let currentProfileData = null;
+
 async function loadProfile() {
     try {
         const res = await fetch('/api/get-profile');
@@ -7,6 +9,7 @@ async function loadProfile() {
         }
 
         const user = await res.json();
+        currentProfileData = user;
 
         const updateEl = (id, val, isInput = false) => {
             const el = document.getElementById(id);
@@ -33,7 +36,7 @@ async function loadProfile() {
                 updatePreview(avatarUrl, "✅ Current profile picture");
             } else {
                 const themeColor = user.themeColor || "#2563eb";
-                const defaultAvatar = generateDefaultAvatarSVG(themeColor);
+                const defaultAvatar = window.generateDefaultAvatarSVG(themeColor);
                 updatePreview(defaultAvatar, "🎨 Default avatar from your theme");
             }
         }
@@ -47,6 +50,11 @@ async function loadProfile() {
                     try {
                         console.log('Loading user accessories:', user.accessories);
                         window.accessoryManager.setAccessoriesData(user.accessories);
+                        window.accessoryManager.setOwnershipData({
+                            ownedAccessories: user.ownedAccessories,
+                            currency: user.currency,
+                            xp: user.xp
+                        });
                     } catch (error) {
                         console.error('Error loading accessories:', error);
                     }
@@ -69,6 +77,8 @@ async function loadProfile() {
         updateEl('stat-rank', user.rank || "Member");
         updateEl('stat-currency', (user.currency || 0).toLocaleString());
         updateEl('stat-xp', `${(user.xp || 0).toLocaleString()} XP`);
+        updateEl('accessoryCurrencyBalance', `${(user.currency || 0).toLocaleString()} coins`);
+        updateEl('accessoryXpBalance', `${(user.xp || 0).toLocaleString()} XP`);
 
                 const followers = user.followersCount ?? (Array.isArray(user.followers) ? user.followers.length : 0);
         updateEl('stat-followers', followers.toLocaleString());
@@ -367,19 +377,6 @@ async function validateImageUrl(url) {
     }
 }
 
-function generateDefaultAvatarSVG(themeColor) {
-    const userColor = themeColor || "#2563eb";
-
-    const svg = `
-        <svg viewBox="0 0 100 100" fill="${userColor}" xmlns="http://www.w3.org/2000/svg" style="width: 70%; height: 70%; max-width: 100%; max-height: 100%;">
-            <circle cx="50" cy="35" r="18"/>
-            <path d="M 50 58 C 35 58, 20 65, 15 80 L 15 95 L 85 95 L 85 80 C 80 65, 65 58, 50 58 Z"/>
-        </svg>
-    `;
-
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
-}
-
 function updatePreview(url, status, keepCurrentImage = false) {
     const previewImage = document.getElementById('previewImage');
     const previewStatus = document.getElementById('previewStatus');
@@ -402,7 +399,7 @@ function updatePreview(url, status, keepCurrentImage = false) {
             currentAvatarUrl = url;
         } else if (!url) {
             const themeColor = document.getElementById('themeColor')?.value || '#2563eb';
-            const defaultAvatar = generateDefaultAvatarSVG(themeColor);
+            const defaultAvatar = window.generateDefaultAvatarSVG(themeColor);
             previewImage.src = defaultAvatar;
             currentAvatarUrl = "";
         }
@@ -567,9 +564,38 @@ document.addEventListener('DOMContentLoaded', () => {
         themeColorInput.addEventListener('change', () => {
             const avatarUrl = document.getElementById('avatarUrl')?.value?.trim();
             if (!avatarUrl) {
-                const defaultAvatar = generateDefaultAvatarSVG(themeColorInput.value);
+                const defaultAvatar = window.generateDefaultAvatarSVG(themeColorInput.value);
                 updatePreview(defaultAvatar, "🎨 Updated avatar color");
             }
         });
     }
+
+    const accessoryActionButton = document.getElementById('accessory-action-button');
+    if (accessoryActionButton) {
+        accessoryActionButton.addEventListener('click', async () => {
+            if (!window.accessoryManager) return;
+
+            const result = await window.accessoryManager.handleActionButton();
+            if (!result.success) {
+                showToast(`Warning: ${result.error || 'Could not unlock accessory.'}`);
+                return;
+            }
+
+            if (result.purchased) {
+                const totalCurrency = Number(result.currency || 0);
+                currentProfileData = { ...(currentProfileData || {}), currency: totalCurrency };
+
+                const currencyEl = document.getElementById('stat-currency');
+                if (currencyEl) currencyEl.textContent = totalCurrency.toLocaleString();
+
+                const accessoryBalance = document.getElementById('accessoryCurrencyBalance');
+                if (accessoryBalance) accessoryBalance.textContent = `${totalCurrency.toLocaleString()} coins`;
+
+                showToast('Accessory unlocked and equipped.');
+            } else if (result.equipped) {
+                showToast('Accessory equipped.');
+            }
+        });
+    }
 });
+

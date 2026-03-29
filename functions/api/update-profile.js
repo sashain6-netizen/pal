@@ -1,4 +1,5 @@
 import { verifyAndDecodeToken } from "./_jwt.js";
+import { getValidAccessoryKeys, grantEarnedAccessories, isAccessoryOwned } from "./_accessories.js";
 
 export async function onRequestPost(context) {
     const { request, env } = context;
@@ -40,6 +41,8 @@ export async function onRequestPost(context) {
             rank: "Member",
             currency: 0
         };
+        const unlockResult = grantEarnedAccessories(user);
+        user.ownedAccessories = unlockResult.ownedAccessories;
 
         const bioStr = String(updates.bio || "");
         if (bioStr.length > bioMaxLen) {
@@ -153,13 +156,7 @@ export async function onRequestPost(context) {
 
         if (updates.accessories && typeof updates.accessories === 'object') {
             const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
-            const validAccessoryKeys = {
-                hats: ['none', 'cap', 'top_hat', 'wizard_hat', 'crown', 'beanie', 'pirate_hat'],
-                glasses: ['none', 'sunglasses', 'regular_glasses', 'monocle', 'heart_glasses', 'star_glasses'],
-                mouths: ['none', 'smile', 'big_smile', 'laugh', 'frown', 'surprised', 'tongue_out'],
-                face_accessories: ['none', 'mustache', 'beard', 'blush', 'freckles', 'eye_patch', 'mask'],
-                backgrounds: ['none', 'sparkles', 'hearts', 'stars']
-            };
+            const validAccessoryKeys = getValidAccessoryKeys();
 
             const validatedAccessories = {};
 
@@ -173,6 +170,13 @@ export async function onRequestPost(context) {
 
                 if (!validAccessoryKeys[category].includes(accessoryKey)) {
                     return new Response(JSON.stringify({ error: `Invalid accessory key "${accessoryKey}" for category "${category}"` }), {
+                        status: 400,
+                        headers: { "Content-Type": "application/json" }
+                    });
+                }
+
+                if (!isAccessoryOwned(user.ownedAccessories, category, accessoryKey)) {
+                    return new Response(JSON.stringify({ error: `You have not unlocked "${accessoryKey}" in ${category} yet.` }), {
                         status: 400,
                         headers: { "Content-Type": "application/json" }
                     });

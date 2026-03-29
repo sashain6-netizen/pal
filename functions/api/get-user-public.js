@@ -1,4 +1,11 @@
 export async function onRequestGet(context) {
+    const defaultAccessories = {
+        hats: 'none',
+        glasses: 'none',
+        mouths: 'none',
+        face_accessories: 'none',
+        backgrounds: 'none'
+    };
     const { request, env } = context;
     const url = new URL(request.url);
     const username = url.searchParams.get("id");
@@ -25,6 +32,7 @@ export async function onRequestGet(context) {
         currency: user.currency || 0,
         followers: user.followers || 0,
         following: user.following || [],
+        accessories: user.accessories || defaultAccessories,
         isPremium: isPremium
     };
 

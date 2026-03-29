@@ -1,4 +1,5 @@
 import { verifyAndDecodeToken } from "./_jwt.js";
+import { grantEarnedAccessories } from "./_accessories.js";
 
 export async function onRequestGet(context) {
     const { request, env } = context;
@@ -23,6 +24,10 @@ export async function onRequestGet(context) {
         const rawUserData = await env.USERS_KV.get(`user:${username}`);
         if (!rawUserData) return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
         const user = JSON.parse(rawUserData);
+        const unlockResult = grantEarnedAccessories(user);
+        if (unlockResult.changed) {
+            user.ownedAccessories = unlockResult.ownedAccessories;
+        }
 
         if (user.isBanned === true) {
           if (user.banExpiration) {
@@ -118,6 +123,8 @@ export async function onRequestGet(context) {
 
         if (updated) {
             await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
+        } else if (unlockResult.changed) {
+            await env.USERS_KV.put(`user:${username}`, JSON.stringify(user));
         }
 
         const profileData = {
@@ -141,7 +148,8 @@ export async function onRequestGet(context) {
                 mouths: 'none',
                 face_accessories: 'none',
                 backgrounds: 'none'
-            }
+            },
+            ownedAccessories: user.ownedAccessories || unlockResult.ownedAccessories
         };
 
         return new Response(JSON.stringify(profileData), {
