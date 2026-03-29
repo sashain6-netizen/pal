@@ -133,7 +133,7 @@ const ACCESSORY_LIBRARY = {
                 <ellipse cx="38" cy="44" rx="1.5" ry="2" fill="#ffffff"/>
                 <ellipse cx="64" cy="44" rx="1.5" ry="2" fill="#ffffff"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 40, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 38, scale: 1.1, rotation: 0 }
         },
         cracked_glasses: {
             name: 'Cracked Specs',
@@ -249,7 +249,7 @@ const ACCESSORY_LIBRARY = {
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M42 58 C47 63 53 63 58 58" stroke="#7c4a36" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 56, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 54, scale: 1.1, rotation: 0 }
         },
         crooked_grin: {
             name: 'Crooked Grin',
@@ -355,7 +355,7 @@ const ACCESSORY_LIBRARY = {
                 <rect x="63" y="49" width="16" height="8" rx="4" fill="#f1d6b8" stroke="#caa27d" stroke-width="1.2" transform="rotate(-18 71 53)"/>
                 <circle cx="71" cy="53" r="1.3" fill="#d4a574"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 43, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 47, scale: 1, rotation: 0 }
         },
         freckles: {
             name: 'Freckles',
@@ -372,7 +372,7 @@ const ACCESSORY_LIBRARY = {
                 <circle cx="61" cy="52" r="1.1" fill="#9a5a3a"/>
                 <circle cx="65" cy="49" r="1.2" fill="#9a5a3a"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 43, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 47, scale: 1, rotation: 0 }
         },
         blush: {
             name: 'Blush',
@@ -385,7 +385,7 @@ const ACCESSORY_LIBRARY = {
                 <ellipse cx="33" cy="51" rx="8" ry="5" fill="#fb7185" opacity="0.32"/>
                 <ellipse cx="67" cy="51" rx="8" ry="5" fill="#fb7185" opacity="0.32"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 43, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 47, scale: 1, rotation: 0 }
         },
         mustache: {
             name: 'Mustache',
