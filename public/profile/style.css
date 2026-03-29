@@ -692,7 +692,7 @@
     transition: all 0.2s ease;
 }
 
-.accessory-element.hat {
+.accessory-element.hats {
     animation: hatFloat 3s ease-in-out infinite;
 }
 
@@ -700,15 +700,15 @@
     animation: glassesShine 4s ease-in-out infinite;
 }
 
-.accessory-element.mouth {
+.accessory-element.mouths {
     animation: mouthPulse 2s ease-in-out infinite;
 }
 
-.accessory-element.face-accessory {
+.accessory-element.face-accessories {
     animation: faceAccessoryWiggle 5s ease-in-out infinite;
 }
 
-.accessory-element.background {
+.accessory-element.backgrounds {
     animation: backgroundTwinkle 6s linear infinite;
 }
 
@@ -738,7 +738,7 @@
     50% { opacity: 0.6; }
 }
 
-.avatar-with-accessories:hover .accessory-element.hat {
+.avatar-with-accessories:hover .accessory-element.hats {
     animation-duration: 1.5s;
 }
 
@@ -746,7 +746,7 @@
     animation-duration: 2s;
 }
 
-.avatar-with-accessories:hover .accessory-element.mouth {
+.avatar-with-accessories:hover .accessory-element.mouths {
     animation-duration: 1s;
 }
 
