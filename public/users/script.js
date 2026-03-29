@@ -436,9 +436,10 @@ async function loadProfile() {
                 if (avatarWithAccessories) {
                     const isMobile = window.innerWidth <= 480;
                     const avatarSize = isMobile ? 120 : 150;
+                    const svgSize = isMobile ? '23%' : '19%';
                     avatarWithAccessories.innerHTML = `
                         <div style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;">
-                            ${getColoredSvg(data.themeColor || "#2563eb", '70%')}
+                            ${getColoredSvg(data.themeColor || "#2563eb", svgSize)}
                         </div>
                         <div class="accessory-layer" id="userAccessoryLayer"></div>
                     `;
