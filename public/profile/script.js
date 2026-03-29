@@ -369,21 +369,24 @@ async function validateImageUrl(url) {
 
 function generateDefaultAvatarSVG(themeColor) {
     const userColor = themeColor || "#2563eb";
-
+    
+    // Use the standardized function with 70% sizing
+    const svgContent = getCircleFillingAvatarSvg(userColor, '70%');
+    
+    // Extract the SVG content from the HTML string
+    const svgMatch = svgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
+    if (svgMatch) {
+        const svg = `<svg viewBox="0 0 100 100" fill="${userColor}" xmlns="http://www.w3.org/2000/svg">${svgMatch[1]}</svg>`;
+        return `data:image/svg+xml;base64,${btoa(svg)}`;
+    }
+    
+    // Fallback to original if parsing fails
     const svg = `
         <svg viewBox="0 0 100 100" fill="${userColor}" xmlns="http://www.w3.org/2000/svg">
-            <!-- Head circle positioned higher -->
             <circle cx="50" cy="35" r="18"/>
-            <!-- Shoulders/body shape -->
-            <path d="M 50 58
-                     C 35 58, 20 65, 15 80
-                     L 15 95
-                     L 85 95
-                     L 85 80
-                     C 80 65, 65 58, 50 58 Z"/>
+            <path d="M 50 58 C 35 58, 20 65, 15 80 L 15 95 L 85 95 L 85 80 C 80 65, 65 58, 50 58 Z"/>
         </svg>
     `;
-
     return `data:image/svg+xml;base64,${btoa(svg)}`;
 }
 
