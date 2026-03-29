@@ -280,19 +280,37 @@ class AccessoryManager {
             return;
         }
 
+        console.log('=== Starting updatePreview ===');
+        console.log('Current accessories:', this.accessories);
+        console.log('Accessory layer element:', accessoryLayer);
+        console.log('Accessory layer before clear:', accessoryLayer.innerHTML);
+
         accessoryLayer.innerHTML = '';
 
         Object.keys(this.accessories).forEach(category => {
             const accessoryKey = this.accessories[category];
             const accessory = ACCESSORY_LIBRARY[category]?.[accessoryKey];
 
+            console.log(`--- Processing ${category}.${accessoryKey} ---`);
+            console.log('Accessory found:', !!accessory);
+            console.log('Has SVG:', !!accessory?.svg);
+
             if (accessory?.svg) {
                 this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
+            } else {
+                console.warn(`No SVG found for ${category}.${accessoryKey}`);
             }
         });
+
+        console.log('=== Finished updatePreview ===');
+        console.log('Final accessory layer HTML:', accessoryLayer.innerHTML);
     }
 
     renderAccessory(container, accessory, category, accessoryKey) {
+        console.log(`Rendering accessory: ${category}.${accessoryKey}`);
+        console.log('Accessory data:', accessory);
+        console.log('SVG content:', accessory.svg);
+        
         const element = document.createElement('div');
         element.className = `accessory-element ${category.replace('_', '-')}`;
         element.dataset.category = category;
@@ -310,12 +328,30 @@ class AccessoryManager {
         element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg)`;
         element.style.opacity = defaultPos.opacity ?? 1;
         
+        // Add some debugging styles to make sure elements are visible
+        element.style.border = '1px solid red';
+        element.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+        element.style.minWidth = '10px';
+        element.style.minHeight = '10px';
+        
+        console.log(`Position: left=${defaultPos.x}%, top=${defaultPos.y}%, scale=${scale}`);
+        console.log('Element styles:', {
+            left: element.style.left,
+            top: element.style.top,
+            transform: element.style.transform,
+            opacity: element.style.opacity,
+            className: element.className
+        });
+        
         if (isBackground) {
             element.style.width = '120%';
             element.style.height = '120%';
         }
 
+        console.log('Appending element to container:', container);
         container.appendChild(element);
+        console.log('Container children after append:', container.children.length);
+        console.log('Container innerHTML after append:', container.innerHTML);
     }
 
     getAccessoriesData() {
