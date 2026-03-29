@@ -371,10 +371,16 @@ function generateDefaultAvatarSVG(themeColor) {
     const userColor = themeColor || "#2563eb";
 
     const svg = `
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="50" fill="${userColor}" fill-opacity="0.1"/>
-            <path d="M50 50C58.28 50 65 42.31 65 33.33C65 24.35 58.28 16.67 50 16.67C41.72 16.67 35 24.35 35 33.33C35 42.31 41.72 50 50 50ZM50 58.33C38.89 58.33 16.67 64.17 16.67 75V83.33H83.33V75C83.33 64.17 61.11 58.33 50 58.33Z"
-                  fill="${userColor}" />
+        <svg viewBox="0 0 100 100" fill="${userColor}" xmlns="http://www.w3.org/2000/svg">
+            <!-- Head circle positioned higher -->
+            <circle cx="50" cy="35" r="18"/>
+            <!-- Shoulders/body shape -->
+            <path d="M 50 58
+                     C 35 58, 20 65, 15 80
+                     L 15 95
+                     L 85 95
+                     L 85 80
+                     C 80 65, 65 58, 50 58 Z"/>
         </svg>
     `;
 

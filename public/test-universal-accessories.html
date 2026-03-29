@@ -58,11 +58,9 @@
                 <h4>Thread Avatar</h4>
                 <div class="test-avatar thread-avatar-svg"
                      data-username="testuser1"
-                     data-user='{"username":"testuser1","accessories":{"hats":"cap","glasses":"sunglasses","mouths":"smile","face_accessories":"none","backgrounds":"sparkles"},"themeColor="#ff6b6b"}'>
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                              fill="#ff6b6b" />
-                    </svg>
+                     data-user='{"username":"testuser1","accessories":{"hats":"cap","glasses":"sunglasses","mouths":"smile","face_accessories":"none","backgrounds":"sparkles"},"themeColor":"#ff6b6b"}'>
+                    <script>document.write(getCircleFillingAvatarSvg('#ff6b6b', '100%'))
+</script>
                 </div>
                 <p>@testuser1 with cap, sunglasses, smile, sparkles</p>
             </div>
@@ -71,11 +69,9 @@
                 <h4>Search Avatar</h4>
                 <div class="test-avatar search-avatar-svg"
                      data-username="testuser2"
-                     data-user='{"username":"testuser2","accessories":{"hats":"wizard_hat","glasses":"heart_glasses","mouths":"laugh","face_accessories":"mustache","backgrounds":"hearts"},"themeColor="#4a0080"}'>
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                              fill="#4a0080" />
-                    </svg>
+                     data-user='{"username":"testuser2","accessories":{"hats":"wizard_hat","glasses":"heart_glasses","mouths":"laugh","face_accessories":"mustache","backgrounds":"hearts"},"themeColor":"#4a0080"}'>
+                    <script>document.write(getCircleFillingAvatarSvg('#4a0080', '100%'))
+</script>
                 </div>
                 <p>@testuser2 with wizard hat, heart glasses, laugh, mustache, hearts</p>
             </div>
@@ -84,11 +80,9 @@
                 <h4>Profile Icon</h4>
                 <div class="test-avatar profile-icon"
                      data-username="testuser3"
-                     data-user='{"username":"testuser3","accessories":{"hats":"crown","glasses":"star_glasses","mouths":"tongue_out","face_accessories":"blush","backgrounds":"stars"},"themeColor="#ffd700"}'>
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                              fill="#ffd700" />
-                    </svg>
+                     data-user='{"username":"testuser3","accessories":{"hats":"crown","glasses":"star_glasses","mouths":"tongue_out","face_accessories":"blush","backgrounds":"stars"},"themeColor":"#ffd700"}'>
+                    <script>document.write(getCircleFillingAvatarSvg('#ffd700', '100%'))
+</script>
                 </div>
                 <p>@testuser3 with crown, star glasses, tongue out, blush, stars</p>
             </div>
@@ -97,11 +91,9 @@
                 <h4>No Accessories</h4>
                 <div class="test-avatar thread-avatar-svg"
                      data-username="testuser4"
-                     data-user='{"username":"testuser4","accessories":{"hats":"none","glasses":"none","mouths":"none","face_accessories":"none","backgrounds":"none"},"themeColor="#2563eb"}'>
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                              fill="#2563eb" />
-                    </svg>
+                     data-user='{"username":"testuser4","accessories":{"hats":"none","glasses":"none","mouths":"none","face_accessories":"none","backgrounds":"none"},"themeColor":"#2563eb"}'>
+                    <script>document.write(getCircleFillingAvatarSvg('#2563eb', '100%'))
+</script>
                 </div>
                 <p>@testuser4 with no accessories</p>
             </div>
@@ -133,6 +125,7 @@
     <script src="/profile/accessories.js"></script>
     <script src="/profile/accessory-manager.js"></script>
     <script src="/utils/universal-accessories.js"></script>
+    <script src="/utils/avatar-svg.js"></script>
 
     <script>
         function testDynamicAvatar() {
@@ -152,12 +145,7 @@
                 themeColor: '#1a1a1a'
             });
 
-            newAvatar.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                                  fill="#1a1a1a" />
-                </svg>
-            `;
+            newAvatar.innerHTML = getCircleFillingAvatarSvg('#1a1a1a', '100%');
 
             container.innerHTML = '<h3>Dynamic Avatar Test:</h3>';
             container.appendChild(newAvatar);
