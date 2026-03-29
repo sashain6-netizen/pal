@@ -31,7 +31,7 @@ async function loadThread(append = false) {
         ];
 
                 if (!currentUser) {
-            fetchTasks.push(fetch('/api/me').then(res => res.json()));
+            fetchTasks.push(fetch('/api/get-profile').then(res => res.ok ? res.json() : null));
         }
 
         const [threadRes, userData] = await Promise.all(fetchTasks);

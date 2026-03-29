@@ -1,16 +1,22 @@
+import { verifyAndDecodeToken } from "./_jwt.js";
+
 export async function onRequestGet(context) {
   const { request, env } = context;
-  const cookieHeader = request.headers.get("Cookie") || "";
 
-    if (!cookieHeader.includes("pal_session=")) {
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const token = cookieHeader
+    .split('; ')
+    .find(row => row.trim().startsWith('pal_session='))
+    ?.split('=')[1];
+
+  if (!token) {
     return new Response(JSON.stringify({ loggedIn: false }), {
       headers: { "Content-Type": "application/json" }
     });
   }
 
   try {
-    const token = cookieHeader.split("pal_session=")[1].split(";")[0];
-    const payload = JSON.parse(atob(token.split(".")[1]));
+    const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
     const username = payload.username?.toLowerCase();
 
     const userKey = `user:${username}`;
