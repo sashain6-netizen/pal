@@ -38,7 +38,7 @@ function renderAccessoryElement(container, accessory, category, accessoryKey) {
 }
 
 function getColoredSvg(color, size = null) {
-    const svgSize = size ? `${size}px` : '100%';
+    const svgSize = size ? size : '100%';
     return getCircleFillingAvatarSvg(color, svgSize);
 }
 
