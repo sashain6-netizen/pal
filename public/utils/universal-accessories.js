@@ -37,11 +37,19 @@ class UniversalAccessorySystem {
     async loadAccessoryLibrary() {
         try {
             await new Promise((resolve, reject) => {
-                const existingScript = document.querySelector('script[data-accessory-library="true"]');
+                const existingScript = Array.from(document.querySelectorAll('script[src]')).find(script => {
+                    const src = script.getAttribute('src') || '';
+                    return src.includes('/profile/accessories.js') || src.endsWith('profile/accessories.js');
+                });
+
                 if (existingScript) {
-                    existingScript.addEventListener('load', resolve, { once: true });
+                    if (window.ACCESSORY_LIBRARY) {
+                        resolve();
+                        return;
+                    }
+
+                    existingScript.addEventListener('load', () => resolve(), { once: true });
                     existingScript.addEventListener('error', reject, { once: true });
-                    if (window.ACCESSORY_LIBRARY) resolve();
                     return;
                 }
 
