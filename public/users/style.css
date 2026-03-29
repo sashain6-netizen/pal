@@ -486,7 +486,7 @@
 .premium-avatar-pulse::after {
     content: '';
     position: absolute;
-    top: -5px; left: -5px; right: -5px; bottom: -5px;
+    top: 0px; left: 0px; right: 0px; bottom: 0px;
     border-radius: 50%;
     border: 2px solid #ffd700;
     animation: avatar-glow-ring 2s infinite ease-out;
