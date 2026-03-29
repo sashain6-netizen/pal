@@ -17,6 +17,14 @@
     justify-content: center;
 }
 
+.avatar-with-accessories svg {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain;
+}
+
 #display-avatar {
     width: 150px;
     height: 150px;
@@ -374,6 +382,13 @@
     .avatar-with-accessories {
         width: 120px;
         height: 120px;
+    }
+
+    .avatar-with-accessories svg {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
     }
 
     #display-avatar {
