@@ -196,7 +196,7 @@ class UniversalAccessorySystem {
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 3;
         `;
 
         const computedStyle = window.getComputedStyle(avatarElement);
@@ -240,7 +240,7 @@ class UniversalAccessorySystem {
             transform: translate(-50%, -50%) scale(${defaultPos.scale}) rotate(${defaultPos.rotation}deg);
             opacity: ${defaultPos.opacity};
             pointer-events: none;
-            z-index: 2;
+            z-index: ${category === 'backgrounds' ? 1 : 4};
         `;
 
         container.appendChild(element);
