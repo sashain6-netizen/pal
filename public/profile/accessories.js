@@ -13,7 +13,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M32 44 L50 36 L68 44" fill="none" stroke="#9e9276" stroke-width="2"/>
                 <path d="M40 31 L50 36 L60 31" fill="none" stroke="#d0c7b0" stroke-width="1.4"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 24, scale: 1.08, rotation: -2 }
+            defaultPosition: { x: 50, y: 20, scale: 1.08, rotation: -2 }
         },
         beanie: {
             name: 'Beanie',
@@ -27,7 +27,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M20 49 C31 44 69 44 80 49 L80 58 C69 61 31 61 20 58 Z" fill="#9f2f35"/>
                 <circle cx="50" cy="17" r="5" fill="#f7d6d7"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 22, scale: 1.15, rotation: 0 }
+            defaultPosition: { x: 50, y: 18, scale: 1.15, rotation: 0 }
         },
         cap: {
             name: 'Street Cap',
@@ -41,7 +41,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M25 45 C36 39 64 39 75 45 C70 52 58 56 50 56 C42 56 30 52 25 45 Z" fill="#143d8f"/>
                 <path d="M70 44 C80 45 88 49 91 55 C82 57 72 56 64 51 Z" fill="#143d8f"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 24, scale: 1.12, rotation: -2 }
+            defaultPosition: { x: 50, y: 20, scale: 1.12, rotation: -2 }
         },
         bucket_hat: {
             name: 'Bucket Hat',
@@ -55,7 +55,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M18 42 C28 36 72 36 82 42 L76 53 C65 49 35 49 24 53 Z" fill="#8c6a38"/>
                 <path d="M39 28 H61" stroke="#ead1a2" stroke-width="3" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 24, scale: 1.15, rotation: 0 }
+            defaultPosition: { x: 50, y: 20, scale: 1.15, rotation: 0 }
         },
         headphones: {
             name: 'Studio Headphones',
@@ -71,7 +71,7 @@ const ACCESSORY_LIBRARY = {
                 <rect x="20" y="46" width="7" height="18" rx="3" fill="#4f46e5"/>
                 <rect x="73" y="46" width="7" height="18" rx="3" fill="#4f46e5"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 31, scale: 1.18, rotation: 0 }
+            defaultPosition: { x: 50, y: 28, scale: 1.18, rotation: 0 }
         },
         pirate_hat: {
             name: 'Captain Hat',
@@ -85,7 +85,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M24 43 C26 54 37 61 50 61 C63 61 74 54 76 43" fill="#252525"/>
                 <path d="M43 34 H57 M50 27 V41" stroke="#f8fafc" stroke-width="2.5" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 22, scale: 1.22, rotation: 0 }
+            defaultPosition: { x: 50, y: 18, scale: 1.22, rotation: 0 }
         },
         laurel_crown: {
             name: 'Laurel Crown',
@@ -99,7 +99,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M33 43 L28 38 M39 35 L34 30 M61 35 L66 30 M67 43 L72 38" stroke="#96b23f" stroke-width="4" stroke-linecap="round"/>
                 <path d="M44 26 L40 21 M56 26 L60 21" stroke="#96b23f" stroke-width="4" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 24, scale: 1.12, rotation: 0 }
+            defaultPosition: { x: 50, y: 20, scale: 1.12, rotation: 0 }
         },
         royal_crown: {
             name: 'Royal Crown',
@@ -115,12 +115,26 @@ const ACCESSORY_LIBRARY = {
                 <circle cx="31" cy="30" r="3" fill="#ef4444"/>
                 <circle cx="69" cy="30" r="3" fill="#22c55e"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 21, scale: 1.2, rotation: 0 }
+            defaultPosition: { x: 50, y: 17, scale: 1.2, rotation: 0 }
         }
     },
 
     glasses: {
-        none: { name: 'Natural', rarity: 'Starter', description: 'No eyewear.', price: 0, xpRequired: 0, svg: '', category: 'glasses' },
+        none: { 
+            name: 'Natural Eyes', 
+            rarity: 'Starter', 
+            description: 'Simple, natural eyes.', 
+            price: 0, 
+            xpRequired: 0, 
+            category: 'glasses',
+            svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="37" cy="45" rx="4" ry="5" fill="#2d3748"/>
+                <ellipse cx="63" cy="45" rx="4" ry="5" fill="#2d3748"/>
+                <ellipse cx="38" cy="44" rx="1.5" ry="2" fill="#ffffff"/>
+                <ellipse cx="64" cy="44" rx="1.5" ry="2" fill="#ffffff"/>
+            </svg>`,
+            defaultPosition: { x: 50, y: 40, scale: 1, rotation: 0 }
+        },
         cracked_glasses: {
             name: 'Cracked Specs',
             rarity: 'Starter',
@@ -134,7 +148,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M47 45 H53" stroke="#4b5563" stroke-width="3" stroke-linecap="round"/>
                 <path d="M31 40 L43 50 M43 40 L31 50" stroke="#94a3b8" stroke-width="1.4"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 42, scale: 1.02, rotation: 0 }
+            defaultPosition: { x: 50, y: 40, scale: 1.02, rotation: 0 }
         },
         regular_glasses: {
             name: 'Classic Frames',
@@ -148,7 +162,7 @@ const ACCESSORY_LIBRARY = {
                 <rect x="51" y="34" width="24" height="18" rx="7" fill="rgba(255,255,255,0.08)" stroke="#334155" stroke-width="3"/>
                 <path d="M49 42 H51" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 42, scale: 1.06, rotation: 0 }
+            defaultPosition: { x: 50, y: 40, scale: 1.06, rotation: 0 }
         },
         sunglasses: {
             name: 'Sunglasses',
@@ -163,7 +177,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M49 42 H51" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
                 <path d="M29 38 H44 M56 38 H71" stroke="#64748b" stroke-width="2" opacity="0.45"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 42, scale: 1.05, rotation: 0 }
+            defaultPosition: { x: 50, y: 40, scale: 1.05, rotation: 0 }
         },
         gamer_glasses: {
             name: 'Gamer Glasses',
@@ -178,7 +192,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M48 43 H52" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
                 <path d="M24 43 H46 M54 43 H76" stroke="#7dd3fc" stroke-width="1.5" opacity="0.55"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 42, scale: 1.08, rotation: 0 }
+            defaultPosition: { x: 50, y: 40, scale: 1.08, rotation: 0 }
         },
         heart_glasses: {
             name: 'Heart Shades',
@@ -192,7 +206,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M65 37 C61 31 50 33 50 43 C50 52 65 60 65 60 C65 60 80 52 80 43 C80 33 69 31 65 37 Z" fill="#fb7185" stroke="#be123c" stroke-width="2.4"/>
                 <path d="M48 43 H52" stroke="#be123c" stroke-width="3" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 43, scale: 1.04, rotation: 0 }
+            defaultPosition: { x: 50, y: 41, scale: 1.04, rotation: 0 }
         },
         star_glasses: {
             name: 'Star Glasses',
@@ -206,7 +220,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M65 31 L68 39 L76 39 L70 44 L72 52 L65 47 L58 52 L60 44 L54 39 L62 39 Z" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
                 <path d="M46 43 H54" stroke="#ca8a04" stroke-width="2.4" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 42, scale: 1.07, rotation: 0 }
+            defaultPosition: { x: 50, y: 40, scale: 1.07, rotation: 0 }
         },
         cyber_visor: {
             name: 'Cyber Visor',
@@ -220,12 +234,23 @@ const ACCESSORY_LIBRARY = {
                 <path d="M27 43 H73" stroke="#67e8f9" stroke-width="2" opacity="0.8"/>
                 <path d="M32 50 H68" stroke="#0891b2" stroke-width="2" opacity="0.55"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 42, scale: 1.12, rotation: 0 }
+            defaultPosition: { x: 50, y: 40, scale: 1.12, rotation: 0 }
         }
     },
 
     mouths: {
-        none: { name: 'Neutral', rarity: 'Starter', description: 'Neutral mouth.', price: 0, xpRequired: 0, svg: '', category: 'mouths' },
+        none: { 
+            name: 'Gentle Smile', 
+            rarity: 'Starter', 
+            description: 'A soft, natural smile.', 
+            price: 0, 
+            xpRequired: 0, 
+            category: 'mouths',
+            svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M42 58 C47 63 53 63 58 58" stroke="#7c4a36" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>`,
+            defaultPosition: { x: 50, y: 56, scale: 1, rotation: 0 }
+        },
         crooked_grin: {
             name: 'Crooked Grin',
             rarity: 'Starter',
@@ -236,7 +261,7 @@ const ACCESSORY_LIBRARY = {
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M40 61 C47 66 57 64 63 58" stroke="#7c4a36" stroke-width="3" fill="none" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 58, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 56, scale: 1, rotation: 0 }
         },
         smile: {
             name: 'Soft Smile',
@@ -248,7 +273,7 @@ const ACCESSORY_LIBRARY = {
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M40 58 C45 64 55 64 60 58" stroke="#7c4a36" stroke-width="3" fill="none" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 58, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 56, scale: 1, rotation: 0 }
         },
         big_smile: {
             name: 'Big Smile',
@@ -261,7 +286,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M36 57 C42 67 58 67 64 57" stroke="#7c4a36" stroke-width="3.2" fill="none" stroke-linecap="round"/>
                 <path d="M40 58 H60" stroke="#f8fafc" stroke-width="1.6" opacity="0.6"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 58, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 56, scale: 1, rotation: 0 }
         },
         laugh: {
             name: 'Laugh',
@@ -274,7 +299,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M38 56 C43 66 57 66 62 56 V63 C56 70 44 70 38 63 Z" fill="#5b2d24"/>
                 <path d="M40 58 H60" stroke="#fff7ed" stroke-width="2"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 59, scale: 1.02, rotation: 0 }
+            defaultPosition: { x: 50, y: 57, scale: 1.02, rotation: 0 }
         },
         frown: {
             name: 'Frown',
@@ -286,7 +311,7 @@ const ACCESSORY_LIBRARY = {
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M40 64 C46 58 54 58 60 64" stroke="#7c4a36" stroke-width="3" fill="none" stroke-linecap="round"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 60, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 58, scale: 1, rotation: 0 }
         },
         surprised: {
             name: 'Surprised',
@@ -299,7 +324,7 @@ const ACCESSORY_LIBRARY = {
                 <ellipse cx="50" cy="61" rx="6" ry="8" fill="#5b2d24"/>
                 <ellipse cx="50" cy="59" rx="3" ry="4" fill="#f5d0c5" opacity="0.55"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 59, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 57, scale: 1, rotation: 0 }
         },
         fang_grin: {
             name: 'Fang Grin',
@@ -313,7 +338,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M41 58 H59" stroke="#fffaf5" stroke-width="2"/>
                 <path d="M45 58 L47 63 L49 58 M51 58 L53 63 L55 58" fill="#fffaf5"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 59, scale: 1.02, rotation: 0 }
+            defaultPosition: { x: 50, y: 57, scale: 1.02, rotation: 0 }
         }
     },
 
@@ -330,7 +355,7 @@ const ACCESSORY_LIBRARY = {
                 <rect x="63" y="49" width="16" height="8" rx="4" fill="#f1d6b8" stroke="#caa27d" stroke-width="1.2" transform="rotate(-18 71 53)"/>
                 <circle cx="71" cy="53" r="1.3" fill="#d4a574"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 45, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 43, scale: 1, rotation: 0 }
         },
         freckles: {
             name: 'Freckles',
@@ -347,7 +372,7 @@ const ACCESSORY_LIBRARY = {
                 <circle cx="61" cy="52" r="1.1" fill="#9a5a3a"/>
                 <circle cx="65" cy="49" r="1.2" fill="#9a5a3a"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 45, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 43, scale: 1, rotation: 0 }
         },
         blush: {
             name: 'Blush',
@@ -360,7 +385,7 @@ const ACCESSORY_LIBRARY = {
                 <ellipse cx="33" cy="51" rx="8" ry="5" fill="#fb7185" opacity="0.32"/>
                 <ellipse cx="67" cy="51" rx="8" ry="5" fill="#fb7185" opacity="0.32"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 45, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 43, scale: 1, rotation: 0 }
         },
         mustache: {
             name: 'Mustache',
@@ -372,7 +397,7 @@ const ACCESSORY_LIBRARY = {
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M34 55 C38 49 44 50 49 54 C50 55 50 55 50 55 C56 50 62 49 66 55 C61 61 54 61 50 57 C46 61 39 61 34 55 Z" fill="#4b2e24"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 53, scale: 1.02, rotation: 0 }
+            defaultPosition: { x: 50, y: 51, scale: 1.02, rotation: 0 }
         },
         beard: {
             name: 'Beard',
@@ -385,7 +410,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M34 55 C36 65 42 74 50 77 C58 74 64 65 66 55 C61 59 56 61 50 61 C44 61 39 59 34 55 Z" fill="#4b2e24"/>
                 <path d="M41 58 C44 62 56 62 59 58" stroke="#5b372b" stroke-width="2" fill="none"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 56, scale: 1.03, rotation: 0 }
+            defaultPosition: { x: 50, y: 54, scale: 1.03, rotation: 0 }
         },
         eye_patch: {
             name: 'Eye Patch',
@@ -398,7 +423,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M18 37 C31 41 69 41 82 37" fill="none" stroke="#1f2937" stroke-width="3"/>
                 <ellipse cx="37" cy="43" rx="10" ry="8" fill="#111827"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 42, scale: 1.02, rotation: 0 }
+            defaultPosition: { x: 50, y: 40, scale: 1.02, rotation: 0 }
         },
         mask: {
             name: 'Street Mask',
@@ -412,7 +437,7 @@ const ACCESSORY_LIBRARY = {
                 <path d="M27 56 C21 53 18 49 16 45 M73 56 C79 53 82 49 84 45" stroke="#64748b" stroke-width="2.4" stroke-linecap="round"/>
                 <path d="M37 59 H63 M35 64 H65" stroke="#94a3b8" stroke-width="1.5" opacity="0.7"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 56, scale: 1.05, rotation: 0 }
+            defaultPosition: { x: 50, y: 54, scale: 1.05, rotation: 0 }
         },
         golden_piercing: {
             name: 'Golden Piercing',
@@ -425,7 +450,7 @@ const ACCESSORY_LIBRARY = {
                 <circle cx="67" cy="56" r="4.2" fill="none" stroke="#facc15" stroke-width="2.6"/>
                 <circle cx="67" cy="56" r="1.2" fill="#fff7b3"/>
             </svg>`,
-            defaultPosition: { x: 50, y: 46, scale: 1, rotation: 0 }
+            defaultPosition: { x: 50, y: 44, scale: 1, rotation: 0 }
         }
     },
 
