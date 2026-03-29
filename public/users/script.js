@@ -39,7 +39,7 @@ function renderAccessoryElement(container, accessory, category, accessoryKey) {
 
 function getColoredSvg(color) {
     return `
-        <svg viewBox="0 0 24 24" fill="${color}" style="width: calc(100% - 8px); height: calc(100% - 8px);">
+        <svg viewBox="0 0 24 24" fill="${color}" style="width: 100%; height: 100%;">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
         </svg>`;
 }
@@ -441,7 +441,7 @@ async function loadProfile() {
                     const isMobile = window.innerWidth <= 480;
                     const avatarSize = isMobile ? 120 : 150;
                     avatarWithAccessories.innerHTML = `
-                        <div style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <div style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0;">
                             ${getColoredSvg(data.themeColor || "#2563eb")}
                         </div>
                         <div class="accessory-layer" id="userAccessoryLayer"></div>
