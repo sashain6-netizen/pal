@@ -371,7 +371,7 @@ function generateDefaultAvatarSVG(themeColor) {
     const userColor = themeColor || "#2563eb";
 
     const svg = `
-        <svg viewBox="0 0 100 100" fill="${userColor}" xmlns="http://www.w3.org/2000/svg" style="width: 19%; height: 19%; max-width: 100%; max-height: 100%;">
+        <svg viewBox="0 0 100 100" fill="${userColor}" xmlns="http://www.w3.org/2000/svg" style="width: 35%; height: 35%; max-width: 100%; max-height: 100%;">
             <circle cx="50" cy="35" r="18"/>
             <path d="M 50 58 C 35 58, 20 65, 15 80 L 15 95 L 85 95 L 85 80 C 80 65, 65 58, 50 58 Z"/>
         </svg>
