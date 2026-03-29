@@ -17,7 +17,7 @@ export async function onRequestPost(context) {
         const payload = await verifyAndDecodeToken(token, env.JWT_SECRET, env);
         const username = payload.username;
         const userKey = `user:${username}`;
-        const rawUser = await env.USERS_KV.get(userKey, { cacheTtl: 0 });
+        const rawUser = await env.USERS_KV.get(userKey);
 
         if (!rawUser) {
             return new Response(JSON.stringify({ error: "User not found" }), {

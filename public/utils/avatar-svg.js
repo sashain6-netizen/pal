@@ -17,73 +17,53 @@ function clampColor(value) {
     return Math.max(0, Math.min(255, Math.round(value)));
 }
 
-function shadeColor(hex, amount = 0) {
+function mixColor(hex, amount = 0) {
     const { r, g, b } = hexToRgb(hex);
-    const factor = amount < 0 ? 1 + amount : 1 - amount;
-    const mix = amount < 0 ? 255 : 0;
+    const target = amount >= 0 ? 255 : 0;
+    const blend = Math.abs(amount);
 
-    return `rgb(${clampColor(r * factor + mix * (1 - factor))}, ${clampColor(g * factor + mix * (1 - factor))}, ${clampColor(b * factor + mix * (1 - factor))})`;
+    return `rgb(${clampColor(r + (target - r) * blend)}, ${clampColor(g + (target - g) * blend)}, ${clampColor(b + (target - b) * blend)})`;
 }
 
 function buildPortraitAvatarSvg(color = '#2563eb', size = '100%') {
     const base = color || '#2563eb';
-    const hair = shadeColor(base, 0.45);
-    const hairShadow = shadeColor(base, 0.6);
-    const shirt = shadeColor(base, -0.18);
-    const shirtShadow = shadeColor(base, 0.18);
-    const skin = '#f3c9aa';
-    const skinShadow = '#dfa985';
-    const highlight = shadeColor(base, -0.4);
+    const ring = mixColor(base, 0.58);
+    const ringShadow = mixColor(base, -0.18);
+    const line = '#475569';
+    const lineSoft = '#94a3b8';
+    const fill = '#ffffff';
+    const shadow = 'rgba(15, 23, 42, 0.08)';
 
     return `
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%;">
             <defs>
-                <radialGradient id="avatarBg" cx="35%" cy="28%" r="70%">
-                    <stop offset="0%" stop-color="${highlight}" stop-opacity="0.95"/>
-                    <stop offset="55%" stop-color="${base}" stop-opacity="0.9"/>
-                    <stop offset="100%" stop-color="${shadeColor(base, 0.25)}" stop-opacity="1"/>
-                </radialGradient>
-                <linearGradient id="shirtGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="${shirt}"/>
-                    <stop offset="100%" stop-color="${shirtShadow}"/>
+                <linearGradient id="avatarRing" x1="18%" y1="12%" x2="82%" y2="88%">
+                    <stop offset="0%" stop-color="${ring}"/>
+                    <stop offset="100%" stop-color="${ringShadow}"/>
                 </linearGradient>
-                <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="${skin}"/>
-                    <stop offset="100%" stop-color="${skinShadow}"/>
+                <linearGradient id="avatarCard" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="100%" stop-color="#f8fafc"/>
                 </linearGradient>
-                <clipPath id="avatarClip">
-                    <circle cx="50" cy="50" r="48"/>
-                </clipPath>
             </defs>
 
-            <circle cx="50" cy="50" r="48" fill="url(#avatarBg)"/>
+            <circle cx="50" cy="50" r="47" fill="url(#avatarRing)"/>
+            <circle cx="50" cy="50" r="42.5" fill="url(#avatarCard)"/>
 
-            <g clip-path="url(#avatarClip)">
-                <path d="M16 98 C18 77 31 66 50 66 C69 66 82 77 84 98 Z" fill="url(#shirtGrad)"/>
-                <path d="M28 98 C31 80 39 72 50 72 C61 72 69 80 72 98 Z" fill="${shadeColor(base, -0.08)}" opacity="0.55"/>
+            <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M27 79 C31 67 39 61 50 61 C61 61 69 67 73 79" stroke="${line}" stroke-width="4"/>
+                <path d="M35 76 C38 68 43 64 50 64 C57 64 62 68 65 76" stroke="${lineSoft}" stroke-width="2.5"/>
 
-                <path d="M31 66 C33 58 40 54 50 54 C60 54 67 58 69 66 C63 72 57 76 50 76 C43 76 37 72 31 66 Z" fill="url(#skinGrad)"/>
-                <path d="M31 66 C34 60 41 58 50 58 C59 58 66 60 69 66 C64 69 58 71 50 71 C42 71 36 69 31 66 Z" fill="${skinShadow}" opacity="0.55"/>
-
-                <path d="M30 30 C30 19 39 12 50 12 C61 12 70 19 70 30 L70 42 C70 55 61 66 50 66 C39 66 30 55 30 42 Z" fill="url(#skinGrad)"/>
-                <path d="M37 44 C39 39 43 36 48 35" stroke="${skinShadow}" stroke-width="1.6" stroke-linecap="round" opacity="0.45"/>
-                <path d="M63 44 C61 39 57 36 52 35" stroke="${skinShadow}" stroke-width="1.6" stroke-linecap="round" opacity="0.45"/>
-                <circle cx="42" cy="42" r="2.3" fill="#1f2937"/>
-                <circle cx="58" cy="42" r="2.3" fill="#1f2937"/>
-                <circle cx="41.4" cy="41.2" r="0.7" fill="#ffffff" opacity="0.85"/>
-                <circle cx="57.4" cy="41.2" r="0.7" fill="#ffffff" opacity="0.85"/>
-                <path d="M49 43 C48 49 48 52 50 54 C52 53 52 49 51 43" fill="${skinShadow}" opacity="0.35"/>
-                <path d="M43 56 C46 59 54 59 57 56" stroke="#8b5e4a" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-                <ellipse cx="36" cy="49" rx="3.4" ry="5.2" fill="${skin}" opacity="0.75"/>
-                <ellipse cx="64" cy="49" rx="3.4" ry="5.2" fill="${skin}" opacity="0.75"/>
-
-                <path d="M28 31 C28 16 40 9 50 9 C60 9 72 16 72 31 L72 34 C69 27 63 23 57 21 C52 19 47 19 43 20 C37 21 32 25 28 34 Z" fill="${hair}"/>
-                <path d="M29 33 C34 25 42 22 50 22 C59 22 66 25 71 33 L71 24 C68 16 60 11 50 11 C40 11 32 16 29 24 Z" fill="${hairShadow}" opacity="0.42"/>
-                <path d="M30 31 C34 25 39 23 43 22 C41 28 37 31 32 34 Z" fill="${hairShadow}" opacity="0.45"/>
-                <path d="M70 31 C66 25 61 23 57 22 C59 28 63 31 68 34 Z" fill="${hairShadow}" opacity="0.45"/>
+                <path d="M34 34 C34 23 41 16 50 16 C59 16 66 23 66 34 L66 42 C66 53 59 61 50 61 C41 61 34 53 34 42 Z" fill="${fill}" stroke="${line}" stroke-width="3.2"/>
+                <path d="M37 31 C39 24 44 20 50 20 C56 20 61 24 63 31" stroke="${line}" stroke-width="3.2"/>
+                <path d="M40 41 H45 M55 41 H60" stroke="${line}" stroke-width="2.8"/>
+                <path d="M49 44 C48.5 48 48.5 50.5 50 52" stroke="${lineSoft}" stroke-width="2.2"/>
+                <path d="M44 55 C46 56.7 54 56.7 56 55" stroke="${line}" stroke-width="2.6"/>
+                <path d="M36 41 C35.4 36 35.7 31 37.5 27" stroke="${line}" stroke-width="2.6"/>
+                <path d="M64 41 C64.6 36 64.3 31 62.5 27" stroke="${line}" stroke-width="2.6"/>
             </g>
 
-            <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+            <ellipse cx="50" cy="84" rx="18" ry="5" fill="${shadow}"/>
         </svg>`;
 }
 

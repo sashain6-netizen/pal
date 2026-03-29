@@ -103,12 +103,6 @@ class AccessoryManager {
     handleAccessoryClick(category, accessoryKey) {
         this.activeCategory = category;
         this.activeAccessoryKey = accessoryKey;
-
-        if (this.isOwned(category, accessoryKey)) {
-            this.accessories[category] = accessoryKey;
-            this.updatePreview();
-        }
-
         this.updateSelectionUI();
         this.renderActiveAccessoryDetails();
     }
@@ -161,14 +155,19 @@ class AccessoryManager {
         if (!item) return null;
 
         const owned = this.isOwned(category, accessoryKey);
+        const equipped = this.accessories[category] === accessoryKey;
         const xpReady = this.xp >= (item.xpRequired || 0);
         const affordable = this.currency >= (item.price || 0);
 
-        let actionLabel = 'Owned';
+        let actionLabel = equipped ? 'Equipped' : 'Equip Now';
         let disabled = false;
         let helper = item.description || '';
 
-        if (!owned) {
+        if (owned) {
+            helper = equipped
+                ? `${item.description} This item is already active.`
+                : `${item.description} You own this item and can equip it now.`;
+        } else {
             if (!xpReady) {
                 actionLabel = `Reach ${(item.xpRequired || 0).toLocaleString()} XP`;
                 helper = `${item.description} Earn more XP to unlock this.`;
@@ -184,7 +183,7 @@ class AccessoryManager {
             }
         }
 
-        return { item, owned, xpReady, affordable, actionLabel, disabled, helper };
+        return { item, owned, equipped, xpReady, affordable, actionLabel, disabled, helper };
     }
 
     renderActiveAccessoryDetails() {
@@ -205,7 +204,7 @@ class AccessoryManager {
         if (button) {
             button.dataset.category = this.activeCategory;
             button.dataset.accessoryKey = this.activeAccessoryKey;
-            button.textContent = state.owned ? 'Equip Now' : state.actionLabel;
+            button.textContent = state.actionLabel;
             button.disabled = state.disabled;
             button.classList.toggle('is-buying', !state.owned);
         }
