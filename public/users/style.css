@@ -10,16 +10,16 @@
 
 .avatar-with-accessories {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 #display-avatar {
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid #ffffff;
@@ -92,7 +92,7 @@
 .auth-card {
   background: var(--white);
   width: 100%;
-  max-width: 450px;
+  max-width: 520px;
   padding: 40px;
   border-radius: 24px;
   box-shadow: 0 20px 40px rgba(10, 45, 143, 0.08);
@@ -368,6 +368,22 @@
 @media (max-width: 480px) {
     .auth-card {
         padding: 30px 20px;
+        max-width: 400px;
+    }
+
+    .avatar-with-accessories {
+        width: 120px;
+        height: 120px;
+    }
+
+    #display-avatar {
+        width: 120px;
+        height: 120px;
+    }
+
+    .avatar-container {
+        width: 120px;
+        height: 120px;
     }
 
         .stats-grid {
@@ -404,8 +420,8 @@
 }
 
 .avatar-container {
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     margin: 0 auto;
     border: 4px solid white;
