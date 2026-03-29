@@ -428,12 +428,25 @@ async function loadProfile() {
                     avatarImg.style.display = 'block';
                     avatarImg.src = data.avatar;
                 }
+                // Clear any existing SVG content
+                const accessoryLayer = document.getElementById('userAccessoryLayer');
+                if (accessoryLayer) {
+                    accessoryLayer.innerHTML = '';
+                }
             } else {
                 if (avatarImg) avatarImg.style.display = 'none';
-                avatarWrapper.style.display        = 'flex';
-                avatarWrapper.style.alignItems     = 'center';
-                avatarWrapper.style.justifyContent = 'center';
-                avatarWrapper.innerHTML = getColoredSvg(data.themeColor || "#2563eb");
+                // Keep the avatar-with-accessories structure but replace with SVG
+                const avatarWithAccessories = document.getElementById('userAvatarWithAccessories');
+                if (avatarWithAccessories) {
+                    const isMobile = window.innerWidth <= 480;
+                    const avatarSize = isMobile ? 120 : 150;
+                    avatarWithAccessories.innerHTML = `
+                        <div style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            ${getColoredSvg(data.themeColor || "#2563eb")}
+                        </div>
+                        <div class="accessory-layer" id="userAccessoryLayer"></div>
+                    `;
+                }
             }
         }
 
