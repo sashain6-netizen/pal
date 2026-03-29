@@ -61,7 +61,14 @@ class UniversalAccessorySystem {
                 document.head.appendChild(script);
             });
 
+            // Wait a bit for the script to fully execute and set window.ACCESSORY_LIBRARY
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
             this.accessoryLibrary = window.ACCESSORY_LIBRARY;
+            
+            if (!this.accessoryLibrary) {
+                throw new Error('ACCESSORY_LIBRARY not found after loading accessories.js');
+            }
         } catch (error) {
             console.error('Failed to load accessory library:', error);
         }
@@ -131,7 +138,12 @@ class UniversalAccessorySystem {
 
         try {
             const userData = await this.extractUserData(avatarElement);
-            if (!userData || !userData.accessories) return;
+            console.log('Applying accessories to avatar:', avatarElement, 'userData:', userData);
+            
+            if (!userData || !userData.accessories) {
+                console.log('No user data or accessories found for avatar:', avatarElement);
+                return;
+            }
 
             if (avatarElement.querySelector('.accessory-layer')) return;
 
@@ -148,12 +160,16 @@ class UniversalAccessorySystem {
         let userData = null;
 
         const userId = avatarElement.dataset.userId || avatarElement.dataset.username;
+        console.log('Extracting user data for avatar:', avatarElement, 'userId:', userId);
+        
         if (userId) {
             userData = await this.fetchUserData(userId);
+            console.log('Fetched user data for userId:', userId, 'userData:', userData);
         }
 
         if (!userData && window.currentUser) {
             userData = window.currentUser;
+            console.log('Using window.currentUser:', userData);
         }
 
         if (!userData) {
@@ -161,6 +177,7 @@ class UniversalAccessorySystem {
             if (parent) {
                 try {
                     userData = JSON.parse(parent.dataset.user || '{}');
+                    console.log('Parsed user data from parent:', userData);
                 } catch (e) {
                     console.warn('Failed to parse user data from parent element:', e);
                 }
@@ -168,16 +185,19 @@ class UniversalAccessorySystem {
         }
 
         if (!userData && avatarElement.id === 'avatar-container') {
+            console.log('Fetching profile data for navbar avatar');
             try {
                 const response = await fetch('/api/get-profile', { credentials: 'include' });
                 if (response.ok) {
                     userData = await response.json();
+                    console.log('Fetched profile data for navbar:', userData);
                 }
             } catch (error) {
                 console.error('Failed to fetch current user data for navbar:', error);
             }
         }
 
+        console.log('Final extracted userData:', userData);
         return userData;
     }
 
