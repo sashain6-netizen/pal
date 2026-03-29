@@ -5,12 +5,12 @@ let searchTimeout;
 let currentOffset = 0;
 const limit = 50;
 
-function generateAvatar(avatarUrl, userColor, username) {
+function generateAvatar(avatarUrl, userColor, username, userData) {
     if (avatarUrl && avatarUrl !== "" && avatarUrl !== "/default-avatar.png") {
         return `<img src="${avatarUrl}" alt="${username}" class="thread-avatar">`;
     } else {
         return `
-            <div class="thread-avatar thread-avatar-svg">
+            <div class="thread-avatar thread-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
                     <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
                           fill="${userColor}" />
@@ -19,12 +19,12 @@ function generateAvatar(avatarUrl, userColor, username) {
     }
 }
 
-function generateSearchAvatar(avatarUrl, userColor, username) {
+function generateSearchAvatar(avatarUrl, userColor, username, userData) {
     if (avatarUrl && avatarUrl !== "" && avatarUrl !== "/default-avatar.png") {
         return `<img src="${avatarUrl}" alt="${username}" class="search-avatar">`;
     } else {
         return `
-            <div class="search-avatar search-avatar-svg">
+            <div class="search-avatar search-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
                     <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
                           fill="${userColor}" />
@@ -82,7 +82,7 @@ async function loadPublicThreads(append = false) {
                 </div>
                 <div class="meta-info" onclick="location.href='/pages/thread?id=${t.id}'">
                     <div class="thread-user-info">
-                        ${generateAvatar(t.avatar, t.forumColor || '#2563eb', t.creator_username)}
+                        ${generateAvatar(t.avatar, t.forumColor || '#2563eb', t.creator_username, t)}
                         <div class="thread-user-details">
                             By <span class="user-mention ${t.isPremium ? 'premium-user-text' : ''}"
                                 ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
@@ -277,7 +277,7 @@ async function handleSearch() {
                         </div>
                         <div class="search-meta">
                             <div class="search-user-info">
-                                ${generateSearchAvatar(t.avatar, t.forumColor || '#2563eb', t.creator_username)}
+                                ${generateSearchAvatar(t.avatar, t.forumColor || '#2563eb', t.creator_username, t)}
                                 <span class="${t.isPremium ? 'premium-user-text' : ''}"
                                     ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
                                     @${t.creator_username} ${t.isPremium ? '⭐' : ''}

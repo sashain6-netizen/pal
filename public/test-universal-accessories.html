@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Accessories Test</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-avatar {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 10px;
+        }
+        .test-info {
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+    
+    <div class="test-container">
+        <h1>Universal Accessories System Test</h1>
+        
+        <div class="test-info">
+            <h3>Test Cases:</h3>
+            <ul>
+                <li>Navbar avatar (should show current user's accessories)</li>
+                <li>Thread avatar with data attributes</li>
+                <li>Search avatar with data attributes</li>
+                <li>Profile icon with embedded user data</li>
+            </ul>
+        </div>
+
+        <div class="test-grid">
+            <!-- Test Case 1: Thread avatar with data attributes -->
+            <div>
+                <h4>Thread Avatar</h4>
+                <div class="test-avatar thread-avatar-svg" 
+                     data-username="testuser1" 
+                     data-user='{"username":"testuser1","accessories":{"hats":"cap","glasses":"sunglasses","mouths":"smile","face_accessories":"none","backgrounds":"sparkles"},"themeColor="#ff6b6b"}'>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                              fill="#ff6b6b" />
+                    </svg>
+                </div>
+                <p>@testuser1 with cap, sunglasses, smile, sparkles</p>
+            </div>
+
+            <!-- Test Case 2: Search avatar with different accessories -->
+            <div>
+                <h4>Search Avatar</h4>
+                <div class="test-avatar search-avatar-svg" 
+                     data-username="testuser2" 
+                     data-user='{"username":"testuser2","accessories":{"hats":"wizard_hat","glasses":"heart_glasses","mouths":"laugh","face_accessories":"mustache","backgrounds":"hearts"},"themeColor="#4a0080"}'>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                              fill="#4a0080" />
+                    </svg>
+                </div>
+                <p>@testuser2 with wizard hat, heart glasses, laugh, mustache, hearts</p>
+            </div>
+
+            <!-- Test Case 3: Profile icon -->
+            <div>
+                <h4>Profile Icon</h4>
+                <div class="test-avatar profile-icon" 
+                     data-username="testuser3" 
+                     data-user='{"username":"testuser3","accessories":{"hats":"crown","glasses":"star_glasses","mouths":"tongue_out","face_accessories":"blush","backgrounds":"stars"},"themeColor="#ffd700"}'>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                              fill="#ffd700" />
+                    </svg>
+                </div>
+                <p>@testuser3 with crown, star glasses, tongue out, blush, stars</p>
+            </div>
+
+            <!-- Test Case 4: No accessories -->
+            <div>
+                <h4>No Accessories</h4>
+                <div class="test-avatar thread-avatar-svg" 
+                     data-username="testuser4" 
+                     data-user='{"username":"testuser4","accessories":{"hats":"none","glasses":"none","mouths":"none","face_accessories":"none","backgrounds":"none"},"themeColor="#2563eb"}'>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+                        <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                              fill="#2563eb" />
+                    </svg>
+                </div>
+                <p>@testuser4 with no accessories</p>
+            </div>
+        </div>
+
+        <div class="test-info">
+            <h3>Expected Results:</h3>
+            <ul>
+                <li>Each avatar should display its respective accessories</li>
+                <li>Accessories should be positioned correctly</li>
+                <li>Colors and styles should match the accessory definitions</li>
+                <li>No JavaScript errors in console</li>
+            </ul>
+        </div>
+
+        <div class="test-info">
+            <h3>Debug Console:</h3>
+            <p>Check the browser console for initialization messages and any errors.</p>
+            <button onclick="window.universalAccessorySystem.refreshAllAvatars()" class="nav-btn">Refresh All Avatars</button>
+            <button onclick="testDynamicAvatar()" class="nav-btn">Add Dynamic Avatar</button>
+        </div>
+
+        <div id="dynamic-test-container"></div>
+    </div>
+
+    <script src="/global-settings.js"></script>
+    <script src="/navbar.js"></script>
+    <script src="/global-auth.js"></script>
+    <script src="/profile/accessories.js"></script>
+    <script src="/profile/accessory-manager.js"></script>
+    <script src="/utils/universal-accessories.js"></script>
+    
+    <script>
+        function testDynamicAvatar() {
+            const container = document.getElementById('dynamic-test-container');
+            const newAvatar = document.createElement('div');
+            newAvatar.className = 'test-avatar thread-avatar-svg';
+            newAvatar.dataset.username = 'dynamictest';
+            newAvatar.dataset.user = JSON.stringify({
+                username: 'dynamictest',
+                accessories: {
+                    hats: 'pirate_hat',
+                    glasses: 'monocle',
+                    mouths: 'surprised',
+                    face_accessories: 'eye_patch',
+                    backgrounds: 'sparkles'
+                },
+                themeColor: '#1a1a1a'
+            });
+            
+            newAvatar.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
+                                  fill="#1a1a1a" />
+                </svg>
+            `;
+            
+            container.innerHTML = '<h3>Dynamic Avatar Test:</h3>';
+            container.appendChild(newAvatar);
+            
+            // Manually trigger accessory application
+            setTimeout(() => {
+                window.universalAccessorySystem.applyAccessoriesToAvatar(newAvatar);
+            }, 100);
+        }
+    </script>
+</body>
+</html>

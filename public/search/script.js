@@ -42,7 +42,7 @@ async function performSearch() {
 
             resultsArea.innerHTML += `
                 <div class="${cardClass}">
-                    <div class="${iconClass}" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}">
+                    <div class="${iconClass}" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}" data-username="${user.username}" data-user='${JSON.stringify(user).replace(/'/g, "&apos;")}'>
                         ${avatarContent}
                     </div>
                     <h3 class="${nameClass}">${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}${star}</h3>
