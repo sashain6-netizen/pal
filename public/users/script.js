@@ -37,9 +37,10 @@ function renderAccessoryElement(container, accessory, category, accessoryKey) {
     container.appendChild(element);
 }
 
-function getColoredSvg(color) {
+function getColoredSvg(color, size = null) {
+    const svgSize = size ? `width: ${size}px; height: ${size}px;` : 'width: 70%; height: 70%; max-width: 105px; max-height: 105px;';
     return `
-        <svg viewBox="0 0 24 24" fill="${color}" style="width: 80%; height: 80%; max-width: 120px; max-height: 120px;">
+        <svg viewBox="0 0 24 24" fill="${color}" style="${svgSize}">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
         </svg>`;
 }
@@ -440,7 +441,7 @@ async function loadProfile() {
                     const avatarSize = isMobile ? 120 : 150;
                     avatarWithAccessories.innerHTML = `
                         <div style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;">
-                            ${getColoredSvg(data.themeColor || "#2563eb")}
+                            ${getColoredSvg(data.themeColor || "#2563eb", avatarSize * 0.8)}
                         </div>
                         <div class="accessory-layer" id="userAccessoryLayer"></div>
                     `;
@@ -474,7 +475,7 @@ async function loadProfile() {
                         navAvatar.style.display        = 'flex';
                         navAvatar.style.alignItems     = 'center';
                         navAvatar.style.justifyContent = 'center';
-                        navAvatar.innerHTML = getColoredSvg(myData.themeColor || "#2563eb");
+                        navAvatar.innerHTML = getColoredSvg(myData.themeColor || "#2563eb", 32);
                     }
                     document.getElementById('loggedInLinks')?.style.setProperty('display', 'block');
                     document.getElementById('loggedOutLinks')?.style.setProperty('display', 'none');
