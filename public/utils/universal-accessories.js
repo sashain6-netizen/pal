@@ -81,6 +81,7 @@ class UniversalAccessorySystem {
     applyAccessoriesToAllAvatars() {
         const avatarSelectors = [
             '.thread-avatar-svg',
+            '.post-avatar-svg',
             '.search-avatar-svg',
             '.profile-icon',
             '[data-avatar]',
@@ -98,6 +99,7 @@ class UniversalAccessorySystem {
     applyAccessoriesToNode(node) {
         const avatarSelectors = [
             '.thread-avatar-svg',
+            '.post-avatar-svg',
             '.search-avatar-svg',
             '.profile-icon',
             '[data-avatar]',

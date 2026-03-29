@@ -5,12 +5,12 @@ let currentOffset = 0;
 const limit = 50;
 let currentUser = null;
 
-function generateAvatar(avatarUrl, userColor, username) {
+function generateAvatar(avatarUrl, userColor, username, userData = null) {
     if (avatarUrl && avatarUrl !== "" && avatarUrl !== "/default-avatar.png") {
         return `<img src="${avatarUrl}" alt="${username}" class="post-avatar">`;
     } else {
         return `
-            <div class="post-avatar post-avatar-svg">
+            <div class="post-avatar post-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
                 ${getCircleFillingAvatarSvg(userColor, '100%')}
             </div>`;
     }
@@ -70,7 +70,7 @@ async function loadThread(append = false) {
         data-post-id="${post.id}">
 
         ${divineExtras} <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
-        ${generateAvatar(post.avatar, forumColor, post.username)}
+                        ${generateAvatar(post.avatar, forumColor, post.username, post)}
 
         <div class="post-body-inline">
             <span class="author-area">

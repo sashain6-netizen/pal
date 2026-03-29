@@ -4,7 +4,7 @@ function renderUserAccessories(accessoriesData) {
 
     accessoryLayer.innerHTML = '';
 
-    const accessories = accessoriesData.accessories || {};
+    const accessories = accessoriesData.accessories || accessoriesData || {};
 
     Object.keys(accessories).forEach(category => {
         const accessoryKey = accessories[category];
