@@ -588,3 +588,10 @@ const ACCESSORY_CONTROLS = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { ACCESSORY_LIBRARY, DEFAULT_ACCESSORIES, DEFAULT_OWNED_ACCESSORIES, ACCESSORY_CONTROLS };
 }
+
+// Expose to global scope for universal accessories system
+if (typeof window !== 'undefined') {
+    window.ACCESSORY_LIBRARY = ACCESSORY_LIBRARY;
+    window.DEFAULT_ACCESSORIES = DEFAULT_ACCESSORIES;
+    window.DEFAULT_OWNED_ACCESSORIES = DEFAULT_OWNED_ACCESSORIES;
+}
