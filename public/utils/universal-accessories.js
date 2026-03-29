@@ -253,15 +253,22 @@ class UniversalAccessorySystem {
         element.innerHTML = accessory.svg;
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
+        
+        // Backgrounds need to be larger to cover the entire avatar
+        const isBackground = category === 'backgrounds';
+        const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
+        const zIndex = isBackground ? 1 : 4;
 
         element.style.cssText = `
             position: absolute;
             left: ${defaultPos.x}%;
             top: ${defaultPos.y}%;
-            transform: translate(-50%, -50%) scale(${defaultPos.scale}) rotate(${defaultPos.rotation}deg);
+            transform: translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);
             opacity: ${defaultPos.opacity};
             pointer-events: none;
-            z-index: ${category === 'backgrounds' ? 1 : 4};
+            z-index: ${zIndex};
+            width: ${isBackground ? '120%' : 'auto'};
+            height: ${isBackground ? '120%' : 'auto'};
         `;
 
         container.appendChild(element);
