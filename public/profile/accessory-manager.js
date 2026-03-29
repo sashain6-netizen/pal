@@ -282,19 +282,12 @@ class AccessoryManager {
 
         accessoryLayer.innerHTML = '';
 
-        console.log('Updating preview with accessories:', this.accessories);
-
         Object.keys(this.accessories).forEach(category => {
             const accessoryKey = this.accessories[category];
             const accessory = ACCESSORY_LIBRARY[category]?.[accessoryKey];
 
-            console.log(`Processing ${category}.${accessoryKey}:`, accessory);
-
             if (accessory?.svg) {
-                console.log(`Rendering ${category}.${accessoryKey} with SVG`);
                 this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
-            } else {
-                console.warn(`No SVG found for ${category}.${accessoryKey}`);
             }
         });
     }

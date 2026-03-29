@@ -45,6 +45,7 @@ async function loadProfile() {
         if (themeEl) themeEl.value = user.themeColor || "#2563eb";
 
         if (user.accessories && typeof user.accessories === 'object') {
+            console.log('User accessories from API:', user.accessories);
             const loadAccessories = () => {
                 if (window.accessoryManager) {
                     try {
@@ -55,6 +56,14 @@ async function loadProfile() {
                             currency: user.currency,
                             xp: user.xp
                         });
+                        
+                        // Debug: Check what's actually set
+                        setTimeout(() => {
+                            console.log('Accessories after loading:', window.accessoryManager.accessories);
+                            const accessoryLayer = document.getElementById('accessoryLayer');
+                            console.log('Accessory layer element:', accessoryLayer);
+                            console.log('Accessory layer content:', accessoryLayer?.innerHTML);
+                        }, 500);
                     } catch (error) {
                         console.error('Error loading accessories:', error);
                     }
@@ -601,5 +610,45 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Debug: Add manual test function
+    window.testAccessories = () => {
+        console.log('Testing accessories manually...');
+        if (window.accessoryManager) {
+            console.log('Accessory manager found');
+            console.log('Current accessories:', window.accessoryManager.accessories);
+            
+            // Force set to default accessories
+            window.accessoryManager.setAccessoriesData({
+                hats: 'none',
+                glasses: 'none',
+                mouths: 'none',
+                face_accessories: 'none',
+                backgrounds: 'none'
+            });
+            
+            console.log('After setting defaults:', window.accessoryManager.accessories);
+            
+            // Force update preview
+            window.accessoryManager.updatePreview();
+            
+            const accessoryLayer = document.getElementById('accessoryLayer');
+            console.log('Accessory layer:', accessoryLayer);
+            console.log('Accessory layer HTML:', accessoryLayer?.innerHTML);
+            
+            // Check individual accessories
+            console.log('Natural Eyes:', ACCESSORY_LIBRARY.glasses.none);
+            console.log('Gentle Smile:', ACCESSORY_LIBRARY.mouths.none);
+        } else {
+            console.log('Accessory manager not found');
+        }
+    };
+
+    // Auto-run test after 2 seconds for debugging
+    setTimeout(() => {
+        if (window.location.search.includes('debug=1')) {
+            window.testAccessories();
+        }
+    }, 2000);
 });
 
