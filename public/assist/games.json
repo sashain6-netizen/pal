@@ -30,5 +30,11 @@
     "thumb": "/assist/Bitlife-thumb.png",
     "url": "https://nb-ga.github.io/games-site/projects/bitlife/index.html",
     "external": false
+  },
+  {
+    "title": "Drift Boss",
+    "thumb": "/assist/DriftBoss.png",
+    "url": "https://nb-ga.github.io/games-site/projects/drift-boss/index.html",
+    "external": false
   }
 ]
