@@ -103,6 +103,12 @@ class AccessoryManager {
     handleAccessoryClick(category, accessoryKey) {
         this.activeCategory = category;
         this.activeAccessoryKey = accessoryKey;
+
+        if (this.isOwned(category, accessoryKey)) {
+            this.accessories[category] = accessoryKey;
+            this.updatePreview();
+        }
+
         this.updateSelectionUI();
         this.renderActiveAccessoryDetails();
     }
@@ -247,12 +253,20 @@ class AccessoryManager {
             xp: this.xp
         });
 
-        this.accessories[this.activeCategory] = this.activeAccessoryKey;
+        this.setAccessoriesData(result.accessories || {
+            ...this.accessories,
+            [this.activeCategory]: this.activeAccessoryKey
+        });
         this.updateSelectionUI();
         this.updatePreview();
         this.renderActiveAccessoryDetails();
 
-        return { success: true, purchased: result.purchased, currency: result.currency };
+        return {
+            success: true,
+            purchased: result.purchased,
+            currency: result.currency,
+            accessories: result.accessories || { ...this.accessories }
+        };
     }
 
     updatePreview() {

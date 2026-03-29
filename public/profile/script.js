@@ -583,7 +583,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.purchased) {
                 const totalCurrency = Number(result.currency || 0);
-                currentProfileData = { ...(currentProfileData || {}), currency: totalCurrency };
+                currentProfileData = {
+                    ...(currentProfileData || {}),
+                    currency: totalCurrency,
+                    accessories: result.accessories || currentProfileData?.accessories
+                };
 
                 const currencyEl = document.getElementById('stat-currency');
                 if (currencyEl) currencyEl.textContent = totalCurrency.toLocaleString();

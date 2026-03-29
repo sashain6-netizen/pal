@@ -71,6 +71,14 @@ export async function onRequestPost(context) {
 
         user.currency = (user.currency || 0) - item.price;
         user.ownedAccessories[category] = [...new Set([...(user.ownedAccessories[category] || []), accessoryKey])];
+        user.accessories = {
+            hats: user.accessories?.hats || 'none',
+            glasses: user.accessories?.glasses || 'none',
+            mouths: user.accessories?.mouths || 'none',
+            face_accessories: user.accessories?.face_accessories || 'none',
+            backgrounds: user.accessories?.backgrounds || 'none',
+            [category]: accessoryKey
+        };
 
         await env.USERS_KV.put(userKey, JSON.stringify(user));
 
@@ -78,6 +86,7 @@ export async function onRequestPost(context) {
             success: true,
             currency: user.currency,
             ownedAccessories: user.ownedAccessories,
+            accessories: user.accessories,
             purchased: { category, accessoryKey }
         }), {
             headers: { "Content-Type": "application/json" }
