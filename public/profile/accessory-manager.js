@@ -84,8 +84,12 @@ class AccessoryManager {
             backgrounds: data.backgrounds || 'none'
         };
 
+        this.activeCategory = 'hats';
+        this.activeAccessoryKey = this.accessories.hats || 'none';
+
         this.updateSelectionUI();
         this.updatePreview();
+        this.renderActiveAccessoryDetails();
     }
 
     setOwnershipData({ ownedAccessories, currency, xp }) {

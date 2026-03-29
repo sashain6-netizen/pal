@@ -11,7 +11,7 @@ function generateAvatar(avatarUrl, userColor, username) {
     } else {
         return `
             <div class="post-avatar post-avatar-svg">
-                ${getCircleFillingAvatarSvg(userColor, '70%')}
+                ${getCircleFillingAvatarSvg(userColor, '100%')}
             </div>`;
     }
 }

@@ -27,8 +27,8 @@ function mixColor(hex, amount = 0) {
 
 function buildPortraitAvatarSvg(color = '#2563eb', size = '100%') {
     const base = color || '#2563eb';
-    const bg = mixColor(base, 0.86);
-    const edge = mixColor(base, 0.18);
+    const bg = mixColor(base, 0.87);
+    const edge = mixColor(base, 0.2);
     const shade = mixColor(base, -0.16);
 
     return `
@@ -42,23 +42,23 @@ function buildPortraitAvatarSvg(color = '#2563eb', size = '100%') {
             <circle cx="50" cy="50" r="50" fill="${bg}" />
 
             <g clip-path="url(#avatarClip)">
-                <circle cx="50" cy="28" r="24" fill="${base}"/>
-                <path d="M50 53
-                         C42 53 35 54.5 29 57.5
-                         C20 62 15 71 12 86
-                         L12 104
-                         L88 104
-                         L88 86
-                         C85 71 80 62 71 57.5
-                         C65 54.5 58 53 50 53 Z"
+                <circle cx="50" cy="27" r="28" fill="${base}"/>
+                <path d="M50 55
+                         C43 55 37 56 32 58
+                         C23 61.5 17 69 13 83
+                         L13 104
+                         L87 104
+                         L87 83
+                         C83 69 77 61.5 68 58
+                         C63 56 57 55 50 55 Z"
                       fill="${base}"/>
-                <path d="M50 54
-                         C44 54 39 55 34 56.8
-                         C39 59 44 60 50 60
-                         C56 60 61 59 66 56.8
-                         C61 55 56 54 50 54 Z"
+                <path d="M50 56
+                         C45 56 40.5 56.8 36 58.1
+                         C40 59.7 45 60.6 50 60.6
+                         C55 60.6 60 59.7 64 58.1
+                         C59.5 56.8 55 56 50 56 Z"
                       fill="${shade}"
-                      opacity="0.15"/>
+                      opacity="0.14"/>
             </g>
 
             <circle cx="50" cy="50" r="49" fill="none" stroke="${edge}" stroke-width="1.5" opacity="0.22"/>

@@ -915,8 +915,8 @@
 }
 
 .accessory-item.focused {
-    border-color: #0f172a;
-    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+    border-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
 .accessory-item.locked {
@@ -950,7 +950,8 @@
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    border: 2px dashed #cbd5e1;
+    border: 2px dashed #d7e3f4;
+    background: rgba(255, 255, 255, 0.7);
 }
 
 .accessory-meta {
