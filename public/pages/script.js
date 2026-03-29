@@ -11,7 +11,7 @@ function generateAvatar(avatarUrl, userColor, username, userData) {
     } else {
         return `
             <div class="thread-avatar thread-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
-                ${getCircleFillingAvatarSvg(userColor, '70%')}
+                ${getCircleFillingAvatarSvg(userColor, '100%')}
             </div>`;
     }
 }
@@ -22,7 +22,7 @@ function generateSearchAvatar(avatarUrl, userColor, username, userData) {
     } else {
         return `
             <div class="search-avatar search-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
-                ${getCircleFillingAvatarSvg(userColor, '70%')}
+                ${getCircleFillingAvatarSvg(userColor, '100%')}
             </div>`;
     }
 }

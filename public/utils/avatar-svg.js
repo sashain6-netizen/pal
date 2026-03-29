@@ -27,41 +27,41 @@ function mixColor(hex, amount = 0) {
 
 function buildPortraitAvatarSvg(color = '#2563eb', size = '100%') {
     const base = color || '#2563eb';
-    const bg = mixColor(base, 0.84);
-    const edge = mixColor(base, 0.1);
+    const bg = mixColor(base, 0.86);
+    const edge = mixColor(base, 0.18);
     const shade = mixColor(base, -0.16);
 
     return `
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%;">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%; display:block;">
             <defs>
                 <clipPath id="avatarClip">
-                    <circle cx="50" cy="50" r="48"/>
+                    <circle cx="50" cy="50" r="50"/>
                 </clipPath>
             </defs>
 
-            <circle cx="50" cy="50" r="48" fill="${bg}" />
+            <circle cx="50" cy="50" r="50" fill="${bg}" />
 
             <g clip-path="url(#avatarClip)">
-                <circle cx="50" cy="29" r="22" fill="${base}"/>
-                <path d="M50 54
-                         C41 54 34 56 28 60
-                         C21 65 17 72 15 83
-                         L15 101
-                         L85 101
-                         L85 83
-                         C83 72 79 65 72 60
-                         C66 56 59 54 50 54 Z"
+                <circle cx="50" cy="28" r="24" fill="${base}"/>
+                <path d="M50 53
+                         C42 53 35 54.5 29 57.5
+                         C20 62 15 71 12 86
+                         L12 104
+                         L88 104
+                         L88 86
+                         C85 71 80 62 71 57.5
+                         C65 54.5 58 53 50 53 Z"
                       fill="${base}"/>
-                <path d="M50 55
-                         C43 55 37 56.5 32 59
-                         C38 61 44 62 50 62
-                         C56 62 62 61 68 59
-                         C63 56.5 57 55 50 55 Z"
+                <path d="M50 54
+                         C44 54 39 55 34 56.8
+                         C39 59 44 60 50 60
+                         C56 60 61 59 66 56.8
+                         C61 55 56 54 50 54 Z"
                       fill="${shade}"
-                      opacity="0.16"/>
+                      opacity="0.15"/>
             </g>
 
-            <circle cx="50" cy="50" r="48" fill="none" stroke="${edge}" stroke-width="1.5" opacity="0.35"/>
+            <circle cx="50" cy="50" r="49" fill="none" stroke="${edge}" stroke-width="1.5" opacity="0.22"/>
         </svg>`;
 }
 

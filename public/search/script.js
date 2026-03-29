@@ -33,7 +33,7 @@ async function performSearch() {
             if (user.avatar && user.avatar !== "/default-avatar.png") {
                 avatarContent = `<img src="${user.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
             } else {
-                avatarContent = getCircleFillingAvatarSvg(user.themeColor || '#2563eb', '70%');
+            avatarContent = getCircleFillingAvatarSvg(user.themeColor || '#2563eb', '100%');
             }
 
             resultsArea.innerHTML += `

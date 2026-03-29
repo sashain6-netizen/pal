@@ -906,6 +906,12 @@
     justify-content: flex-start;
     gap: 8px;
     text-align: left;
+    outline: none;
+}
+
+.accessory-item:focus,
+.accessory-item:focus-visible {
+    outline: none;
 }
 
 .accessory-item.focused {
