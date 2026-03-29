@@ -9,20 +9,10 @@ function generateAvatar(avatarUrl, userColor, username) {
     if (avatarUrl && avatarUrl !== "" && avatarUrl !== "/default-avatar.png") {
         return `<img src="${avatarUrl}" alt="${username}" class="post-avatar">`;
     } else {
-        if (typeof getCircleFillingAvatarSvg === 'function') {
-            return `
-                <div class="post-avatar post-avatar-svg">
-                    ${getCircleFillingAvatarSvg(userColor, '100%')}
-                </div>`;
-        } else {
-            return `
-                <div class="post-avatar post-avatar-svg">
-                    <svg viewBox="0 0 100 100" fill="${userColor}" style="width:100%; height:100%; max-width:100%; max-height:100%;">
-                        <circle cx="50" cy="35" r="18"/>
-                        <path d="M 50 58 C 35 58, 20 65, 15 80 L 15 95 L 85 95 L 85 80 C 80 65, 65 58, 50 58 Z"/>
-                    </svg>
-                </div>`;
-        }
+        return `
+            <div class="post-avatar post-avatar-svg">
+                ${getCircleFillingAvatarSvg(userColor, '100%')}
+            </div>`;
     }
 }
 

@@ -32,15 +32,7 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
         if (userData.avatar && userData.avatar !== "" && userData.avatar !== "/default-avatar.png") {
             avatarContainer.innerHTML = `<img src="${userData.avatar}" id="nav-avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         } else {
-            if (typeof getCircleFillingAvatarSvg === 'function') {
-                avatarContainer.innerHTML = getCircleFillingAvatarSvg(userColor, '70%');
-            } else {
-                avatarContainer.innerHTML = `
-                    <svg viewBox="0 0 100 100" fill="${userColor}" style="width:70%; height:70%; max-width:100%; max-height:100%;">
-                        <circle cx="50" cy="35" r="18"/>
-                        <path d="M 50 58 C 35 58, 20 65, 15 80 L 15 95 L 85 95 L 85 80 C 80 65, 65 58, 50 58 Z"/>
-                    </svg>`;
-            }
+            avatarContainer.innerHTML = getCircleFillingAvatarSvg(userColor, '70%');
         }
 
                 const logoutBtn = document.getElementById('logoutLink');
