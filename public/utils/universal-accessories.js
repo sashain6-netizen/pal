@@ -141,19 +141,16 @@ class UniversalAccessorySystem {
         if (!this.isInitialized || !this.accessoryLibrary) return;
 
         try {
-            // Check if this is a users page avatar that should be handled by universal system
-            const isUsersPageAvatar = avatarElement.closest('#userAvatarWithAccessories') || 
+            const isUsersPageAvatar = avatarElement.closest('#userAvatarWithAccessories') ||
                                      avatarElement.id === 'userAvatarWithAccessories' ||
                                      (avatarElement.classList.contains('avatar-with-accessories') &&
                                       avatarElement.dataset.username);
-            
-            // Skip avatars that have #userAccessoryLayer but are not users page avatars
+
             if (avatarElement.querySelector('#userAccessoryLayer') && !isUsersPageAvatar) {
                 console.log('Avatar has #userAccessoryLayer and is not users page avatar, skipping universal system:', avatarElement);
                 return;
             }
 
-            // For users page, we need to find the actual avatar element inside
             let targetAvatarElement = avatarElement;
             if (isUsersPageAvatar && avatarElement.id === 'userAvatarWithAccessories') {
                 const innerAvatar = avatarElement.querySelector('.avatar-with-accessories[data-username]');
