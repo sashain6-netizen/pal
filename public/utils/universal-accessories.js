@@ -314,7 +314,7 @@ class UniversalAccessorySystem {
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
 
         const isBackground = category === 'backgrounds';
-        const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
+        const scale = isBackground ? (defaultPos.scale || 1) * 1.8 : defaultPos.scale;
         element.style.position = 'absolute';
         element.style.left = `${defaultPos.x}%`;
         element.style.top = `${defaultPos.y}%`;
@@ -399,7 +399,7 @@ function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
 
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
     const isBackground = category === 'backgrounds';
-    const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
+    const scale = isBackground ? (defaultPos.scale || 1) * 1.8 : defaultPos.scale;
     const extraSize = isBackground ? 'width:120%;height:120%;' : 'width:66.6667%;height:66.6667%;';
     const normalizedSvg = normalizeAccessorySvgMarkup(accessory.svg, true);
 
@@ -442,9 +442,15 @@ function buildAccessoryLayersMarkup(accessoriesData) {
 }
 
 function buildAvatarWithAccessoriesMarkup(userColor = '#2563eb', userData = null) {
+    const accessories = normalizeAccessoryData(userData?.accessories || userData);
+    const hasVisibleBackground = accessories.backgrounds && accessories.backgrounds !== 'none';
+    const baseAvatarMarkup = hasVisibleBackground
+        ? getPortraitOnlyAvatarSvg(userColor, '100%')
+        : getCircleFillingAvatarSvg(userColor, '100%');
+
     return `
-        ${getCircleFillingAvatarSvg(userColor, '100%')}
-        ${buildAccessoryLayersMarkup(userData?.accessories || userData)}
+        ${baseAvatarMarkup}
+        ${buildAccessoryLayersMarkup(accessories)}
     `;
 }
 

@@ -32,7 +32,7 @@ function buildPortraitAvatarSvg(color = '#2563eb', size = '100%') {
     const shade = mixColor(base, -0.16);
 
     return `
-        <svg class="avatar-base-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%; display:block;">
+        <svg class="avatar-base-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%; display:block; position:relative; z-index:1;">
             <defs>
                 <clipPath id="avatarClip">
                     <circle cx="50" cy="50" r="50"/>
@@ -65,6 +65,43 @@ function buildPortraitAvatarSvg(color = '#2563eb', size = '100%') {
         </svg>`;
 }
 
+function buildPortraitOnlyAvatarSvg(color = '#2563eb', size = '100%') {
+    const base = color || '#2563eb';
+    const edge = mixColor(base, 0.2);
+    const shade = mixColor(base, -0.16);
+
+    return `
+        <svg class="avatar-base-svg avatar-portrait-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%; display:block; position:relative; z-index:1;">
+            <defs>
+                <clipPath id="avatarClipPortrait">
+                    <circle cx="50" cy="50" r="50"/>
+                </clipPath>
+            </defs>
+
+            <g clip-path="url(#avatarClipPortrait)">
+                <circle cx="50" cy="49.5" r="30" fill="${base}"/>
+                <path d="M50 75.5
+                         C42 75.5 35 76.5 29 78.5
+                         C19 82 12 88.5 8 101.5
+                         L8 105
+                         L92 105
+                         L92 101.5
+                         C88 88.5 81 82 71 78.5
+                         C65 76.5 58 75.5 50 75.5 Z"
+                      fill="${base}"/>
+                <path d="M50 76.5
+                         C44 76.5 38.5 77.3 33.3 78.5
+                         C38.2 80.5 44 81.5 50 81.5
+                         C56 81.5 61.8 80.5 66.7 78.5
+                         C61.5 77.3 56 76.5 50 76.5 Z"
+                      fill="${shade}"
+                      opacity="0.14"/>
+            </g>
+
+            <circle cx="50" cy="50" r="49" fill="none" stroke="${edge}" stroke-width="1.5" opacity="0.18"/>
+        </svg>`;
+}
+
 function svgToDataUri(svg) {
     return `data:image/svg+xml;base64,${btoa(svg)}`;
 }
@@ -75,6 +112,10 @@ function getStandardAvatarSvg(color = '#2563eb', size = '100%') {
 
 function getCircleFillingAvatarSvg(color = '#2563eb', size = '100%') {
     return buildPortraitAvatarSvg(color, size);
+}
+
+function getPortraitOnlyAvatarSvg(color = '#2563eb', size = '100%') {
+    return buildPortraitOnlyAvatarSvg(color, size);
 }
 
 function getColoredSvg(color, size = null) {
@@ -88,6 +129,7 @@ function generateDefaultAvatarSVG(color) {
 
 window.getStandardAvatarSvg = getStandardAvatarSvg;
 window.getCircleFillingAvatarSvg = getCircleFillingAvatarSvg;
+window.getPortraitOnlyAvatarSvg = getPortraitOnlyAvatarSvg;
 window.getColoredSvg = getColoredSvg;
 window.generateDefaultAvatarSVG = generateDefaultAvatarSVG;
 
@@ -95,6 +137,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         getStandardAvatarSvg,
         getCircleFillingAvatarSvg,
+        getPortraitOnlyAvatarSvg,
         getColoredSvg,
         generateDefaultAvatarSVG
     };
