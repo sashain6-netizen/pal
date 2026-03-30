@@ -601,6 +601,15 @@ function buildAccessoryLayersMarkup(accessoriesData) {
 
 function buildAvatarWithAccessoriesMarkup(userColor = '#2563eb', userData = null) {
     const accessories = normalizeAccessoryData(userData?.accessories || userData);
+    
+    // Check if user has a custom profile image
+    const hasCustomImage = userData?.avatar && userData.avatar !== "" && userData.avatar !== "/default-avatar.png";
+    
+    if (hasCustomImage) {
+        // Return just the avatar circle without accessories
+        return getCircleFillingAvatarSvg(userColor, '100%');
+    }
+    
     return `
         ${getCircleFillingAvatarSvg(userColor, '100%')}
         ${buildAccessoryLayersMarkup(accessories)}
