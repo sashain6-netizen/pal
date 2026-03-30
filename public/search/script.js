@@ -25,7 +25,7 @@ async function performSearch() {
 
         users.forEach(user => {
             const cardClass = user.isPremium ? "feature-card premium-card-pulse" : "feature-card";
-            const iconClass = user.isPremium ? "profile-icon premium-avatar-pulse" : "profile-icon";
+            const iconClass = user.isPremium ? "search-result-avatar premium-avatar-pulse" : "search-result-avatar";
             const star = "";
             const nameClass = user.isPremium ? "premium-user-text" : "";
 
@@ -38,7 +38,7 @@ async function performSearch() {
 
             resultsArea.innerHTML += `
                 <div class="${cardClass}">
-                    <div class="${iconClass} avatar-with-accessories" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}; position: relative; overflow: visible;" data-username="${user.username}" data-user='${JSON.stringify(user).replace(/'/g, "&apos;")}'>
+                    <div class="${iconClass} avatar-with-accessories" style="border-color: ${user.themeColor || 'var(--blue-primary)'};" data-username="${user.username}" data-user='${JSON.stringify(user).replace(/'/g, "&apos;")}'>
                         ${avatarContent}
                     </div>
                     <h3 class="${nameClass}">${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}${star}</h3>

@@ -66,6 +66,29 @@ h1 {
     align-self: center;
 }
 
+.search-result-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    border: 2px solid var(--blue-primary);
+    background: var(--white);
+    position: relative;
+    overflow: visible;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+.search-result-avatar > .avatar-base-svg,
+.search-result-avatar > img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
 .profile-icon img {
     width: 100%;
     height: 100%;

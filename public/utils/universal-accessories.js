@@ -47,6 +47,9 @@ class UniversalAccessorySystem {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                border-radius: 50%;
+                flex-shrink: 0;
+                isolation: isolate;
             }
 
             .avatar-with-accessories > .avatar-base-svg,
@@ -427,8 +430,8 @@ class UniversalAccessorySystem {
         element.style.opacity = defaultPos.opacity ?? 1;
         element.style.pointerEvents = 'none';
         element.style.zIndex = '2';
-        element.style.width = '100%';
-        element.style.height = '100%';
+        element.style.width = '66.6667%';
+        element.style.height = '66.6667%';
         element.style.setProperty('--scale', String(scale));
         element.style.setProperty('--rotation', `${defaultPos.rotation || 0}deg`);
 
