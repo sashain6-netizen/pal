@@ -64,19 +64,7 @@ export async function onRequestPost(context) {
                     const url = new URL(urlStr);
 
                     if (!['http:', 'https:'].includes(url.protocol)) {
-                        return new Response(JSON.stringify({ error: "Invalid URL protocol. Only HTTP and HTTPS are allowed." }), {
-                            status: 400,
-                            headers: { "Content-Type": "application/json" }
-                        });
-                    }
-
-                    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
-                    const hasImageExtension = imageExtensions.some(ext =>
-                        url.pathname.toLowerCase().endsWith(ext)
-                    );
-
-                    if (!hasImageExtension && !url.hostname.includes('imgur.com') && !url.hostname.includes('discord.com') && !url.hostname.includes('cdn.discordapp.com')) {
-                        return new Response(JSON.stringify({ error: "URL must point to a valid image file (jpg, png, gif, webp, bmp, svg)" }), {
+                        return new Response(JSON.stringify({ error: "Invalid URL protocol." }), {
                             status: 400,
                             headers: { "Content-Type": "application/json" }
                         });
@@ -84,56 +72,32 @@ export async function onRequestPost(context) {
 
                     try {
                         const imageResponse = await fetch(urlStr, {
-                            method: 'HEAD',
-                            headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' }
+                            method: 'HEAD', 
+                            headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' },
+                            redirect: 'follow'
                         });
 
                         if (!imageResponse.ok) {
-                            return new Response(JSON.stringify({ error: "Unable to access the image URL. Please check if the URL is valid and accessible." }), {
-                                status: 400,
-                                headers: { "Content-Type": "application/json" }
-                            });
+                            throw new Error("Link unreachable");
                         }
 
                         const contentType = imageResponse.headers.get('content-type') || '';
+                        
                         if (!contentType.startsWith('image/')) {
-                            return new Response(JSON.stringify({ error: "URL does not point to a valid image file." }), {
+                            return new Response(JSON.stringify({ error: "URL does not point to a valid image." }), {
                                 status: 400,
                                 headers: { "Content-Type": "application/json" }
                             });
                         }
 
-                        if (urlStr.toLowerCase().includes('.png') || contentType === 'image/png') {
-                            const pngResponse = await fetch(urlStr, {
-                                method: 'GET',
-                                headers: { 'Range': 'bytes=0-8', 'User-Agent': 'Pal-Profile-Validator/1.0' }
-                            });
-
-                            if (pngResponse.ok) {
-                                const buffer = await pngResponse.arrayBuffer();
-                                const bytes = new Uint8Array(buffer);
-
-                                const pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
-                                const isValidPng = bytes.length >= 8 &&
-                                    pngSignature.every((byte, index) => bytes[index] === byte);
-
-                                if (!isValidPng) {
-                                    return new Response(JSON.stringify({ error: "The file is not a valid PNG image. Please use a genuine PNG file." }), {
-                                        status: 400,
-                                        headers: { "Content-Type": "application/json" }
-                                    });
-                                }
-                            }
-                        }
+                        avatarUrl = urlStr;
 
                     } catch (fetchError) {
-                        return new Response(JSON.stringify({ error: "Failed to validate the image URL. Please ensure it's accessible and a valid image." }), {
+                        return new Response(JSON.stringify({ error: "Could not verify image URL. Ensure the link is public." }), {
                             status: 400,
                             headers: { "Content-Type": "application/json" }
                         });
                     }
-
-                    avatarUrl = urlStr;
 
                 } catch (urlError) {
                     return new Response(JSON.stringify({ error: "Invalid URL format" }), {
