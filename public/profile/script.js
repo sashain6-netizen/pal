@@ -303,20 +303,17 @@ let currentAvatarUrl = "";
 let previewTimeout = null;
 
 async function validateImageUrl(url) {
-    console.log('Validating URL:', url);
-
     try {
         const trimmedUrl = url.trim();
         const isAlreadyEncoded = trimmedUrl !== decodeURI(trimmedUrl);
         const encodedUrl = isAlreadyEncoded ? trimmedUrl : encodeURI(trimmedUrl);
-        const urlObj = new URL(encodedUrl);
-
-        if (!['http:', 'https:'].includes(urlObj.protocol)) {
-            return { valid: false, error: "Only HTTP and HTTPS links are allowed." };
-        }
+        new URL(encodedUrl); 
 
         return new Promise((resolve) => {
             const img = new Image();
+            
+            // CRITICAL: Must be set BEFORE setting img.src
+            img.referrerPolicy = "no-referrer";
 
             const timer = setTimeout(() => {
                 img.src = ""; 
@@ -325,14 +322,13 @@ async function validateImageUrl(url) {
 
             img.onload = () => {
                 clearTimeout(timer);
-
+                // Catching the 1x1 "blocked" pixel
                 if (img.naturalWidth > 1 && img.naturalHeight > 1) {
-                    console.log(`✅ Valid: ${img.naturalWidth}x${img.naturalHeight}`);
                     resolve({ valid: true, url: encodedUrl });
                 } else {
                     resolve({ 
                         valid: false, 
-                        error: "This image is being blocked by the host (e.g., Wikia/Fandom). Try re-hosting on Imgur or PostImages." 
+                        error: "This host blocks external links. Please re-host on Imgur." 
                     });
                 }
             };
@@ -341,15 +337,14 @@ async function validateImageUrl(url) {
                 clearTimeout(timer);
                 resolve({ 
                     valid: false, 
-                    error: "Could not load image. This link might be broken or private." 
+                    error: "Could not load image. Link might be broken or private." 
                 });
             };
 
             img.src = encodedUrl;
         });
-
     } catch (error) {
-        return { valid: false, error: "That doesn't look like a valid URL." };
+        return { valid: false, error: "Invalid URL format." };
     }
 }
 
@@ -360,13 +355,13 @@ function updatePreview(url, status, keepCurrentImage = false) {
 
     if (!previewImage || !previewStatus || !avatarUrlGroup) return;
 
-    // Fix for Wikia/Fandom: Tells the browser not to reveal our site's 
-    // identity, which bypasses hotlink protection.
+    // 1. Force the Referrer Policy BEFORE setting the src.
+    // This is the "cloaking device" that makes Wikia/Fandom images work.
     previewImage.referrerPolicy = "no-referrer";
 
     avatarUrlGroup.classList.remove('has-success', 'has-error');
 
-    // Visual feedback: Add loading class if we are validating or fetching
+    // 2. Manage visual loading states
     if (status.includes("⏳") || status.includes("🔍")) {
         previewImage.classList.add('loading');
     } else {
@@ -374,26 +369,27 @@ function updatePreview(url, status, keepCurrentImage = false) {
     }
 
     if (!keepCurrentImage) {
-        if (url && url !== currentAvatarUrl) {
-            console.log('Setting preview image src to:', url);
+        if (url) {
+            // We set the src; the browser now fetches it without a Referer header
             previewImage.src = url;
             currentAvatarUrl = url;
-        } else if (!url) {
-            // Fallback to default SVG if no URL is provided
+        } else {
+            // Revert to default if URL is empty/null
             const themeColor = document.getElementById('themeColor')?.value || '#2563eb';
-            const defaultAvatar = window.generateDefaultAvatarSVG ? 
-                window.generateDefaultAvatarSVG(themeColor) : "/default-avatar.png";
+            const defaultAvatar = window.generateDefaultAvatarSVG 
+                ? window.generateDefaultAvatarSVG(themeColor) 
+                : "/default-avatar.png";
             previewImage.src = defaultAvatar;
             currentAvatarUrl = "";
         }
 
-        // Sync with accessories (hats, glasses, etc.)
+        // Keep hats/glasses in sync with the new image
         if (window.accessoryManager) {
             window.accessoryManager.updatePreview();
         }
     }
 
-    // Update status text and styling
+    // 3. Status Text and CSS Class Logic
     previewStatus.textContent = status;
     previewStatus.className = "preview-status";
 
