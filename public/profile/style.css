@@ -1186,7 +1186,6 @@
     }
 }
 
-/* Accessory Type Navigation Tabs */
 .accessory-type-nav {
     display: flex;
     gap: 8px;
@@ -1274,7 +1273,6 @@
     color: #2563eb;
 }
 
-/* Updated Category Containers */
 .accessories-container {
     margin-top: 0;
 }
@@ -1327,7 +1325,6 @@
     }
 }
 
-/* Mobile Responsive for Tabs */
 @media (max-width: 480px) {
     .accessory-type-nav {
         gap: 6px;

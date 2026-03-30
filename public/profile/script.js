@@ -264,29 +264,23 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
 document.addEventListener('DOMContentLoaded', loadProfile);
 
-// Accessory Category Navigation
 function switchAccessoryCategory(category) {
-    // Update tab states
     document.querySelectorAll('.accessory-type-tab').forEach(tab => {
         tab.classList.remove('active');
     });
     document.querySelector(`[data-category="${category}"]`).classList.add('active');
 
-    // Update category visibility
     document.querySelectorAll('.accessory-category').forEach(cat => {
         cat.classList.remove('active');
     });
     document.getElementById(`category-${category}`).classList.add('active');
 
-    // Update accessory manager active category
     if (window.accessoryManager) {
         window.accessoryManager.setActiveCategory(category);
     }
 }
 
-// Keyboard navigation for accessory tabs
 document.addEventListener('keydown', (e) => {
-    // Only handle when accessories menu is open
     const accessoriesMenu = document.getElementById('accessoriesMenu');
     if (!accessoriesMenu || !accessoriesMenu.classList.contains('show')) return;
 
@@ -464,8 +458,7 @@ function updatePreview(url, status, keepCurrentImage = false) {
             previewImage.src = defaultAvatar;
             currentAvatarUrl = "";
         }
-        
-        // Update accessory preview after image changes
+
         if (window.accessoryManager) {
             window.accessoryManager.updatePreview();
         }

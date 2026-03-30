@@ -477,13 +477,11 @@ class UniversalAccessorySystem {
 
     renderAccessoriesForAvatar(avatarElement, accessoriesData) {
         const accessories = accessoriesData?.accessories || accessoriesData || {};
-        
-        // Check if avatar has a custom profile image (not default avatar)
+
         const hasCustomImage = this.hasCustomProfileImage(avatarElement);
-        
-        // Also exclude pure img elements (like search avatars with custom images)
+
         const isPureImgElement = avatarElement.tagName === 'IMG' && !avatarElement.classList.contains('avatar-with-accessories');
-        
+
         if (hasCustomImage || isPureImgElement) {
             return;
         }
@@ -501,31 +499,27 @@ class UniversalAccessorySystem {
     }
 
     hasCustomProfileImage(avatarElement) {
-        // Check if it's an img element with a custom src
         const imgElement = avatarElement.querySelector('img') || (avatarElement.tagName === 'IMG' ? avatarElement : null);
-        
+
         if (imgElement) {
             const src = imgElement.src || imgElement.getAttribute('src');
-            // If src is not the default avatar and not empty, it's a custom image
             if (src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png') {
                 return true;
             }
         }
-        
-        // Also check if the avatar element itself has a custom src (for search avatars)
+
         if (avatarElement.tagName === 'IMG') {
             const src = avatarElement.src || avatarElement.getAttribute('src');
             if (src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png') {
                 return true;
             }
         }
-        
-        // Check if the innerHTML contains an img with custom src (for navbar)
+
         const innerHTML = avatarElement.innerHTML || '';
         if (innerHTML.includes('<img') && !innerHTML.includes('/default-avatar.png')) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -610,15 +604,13 @@ function buildAccessoryLayersMarkup(accessoriesData) {
 
 function buildAvatarWithAccessoriesMarkup(userColor = '#2563eb', userData = null) {
     const accessories = normalizeAccessoryData(userData?.accessories || userData);
-    
-    // Check if user has a custom profile image
+
     const hasCustomImage = userData?.avatar && userData.avatar !== "" && userData.avatar !== "/default-avatar.png";
-    
+
     if (hasCustomImage) {
-        // Return just the avatar circle without accessories
         return getCircleFillingAvatarSvg(userColor, '100%');
     }
-    
+
     return `
         ${getCircleFillingAvatarSvg(userColor, '100%')}
         ${buildAccessoryLayersMarkup(accessories)}

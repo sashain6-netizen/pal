@@ -125,10 +125,8 @@ class AccessoryManager {
         this.activeCategory = category;
         this.activeAccessoryKey = accessoryKey;
 
-        // Switch to the appropriate tab if not already active
         const activeTab = document.querySelector('.accessory-type-tab.active');
         if (!activeTab || activeTab.dataset.category !== category) {
-            // Use the global switchAccessoryCategory function
             if (typeof switchAccessoryCategory === 'function') {
                 switchAccessoryCategory(category);
             }
@@ -302,7 +300,7 @@ class AccessoryManager {
     updatePreview() {
         const accessoryLayer = document.getElementById('accessoryLayer');
         const previewImage = document.getElementById('previewImage');
-        
+
         if (!accessoryLayer) {
             console.warn('Accessory layer not found');
             return;
@@ -310,9 +308,8 @@ class AccessoryManager {
 
         accessoryLayer.innerHTML = '';
 
-        // Check if user has a custom profile image
         const hasCustomImage = this.hasCustomProfileImage(previewImage);
-        
+
         if (hasCustomImage) {
             console.log('User has custom profile image, hiding accessories in preview');
             return;
@@ -330,9 +327,8 @@ class AccessoryManager {
 
     hasCustomProfileImage(imgElement) {
         if (!imgElement) return false;
-        
+
         const src = imgElement.src || imgElement.getAttribute('src');
-        // If src is not the default avatar and not empty, it's a custom image
         return src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png';
     }
 
