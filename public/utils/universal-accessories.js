@@ -235,7 +235,7 @@ class UniversalAccessorySystem {
         Object.keys(accessories).forEach(category => {
             const accessoryKey = accessories[category];
 
-            if (accessoryKey === 'none' || !this.accessoryLibrary[category]) return;
+            if (!this.accessoryLibrary[category]) return;
 
             const accessory = this.accessoryLibrary[category][accessoryKey];
             if (!accessory || !accessory.svg) return;
