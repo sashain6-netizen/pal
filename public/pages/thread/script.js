@@ -10,8 +10,8 @@ function generateAvatar(avatarUrl, userColor, username, userData = null) {
         return `<img src="${avatarUrl}" alt="${username}" class="post-avatar">`;
     } else {
         return `
-            <div class="post-avatar post-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
-                ${getCircleFillingAvatarSvg(userColor, '100%')}
+            <div class="post-avatar post-avatar-svg avatar-with-accessories" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
+                ${buildAvatarWithAccessoriesMarkup(userColor, userData)}
             </div>`;
     }
 }

@@ -10,8 +10,8 @@ function generateAvatar(avatarUrl, userColor, username, userData) {
         return `<img src="${avatarUrl}" alt="${username}" class="thread-avatar">`;
     } else {
         return `
-            <div class="thread-avatar thread-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
-                ${getCircleFillingAvatarSvg(userColor, '100%')}
+            <div class="thread-avatar thread-avatar-svg avatar-with-accessories" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
+                ${buildAvatarWithAccessoriesMarkup(userColor, userData)}
             </div>`;
     }
 }
@@ -21,8 +21,8 @@ function generateSearchAvatar(avatarUrl, userColor, username, userData) {
         return `<img src="${avatarUrl}" alt="${username}" class="search-avatar">`;
     } else {
         return `
-            <div class="search-avatar search-avatar-svg" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
-                ${getCircleFillingAvatarSvg(userColor, '100%')}
+            <div class="search-avatar search-avatar-svg avatar-with-accessories" data-username="${username}" data-user='${JSON.stringify(userData || {}).replace(/'/g, "&apos;")}'>
+                ${buildAvatarWithAccessoriesMarkup(userColor, userData)}
             </div>`;
     }
 }

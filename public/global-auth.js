@@ -32,7 +32,7 @@ function updateGlobalUI(isLoggedIn, userData = {}) {
         if (userData.avatar && userData.avatar !== "" && userData.avatar !== "/default-avatar.png") {
             avatarContainer.innerHTML = `<img src="${userData.avatar}" id="nav-avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
         } else {
-            avatarContainer.innerHTML = getCircleFillingAvatarSvg(userColor, '100%');
+            avatarContainer.innerHTML = buildAvatarWithAccessoriesMarkup(userColor, userData);
         }
 
                 const logoutBtn = document.getElementById('logoutLink');

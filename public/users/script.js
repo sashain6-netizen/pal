@@ -389,16 +389,8 @@ async function loadProfile() {
             } else {
                 avatarWithAccessories.dataset.user = JSON.stringify(data || {}).replace(/'/g, "&apos;");
                 avatarWithAccessories.dataset.username = data.username || '';
-                avatarWithAccessories.innerHTML = getColoredSvg(data.themeColor || "#2563eb", '100%');
+                avatarWithAccessories.innerHTML = buildAvatarWithAccessoriesMarkup(data.themeColor || "#2563eb", data);
             }
-        }
-
-        if (window.universalAccessorySystem && window.universalAccessorySystem.isInitialized) {
-            setTimeout(() => {
-                if (avatarWithAccessories) {
-                    window.universalAccessorySystem.applyAccessoriesToAvatar(avatarWithAccessories);
-                }
-            }, 200);
         }
 
         const profileCard = document.querySelector('.profile-card');
@@ -423,7 +415,7 @@ async function loadProfile() {
                         navAvatar.style.display        = 'flex';
                         navAvatar.style.alignItems     = 'center';
                         navAvatar.style.justifyContent = 'center';
-                        navAvatar.innerHTML = getColoredSvg(myData.themeColor || "#2563eb", 30);
+                        navAvatar.innerHTML = buildAvatarWithAccessoriesMarkup(myData.themeColor || "#2563eb", myData);
                     }
                     document.getElementById('loggedInLinks')?.style.setProperty('display', 'block');
                     document.getElementById('loggedOutLinks')?.style.setProperty('display', 'none');

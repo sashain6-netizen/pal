@@ -375,6 +375,63 @@ class UniversalAccessorySystem {
     }
 }
 
+function normalizeAccessoryData(accessoriesData) {
+    return accessoriesData?.accessories || accessoriesData || {};
+}
+
+function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
+    if (!accessory?.svg) return '';
+
+    const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
+    const isBackground = category === 'backgrounds';
+    const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
+    const extraSize = isBackground ? 'width:120%;height:120%;' : 'width:100%;height:100%;';
+
+    return `
+        <div
+            class="accessory-element ${category.replace('_', '-')}"
+            data-category="${category}"
+            data-accessory-key="${accessoryKey}"
+            style="position:absolute;left:${defaultPos.x}%;top:${defaultPos.y}%;transform:translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);opacity:${defaultPos.opacity ?? 1};pointer-events:none;z-index:${isBackground ? 0 : 2};--scale:${scale};--rotation:${defaultPos.rotation || 0}deg;${extraSize}"
+        >
+            ${accessory.svg}
+        </div>
+    `;
+}
+
+function buildAccessoryLayersMarkup(accessoriesData) {
+    const library = window.ACCESSORY_LIBRARY;
+    if (!library) return '';
+
+    const accessories = normalizeAccessoryData(accessoriesData);
+    const backgroundMarkup = [];
+    const foregroundMarkup = [];
+
+    Object.entries(accessories).forEach(([category, accessoryKey]) => {
+        const accessory = library?.[category]?.[accessoryKey];
+        if (!accessory?.svg) return;
+
+        const markup = buildAccessoryElementMarkup(accessory, category, accessoryKey);
+        if (category === 'backgrounds') {
+            backgroundMarkup.push(markup);
+        } else {
+            foregroundMarkup.push(markup);
+        }
+    });
+
+    return `
+        ${backgroundMarkup.length ? `<div class="accessory-layer background-accessory-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;">${backgroundMarkup.join('')}</div>` : ''}
+        ${foregroundMarkup.length ? `<div class="accessory-layer foreground-accessory-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;">${foregroundMarkup.join('')}</div>` : ''}
+    `;
+}
+
+function buildAvatarWithAccessoriesMarkup(userColor = '#2563eb', userData = null) {
+    return `
+        ${getCircleFillingAvatarSvg(userColor, '100%')}
+        ${buildAccessoryLayersMarkup(userData?.accessories || userData)}
+    `;
+}
+
 const universalAccessorySystem = new UniversalAccessorySystem();
 
 if (document.readyState === 'loading') {
@@ -386,6 +443,8 @@ if (document.readyState === 'loading') {
 }
 
 window.universalAccessorySystem = universalAccessorySystem;
+window.buildAccessoryLayersMarkup = buildAccessoryLayersMarkup;
+window.buildAvatarWithAccessoriesMarkup = buildAvatarWithAccessoriesMarkup;
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = UniversalAccessorySystem;

@@ -33,12 +33,12 @@ async function performSearch() {
             if (user.avatar && user.avatar !== "/default-avatar.png") {
                 avatarContent = `<img src="${user.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
             } else {
-            avatarContent = getCircleFillingAvatarSvg(user.themeColor || '#2563eb', '100%');
+            avatarContent = buildAvatarWithAccessoriesMarkup(user.themeColor || '#2563eb', user);
             }
 
             resultsArea.innerHTML += `
                 <div class="${cardClass}">
-                    <div class="${iconClass}" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}" data-username="${user.username}" data-user='${JSON.stringify(user).replace(/'/g, "&apos;")}'>
+                    <div class="${iconClass} avatar-with-accessories" style="margin: 0 auto 15px; width: 60px; height: 60px; border-color: ${user.themeColor || 'var(--blue-primary)'}; position: relative; overflow: visible;" data-username="${user.username}" data-user='${JSON.stringify(user).replace(/'/g, "&apos;")}'>
                         ${avatarContent}
                     </div>
                     <h3 class="${nameClass}">${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}${star}</h3>
