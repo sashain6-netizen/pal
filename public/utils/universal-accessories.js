@@ -15,6 +15,8 @@ class UniversalAccessorySystem {
         if (this.isInitialized) return;
 
         try {
+            this.ensureSharedStyles();
+
             if (typeof window.ACCESSORY_LIBRARY === 'undefined') {
                 await this.loadAccessoryLibrary();
             } else {
@@ -31,6 +33,111 @@ class UniversalAccessorySystem {
         } catch (error) {
             console.error('Failed to initialize universal accessory system:', error);
         }
+    }
+
+    ensureSharedStyles() {
+        if (document.getElementById('universal-accessory-styles')) return;
+
+        const style = document.createElement('style');
+        style.id = 'universal-accessory-styles';
+        style.textContent = `
+            .avatar-with-accessories,
+            #avatar-container {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .avatar-with-accessories > .avatar-base-svg,
+            #avatar-container > .avatar-base-svg {
+                width: 100%;
+                height: 100%;
+                max-width: 100%;
+                max-height: 100%;
+                display: block;
+                position: relative;
+                z-index: 1;
+            }
+
+            .avatar-with-accessories > img,
+            #avatar-container > img {
+                position: relative;
+                z-index: 1;
+            }
+
+            .avatar-with-accessories > .accessory-layer,
+            #avatar-container > .accessory-layer {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+            }
+
+            .avatar-with-accessories > .foreground-accessory-layer,
+            #avatar-container > .foreground-accessory-layer {
+                z-index: 2;
+            }
+
+            .avatar-with-accessories .accessory-element,
+            #avatar-container .accessory-element {
+                position: absolute;
+                width: 66.6667%;
+                height: 66.6667%;
+                transform-origin: center;
+            }
+
+            .avatar-with-accessories .accessory-element svg,
+            #avatar-container .accessory-element svg {
+                width: 100%;
+                height: 100%;
+                display: block;
+                overflow: visible;
+            }
+
+            .avatar-with-accessories .accessory-element.hats,
+            #avatar-container .accessory-element.hats {
+                animation: universalHatFloat 3s ease-in-out infinite;
+            }
+
+            .avatar-with-accessories .accessory-element.glasses,
+            #avatar-container .accessory-element.glasses {
+                animation: universalGlassesShine 4s ease-in-out infinite;
+                transform: translate(-50%, -50%) scale(var(--scale, 1)) rotate(var(--rotation, 0deg));
+            }
+
+            .avatar-with-accessories .accessory-element.mouths,
+            #avatar-container .accessory-element.mouths {
+                animation: universalMouthPulse 2s ease-in-out infinite;
+            }
+
+            .avatar-with-accessories .accessory-element.face-accessories,
+            #avatar-container .accessory-element.face-accessories {
+                animation: universalFaceAccessoryWiggle 5s ease-in-out infinite;
+            }
+
+            @keyframes universalHatFloat {
+                0%, 100% { transform: translate(-50%, -50%) translateY(0px) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
+                50% { transform: translate(-50%, -50%) translateY(-2px) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
+            }
+
+            @keyframes universalGlassesShine {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.9; }
+            }
+
+            @keyframes universalMouthPulse {
+                0%, 100% { transform: translate(-50%, -50%) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
+                50% { transform: translate(-50%, -50%) scale(calc(var(--scale, 1) * 1.05)) rotate(var(--rotation, 0deg)); }
+            }
+
+            @keyframes universalFaceAccessoryWiggle {
+                0%, 100% { transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) scale(var(--scale, 1)); }
+                25% { transform: translate(-50%, -50%) rotate(calc(var(--rotation, 0deg) + 1deg)) scale(var(--scale, 1)); }
+                75% { transform: translate(-50%, -50%) rotate(calc(var(--rotation, 0deg) - 1deg)) scale(var(--scale, 1)); }
+            }
+        `;
+
+        document.head.appendChild(style);
     }
 
     async loadAccessoryLibrary() {
