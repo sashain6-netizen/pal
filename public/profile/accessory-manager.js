@@ -299,13 +299,21 @@ class AccessoryManager {
         element.innerHTML = accessory.svg;
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
+        
+        // Adjust hat position to be lower (matching universal system)
+        let yPos = defaultPos.y;
+        if (category === 'hats') {
+            yPos = Math.min(defaultPos.y + 8, 85); // Move hats down by 8%, max 85%
+        }
 
         const scale = defaultPos.scale;
 
         element.style.left = `${defaultPos.x}%`;
-        element.style.top = `${defaultPos.y}%`;
+        element.style.top = `${yPos}%`;
         element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg)`;
         element.style.opacity = defaultPos.opacity ?? 1;
+        element.style.width = '66.6667%';
+        element.style.height = '66.6667%';
 
         container.appendChild(element);
     }

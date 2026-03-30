@@ -565,23 +565,29 @@
 }
 
 .accessory-category {
-    margin-bottom: 20px;
+    margin-bottom: 28px;
+    background: linear-gradient(145deg, #fafbff 0%, #f5f8ff 100%);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(37, 99, 235, 0.06);
 }
 
 .accessory-category h4 {
-    margin: 0 0 12px 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--blue-deep);
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 6px;
+    margin: 0 0 16px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e40af;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(37, 99, 235, 0.08);
 }
 
 .accessory-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 10px;
-    margin-bottom: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
 }
 
 .accessory-item {
@@ -653,6 +659,8 @@
     position: relative;
     width: 80px;
     height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .avatar-with-accessories {
@@ -662,6 +670,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 #previewImage {
@@ -693,7 +703,7 @@
 }
 
 .accessory-element.hats {
-    animation: hatFloat 3s ease-in-out infinite;
+    animation: none;
 }
 
 .accessory-element.glasses {
