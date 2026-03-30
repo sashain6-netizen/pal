@@ -20,12 +20,7 @@ function renderUserAccessories(accessoriesData) {
 
 function renderAccessoryElement(container, accessory, category, accessoryKey) {
     const element = document.createElement('div');
-    element.className = 'accessory-element';
-
-    const animationClass = category.replace('_', '');
-    element.classList.add(animationClass);
-
-    element.innerHTML = accessory.svg;
+    element.className = `accessory-element ${category.replace('_', '-')}`; // Use proper CSS classes
 
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
 
@@ -33,6 +28,10 @@ function renderAccessoryElement(container, accessory, category, accessoryKey) {
     element.style.top = `${defaultPos.y}%`;
     element.style.transform = `translate(-50%, -50%) scale(${defaultPos.scale}) rotate(${defaultPos.rotation}deg)`;
     element.style.opacity = defaultPos.opacity;
+    element.style.pointerEvents = 'none';
+    element.style.position = 'absolute';
+
+    element.innerHTML = accessory.svg;
 
     container.appendChild(element);
 }

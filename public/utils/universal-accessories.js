@@ -143,7 +143,7 @@ class UniversalAccessorySystem {
                 return;
             }
 
-            if (avatarElement.querySelector('.accessory-layer')) return;
+            if (avatarElement.querySelector('.accessory-layer') || avatarElement.querySelector('#userAccessoryLayer')) return;
 
             const accessoryLayer = this.createAccessoryLayer(avatarElement);
 
@@ -175,6 +175,15 @@ class UniversalAccessorySystem {
                 } catch (e) {
                     console.warn('Failed to parse user data from parent element:', e);
                 }
+            }
+        }
+
+        // Also check if the avatar element itself has data-user attribute
+        if (!userData && avatarElement.dataset.user) {
+            try {
+                userData = JSON.parse(avatarElement.dataset.user || '{}');
+            } catch (e) {
+                console.warn('Failed to parse user data from avatar element:', e);
             }
         }
 
