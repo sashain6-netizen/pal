@@ -134,18 +134,25 @@ class UniversalAccessorySystem {
     }
 
     async applyAccessoriesToAvatar(avatarElement) {
+        console.log('Universal system applying accessories to:', avatarElement);
         if (!this.isInitialized || !this.accessoryLibrary) return;
 
         try {
             const userData = await this.extractUserData(avatarElement);
+            console.log('Extracted user data:', userData);
             
             if (!userData || !userData.accessories) {
+                console.log('No user data or accessories found for:', avatarElement);
                 return;
             }
 
-            if (avatarElement.querySelector('.accessory-layer') || avatarElement.querySelector('#userAccessoryLayer')) return;
+            if (avatarElement.querySelector('.accessory-layer') || avatarElement.querySelector('#userAccessoryLayer')) {
+                console.log('Accessory layer already exists, skipping:', avatarElement);
+                return;
+            }
 
             const accessoryLayer = this.createAccessoryLayer(avatarElement);
+            console.log('Created accessory layer:', accessoryLayer);
 
             this.renderAccessories(accessoryLayer, userData.accessories);
 
@@ -214,7 +221,7 @@ class UniversalAccessorySystem {
     }
 
     createAccessoryLayer(avatarElement) {
-        let accessoryLayer = avatarElement.querySelector('.accessory-layer');
+        let accessoryLayer = avatarElement.querySelector('.accessory-layer') || avatarElement.querySelector('#userAccessoryLayer');
         if (accessoryLayer) return accessoryLayer;
 
         accessoryLayer = document.createElement('div');
