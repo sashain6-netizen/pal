@@ -400,7 +400,7 @@ function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
     const isBackground = category === 'backgrounds';
     const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
-    const extraSize = isBackground ? 'width:120%;height:120%;' : 'width:100%;height:100%;';
+    const extraSize = isBackground ? 'width:120%;height:120%;' : 'width:66.6667%;height:66.6667%;';
     const normalizedSvg = normalizeAccessorySvgMarkup(accessory.svg, true);
 
     return `
