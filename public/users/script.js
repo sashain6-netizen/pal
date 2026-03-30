@@ -1,83 +1,3 @@
-function renderUserAccessories(accessoriesData) {
-    console.log('renderUserAccessories called with:', accessoriesData);
-    
-    const accessoryLayer = document.getElementById('userAccessoryLayer');
-    console.log('Accessory layer found:', !!accessoryLayer);
-    
-    if (!accessoryLayer || !accessoriesData) {
-        console.log('Early return - missing layer or data');
-        return;
-    }
-
-    accessoryLayer.innerHTML = '';
-
-    const accessories = accessoriesData.accessories || accessoriesData || {};
-    console.log('Processed accessories:', accessories);
-
-    // Wait for ACCESSORY_LIBRARY to be available
-    const tryRenderAccessories = () => {
-        console.log('Trying to render accessories, ACCESSORY_LIBRARY available:', !!window.ACCESSORY_LIBRARY);
-        
-        if (!window.ACCESSORY_LIBRARY) {
-            // If library isn't loaded yet, try again in 100ms
-            setTimeout(tryRenderAccessories, 100);
-            return;
-        }
-
-        let renderedCount = 0;
-        Object.keys(accessories).forEach(category => {
-            const accessoryKey = accessories[category];
-            console.log(`Processing ${category}: ${accessoryKey}`);
-
-            if (window.ACCESSORY_LIBRARY[category] && window.ACCESSORY_LIBRARY[category][accessoryKey]) {
-                const accessory = window.ACCESSORY_LIBRARY[category][accessoryKey];
-                if (accessory.svg) {
-                    renderAccessoryElement(accessoryLayer, accessory, category, accessoryKey);
-                    renderedCount++;
-                    console.log(`Rendered ${category}: ${accessoryKey}`);
-                }
-            } else {
-                console.log(`Accessory not found: ${category}:${accessoryKey}`);
-            }
-        });
-        
-        console.log(`Total accessories rendered: ${renderedCount}`);
-    };
-
-    tryRenderAccessories();
-}
-
-function renderAccessoryElement(container, accessory, category, accessoryKey) {
-    const element = document.createElement('div');
-    element.className = `accessory-element ${category.replace('_', '-')}`;
-    element.dataset.category = category;
-    element.dataset.accessoryKey = accessoryKey;
-
-    element.innerHTML = accessory.svg;
-
-    const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
-
-    const isBackground = category === 'backgrounds';
-    const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
-    const zIndex = isBackground ? 1 : 4;
-
-    element.style.cssText = `
-        position: absolute;
-        left: ${defaultPos.x}%;
-        top: ${defaultPos.y}%;
-        transform: translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);
-        opacity: ${defaultPos.opacity};
-        pointer-events: none;
-        z-index: ${zIndex};
-        width: ${isBackground ? '120%' : 'auto'};
-        height: ${isBackground ? '120%' : 'auto'};
-        --scale: ${scale};
-        --rotation: ${defaultPos.rotation}deg;
-    `;
-
-    container.appendChild(element);
-}
-
 function getColoredSvg(color, size = null) {
     const svgSize = size ? size : '100%';
     return getCircleFillingAvatarSvg(color, svgSize);
@@ -467,10 +387,6 @@ async function loadProfile() {
                     avatarImg.style.display = 'block';
                     avatarImg.src = data.avatar;
                 }
-                const accessoryLayer = document.getElementById('userAccessoryLayer');
-                if (accessoryLayer) {
-                    accessoryLayer.innerHTML = '';
-                }
             } else {
                 if (avatarImg) avatarImg.style.display = 'none';
                 const avatarWithAccessories = document.getElementById('userAvatarWithAccessories');
@@ -479,20 +395,21 @@ async function loadProfile() {
                     const avatarSize = isMobile ? 120 : 150;
                     const svgSize = '100%';
                     avatarWithAccessories.innerHTML = `
-                        <div style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;" data-user='${JSON.stringify(data || {}).replace(/'/g, "&apos;")}'>
+                        <div class="avatar-with-accessories" style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;" data-user='${JSON.stringify(data || {}).replace(/'/g, "&apos;")}' data-username="${data.username || ''}">
                             ${getColoredSvg(data.themeColor || "#2563eb", svgSize)}
                         </div>
-                        <div class="accessory-layer" id="userAccessoryLayer"></div>
                     `;
                 }
             }
         }
 
-        if (data.accessories) {
-            // Small delay to ensure DOM is fully updated after avatar recreation
+        if (window.universalAccessorySystem && window.universalAccessorySystem.isInitialized) {
             setTimeout(() => {
-                renderUserAccessories(data.accessories);
-            }, 50);
+                const avatarElement = document.querySelector('.avatar-with-accessories[data-username]');
+                if (avatarElement) {
+                    window.universalAccessorySystem.applyAccessoriesToAvatar(avatarElement);
+                }
+            }, 200);
         }
 
         const profileCard = document.querySelector('.profile-card');

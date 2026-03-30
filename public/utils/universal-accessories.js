@@ -139,9 +139,12 @@ class UniversalAccessorySystem {
         if (!this.isInitialized || !this.accessoryLibrary) return;
 
         try {
-            // Skip avatars that have #userAccessoryLayer - these are handled by the user page's own system
-            if (avatarElement.querySelector('#userAccessoryLayer')) {
-                console.log('Avatar has #userAccessoryLayer, skipping universal system:', avatarElement);
+            const isUsersPageAvatar = avatarElement.closest('#userAvatarWithAccessories') ||
+                                     avatarElement.classList.contains('avatar-with-accessories') &&
+                                     avatarElement.dataset.username;
+
+            if (avatarElement.querySelector('#userAccessoryLayer') && !isUsersPageAvatar) {
+                console.log('Avatar has #userAccessoryLayer and is not users page avatar, skipping universal system:', avatarElement);
                 return;
             }
 
