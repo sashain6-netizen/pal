@@ -71,6 +71,8 @@ function renderAccessoryElement(container, accessory, category, accessoryKey) {
         z-index: ${zIndex};
         width: ${isBackground ? '120%' : 'auto'};
         height: ${isBackground ? '120%' : 'auto'};
+        --scale: ${scale};
+        --rotation: ${defaultPos.rotation}deg;
     `;
 
     container.appendChild(element);

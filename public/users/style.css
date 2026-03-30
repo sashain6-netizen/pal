@@ -53,6 +53,8 @@
 
 .accessory-element.hat {
     animation: hatFloat 3s ease-in-out infinite;
+    --scale: 1;
+    --rotation: 0deg;
 }
 
 .accessory-element.glasses {
@@ -61,10 +63,14 @@
 
 .accessory-element.mouth {
     animation: mouthPulse 2s ease-in-out infinite;
+    --scale: 1;
+    --rotation: 0deg;
 }
 
 .accessory-element.face-accessory {
     animation: faceAccessoryWiggle 5s ease-in-out infinite;
+    --scale: 1;
+    --rotation: 0deg;
 }
 
 .accessory-element.background {
@@ -72,8 +78,8 @@
 }
 
 @keyframes hatFloat {
-    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-    50% { transform: translate(-50%, -50%) translateY(-2px); }
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
+    50% { transform: translate(-50%, -50%) translateY(-2px) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
 }
 
 @keyframes glassesShine {
@@ -81,15 +87,20 @@
     50% { opacity: 0.9; }
 }
 
+.accessory-element.glasses {
+    animation: glassesShine 4s ease-in-out infinite;
+    transform: translate(-50%, -50%) scale(var(--scale, 1)) rotate(var(--rotation, 0deg));
+}
+
 @keyframes mouthPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.05); }
+    0%, 100% { transform: translate(-50%, -50%) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
+    50% { transform: translate(-50%, -50%) scale(calc(var(--scale, 1) * 1.05)) rotate(var(--rotation, 0deg)); }
 }
 
 @keyframes faceAccessoryWiggle {
-    0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-    25% { transform: translate(-50%, -50%) rotate(1deg); }
-    75% { transform: translate(-50%, -50%) rotate(-1deg); }
+    0%, 100% { transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) scale(var(--scale, 1)); }
+    25% { transform: translate(-50%, -50%) rotate(calc(var(--rotation, 0deg) + 1deg)) scale(var(--scale, 1)); }
+    75% { transform: translate(-50%, -50%) rotate(calc(var(--rotation, 0deg) - 1deg)) scale(var(--scale, 1)); }
 }
 
 @keyframes backgroundTwinkle {
