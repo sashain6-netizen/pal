@@ -30,15 +30,17 @@ async function performSearch() {
             const nameClass = user.isPremium ? "premium-user-text" : "";
 
             let avatarContent;
+            let avatarClass = iconClass;
             if (user.avatar && user.avatar !== "/default-avatar.png") {
                 avatarContent = `<img src="${user.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
             } else {
-            avatarContent = buildAvatarWithAccessoriesMarkup(user.themeColor || '#2563eb', user);
+                avatarContent = buildAvatarWithAccessoriesMarkup(user.themeColor || '#2563eb', user);
+                avatarClass += " avatar-with-accessories";
             }
 
             resultsArea.innerHTML += `
                 <div class="${cardClass}">
-                    <div class="${iconClass} avatar-with-accessories" style="border-color: ${user.themeColor || 'var(--blue-primary)'};" data-username="${user.username}" data-user='${JSON.stringify(user).replace(/'/g, "&apos;")}'>
+                    <div class="${avatarClass}" style="border-color: ${user.themeColor || 'var(--blue-primary)'};" data-username="${user.username}" data-user='${JSON.stringify(user).replace(/'/g, "&apos;")}'>
                         ${avatarContent}
                     </div>
                     <h3 class="${nameClass}">${user.prefix ? '['+user.prefix+'] ' : ''}${user.displayName}${star}</h3>

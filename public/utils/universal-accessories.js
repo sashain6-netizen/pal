@@ -485,7 +485,6 @@ class UniversalAccessorySystem {
         const isPureImgElement = avatarElement.tagName === 'IMG' && !avatarElement.classList.contains('avatar-with-accessories');
         
         if (hasCustomImage || isPureImgElement) {
-            console.log('User has custom profile image or is pure img element, skipping accessories');
             return;
         }
 
@@ -503,18 +502,28 @@ class UniversalAccessorySystem {
 
     hasCustomProfileImage(avatarElement) {
         // Check if it's an img element with a custom src
-        const imgElement = avatarElement.querySelector('img') || avatarElement.tagName === 'IMG' ? avatarElement : null;
+        const imgElement = avatarElement.querySelector('img') || (avatarElement.tagName === 'IMG' ? avatarElement : null);
         
         if (imgElement) {
             const src = imgElement.src || imgElement.getAttribute('src');
             // If src is not the default avatar and not empty, it's a custom image
-            return src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png';
+            if (src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png') {
+                return true;
+            }
         }
         
         // Also check if the avatar element itself has a custom src (for search avatars)
         if (avatarElement.tagName === 'IMG') {
             const src = avatarElement.src || avatarElement.getAttribute('src');
-            return src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png';
+            if (src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png') {
+                return true;
+            }
+        }
+        
+        // Check if the innerHTML contains an img with custom src (for navbar)
+        const innerHTML = avatarElement.innerHTML || '';
+        if (innerHTML.includes('<img') && !innerHTML.includes('/default-avatar.png')) {
+            return true;
         }
         
         return false;
