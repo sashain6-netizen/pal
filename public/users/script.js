@@ -1,29 +1,47 @@
 function renderUserAccessories(accessoriesData) {
+    console.log('renderUserAccessories called with:', accessoriesData);
+    
     const accessoryLayer = document.getElementById('userAccessoryLayer');
-    if (!accessoryLayer || !accessoriesData) return;
+    console.log('Accessory layer found:', !!accessoryLayer);
+    
+    if (!accessoryLayer || !accessoriesData) {
+        console.log('Early return - missing layer or data');
+        return;
+    }
 
     accessoryLayer.innerHTML = '';
 
     const accessories = accessoriesData.accessories || accessoriesData || {};
+    console.log('Processed accessories:', accessories);
 
     // Wait for ACCESSORY_LIBRARY to be available
     const tryRenderAccessories = () => {
+        console.log('Trying to render accessories, ACCESSORY_LIBRARY available:', !!window.ACCESSORY_LIBRARY);
+        
         if (!window.ACCESSORY_LIBRARY) {
             // If library isn't loaded yet, try again in 100ms
             setTimeout(tryRenderAccessories, 100);
             return;
         }
 
+        let renderedCount = 0;
         Object.keys(accessories).forEach(category => {
             const accessoryKey = accessories[category];
+            console.log(`Processing ${category}: ${accessoryKey}`);
 
             if (window.ACCESSORY_LIBRARY[category] && window.ACCESSORY_LIBRARY[category][accessoryKey]) {
                 const accessory = window.ACCESSORY_LIBRARY[category][accessoryKey];
                 if (accessory.svg) {
                     renderAccessoryElement(accessoryLayer, accessory, category, accessoryKey);
+                    renderedCount++;
+                    console.log(`Rendered ${category}: ${accessoryKey}`);
                 }
+            } else {
+                console.log(`Accessory not found: ${category}:${accessoryKey}`);
             }
         });
+        
+        console.log(`Total accessories rendered: ${renderedCount}`);
     };
 
     tryRenderAccessories();
@@ -469,7 +487,10 @@ async function loadProfile() {
         }
 
         if (data.accessories) {
-            renderUserAccessories(data.accessories);
+            // Small delay to ensure DOM is fully updated after avatar recreation
+            setTimeout(() => {
+                renderUserAccessories(data.accessories);
+            }, 50);
         }
 
         const profileCard = document.querySelector('.profile-card');

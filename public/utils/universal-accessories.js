@@ -139,6 +139,12 @@ class UniversalAccessorySystem {
         if (!this.isInitialized || !this.accessoryLibrary) return;
 
         try {
+            // Skip avatars that have #userAccessoryLayer - these are handled by the user page's own system
+            if (avatarElement.querySelector('#userAccessoryLayer')) {
+                console.log('Avatar has #userAccessoryLayer, skipping universal system:', avatarElement);
+                return;
+            }
+
             const userData = await this.extractUserData(avatarElement);
             console.log('Extracted user data:', userData);
 
@@ -147,7 +153,7 @@ class UniversalAccessorySystem {
                 return;
             }
 
-            if (avatarElement.querySelector('.accessory-layer') || avatarElement.querySelector('#userAccessoryLayer')) {
+            if (avatarElement.querySelector('.accessory-layer')) {
                 console.log('Accessory layer already exists, skipping:', avatarElement);
                 return;
             }
