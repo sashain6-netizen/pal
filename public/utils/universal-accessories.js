@@ -315,26 +315,17 @@ class UniversalAccessorySystem {
 
         const isBackground = category === 'backgrounds';
         const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
-        const zIndex = isBackground ? 0 : 2;
+        element.style.position = 'absolute';
+        element.style.left = `${defaultPos.x}%`;
+        element.style.top = `${defaultPos.y}%`;
+        element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg)`;
+        element.style.opacity = defaultPos.opacity ?? 1;
+        element.style.pointerEvents = 'none';
+        element.style.zIndex = isBackground ? '0' : '2';
 
-        element.style.cssText = `
-            position: absolute;
-            left: ${defaultPos.x}%;
-            top: ${defaultPos.y}%;
-            transform: translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);
-            opacity: ${defaultPos.opacity};
-            pointer-events: none;
-            z-index: ${zIndex};
-            width: 100%;
-            height: 100%;
-        `;
-
-        const svg = element.querySelector('svg');
-        if (svg) {
-            svg.style.width = '100%';
-            svg.style.height = '100%';
-            svg.style.display = 'block';
-            svg.style.overflow = 'visible';
+        if (isBackground) {
+            element.style.width = '120%';
+            element.style.height = '120%';
         }
 
         container.appendChild(element);
