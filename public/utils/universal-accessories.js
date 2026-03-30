@@ -481,8 +481,11 @@ class UniversalAccessorySystem {
         // Check if avatar has a custom profile image (not default avatar)
         const hasCustomImage = this.hasCustomProfileImage(avatarElement);
         
-        if (hasCustomImage) {
-            console.log('User has custom profile image, skipping accessories');
+        // Also exclude pure img elements (like search avatars with custom images)
+        const isPureImgElement = avatarElement.tagName === 'IMG' && !avatarElement.classList.contains('avatar-with-accessories');
+        
+        if (hasCustomImage || isPureImgElement) {
+            console.log('User has custom profile image or is pure img element, skipping accessories');
             return;
         }
 
@@ -505,6 +508,12 @@ class UniversalAccessorySystem {
         if (imgElement) {
             const src = imgElement.src || imgElement.getAttribute('src');
             // If src is not the default avatar and not empty, it's a custom image
+            return src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png';
+        }
+        
+        // Also check if the avatar element itself has a custom src (for search avatars)
+        if (avatarElement.tagName === 'IMG') {
+            const src = avatarElement.src || avatarElement.getAttribute('src');
             return src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png';
         }
         
