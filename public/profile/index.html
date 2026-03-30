@@ -27,77 +27,18 @@
                 <input type="text" id="displayName" placeholder="Your name">
             </div>
 
-            <div class="dropdown-section">
-                <div class="dropdown-header" onclick="toggleDropdown('profileDropdown')">
+            <div class="menu-section">
+                <button type="button" class="menu-button" onclick="openMenu('profileMenu')">
                     <span>📷 Profile Picture</span>
-                    <span class="dropdown-arrow" id="profileDropdown-arrow">▼</span>
-                </div>
-                <div class="dropdown-content" id="profileDropdown" style="display: none;">
-                    <div class="input-group" id="avatarUrlGroup">
-                        <label for="avatarUrl">Profile Picture URL</label>
-                        <input type="text" id="avatarUrl" placeholder="https://example.com/your-image.png">
-                        <div class="avatar-preview" id="avatarPreview">
-                            <div class="avatar-preview-container">
-                                <div class="avatar-with-accessories" id="avatarWithAccessories">
-                                    <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
-                                    <div class="accessory-layer" id="accessoryLayer"></div>
-                                </div>
-                            </div>
-                            <div class="preview-status" id="previewStatus"></div>
-                        </div>
-                        <small style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">
-                            Enter any image URL from the web. Supports JPG, PNG, GIF, WebP, BMP, SVG, AVIF, ICO, TIFF formats. Works with any image hosting service or direct image links.
-                        </small>
-                    </div>
-                </div>
+                    <span class="menu-arrow">→</span>
+                </button>
             </div>
 
-            <div class="dropdown-section">
-                <div class="dropdown-header" onclick="toggleDropdown('accessoriesDropdown')">
+            <div class="menu-section">
+                <button type="button" class="menu-button" onclick="openMenu('accessoriesMenu')">
                     <span>🎨 Avatar Accessories</span>
-                    <span class="dropdown-arrow" id="accessoriesDropdown-arrow">▼</span>
-                </div>
-                <div class="dropdown-content" id="accessoriesDropdown" style="display: none;">
-                    <div class="accessory-economy-panel">
-                        <div class="accessory-balance-card">
-                            <span class="accessory-balance-label">Accessory Budget</span>
-                            <strong id="accessoryCurrencyBalance">0 coins</strong>
-                            <span id="accessoryXpBalance">0 XP</span>
-                        </div>
-                        <div class="accessory-detail-card">
-                            <div class="accessory-detail-topline" id="accessory-detail-rarity">Starter • hats</div>
-                            <h3 id="accessory-detail-title">Paper Hat</h3>
-                            <p id="accessory-detail-helper">Select an item to equip it, or buy rarer pieces with your earned currency.</p>
-                            <div class="accessory-detail-footer">
-                                <span id="accessory-current-selection">Wearing: Natural</span>
-                                <button type="button" id="accessory-action-button" class="accessory-action-button">Equip Now</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accessories-container">
-                        <div class="accessory-category">
-                            <h4>🎩 Hats</h4>
-                            <div class="accessory-grid" id="hats-grid"></div>
-                        </div>
-
-                        <div class="accessory-category">
-                            <h4>🕶️ Glasses</h4>
-                            <div class="accessory-grid" id="glasses-grid"></div>
-                        </div>
-
-                        <div class="accessory-category">
-                            <h4>😊 Mouth</h4>
-                            <div class="accessory-grid" id="mouths-grid"></div>
-                        </div>
-
-                        <div class="accessory-category">
-                            <h4>✨ Face Accessories</h4>
-                            <div class="accessory-grid" id="face-accessories-grid"></div>
-                        </div>
-
-                    </div>
-
-                                    </div>
+                    <span class="menu-arrow">→</span>
+                </button>
             </div>
 
             <div class="input-group">
@@ -146,6 +87,81 @@
         <div class="profile-actions" style="margin-top: 20px;">
             <button type="submit" form="profileForm" class="auth-btn">Save Changes</button>
             <a href="/" class="secondary-link" style="display: block; text-align: center; margin-top: 15px;">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div id="profileMenu" class="menu-modal">
+        <div class="menu-modal-content">
+            <div class="menu-modal-header">
+                <h2>📷 Profile Picture</h2>
+                <button type="button" class="menu-modal-close" onclick="closeMenu('profileMenu')">×</button>
+            </div>
+            <div class="menu-modal-body">
+                <div class="input-group" id="avatarUrlGroup">
+                    <label for="avatarUrl">Profile Picture URL</label>
+                    <input type="text" id="avatarUrl" placeholder="https://example.com/your-image.png">
+                    <div class="avatar-preview" id="avatarPreview">
+                        <div class="avatar-preview-container">
+                            <div class="avatar-with-accessories" id="avatarWithAccessories">
+                                <img id="previewImage" src="/default-avatar.png" alt="Profile preview">
+                                <div class="accessory-layer" id="accessoryLayer"></div>
+                            </div>
+                        </div>
+                        <div class="preview-status" id="previewStatus"></div>
+                    </div>
+                    <small style="color: #64748b; font-size: 0.875rem; margin-top: 4px; display: block;">
+                        Enter any image URL from the web. Supports JPG, PNG, GIF, WebP, BMP, SVG, AVIF, ICO, TIFF formats. Works with any image hosting service or direct image links.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="accessoriesMenu" class="menu-modal">
+        <div class="menu-modal-content">
+            <div class="menu-modal-header">
+                <h2>🎨 Avatar Accessories</h2>
+                <button type="button" class="menu-modal-close" onclick="closeMenu('accessoriesMenu')">×</button>
+            </div>
+            <div class="menu-modal-body">
+                <div class="accessory-economy-panel">
+                    <div class="accessory-balance-card">
+                        <span class="accessory-balance-label">Accessory Budget</span>
+                        <strong id="accessoryCurrencyBalance">0 coins</strong>
+                        <span id="accessoryXpBalance">0 XP</span>
+                    </div>
+                    <div class="accessory-detail-card">
+                        <div class="accessory-detail-topline" id="accessory-detail-rarity">Starter • hats</div>
+                        <h3 id="accessory-detail-title">Paper Hat</h3>
+                        <p id="accessory-detail-helper">Select an item to equip it, or buy rarer pieces with your earned currency.</p>
+                        <div class="accessory-detail-footer">
+                            <span id="accessory-current-selection">Wearing: Natural</span>
+                            <button type="button" id="accessory-action-button" class="accessory-action-button">Equip Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="accessories-container">
+                    <div class="accessory-category">
+                        <h4>🎩 Hats</h4>
+                        <div class="accessory-grid" id="hats-grid"></div>
+                    </div>
+
+                    <div class="accessory-category">
+                        <h4>🕶️ Glasses</h4>
+                        <div class="accessory-grid" id="glasses-grid"></div>
+                    </div>
+
+                    <div class="accessory-category">
+                        <h4>😊 Mouth</h4>
+                        <div class="accessory-grid" id="mouths-grid"></div>
+                    </div>
+
+                    <div class="accessory-category">
+                        <h4>✨ Face Accessories</h4>
+                        <div class="accessory-grid" id="face-accessories-grid"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

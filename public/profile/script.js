@@ -117,16 +117,37 @@ async function loadProfile() {
     }
 }
 
-function toggleDropdown(dropdownId) {
-    const dropdown = document.getElementById(dropdownId);
-    const arrow = document.getElementById(dropdownId + '-arrow');
-
-    if (dropdown && arrow) {
-        const isHidden = dropdown.style.display === 'none';
-        dropdown.style.display = isHidden ? 'block' : 'none';
-        arrow.textContent = isHidden ? '▲' : '▼';
+function openMenu(menuId) {
+    const modal = document.getElementById(menuId);
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
 }
+
+function closeMenu(menuId) {
+    const modal = document.getElementById(menuId);
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('menu-modal')) {
+        const menuId = e.target.id;
+        closeMenu(menuId);
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const openModal = document.querySelector('.menu-modal.show');
+        if (openModal) {
+            closeMenu(openModal.id);
+        }
+    }
+});
 
 document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();

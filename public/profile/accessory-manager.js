@@ -299,15 +299,14 @@ class AccessoryManager {
         element.innerHTML = accessory.svg;
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
-        
-        // Adjust positioning for different accessory types (matching universal system)
+
         let yPos = defaultPos.y;
         if (category === 'hats') {
-            yPos = Math.min(defaultPos.y + 8, 85); // Move hats down by 8%, max 85%
+            yPos = Math.min(defaultPos.y + 8, 85);
         } else if (category === 'glasses') {
-            yPos = Math.min(defaultPos.y + 5, 75); // Move glasses down by 5%, max 75%
+            yPos = Math.min(defaultPos.y + 5, 75);
         } else if (category === 'face_accessories') {
-            yPos = Math.min(defaultPos.y + 6, 80); // Move face accessories down by 6%, max 80%
+            yPos = Math.min(defaultPos.y + 6, 80);
         }
 
         const scale = defaultPos.scale;
