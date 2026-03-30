@@ -13,6 +13,23 @@ class AccessoryManager {
         this.updateSelectionUI();
         this.updatePreview();
         this.renderActiveAccessoryDetails();
+        this.updateCategoryCounts();
+    }
+
+    setActiveCategory(category) {
+        this.activeCategory = category;
+        this.activeAccessoryKey = this.accessories[category] || 'none';
+        this.renderActiveAccessoryDetails();
+    }
+
+    updateCategoryCounts() {
+        Object.keys(ACCESSORY_LIBRARY).forEach(category => {
+            const count = Object.keys(ACCESSORY_LIBRARY[category]).length;
+            const countElement = document.getElementById(`${category.replace('_', '-')}-count`);
+            if (countElement) {
+                countElement.textContent = count;
+            }
+        });
     }
 
     normalizeOwnedAccessories(data) {
@@ -89,6 +106,7 @@ class AccessoryManager {
         this.updateSelectionUI();
         this.updatePreview();
         this.renderActiveAccessoryDetails();
+        this.updateCategoryCounts();
     }
 
     setOwnershipData({ ownedAccessories, currency, xp }) {
@@ -106,6 +124,15 @@ class AccessoryManager {
     handleAccessoryClick(category, accessoryKey) {
         this.activeCategory = category;
         this.activeAccessoryKey = accessoryKey;
+
+        // Switch to the appropriate tab if not already active
+        const activeTab = document.querySelector('.accessory-type-tab.active');
+        if (!activeTab || activeTab.dataset.category !== category) {
+            // Use the global switchAccessoryCategory function
+            if (typeof switchAccessoryCategory === 'function') {
+                switchAccessoryCategory(category);
+            }
+        }
 
         if (this.isOwned(category, accessoryKey)) {
             this.accessories[category] = accessoryKey;

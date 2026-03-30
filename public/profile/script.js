@@ -264,6 +264,47 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
 
 document.addEventListener('DOMContentLoaded', loadProfile);
 
+// Accessory Category Navigation
+function switchAccessoryCategory(category) {
+    // Update tab states
+    document.querySelectorAll('.accessory-type-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-category="${category}"]`).classList.add('active');
+
+    // Update category visibility
+    document.querySelectorAll('.accessory-category').forEach(cat => {
+        cat.classList.remove('active');
+    });
+    document.getElementById(`category-${category}`).classList.add('active');
+
+    // Update accessory manager active category
+    if (window.accessoryManager) {
+        window.accessoryManager.setActiveCategory(category);
+    }
+}
+
+// Keyboard navigation for accessory tabs
+document.addEventListener('keydown', (e) => {
+    // Only handle when accessories menu is open
+    const accessoriesMenu = document.getElementById('accessoriesMenu');
+    if (!accessoriesMenu || !accessoriesMenu.classList.contains('show')) return;
+
+    const tabs = Array.from(document.querySelectorAll('.accessory-type-tab'));
+    const activeTab = document.querySelector('.accessory-type-tab.active');
+    const activeIndex = tabs.indexOf(activeTab);
+
+    if (e.key === 'ArrowLeft' && activeIndex > 0) {
+        e.preventDefault();
+        const prevCategory = tabs[activeIndex - 1].dataset.category;
+        switchAccessoryCategory(prevCategory);
+    } else if (e.key === 'ArrowRight' && activeIndex < tabs.length - 1) {
+        e.preventDefault();
+        const nextCategory = tabs[activeIndex + 1].dataset.category;
+        switchAccessoryCategory(nextCategory);
+    }
+});
+
 let currentAvatarUrl = "";
 let previewTimeout = null;
 

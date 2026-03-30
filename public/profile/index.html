@@ -140,24 +140,61 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Accessory Type Navigation -->
+                <div class="accessory-type-nav">
+                    <button class="accessory-type-tab active" data-category="hats" onclick="switchAccessoryCategory('hats')">
+                        <span class="tab-icon">🎩</span>
+                        <span class="tab-label">Hats</span>
+                        <span class="tab-count" id="hats-count">0</span>
+                    </button>
+                    <button class="accessory-type-tab" data-category="glasses" onclick="switchAccessoryCategory('glasses')">
+                        <span class="tab-icon">🕶️</span>
+                        <span class="tab-label">Glasses</span>
+                        <span class="tab-count" id="glasses-count">0</span>
+                    </button>
+                    <button class="accessory-type-tab" data-category="mouths" onclick="switchAccessoryCategory('mouths')">
+                        <span class="tab-icon">😊</span>
+                        <span class="tab-label">Mouth</span>
+                        <span class="tab-count" id="mouths-count">0</span>
+                    </button>
+                    <button class="accessory-type-tab" data-category="face_accessories" onclick="switchAccessoryCategory('face_accessories')">
+                        <span class="tab-icon">✨</span>
+                        <span class="tab-label">Face</span>
+                        <span class="tab-count" id="face-accessories-count">0</span>
+                    </button>
+                </div>
+
                 <div class="accessories-container">
-                    <div class="accessory-category">
-                        <h4>🎩 Hats</h4>
+                    <div class="accessory-category active" id="category-hats">
+                        <div class="category-header">
+                            <h4>🎩 Hats</h4>
+                            <p class="category-description">Headwear and hats to top off your look</p>
+                        </div>
                         <div class="accessory-grid" id="hats-grid"></div>
                     </div>
 
-                    <div class="accessory-category">
-                        <h4>🕶️ Glasses</h4>
+                    <div class="accessory-category" id="category-glasses">
+                        <div class="category-header">
+                            <h4>🕶️ Glasses</h4>
+                            <p class="category-description">Eyewear and glasses for different styles</p>
+                        </div>
                         <div class="accessory-grid" id="glasses-grid"></div>
                     </div>
 
-                    <div class="accessory-category">
-                        <h4>😊 Mouth</h4>
+                    <div class="accessory-category" id="category-mouths">
+                        <div class="category-header">
+                            <h4>😊 Mouth</h4>
+                            <p class="category-description">Expressions and mouth accessories</p>
+                        </div>
                         <div class="accessory-grid" id="mouths-grid"></div>
                     </div>
 
-                    <div class="accessory-category">
-                        <h4>✨ Face Accessories</h4>
+                    <div class="accessory-category" id="category-face_accessories">
+                        <div class="category-header">
+                            <h4>✨ Face Accessories</h4>
+                            <p class="category-description">Extra details and face decorations</p>
+                        </div>
                         <div class="accessory-grid" id="face-accessories-grid"></div>
                     </div>
                 </div>
