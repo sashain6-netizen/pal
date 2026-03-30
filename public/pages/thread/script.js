@@ -45,6 +45,7 @@ async function loadThread(append = false) {
         const postsHTML = (data.posts || []).map(post => {
         const baseThemeColor = post.themeColor || "#2563eb";
         const forumColor = post.forumColor || baseThemeColor;
+        const avatarColor = baseThemeColor || forumColor;
         const glowAlpha = (post.premiumGlowAlpha ?? 0.8);
 
         const animType = (post.postAnimation || 'none').toLowerCase();
@@ -70,7 +71,7 @@ async function loadThread(append = false) {
         data-post-id="${post.id}">
 
         ${divineExtras} <span class="rank-tag" style="background: ${baseThemeColor}">${post.rank}</span>
-                        ${generateAvatar(post.avatar, forumColor, post.username, post)}
+                        ${generateAvatar(post.avatar, avatarColor, post.username, post)}
 
         <div class="post-body-inline">
             <span class="author-area">

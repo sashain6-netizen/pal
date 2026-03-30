@@ -76,7 +76,7 @@ async function loadPublicThreads(append = false) {
                 </div>
                 <div class="meta-info" onclick="location.href='/pages/thread?id=${t.id}'">
                     <div class="thread-user-info">
-                        ${generateAvatar(t.avatar, t.forumColor || '#2563eb', t.creator_username, t)}
+                        ${generateAvatar(t.avatar, t.themeColor || t.forumColor || '#2563eb', t.creator_username, t)}
                         <div class="thread-user-details">
                             By <span class="user-mention ${t.isPremium ? 'premium-user-text' : ''}"
                                 ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
@@ -271,7 +271,7 @@ async function handleSearch() {
                         </div>
                         <div class="search-meta">
                             <div class="search-user-info">
-                                ${generateSearchAvatar(t.avatar, t.forumColor || '#2563eb', t.creator_username, t)}
+                                ${generateSearchAvatar(t.avatar, t.themeColor || t.forumColor || '#2563eb', t.creator_username, t)}
                                 <span class="${t.isPremium ? 'premium-user-text' : ''}"
                                     ${t.isPremium ? `style="--premium-forum-color:${t.forumColor || '#b8860b'}; --premium-glow-alpha:${t.premiumGlowAlpha ?? 0.8}; --premium-glow-color:${t.forumColor || '#ffd700'};"` : ''}>
                                     @${t.creator_username} ${t.isPremium ? '⭐' : ''}
