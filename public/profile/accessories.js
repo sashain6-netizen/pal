@@ -121,8 +121,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Phoenix Crown',
             rarity: 'Elite',
             description: 'Flaming crown that rises from ashes.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 75000,
+            xpRequired: 12000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -142,8 +142,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Dragon Helm',
             rarity: 'Elite',
             description: 'Ancient dragon-scale helmet.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 80000,
+            xpRequired: 13000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -163,8 +163,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cosmic Turban',
             rarity: 'Elite',
             description: 'Mystic turban with celestial patterns.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 78000,
+            xpRequired: 12500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -184,8 +184,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Neon Mohawk',
             rarity: 'Elite',
             description: 'Electric mohawk that pulses with energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 72000,
+            xpRequired: 11500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -205,8 +205,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Crystal Tiara',
             rarity: 'Elite',
             description: 'Elegant tiara with rainbow crystals.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 76000,
+            xpRequired: 12000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -228,8 +228,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Samurai Helmet',
             rarity: 'Elite',
             description: 'Traditional samurai kabuto with crescent moon.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 82000,
+            xpRequired: 13500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M25 40 C30 25 40 18 50 18 C60 18 70 25 75 40 L75 50 C65 54 35 54 25 50 Z" fill="#424242" stroke="#212121" stroke-width="2"/>
@@ -243,8 +243,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Viking Horn Helmet',
             rarity: 'Elite',
             description: 'Mighty Viking helmet with ornate horns.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 79000,
+            xpRequired: 13000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15 35 C20 30 25 32 30 38 L35 45 L65 45 L70 38 C75 32 80 30 85 35 L80 50 C70 54 30 54 20 50 Z" fill="#8b7355" stroke="#5d4e37" stroke-width="2"/>
@@ -257,8 +257,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Wizard Hat',
             rarity: 'Elite',
             description: 'Mystical pointed hat with stars.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 77000,
+            xpRequired: 12500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -279,8 +279,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Classic Fedora',
             rarity: 'Elite',
             description: 'Timeless fedora with silk band.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 68000,
+            xpRequired: 11000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 40 C25 28 38 22 50 22 C62 22 75 28 80 40 L78 44 C70 40 30 40 22 44 Z" fill="#8b4513" stroke="#654321" stroke-width="2"/>
@@ -293,8 +293,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Space Helmet',
             rarity: 'Elite',
             description: 'Futuristic space helmet with visor.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 85000,
+            xpRequired: 14000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -314,8 +314,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Tribal Mask',
             rarity: 'Elite',
             description: 'Ancient tribal mask with spiritual power.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 71000,
+            xpRequired: 11500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M25 35 C30 25 40 20 50 20 C60 20 70 25 75 35 L75 45 C65 50 35 50 25 45 Z" fill="#8d6e63" stroke="#5d4037" stroke-width="2"/>
@@ -330,8 +330,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Steampunk Goggles',
             rarity: 'Elite',
             description: 'Victorian-era goggles with brass details.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 73000,
+            xpRequired: 12000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="37" cy="35" r="8" fill="#8b7355" stroke="#654321" stroke-width="2"/>
@@ -347,8 +347,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Crown of Thorns',
             rarity: 'Elite',
             description: 'Dark crown with menacing thorns.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 74000,
+            xpRequired: 12000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M30 40 L35 25 L40 35 L45 20 L50 35 L55 20 L60 35 L65 25 L70 40 L68 48 H32 Z" fill="#4a4a4a" stroke="#1a1a1a" stroke-width="2"/>
@@ -361,8 +361,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Golden Halo',
             rarity: 'Elite',
             description: 'Divine golden halo that glows.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 88000,
+            xpRequired: 14500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -383,8 +383,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Devil Horns',
             rarity: 'Elite',
             description: 'Menacing devil horns with fire.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 75000,
+            xpRequired: 12500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -403,8 +403,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Angel Wings',
             rarity: 'Elite',
             description: 'Pure white angel wings.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 86000,
+            xpRequired: 14000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 30 C15 20 10 15 15 25 C20 35 25 40 30 35 L40 30 Z" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
@@ -417,8 +417,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Pirate Bandana',
             rarity: 'Elite',
             description: 'Rebellious pirate bandana with skull.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 69000,
+            xpRequired: 11000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M25 35 C30 25 40 20 50 20 C60 20 70 25 75 35 L75 42 C65 46 35 46 25 42 Z" fill="#ff0000" stroke="#8b0000" stroke-width="2"/>
@@ -433,8 +433,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Chef Hat',
             rarity: 'Elite',
             description: 'Professional chef toque.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 67000,
+            xpRequired: 10500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M35 25 C35 15 40 10 50 10 C60 10 65 15 65 25 L65 40 L35 40 Z" fill="#ffffff" stroke="#cccccc" stroke-width="2"/>
@@ -448,8 +448,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Construction Hat',
             rarity: 'Elite',
             description: 'Safety first construction helmet.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 70000,
+            xpRequired: 11500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M25 35 C30 25 40 20 50 20 C60 20 70 25 75 35 L75 40 L25 40 Z" fill="#ffeb3b" stroke="#f57c00" stroke-width="2"/>
@@ -462,8 +462,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Police Cap',
             rarity: 'Elite',
             description: 'Law enforcement police cap.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 72000,
+            xpRequired: 11500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M25 35 C30 25 40 20 50 20 C60 20 70 25 75 35 L75 40 L25 40 Z" fill="#1e88e5" stroke="#1565c0" stroke-width="2"/>
@@ -477,8 +477,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Nurse Cap',
             rarity: 'Elite',
             description: 'Caring nurse cap with cross.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 68000,
+            xpRequired: 11000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M40 20 L60 20 L65 35 L35 35 Z" fill="#ffffff" stroke="#ff0000" stroke-width="2"/>
@@ -491,8 +491,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Astronaut Helmet',
             rarity: 'Elite',
             description: 'NASA-style space helmet.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 83000,
+            xpRequired: 13500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -513,8 +513,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Graduation Cap',
             rarity: 'Elite',
             description: 'Academic graduation mortarboard.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 71000,
+            xpRequired: 11500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M25 35 L50 25 L75 35 L75 40 L50 30 L25 40 Z" fill="#424242" stroke="#212121" stroke-width="2"/>
@@ -527,8 +527,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Santa Hat',
             rarity: 'Elite',
             description: 'Jolly Santa Claus hat.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 74000,
+            xpRequired: 12000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M45 15 L50 10 L55 15 L60 35 L40 35 Z" fill="#ff0000" stroke="#8b0000" stroke-width="2"/>
@@ -542,8 +542,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Bunny Ears',
             rarity: 'Elite',
             description: 'Cute bunny ears headband.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 69000,
+            xpRequired: 11000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M40 25 L38 10 L42 30 Z" fill="#ffb3ba" stroke="#ff6b6b" stroke-width="2"/>
@@ -557,8 +557,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cat Ears',
             rarity: 'Elite',
             description: 'Playful cat ears headband.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 70000,
+            xpRequired: 11500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M40 25 L35 10 L45 30 Z" fill="#424242" stroke="#212121" stroke-width="2"/>
@@ -572,8 +572,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Flower Crown',
             rarity: 'Elite',
             description: 'Delicate flower crown.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 73000,
+            xpRequired: 12000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="35" cy="28" r="4" fill="#ff69b4" stroke="#ff1493" stroke-width="1"/>
@@ -589,8 +589,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Rainbow Mohawk',
             rarity: 'Elite',
             description: 'Colorful rainbow mohawk.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 76000,
+            xpRequired: 12500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -613,8 +613,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cyberpunk Helmet',
             rarity: 'Elite',
             description: 'Futuristic cyberpunk helmet.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 81000,
+            xpRequired: 13000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -635,8 +635,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Royal Turban',
             rarity: 'Elite',
             description: 'Luxurious royal turban with jewels.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 87000,
+            xpRequired: 14000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -658,8 +658,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Ancient Crown',
             rarity: 'Elite',
             description: 'Timeless ancient artifact crown.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 84000,
+            xpRequired: 13500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -679,8 +679,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Mecha Head',
             rarity: 'Elite',
             description: 'Robot mecha helmet.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 89000,
+            xpRequired: 14500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -702,8 +702,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Nature Crown',
             rarity: 'Elite',
             description: 'Organic crown with leaves and vines.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 77000,
+            xpRequired: 12500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -725,8 +725,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Ice Crown',
             rarity: 'Elite',
             description: 'Frozen crown with ice crystals.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 78000,
+            xpRequired: 12500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -748,8 +748,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Fire Crown',
             rarity: 'Elite',
             description: 'Burning crown with eternal flames.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 80000,
+            xpRequired: 13000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -770,8 +770,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Shadow Crown',
             rarity: 'Elite',
             description: 'Dark crown with shadow energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 82000,
+            xpRequired: 13500,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -793,8 +793,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Light Crown',
             rarity: 'Elite',
             description: 'Radiant crown with pure light.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 90000,
+            xpRequired: 15000,
             category: 'hats',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -935,8 +935,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Quantum Goggles',
             rarity: 'Elite',
             description: 'Quantum-enhanced vision with particle effects.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 78000,
+            xpRequired: 12000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -958,8 +958,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Holographic Shades',
             rarity: 'Elite',
             description: 'Shades with shifting holographic patterns.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 75000,
+            xpRequired: 11500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -982,8 +982,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Plasma Lenses',
             rarity: 'Elite',
             description: 'Glowing plasma lenses with energy trails.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 82000,
+            xpRequired: 12500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1005,8 +1005,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Neon Rim Glasses',
             rarity: 'Elite',
             description: 'Classic frames with neon glowing rims.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 73000,
+            xpRequired: 11000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect x="25" y="34" width="24" height="18" rx="7" fill="rgba(255,255,255,0.1)" stroke="#ff00ff" stroke-width="3"/>
@@ -1021,8 +1021,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Digital Display',
             rarity: 'Elite',
             description: 'HUD-style glasses with digital readouts.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 76000,
+            xpRequired: 11500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect x="20" y="30" width="30" height="22" rx="4" fill="rgba(0,255,0,0.1)" stroke="#00ff00" stroke-width="2"/>
@@ -1037,8 +1037,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Rainbow Visor',
             rarity: 'Elite',
             description: 'Spectrum-shifting visor with rainbow effects.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 79000,
+            xpRequired: 12000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1061,8 +1061,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Matrix Shades',
             rarity: 'Elite',
             description: 'Green digital matrix-style glasses.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 77000,
+            xpRequired: 11500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect x="22" y="32" width="26" height="20" rx="8" fill="rgba(0,255,0,0.15)" stroke="#00ff00" stroke-width="3"/>
@@ -1077,8 +1077,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Void Lenses',
             rarity: 'Elite',
             description: 'Dark void lenses with purple energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 80000,
+            xpRequired: 12000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1100,8 +1100,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Golden Monocle',
             rarity: 'Elite',
             description: 'Elegant golden monocle with chain.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 74000,
+            xpRequired: 11000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="63" cy="42" r="10" fill="rgba(255,215,0,0.2)" stroke="#ffd700" stroke-width="3"/>
@@ -1115,8 +1115,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Steampunk Monocle',
             rarity: 'Elite',
             description: 'Victorian brass monocle with gears.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 72000,
+            xpRequired: 11000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="63" cy="42" r="10" fill="rgba(139,69,19,0.3)" stroke="#8b4513" stroke-width="3"/>
@@ -1131,8 +1131,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cyber Eye',
             rarity: 'Elite',
             description: 'Single glowing cybernetic eye.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 81000,
+            xpRequired: 12500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="63" cy="42" r="8" fill="rgba(255,0,0,0.8)" stroke="#ff0000" stroke-width="2"/>
@@ -1146,8 +1146,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Angelic Halo',
             rarity: 'Elite',
             description: 'Divine halo glasses with golden glow.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 85000,
+            xpRequired: 13000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1169,8 +1169,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Demonic Visage',
             rarity: 'Elite',
             description: 'Menacing red glasses with dark energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 83000,
+            xpRequired: 12500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1191,8 +1191,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Crystal Lenses',
             rarity: 'Elite',
             description: 'Prismatic crystal lenses with rainbow refraction.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 79000,
+            xpRequired: 12000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1215,8 +1215,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Electric Arc',
             rarity: 'Elite',
             description: 'Glasses with crackling electric energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 76000,
+            xpRequired: 11500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect x="22" y="32" width="26" height="20" rx="8" fill="rgba(255,255,0,0.1)" stroke="#ffff00" stroke-width="3"/>
@@ -1230,8 +1230,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Frost Rim',
             rarity: 'Elite',
             description: 'Icy blue glasses with frozen patterns.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 74000,
+            xpRequired: 11000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1253,8 +1253,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Shadow Weaver',
             rarity: 'Elite',
             description: 'Dark glasses that blend with shadows.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 78000,
+            xpRequired: 12000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect x="22" y="32" width="26" height="20" rx="8" fill="rgba(0,0,0,0.8)" stroke="#4b0082" stroke-width="3"/>
@@ -1269,8 +1269,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Solar Flare',
             rarity: 'Elite',
             description: 'Blazing glasses with solar energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 84000,
+            xpRequired: 13000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1292,8 +1292,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Lunar Eclipse',
             rarity: 'Elite',
             description: 'Mystical glasses with moon phases.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 80000,
+            xpRequired: 12000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1315,8 +1315,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Tech Commander',
             rarity: 'Elite',
             description: 'Advanced tactical glasses with targeting.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 86000,
+            xpRequired: 13000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect x="20" y="30" width="30" height="22" rx="4" fill="rgba(0,255,0,0.1)" stroke="#00ff00" stroke-width="2"/>
@@ -1333,8 +1333,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Void Walker',
             rarity: 'Elite',
             description: 'Glasses that pierce through dimensions.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 87000,
+            xpRequired: 13500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1355,8 +1355,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cosmic Observer',
             rarity: 'Elite',
             description: 'Glasses that see across the cosmos.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 89000,
+            xpRequired: 14000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1378,8 +1378,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Quantum Reality',
             rarity: 'Elite',
             description: 'Glasses that perceive multiple realities.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 92000,
+            xpRequired: 14500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1403,8 +1403,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Stellar Navigator',
             rarity: 'Elite',
             description: 'Navigation glasses with star charts.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 88000,
+            xpRequired: 13500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1430,8 +1430,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Temporal Distortion',
             rarity: 'Elite',
             description: 'Glasses that bend time itself.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 91000,
+            xpRequired: 14000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1452,8 +1452,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Dimensional Rift',
             rarity: 'Elite',
             description: 'Glasses that peer through dimensional rifts.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 93000,
+            xpRequired: 14500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1475,8 +1475,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Psychic Vision',
             rarity: 'Elite',
             description: 'Glasses that reveal psychic energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 85000,
+            xpRequired: 13000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1498,8 +1498,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Neural Interface',
             rarity: 'Elite',
             description: 'Direct neural interface glasses.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 90000,
+            xpRequired: 14000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1521,8 +1521,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Holographic Projector',
             rarity: 'Elite',
             description: 'Glasses that project holograms.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 87000,
+            xpRequired: 13500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1543,8 +1543,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Antimatter Lenses',
             rarity: 'Elite',
             description: 'Glasses with antimatter energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 94000,
+            xpRequired: 14500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1566,8 +1566,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Quantum Entanglement',
             rarity: 'Elite',
             description: 'Glasses linked across quantum states.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 95000,
+            xpRequired: 15000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1588,8 +1588,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Paradox Resolver',
             rarity: 'Elite',
             description: 'Glasses that resolve temporal paradoxes.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 96000,
+            xpRequired: 15000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1610,8 +1610,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Infinity Observer',
             rarity: 'Elite',
             description: 'Glasses that perceive infinite possibilities.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 98000,
+            xpRequired: 15500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1632,8 +1632,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cosmic Conductor',
             rarity: 'Elite',
             description: 'Glasses that conduct cosmic energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 91000,
+            xpRequired: 14000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1656,8 +1656,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Reality Bender',
             rarity: 'Elite',
             description: 'Glasses that can bend reality itself.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 97000,
+            xpRequired: 15500,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1680,8 +1680,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Ultimate Vision',
             rarity: 'Elite',
             description: 'The pinnacle of visual enhancement.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 99000,
+            xpRequired: 16000,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1920,8 +1920,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Electric Jaw',
             rarity: 'Elite',
             description: 'Crackling electric energy jaw.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 78000,
+            xpRequired: 12000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1941,8 +1941,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Crystal Mouth',
             rarity: 'Elite',
             description: 'Prismatic crystal formation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 76000,
+            xpRequired: 11500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1964,8 +1964,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Shadow Maw',
             rarity: 'Elite',
             description: 'Dark shadow that consumes everything.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 79000,
+            xpRequired: 12000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1984,8 +1984,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Fire Breath',
             rarity: 'Elite',
             description: 'Eternal fire burning within.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 81000,
+            xpRequired: 12500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2005,8 +2005,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Ice Frost',
             rarity: 'Elite',
             description: 'Frozen ice crystal formation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 77000,
+            xpRequired: 11500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2027,8 +2027,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Nature Bloom',
             rarity: 'Elite',
             description: 'Organic flower petal formation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 75000,
+            xpRequired: 11500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2049,8 +2049,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Tech Interface',
             rarity: 'Elite',
             description: 'Digital tech mouth display.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 82000,
+            xpRequired: 12500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2071,8 +2071,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Angelic Voice',
             rarity: 'Elite',
             description: 'Divine golden light emanation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 85000,
+            xpRequired: 13000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2092,8 +2092,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Demonic Roar',
             rarity: 'Elite',
             description: 'Menacing dark energy roar.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 83000,
+            xpRequired: 12500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2113,8 +2113,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Quantum Speak',
             rarity: 'Elite',
             description: 'Quantum particle speech pattern.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 86000,
+            xpRequired: 13000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2136,8 +2136,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Stellar Whisper',
             rarity: 'Elite',
             description: 'Cosmic starlight communication.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 84000,
+            xpRequired: 12500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2158,8 +2158,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Temporal Echo',
             rarity: 'Elite',
             description: 'Time-bending speech waves.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 88000,
+            xpRequired: 13500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2178,8 +2178,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Dimensional Gate',
             rarity: 'Elite',
             description: 'Portal to other dimensions.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 90000,
+            xpRequired: 14000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2199,8 +2199,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Psychic Wave',
             rarity: 'Elite',
             description: 'Mind-to-mind communication waves.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 87000,
+            xpRequired: 13500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2220,8 +2220,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Neural Link',
             rarity: 'Elite',
             description: 'Direct neural interface output.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 91000,
+            xpRequired: 14000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2241,8 +2241,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Hologram Speak',
             rarity: 'Elite',
             description: 'Projected holographic speech.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 85000,
+            xpRequired: 13000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2262,8 +2262,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Antimatter Void',
             rarity: 'Elite',
             description: 'Antimatter energy containment.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 92000,
+            xpRequired: 14500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2282,8 +2282,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Quantum Field',
             rarity: 'Elite',
             description: 'Quantum field fluctuation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 93000,
+            xpRequired: 14500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2306,8 +2306,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Stellar Portal',
             rarity: 'Elite',
             description: 'Gateway to stellar realms.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 94000,
+            xpRequired: 14500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2328,8 +2328,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Paradox Loop',
             rarity: 'Elite',
             description: 'Temporal paradox manifestation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 95000,
+            xpRequired: 15000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2348,8 +2348,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Infinity Gate',
             rarity: 'Elite',
             description: 'Portal to infinite possibilities.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 96000,
+            xpRequired: 15000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2369,8 +2369,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cosmic Conduit',
             rarity: 'Elite',
             description: 'Channel for cosmic energy.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 97000,
+            xpRequired: 15500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2390,8 +2390,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Reality Warp',
             rarity: 'Elite',
             description: 'Bends reality with speech.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 98000,
+            xpRequired: 15500,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2412,8 +2412,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Ultimate Expression',
             rarity: 'Elite',
             description: 'The pinnacle of mouth accessories.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 99000,
+            xpRequired: 16000,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2549,8 +2549,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Plasma Tattoo',
             rarity: 'Elite',
             description: 'Glowing plasma energy tattoo.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 78000,
+            xpRequired: 12000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2569,8 +2569,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cosmic Marking',
             rarity: 'Elite',
             description: 'Celestial constellation marking.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 76000,
+            xpRequired: 11500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2591,8 +2591,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Void Symbol',
             rarity: 'Elite',
             description: 'Dark void energy symbol.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 79000,
+            xpRequired: 12000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2611,8 +2611,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Golden Rune',
             rarity: 'Elite',
             description: 'Ancient golden power rune.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 81000,
+            xpRequired: 12500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2632,8 +2632,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Rainbow Crystal',
             rarity: 'Elite',
             description: 'Prismatic rainbow crystal.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 77000,
+            xpRequired: 11500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2656,8 +2656,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Electric Circuit',
             rarity: 'Elite',
             description: 'Glowing electric circuit pattern.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 82000,
+            xpRequired: 12500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2676,8 +2676,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Crystal Fragment',
             rarity: 'Elite',
             description: 'Shattered crystal fragment.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 75000,
+            xpRequired: 11500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2697,8 +2697,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Shadow Emblem',
             rarity: 'Elite',
             description: 'Dark shadow power emblem.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 80000,
+            xpRequired: 12000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2717,8 +2717,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Fire Ember',
             rarity: 'Elite',
             description: 'Burning fire ember marking.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 83000,
+            xpRequired: 12500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2737,8 +2737,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Ice Shard',
             rarity: 'Elite',
             description: 'Frozen ice crystal shard.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 77000,
+            xpRequired: 11500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2757,8 +2757,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Nature Vine',
             rarity: 'Elite',
             description: 'Organic vine wrapping.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 74000,
+            xpRequired: 11000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2777,8 +2777,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Tech Chip',
             rarity: 'Elite',
             description: 'Advanced technology chip.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 84000,
+            xpRequired: 13000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2798,8 +2798,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Angelic Mark',
             rarity: 'Elite',
             description: 'Divine golden light marking.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 86000,
+            xpRequired: 13000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2819,8 +2819,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Demonic Seal',
             rarity: 'Elite',
             description: 'Menacing dark energy seal.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 85000,
+            xpRequired: 13000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2840,8 +2840,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Quantum Particle',
             rarity: 'Elite',
             description: 'Quantum particle manifestation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 88000,
+            xpRequired: 13500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2861,8 +2861,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Stellar Dust',
             rarity: 'Elite',
             description: 'Cosmic stardust particles.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 82000,
+            xpRequired: 12500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2883,8 +2883,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Temporal Rift',
             rarity: 'Elite',
             description: 'Time distortion rift marking.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 89000,
+            xpRequired: 14000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2903,8 +2903,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Dimensional Scar',
             rarity: 'Elite',
             description: 'Interdimensional travel scar.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 90000,
+            xpRequired: 14000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2924,8 +2924,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Psychic Eye',
             rarity: 'Elite',
             description: 'Third eye psychic power.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 87000,
+            xpRequired: 13500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2945,8 +2945,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Neural Port',
             rarity: 'Elite',
             description: 'Direct neural interface port.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 91000,
+            xpRequired: 14000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2966,8 +2966,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Hologram Tag',
             rarity: 'Elite',
             description: 'Projected holographic ID tag.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 86000,
+            xpRequired: 13000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -2987,8 +2987,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Antimatter Core',
             rarity: 'Elite',
             description: 'Contained antimatter energy core.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 92000,
+            xpRequired: 14500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -3007,8 +3007,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Quantum Flux',
             rarity: 'Elite',
             description: 'Unstable quantum energy field.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 93000,
+            xpRequired: 14500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -3030,8 +3030,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Stellar Gateway',
             rarity: 'Elite',
             description: 'Portal to stellar dimensions.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 94000,
+            xpRequired: 14500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -3051,8 +3051,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Paradox Mark',
             rarity: 'Elite',
             description: 'Temporal paradox manifestation.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 95000,
+            xpRequired: 15000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -3071,8 +3071,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Infinity Sigil',
             rarity: 'Elite',
             description: 'Symbol of infinite power.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 96000,
+            xpRequired: 15000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -3091,8 +3091,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Cosmic Conduit',
             rarity: 'Elite',
             description: 'Channel for cosmic energies.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 97000,
+            xpRequired: 15500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -3112,8 +3112,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Reality Fragment',
             rarity: 'Elite',
             description: 'Shattered piece of reality.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 98000,
+            xpRequired: 15500,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -3133,8 +3133,8 @@ const ACCESSORY_LIBRARY = {
             name: 'Ultimate Essence',
             rarity: 'Elite',
             description: 'The pinnacle of face accessories.',
-            price: 100000,
-            xpRequired: 4000,
+            price: 99000,
+            xpRequired: 16000,
             category: 'face_accessories',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
