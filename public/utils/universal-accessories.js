@@ -322,8 +322,10 @@ class UniversalAccessorySystem {
         element.style.opacity = defaultPos.opacity ?? 1;
         element.style.pointerEvents = 'none';
         element.style.zIndex = isBackground ? '0' : '2';
-        element.style.width = 'auto';
-        element.style.height = 'auto';
+        element.style.width = '100%';
+        element.style.height = '100%';
+        element.style.setProperty('--scale', String(scale));
+        element.style.setProperty('--rotation', `${defaultPos.rotation || 0}deg`);
 
         if (isBackground) {
             element.style.width = '120%';
@@ -334,6 +336,8 @@ class UniversalAccessorySystem {
         if (svg) {
             svg.style.display = 'block';
             svg.style.overflow = 'visible';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
         }
 
         container.appendChild(element);
