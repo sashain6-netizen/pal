@@ -379,13 +379,29 @@ function normalizeAccessoryData(accessoriesData) {
     return accessoriesData?.accessories || accessoriesData || {};
 }
 
+function normalizeAccessorySvgMarkup(svgMarkup, shouldFillContainer) {
+    if (!svgMarkup) return '';
+
+    const sizeStyle = shouldFillContainer ? 'width:100%;height:100%;' : '';
+
+    if (svgMarkup.includes('<svg') && !svgMarkup.includes('data-accessory-svg')) {
+        return svgMarkup.replace(
+            '<svg ',
+            `<svg data-accessory-svg="true" style="${sizeStyle}display:block;overflow:visible;" `
+        );
+    }
+
+    return svgMarkup;
+}
+
 function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
     if (!accessory?.svg) return '';
 
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
     const isBackground = category === 'backgrounds';
     const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
-    const extraSize = isBackground ? 'width:120%;height:120%;' : '';
+    const extraSize = isBackground ? 'width:120%;height:120%;' : 'width:100%;height:100%;';
+    const normalizedSvg = normalizeAccessorySvgMarkup(accessory.svg, true);
 
     return `
         <div
@@ -394,7 +410,7 @@ function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
             data-accessory-key="${accessoryKey}"
             style="position:absolute;left:${defaultPos.x}%;top:${defaultPos.y}%;transform:translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);opacity:${defaultPos.opacity ?? 1};pointer-events:none;z-index:${isBackground ? 0 : 2};--scale:${scale};--rotation:${defaultPos.rotation || 0}deg;${extraSize}"
         >
-            ${accessory.svg}
+            ${normalizedSvg}
         </div>
     `;
 }
