@@ -477,6 +477,14 @@ class UniversalAccessorySystem {
 
     renderAccessoriesForAvatar(avatarElement, accessoriesData) {
         const accessories = accessoriesData?.accessories || accessoriesData || {};
+        
+        // Check if avatar has a custom profile image (not default avatar)
+        const hasCustomImage = this.hasCustomProfileImage(avatarElement);
+        
+        if (hasCustomImage) {
+            console.log('User has custom profile image, skipping accessories');
+            return;
+        }
 
         Object.entries(accessories).forEach(([category, accessoryKey]) => {
             if (!this.accessoryLibrary?.[category]) return;
@@ -488,6 +496,19 @@ class UniversalAccessorySystem {
             const accessoryLayer = this.createAccessoryLayer(avatarElement, 'foreground');
             this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
         });
+    }
+
+    hasCustomProfileImage(avatarElement) {
+        // Check if it's an img element with a custom src
+        const imgElement = avatarElement.querySelector('img') || avatarElement.tagName === 'IMG' ? avatarElement : null;
+        
+        if (imgElement) {
+            const src = imgElement.src || imgElement.getAttribute('src');
+            // If src is not the default avatar and not empty, it's a custom image
+            return src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png';
+        }
+        
+        return false;
     }
 
     refreshAllAvatars() {

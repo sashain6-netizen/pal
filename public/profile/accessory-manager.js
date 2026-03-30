@@ -274,12 +274,22 @@ class AccessoryManager {
 
     updatePreview() {
         const accessoryLayer = document.getElementById('accessoryLayer');
+        const previewImage = document.getElementById('previewImage');
+        
         if (!accessoryLayer) {
             console.warn('Accessory layer not found');
             return;
         }
 
         accessoryLayer.innerHTML = '';
+
+        // Check if user has a custom profile image
+        const hasCustomImage = this.hasCustomProfileImage(previewImage);
+        
+        if (hasCustomImage) {
+            console.log('User has custom profile image, hiding accessories in preview');
+            return;
+        }
 
         Object.keys(this.accessories).forEach(category => {
             const accessoryKey = this.accessories[category];
@@ -289,6 +299,14 @@ class AccessoryManager {
                 this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
             }
         });
+    }
+
+    hasCustomProfileImage(imgElement) {
+        if (!imgElement) return false;
+        
+        const src = imgElement.src || imgElement.getAttribute('src');
+        // If src is not the default avatar and not empty, it's a custom image
+        return src && !src.includes('/default-avatar.png') && src !== '' && src !== '/default-avatar.png';
     }
 
     renderAccessory(container, accessory, category, accessoryKey) {

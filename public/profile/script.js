@@ -423,6 +423,11 @@ function updatePreview(url, status, keepCurrentImage = false) {
             previewImage.src = defaultAvatar;
             currentAvatarUrl = "";
         }
+        
+        // Update accessory preview after image changes
+        if (window.accessoryManager) {
+            window.accessoryManager.updatePreview();
+        }
     }
 
     previewStatus.textContent = status;
