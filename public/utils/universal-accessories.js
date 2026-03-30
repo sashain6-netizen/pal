@@ -102,7 +102,8 @@ class UniversalAccessorySystem {
             '.profile-icon',
             '[data-avatar]',
             '.avatar-with-accessories',
-            '#avatar-container'
+            '#avatar-container',
+            '#userAvatarWithAccessories'
         ];
 
         avatarSelectors.forEach(selector => {
@@ -120,7 +121,8 @@ class UniversalAccessorySystem {
             '.profile-icon',
             '[data-avatar]',
             '.avatar-with-accessories',
-            '#avatar-container'
+            '#avatar-container',
+            '#userAvatarWithAccessories'
         ];
 
         avatarSelectors.forEach(selector => {
@@ -139,29 +141,41 @@ class UniversalAccessorySystem {
         if (!this.isInitialized || !this.accessoryLibrary) return;
 
         try {
-            const isUsersPageAvatar = avatarElement.closest('#userAvatarWithAccessories') ||
-                                     avatarElement.classList.contains('avatar-with-accessories') &&
-                                     avatarElement.dataset.username;
-
+            // Check if this is a users page avatar that should be handled by universal system
+            const isUsersPageAvatar = avatarElement.closest('#userAvatarWithAccessories') || 
+                                     avatarElement.id === 'userAvatarWithAccessories' ||
+                                     (avatarElement.classList.contains('avatar-with-accessories') &&
+                                      avatarElement.dataset.username);
+            
+            // Skip avatars that have #userAccessoryLayer but are not users page avatars
             if (avatarElement.querySelector('#userAccessoryLayer') && !isUsersPageAvatar) {
                 console.log('Avatar has #userAccessoryLayer and is not users page avatar, skipping universal system:', avatarElement);
                 return;
             }
 
-            const userData = await this.extractUserData(avatarElement);
+            // For users page, we need to find the actual avatar element inside
+            let targetAvatarElement = avatarElement;
+            if (isUsersPageAvatar && avatarElement.id === 'userAvatarWithAccessories') {
+                const innerAvatar = avatarElement.querySelector('.avatar-with-accessories[data-username]');
+                if (innerAvatar) {
+                    targetAvatarElement = innerAvatar;
+                }
+            }
+
+            const userData = await this.extractUserData(targetAvatarElement);
             console.log('Extracted user data:', userData);
 
             if (!userData || !userData.accessories) {
-                console.log('No user data or accessories found for:', avatarElement);
+                console.log('No user data or accessories found for:', targetAvatarElement);
                 return;
             }
 
-            if (avatarElement.querySelector('.accessory-layer')) {
-                console.log('Accessory layer already exists, skipping:', avatarElement);
+            if (targetAvatarElement.querySelector('.accessory-layer')) {
+                console.log('Accessory layer already exists, skipping:', targetAvatarElement);
                 return;
             }
 
-            const accessoryLayer = this.createAccessoryLayer(avatarElement);
+            const accessoryLayer = this.createAccessoryLayer(targetAvatarElement);
             console.log('Created accessory layer:', accessoryLayer);
 
             this.renderAccessories(accessoryLayer, userData.accessories);
@@ -233,6 +247,7 @@ class UniversalAccessorySystem {
         let accessoryLayer = avatarElement.querySelector('.accessory-layer') || avatarElement.querySelector('#userAccessoryLayer');
         if (accessoryLayer) return accessoryLayer;
 
+        console.log('Creating accessory layer for:', avatarElement);
         accessoryLayer = document.createElement('div');
         accessoryLayer.className = 'accessory-layer';
         accessoryLayer.style.cssText = `
@@ -251,21 +266,32 @@ class UniversalAccessorySystem {
         }
 
         avatarElement.appendChild(accessoryLayer);
+        console.log('Accessory layer created and appended:', accessoryLayer);
         return accessoryLayer;
     }
 
     renderAccessories(container, accessoriesData) {
+        console.log('Rendering accessories to container:', container, 'with data:', accessoriesData);
         const accessories = accessoriesData.accessories || accessoriesData;
+        console.log('Processed accessories for rendering:', accessories);
 
         Object.keys(accessories).forEach(category => {
             const accessoryKey = accessories[category];
+            console.log(`Processing ${category}: ${accessoryKey}`);
 
-            if (!this.accessoryLibrary[category]) return;
+            if (!this.accessoryLibrary[category]) {
+                console.log(`Category ${category} not found in library`);
+                return;
+            }
 
             const accessory = this.accessoryLibrary[category][accessoryKey];
-            if (!accessory || !accessory.svg) return;
+            if (!accessory || !accessory.svg) {
+                console.log(`Accessory ${category}:${accessoryKey} not found or has no SVG`);
+                return;
+            }
 
             this.renderAccessory(container, accessory, category, accessoryKey);
+            console.log(`Successfully rendered ${category}: ${accessoryKey}`);
         });
     }
 

@@ -405,9 +405,9 @@ async function loadProfile() {
 
         if (window.universalAccessorySystem && window.universalAccessorySystem.isInitialized) {
             setTimeout(() => {
-                const avatarElement = document.querySelector('.avatar-with-accessories[data-username]');
-                if (avatarElement) {
-                    window.universalAccessorySystem.applyAccessoriesToAvatar(avatarElement);
+                const avatarContainer = document.getElementById('userAvatarWithAccessories');
+                if (avatarContainer) {
+                    window.universalAccessorySystem.applyAccessoriesToAvatar(avatarContainer);
                 }
             }, 200);
         }
