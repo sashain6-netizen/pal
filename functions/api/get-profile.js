@@ -146,8 +146,7 @@ export async function onRequestGet(context) {
                 hats: 'none',
                 glasses: 'none',
                 mouths: 'none',
-                face_accessories: 'none',
-                backgrounds: 'none'
+                face_accessories: 'none'
             },
             ownedAccessories: user.ownedAccessories || unlockResult.ownedAccessories
         };

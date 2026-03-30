@@ -3,8 +3,7 @@ export async function onRequestGet(context) {
         hats: 'none',
         glasses: 'none',
         mouths: 'none',
-        face_accessories: 'none',
-        backgrounds: 'none'
+        face_accessories: 'none'
     };
     const { request, env } = context;
     const url = new URL(request.url);

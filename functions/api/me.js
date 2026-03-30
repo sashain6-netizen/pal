@@ -45,8 +45,7 @@ export async function onRequestGet(context) {
         hats: 'none',
         glasses: 'none',
         mouths: 'none',
-        face_accessories: 'none',
-        backgrounds: 'none'
+        face_accessories: 'none'
       }
     }), {
       headers: { "Content-Type": "application/json" }

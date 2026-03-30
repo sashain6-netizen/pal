@@ -6,8 +6,7 @@ class UniversalAccessorySystem {
             hats: 'none',
             glasses: 'none',
             mouths: 'none',
-            face_accessories: 'none',
-            backgrounds: 'none'
+            face_accessories: 'none'
         };
         this.isInitialized = false;
     }
@@ -313,24 +312,18 @@ class UniversalAccessorySystem {
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
 
-        const isBackground = category === 'backgrounds';
-        const scale = isBackground ? (defaultPos.scale || 1) * 1.8 : defaultPos.scale;
+        const scale = defaultPos.scale;
         element.style.position = 'absolute';
         element.style.left = `${defaultPos.x}%`;
         element.style.top = `${defaultPos.y}%`;
         element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg)`;
         element.style.opacity = defaultPos.opacity ?? 1;
         element.style.pointerEvents = 'none';
-        element.style.zIndex = isBackground ? '0' : '2';
+        element.style.zIndex = '2';
         element.style.width = '100%';
         element.style.height = '100%';
         element.style.setProperty('--scale', String(scale));
         element.style.setProperty('--rotation', `${defaultPos.rotation || 0}deg`);
-
-        if (isBackground) {
-            element.style.width = '120%';
-            element.style.height = '120%';
-        }
 
         const svg = element.querySelector('svg');
         if (svg) {
@@ -360,8 +353,8 @@ class UniversalAccessorySystem {
             const accessory = this.accessoryLibrary[category][accessoryKey];
             if (!accessory || !accessory.svg) return;
 
-            const layerType = category === 'backgrounds' ? 'background' : 'foreground';
-            const accessoryLayer = this.createAccessoryLayer(avatarElement, layerType);
+            if (category === 'backgrounds') return;
+            const accessoryLayer = this.createAccessoryLayer(avatarElement, 'foreground');
             this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
         });
     }
@@ -398,9 +391,8 @@ function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
     if (!accessory?.svg) return '';
 
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
-    const isBackground = category === 'backgrounds';
-    const scale = isBackground ? (defaultPos.scale || 1) * 1.8 : defaultPos.scale;
-    const extraSize = isBackground ? 'width:120%;height:120%;' : 'width:66.6667%;height:66.6667%;';
+    const scale = defaultPos.scale;
+    const extraSize = 'width:66.6667%;height:66.6667%;';
     const normalizedSvg = normalizeAccessorySvgMarkup(accessory.svg, true);
 
     return `
@@ -408,7 +400,7 @@ function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
             class="accessory-element ${category.replace('_', '-')}"
             data-category="${category}"
             data-accessory-key="${accessoryKey}"
-            style="position:absolute;left:${defaultPos.x}%;top:${defaultPos.y}%;transform:translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);opacity:${defaultPos.opacity ?? 1};pointer-events:none;z-index:${isBackground ? 0 : 2};--scale:${scale};--rotation:${defaultPos.rotation || 0}deg;${extraSize}"
+            style="position:absolute;left:${defaultPos.x}%;top:${defaultPos.y}%;transform:translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);opacity:${defaultPos.opacity ?? 1};pointer-events:none;z-index:2;--scale:${scale};--rotation:${defaultPos.rotation || 0}deg;${extraSize}"
         >
             ${normalizedSvg}
         </div>
@@ -420,36 +412,26 @@ function buildAccessoryLayersMarkup(accessoriesData) {
     if (!library) return '';
 
     const accessories = normalizeAccessoryData(accessoriesData);
-    const backgroundMarkup = [];
     const foregroundMarkup = [];
 
     Object.entries(accessories).forEach(([category, accessoryKey]) => {
+        if (category === 'backgrounds') return;
         const accessory = library?.[category]?.[accessoryKey];
         if (!accessory?.svg) return;
 
         const markup = buildAccessoryElementMarkup(accessory, category, accessoryKey);
-        if (category === 'backgrounds') {
-            backgroundMarkup.push(markup);
-        } else {
-            foregroundMarkup.push(markup);
-        }
+        foregroundMarkup.push(markup);
     });
 
     return `
-        ${backgroundMarkup.length ? `<div class="accessory-layer background-accessory-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;">${backgroundMarkup.join('')}</div>` : ''}
         ${foregroundMarkup.length ? `<div class="accessory-layer foreground-accessory-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;">${foregroundMarkup.join('')}</div>` : ''}
     `;
 }
 
 function buildAvatarWithAccessoriesMarkup(userColor = '#2563eb', userData = null) {
     const accessories = normalizeAccessoryData(userData?.accessories || userData);
-    const hasVisibleBackground = accessories.backgrounds && accessories.backgrounds !== 'none';
-    const baseAvatarMarkup = hasVisibleBackground
-        ? getPortraitOnlyAvatarSvg(userColor, '100%')
-        : getCircleFillingAvatarSvg(userColor, '100%');
-
     return `
-        ${baseAvatarMarkup}
+        ${getCircleFillingAvatarSvg(userColor, '100%')}
         ${buildAccessoryLayersMarkup(accessories)}
     `;
 }

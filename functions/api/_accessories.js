@@ -53,7 +53,7 @@ export const ACCESSORY_CATALOG = {
     }
 };
 
-export const ACCESSORY_CATEGORIES = Object.keys(ACCESSORY_CATALOG);
+export const ACCESSORY_CATEGORIES = ['hats', 'glasses', 'mouths', 'face_accessories'];
 
 export function getValidAccessoryKeys() {
     return Object.fromEntries(

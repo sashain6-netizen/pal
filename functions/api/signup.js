@@ -71,8 +71,7 @@ export async function onRequestPost(context) {
         hats: "none",
         glasses: "none",
         mouths: "none",
-        face_accessories: "none",
-        backgrounds: "none"
+        face_accessories: "none"
       },
       ownedAccessories: getDefaultOwnedAccessories(),
       ownedPrefixes: [],

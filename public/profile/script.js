@@ -148,7 +148,7 @@ document.getElementById('profileForm')?.addEventListener('submit', async (e) => 
         try {
             const accessoriesData = window.accessoryManager.getAccessoriesData();
             if (accessoriesData && accessoriesData.accessories) {
-                const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
+                const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories'];
                 const cleanAccessories = {};
 
                 for (const [category, accessoryKey] of Object.entries(accessoriesData.accessories)) {

@@ -76,7 +76,6 @@ export async function onRequestPost(context) {
             glasses: user.accessories?.glasses || 'none',
             mouths: user.accessories?.mouths || 'none',
             face_accessories: user.accessories?.face_accessories || 'none',
-            backgrounds: user.accessories?.backgrounds || 'none',
             [category]: accessoryKey
         };
 

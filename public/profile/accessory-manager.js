@@ -80,8 +80,7 @@ class AccessoryManager {
             hats: data.hats || 'none',
             glasses: data.glasses || 'none',
             mouths: data.mouths || 'none',
-            face_accessories: data.face_accessories || 'none',
-            backgrounds: data.backgrounds || 'none'
+            face_accessories: data.face_accessories || 'none'
         };
 
         this.activeCategory = 'hats';
@@ -301,18 +300,12 @@ class AccessoryManager {
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
 
-        const isBackground = category === 'backgrounds';
-        const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
+        const scale = defaultPos.scale;
 
         element.style.left = `${defaultPos.x}%`;
         element.style.top = `${defaultPos.y}%`;
         element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg)`;
         element.style.opacity = defaultPos.opacity ?? 1;
-
-        if (isBackground) {
-            element.style.width = '120%';
-            element.style.height = '120%';
-        }
 
         container.appendChild(element);
     }

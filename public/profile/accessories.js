@@ -591,16 +591,14 @@ const DEFAULT_ACCESSORIES = {
     hats: 'none',
     glasses: 'none',
     mouths: 'none',
-    face_accessories: 'none',
-    backgrounds: 'none'
+    face_accessories: 'none'
 };
 
 const DEFAULT_OWNED_ACCESSORIES = {
     hats: ['none', 'paper_hat'],
     glasses: ['none', 'cracked_glasses'],
     mouths: ['none', 'crooked_grin'],
-    face_accessories: ['none', 'bandaid'],
-    backgrounds: ['none', 'scribble']
+    face_accessories: ['none', 'bandaid']
 };
 
 const ACCESSORY_CONTROLS = {

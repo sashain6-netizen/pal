@@ -155,7 +155,7 @@ export async function onRequestPost(context) {
         };
 
         if (updates.accessories && typeof updates.accessories === 'object') {
-            const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories', 'backgrounds'];
+            const validCategories = ['hats', 'glasses', 'mouths', 'face_accessories'];
             const validAccessoryKeys = getValidAccessoryKeys();
 
             const validatedAccessories = {};
