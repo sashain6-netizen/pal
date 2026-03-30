@@ -306,7 +306,6 @@ async function validateImageUrl(url) {
     console.log('Validating URL:', url);
 
     try {
-
         const trimmedUrl = url.trim();
         const isAlreadyEncoded = trimmedUrl !== decodeURI(trimmedUrl);
         const encodedUrl = isAlreadyEncoded ? trimmedUrl : encodeURI(trimmedUrl);
@@ -327,11 +326,14 @@ async function validateImageUrl(url) {
             img.onload = () => {
                 clearTimeout(timer);
 
-                if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                if (img.naturalWidth > 1 && img.naturalHeight > 1) {
                     console.log(`✅ Valid: ${img.naturalWidth}x${img.naturalHeight}`);
                     resolve({ valid: true, url: encodedUrl });
                 } else {
-                    resolve({ valid: false, error: "The file appears to be a broken image." });
+                    resolve({ 
+                        valid: false, 
+                        error: "This image is being blocked by the host (e.g., Wikia/Fandom). Try re-hosting on Imgur or PostImages." 
+                    });
                 }
             };
 
@@ -339,7 +341,7 @@ async function validateImageUrl(url) {
                 clearTimeout(timer);
                 resolve({ 
                     valid: false, 
-                    error: "Could not load image. Ensure it's a direct link to an image file." 
+                    error: "Could not load image. This link might be broken or private." 
                 });
             };
 
