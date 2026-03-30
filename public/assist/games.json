@@ -41,6 +41,6 @@
   { "title": "Messenger",
     "thumb": "/assist/DriftBoss.png",
     "url": "https://messenger.abeto.co/",
-    "external": true
+    "external": false
   }
 ]
