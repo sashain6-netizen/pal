@@ -40,6 +40,11 @@ class UniversalAccessorySystem {
 
         const style = document.createElement('style');
         style.id = 'universal-accessory-styles';
+        
+        // Check if we're on a page that needs clipping
+        const currentPath = window.location.pathname;
+        const needsClipping = currentPath.includes('/pages') || currentPath.includes('/search');
+        
         style.textContent = `
             .avatar-with-accessories,
             #avatar-container {
@@ -51,6 +56,14 @@ class UniversalAccessorySystem {
                 flex-shrink: 0;
                 isolation: isolate;
             }
+
+            /* Clip accessories on specific pages */
+            ${needsClipping ? `
+            .avatar-with-accessories,
+            #avatar-container {
+                overflow: hidden;
+            }
+            ` : ''}
 
             .avatar-with-accessories > .avatar-base-svg,
             #avatar-container > .avatar-base-svg {
@@ -99,7 +112,7 @@ class UniversalAccessorySystem {
 
             .avatar-with-accessories .accessory-element.hats,
             #avatar-container .accessory-element.hats {
-                animation: universalHatFloat 3s ease-in-out infinite;
+                animation: none;
             }
 
             .avatar-with-accessories .accessory-element.glasses,
@@ -120,7 +133,7 @@ class UniversalAccessorySystem {
 
             @keyframes universalHatFloat {
                 0%, 100% { transform: translate(-50%, -50%) translateY(0px) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
-                50% { transform: translate(-50%, -50%) translateY(-2px) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
+                50% { transform: translate(-50%, -50%) translateY(0px) scale(var(--scale, 1)) rotate(var(--rotation, 0deg)); }
             }
 
             @keyframes universalGlassesShine {
@@ -421,11 +434,17 @@ class UniversalAccessorySystem {
         element.innerHTML = accessory.svg;
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
+        
+        // Adjust hat position to be lower
+        let yPos = defaultPos.y;
+        if (category === 'hats') {
+            yPos = Math.min(defaultPos.y + 8, 85); // Move hats down by 8%, max 85%
+        }
 
         const scale = defaultPos.scale;
         element.style.position = 'absolute';
         element.style.left = `${defaultPos.x}%`;
-        element.style.top = `${defaultPos.y}%`;
+        element.style.top = `${yPos}%`;
         element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg)`;
         element.style.opacity = defaultPos.opacity ?? 1;
         element.style.pointerEvents = 'none';
@@ -501,6 +520,13 @@ function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
     if (!accessory?.svg) return '';
 
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
+    
+    // Adjust hat position to be lower
+    let yPos = defaultPos.y;
+    if (category === 'hats') {
+        yPos = Math.min(defaultPos.y + 8, 85); // Move hats down by 8%, max 85%
+    }
+    
     const scale = defaultPos.scale;
     const extraSize = 'width:66.6667%;height:66.6667%;';
     const normalizedSvg = normalizeAccessorySvgMarkup(accessory.svg, true);
@@ -510,7 +536,7 @@ function buildAccessoryElementMarkup(accessory, category, accessoryKey) {
             class="accessory-element ${category.replace('_', '-')}"
             data-category="${category}"
             data-accessory-key="${accessoryKey}"
-            style="position:absolute;left:${defaultPos.x}%;top:${defaultPos.y}%;transform:translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);opacity:${defaultPos.opacity ?? 1};pointer-events:none;z-index:2;--scale:${scale};--rotation:${defaultPos.rotation || 0}deg;${extraSize}"
+            style="position:absolute;left:${defaultPos.x}%;top:${yPos}%;transform:translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);opacity:${defaultPos.opacity ?? 1};pointer-events:none;z-index:2;--scale:${scale};--rotation:${defaultPos.rotation || 0}deg;${extraSize}"
         >
             ${normalizedSvg}
         </div>
