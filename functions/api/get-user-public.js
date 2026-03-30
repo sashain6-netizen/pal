@@ -27,6 +27,8 @@ export async function onRequestGet(context) {
         bio: user.bio || "",
         avatar: user.avatarUrl || "/default-avatar.png",
         themeColor: user.themeColor || "#2563eb",
+        forumColor: user.forumColor || user.themeColor || "#2563eb",
+        premiumGlowAlpha: typeof user.premiumGlowAlpha === "number" ? user.premiumGlowAlpha : 0.8,
         rank: user.rank || "Member",
         xp: user.xp || 0,
         currency: user.currency || 0,
@@ -37,6 +39,9 @@ export async function onRequestGet(context) {
     };
 
     return new Response(JSON.stringify(publicData), {
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store"
+        }
     });
 }

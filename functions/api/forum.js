@@ -113,7 +113,7 @@ export async function onRequest(context) {
                         };
                     }
 
-                    const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`, { cacheTtl: 1800 });
+                    const userDataRaw = await env.USERS_KV.get(`user:${creatorUsername}`);
                     const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
 
                     return {
@@ -121,7 +121,9 @@ export async function onRequest(context) {
                         isPremium: premiumSet.has(creatorUsername),
                         forumColor: userData.forumColor || userData.themeColor || "#2563eb",
                         premiumGlowAlpha: typeof userData.premiumGlowAlpha === "number" ? userData.premiumGlowAlpha : 0.8,
-                        avatar: userData.avatarUrl || "/default-avatar.png"
+                        avatar: userData.avatarUrl || "/default-avatar.png",
+                        themeColor: userData.themeColor || "#2563eb",
+                        accessories: userData.accessories || null
                     };
                 })
             );

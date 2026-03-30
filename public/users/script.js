@@ -379,35 +379,24 @@ async function loadProfile() {
         }
 
         const avatarWrapper = document.getElementById('avatar-wrapper');
-        const avatarImg     = document.getElementById('display-avatar');
+        const avatarWithAccessories = document.getElementById('userAvatarWithAccessories');
 
-        if (avatarWrapper) {
+        if (avatarWrapper && avatarWithAccessories) {
             if (data.avatar && data.avatar !== "/default-avatar.png") {
-                if (avatarImg) {
-                    avatarImg.style.display = 'block';
-                    avatarImg.src = data.avatar;
-                }
+                avatarWithAccessories.removeAttribute('data-user');
+                avatarWithAccessories.removeAttribute('data-username');
+                avatarWithAccessories.innerHTML = `<img id="display-avatar" src="${data.avatar}" alt="Profile Picture">`;
             } else {
-                if (avatarImg) avatarImg.style.display = 'none';
-                const avatarWithAccessories = document.getElementById('userAvatarWithAccessories');
-                if (avatarWithAccessories) {
-                    const isMobile = window.innerWidth <= 480;
-                    const avatarSize = isMobile ? 120 : 150;
-                    const svgSize = '100%';
-                    avatarWithAccessories.innerHTML = `
-                        <div class="avatar-with-accessories" style="width: ${avatarSize}px; height: ${avatarSize}px; border-radius: 50%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; box-sizing: border-box;" data-user='${JSON.stringify(data || {}).replace(/'/g, "&apos;")}' data-username="${data.username || ''}">
-                            ${getColoredSvg(data.themeColor || "#2563eb", svgSize)}
-                        </div>
-                    `;
-                }
+                avatarWithAccessories.dataset.user = JSON.stringify(data || {}).replace(/'/g, "&apos;");
+                avatarWithAccessories.dataset.username = data.username || '';
+                avatarWithAccessories.innerHTML = getColoredSvg(data.themeColor || "#2563eb", '100%');
             }
         }
 
         if (window.universalAccessorySystem && window.universalAccessorySystem.isInitialized) {
             setTimeout(() => {
-                const avatarContainer = document.getElementById('userAvatarWithAccessories');
-                if (avatarContainer) {
-                    window.universalAccessorySystem.applyAccessoriesToAvatar(avatarContainer);
+                if (avatarWithAccessories) {
+                    window.universalAccessorySystem.applyAccessoriesToAvatar(avatarWithAccessories);
                 }
             }, 200);
         }

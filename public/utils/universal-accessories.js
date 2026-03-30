@@ -99,7 +99,9 @@ class UniversalAccessorySystem {
             '.thread-avatar-svg',
             '.post-avatar-svg',
             '.search-avatar-svg',
-            '.profile-icon',
+            '.profile-icon[data-username]',
+            '.profile-icon[data-user-id]',
+            '.profile-icon[data-user]',
             '[data-avatar]',
             '.avatar-with-accessories',
             '#avatar-container',
@@ -118,7 +120,9 @@ class UniversalAccessorySystem {
             '.thread-avatar-svg',
             '.post-avatar-svg',
             '.search-avatar-svg',
-            '.profile-icon',
+            '.profile-icon[data-username]',
+            '.profile-icon[data-user-id]',
+            '.profile-icon[data-user]',
             '[data-avatar]',
             '.avatar-with-accessories',
             '#avatar-container',
@@ -172,10 +176,7 @@ class UniversalAccessorySystem {
                 return;
             }
 
-            const accessoryLayer = this.createAccessoryLayer(targetAvatarElement);
-            console.log('Created accessory layer:', accessoryLayer);
-
-            this.renderAccessories(accessoryLayer, userData.accessories);
+            this.renderAccessoriesForAvatar(targetAvatarElement, userData.accessories);
 
         } catch (error) {
             console.error('Error applying accessories to avatar:', error);
@@ -185,14 +186,12 @@ class UniversalAccessorySystem {
     async extractUserData(avatarElement) {
         let userData = null;
 
-        const userId = avatarElement.dataset.userId || avatarElement.dataset.username;
-
-        if (userId) {
-            userData = await this.fetchUserData(userId);
-        }
-
-        if (!userData && window.currentUser) {
-            userData = window.currentUser;
+        if (avatarElement.dataset.user) {
+            try {
+                userData = JSON.parse(avatarElement.dataset.user || '{}');
+            } catch (e) {
+                console.warn('Failed to parse user data from avatar element:', e);
+            }
         }
 
         if (!userData) {
@@ -206,12 +205,14 @@ class UniversalAccessorySystem {
             }
         }
 
-        if (!userData && avatarElement.dataset.user) {
-            try {
-                userData = JSON.parse(avatarElement.dataset.user || '{}');
-            } catch (e) {
-                console.warn('Failed to parse user data from avatar element:', e);
-            }
+        const userId = avatarElement.dataset.userId || avatarElement.dataset.username;
+
+        if ((!userData || !userData.accessories) && userId) {
+            userData = await this.fetchUserData(userId);
+        }
+
+        if (!userData && window.currentUser) {
+            userData = window.currentUser;
         }
 
         if (!userData && avatarElement.id === 'avatar-container') {
@@ -230,7 +231,9 @@ class UniversalAccessorySystem {
 
     async fetchUserData(userId) {
         try {
-            const response = await fetch(`/api/get-user-public?id=${userId}`);
+            const response = await fetch(`/api/get-user-public?id=${userId}`, {
+                cache: 'no-store'
+            });
             if (response.ok) {
                 return await response.json();
             }
@@ -240,13 +243,17 @@ class UniversalAccessorySystem {
         return null;
     }
 
-    createAccessoryLayer(avatarElement) {
-        let accessoryLayer = avatarElement.querySelector('.accessory-layer') || avatarElement.querySelector('#userAccessoryLayer');
+    createAccessoryLayer(avatarElement, layerType = 'foreground') {
+        const existingLayerSelector = layerType === 'background'
+            ? '.accessory-layer.background-accessory-layer'
+            : '.accessory-layer.foreground-accessory-layer, #userAccessoryLayer';
+
+        let accessoryLayer = avatarElement.querySelector(existingLayerSelector);
         if (accessoryLayer) return accessoryLayer;
 
         console.log('Creating accessory layer for:', avatarElement);
         accessoryLayer = document.createElement('div');
-        accessoryLayer.className = 'accessory-layer';
+        accessoryLayer.className = `accessory-layer ${layerType}-accessory-layer`;
         accessoryLayer.style.cssText = `
             position: absolute;
             top: 0;
@@ -254,7 +261,7 @@ class UniversalAccessorySystem {
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 3;
+            z-index: ${layerType === 'background' ? 0 : 2};
         `;
 
         const computedStyle = window.getComputedStyle(avatarElement);
@@ -262,7 +269,11 @@ class UniversalAccessorySystem {
             avatarElement.style.position = 'relative';
         }
 
-        avatarElement.appendChild(accessoryLayer);
+        if (layerType === 'background' && avatarElement.firstChild) {
+            avatarElement.insertBefore(accessoryLayer, avatarElement.firstChild);
+        } else {
+            avatarElement.appendChild(accessoryLayer);
+        }
         console.log('Accessory layer created and appended:', accessoryLayer);
         return accessoryLayer;
     }
@@ -304,7 +315,7 @@ class UniversalAccessorySystem {
 
         const isBackground = category === 'backgrounds';
         const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
-        const zIndex = isBackground ? 1 : 4;
+        const zIndex = isBackground ? 0 : 2;
 
         element.style.cssText = `
             position: absolute;
@@ -314,9 +325,17 @@ class UniversalAccessorySystem {
             opacity: ${defaultPos.opacity};
             pointer-events: none;
             z-index: ${zIndex};
-            width: ${isBackground ? '120%' : 'auto'};
-            height: ${isBackground ? '120%' : 'auto'};
+            width: 100%;
+            height: 100%;
         `;
+
+        const svg = element.querySelector('svg');
+        if (svg) {
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.display = 'block';
+            svg.style.overflow = 'visible';
+        }
 
         container.appendChild(element);
     }
@@ -326,8 +345,22 @@ class UniversalAccessorySystem {
             await this.init();
         }
 
-        const accessoryLayer = this.createAccessoryLayer(avatarElement);
-        this.renderAccessories(accessoryLayer, userData.accessories);
+        this.renderAccessoriesForAvatar(avatarElement, userData.accessories);
+    }
+
+    renderAccessoriesForAvatar(avatarElement, accessoriesData) {
+        const accessories = accessoriesData?.accessories || accessoriesData || {};
+
+        Object.entries(accessories).forEach(([category, accessoryKey]) => {
+            if (!this.accessoryLibrary?.[category]) return;
+
+            const accessory = this.accessoryLibrary[category][accessoryKey];
+            if (!accessory || !accessory.svg) return;
+
+            const layerType = category === 'backgrounds' ? 'background' : 'foreground';
+            const accessoryLayer = this.createAccessoryLayer(avatarElement, layerType);
+            this.renderAccessory(accessoryLayer, accessory, category, accessoryKey);
+        });
     }
 
     refreshAllAvatars() {

@@ -32,7 +32,7 @@ function buildPortraitAvatarSvg(color = '#2563eb', size = '100%') {
     const shade = mixColor(base, -0.16);
 
     return `
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%; display:block;">
+        <svg class="avatar-base-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: ${size}; height: ${size}; max-width: 100%; max-height: 100%; display:block;">
             <defs>
                 <clipPath id="avatarClip">
                     <circle cx="50" cy="50" r="50"/>

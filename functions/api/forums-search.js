@@ -41,7 +41,9 @@ export async function onRequestGet(context) {
                     isPremium: premiumSet.has(creatorUsername),
                     forumColor: userData.forumColor || userData.themeColor || "#2563eb",
                     premiumGlowAlpha: typeof userData.premiumGlowAlpha === "number" ? userData.premiumGlowAlpha : 0.8,
-                    avatar: userData.avatarUrl || "/default-avatar.png"
+                    avatar: userData.avatarUrl || "/default-avatar.png",
+                    themeColor: userData.themeColor || "#2563eb",
+                    accessories: userData.accessories || null
                 };
             })
         );

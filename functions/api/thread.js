@@ -53,7 +53,7 @@ export async function onRequestGet(context) {
             if (uname === "[deleted]") {
                 userMap[uname] = { deleted: true };
             } else {
-                const data = await env.USERS_KV.get(`user:${uname}`, { cacheTtl: 1800 });
+                const data = await env.USERS_KV.get(`user:${uname}`);
                 userMap[uname] = data ? JSON.parse(data) : {};
             }
         }));
@@ -89,7 +89,8 @@ export async function onRequestGet(context) {
                 postCaption: isPremium ? String(user.postCaption || "") : "",
                 postAnimation: isPremium ? String(user.postAnimation || "none") : "none",
                 isPremium,
-                avatar: user.avatarUrl || "/default-avatar.png"
+                avatar: user.avatarUrl || "/default-avatar.png",
+                accessories: user.accessories || null
             };
         });
 
