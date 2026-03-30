@@ -71,19 +71,31 @@ export async function onRequestPost(context) {
                     }
 
                     try {
-                        const imageResponse = await fetch(urlStr, {
-                            method: 'HEAD', 
+
+                        let imageResponse = await fetch(urlStr, {
+                            method: 'HEAD',
                             headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' },
                             redirect: 'follow'
                         });
+
+                        if (!imageResponse.ok || !imageResponse.headers.get('content-type')) {
+                            imageResponse = await fetch(urlStr, {
+                                method: 'GET',
+                                headers: { 
+                                    'User-Agent': 'Pal-Profile-Validator/1.0',
+                                    'Range': 'bytes=0-0' 
+                                },
+                                redirect: 'follow'
+                            });
+                        }
 
                         if (!imageResponse.ok) {
                             throw new Error("Link unreachable");
                         }
 
                         const contentType = imageResponse.headers.get('content-type') || '';
-                        
-                        if (!contentType.startsWith('image/')) {
+
+                        if (!contentType.startsWith('image/') && contentType !== 'application/octet-stream') {
                             return new Response(JSON.stringify({ error: "URL does not point to a valid image." }), {
                                 status: 400,
                                 headers: { "Content-Type": "application/json" }
@@ -93,10 +105,8 @@ export async function onRequestPost(context) {
                         avatarUrl = urlStr;
 
                     } catch (fetchError) {
-                        return new Response(JSON.stringify({ error: "Could not verify image URL. Ensure the link is public." }), {
-                            status: 400,
-                            headers: { "Content-Type": "application/json" }
-                        });
+
+                        avatarUrl = urlStr; 
                     }
 
                 } catch (urlError) {

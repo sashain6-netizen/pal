@@ -304,131 +304,50 @@ let previewTimeout = null;
 
 async function validateImageUrl(url) {
     console.log('Validating URL:', url);
+
     try {
-        const isAlreadyEncoded = url !== decodeURI(url);
-        const encodedUrl = isAlreadyEncoded ? url : encodeURI(url);
-        console.log('Is already encoded:', isAlreadyEncoded);
-        console.log('Encoded URL:', encodedUrl);
+
+        const trimmedUrl = url.trim();
+        const isAlreadyEncoded = trimmedUrl !== decodeURI(trimmedUrl);
+        const encodedUrl = isAlreadyEncoded ? trimmedUrl : encodeURI(trimmedUrl);
         const urlObj = new URL(encodedUrl);
-        console.log('URL object:', urlObj);
-        console.log('URL pathname:', urlObj.pathname);
-        console.log('URL search:', urlObj.search);
 
         if (!['http:', 'https:'].includes(urlObj.protocol)) {
-            return { valid: false, error: "Invalid protocol. Only HTTP/HTTPS allowed." };
+            return { valid: false, error: "Only HTTP and HTTPS links are allowed." };
         }
 
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.avif', '.ico', '.tiff', '.tif'];
-        const hasImageExtension = imageExtensions.some(ext =>
-            url.toLowerCase().includes(ext)
-        );
+        return new Promise((resolve) => {
+            const img = new Image();
 
-        const validationMethods = [
-            () => fetch(encodedUrl, {
-                method: 'HEAD',
-                headers: {
-                    'User-Agent': 'Pal-Profile-Validator/1.0',
-                    'Accept': 'image/*'
-                },
-                mode: 'cors'
-            }),
-            () => fetch(encodedUrl, {
-                method: 'GET',
-                headers: {
-                    'User-Agent': 'Pal-Profile-Validator/1.0',
-                    'Accept': 'image/*',
-                    'Range': 'bytes=0-1024'
-                },
-                mode: 'cors'
-            }),
-            () => fetch(encodedUrl, {
-                method: 'GET',
-                headers: {
-                    'User-Agent': 'Pal-Profile-Validator/1.0',
-                    'Accept': 'image/*'
-                },
-                mode: 'no-cors'
-            })
-        ];
+            const timer = setTimeout(() => {
+                img.src = ""; 
+                resolve({ valid: false, error: "The image took too long to respond." });
+            }, 8000);
 
-        let response = null;
-        let lastError = null;
+            img.onload = () => {
+                clearTimeout(timer);
 
-        for (const [index, method] of validationMethods.entries()) {
-            try {
-                response = await method();
-
-                if (index === 2) {
-                    console.log("Using no-cors fallback - assuming valid if request succeeded");
-                    return { valid: true, noCors: true };
+                if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                    console.log(`✅ Valid: ${img.naturalWidth}x${img.naturalHeight}`);
+                    resolve({ valid: true, url: encodedUrl });
+                } else {
+                    resolve({ valid: false, error: "The file appears to be a broken image." });
                 }
+            };
 
-                if (response.ok) break;
-            } catch (err) {
-                lastError = err;
-                continue;
-            }
-        }
-
-        if (!response || !response.ok) {
-            let errorMessage = "Cannot access image URL. Check if the link is correct and publicly accessible.";
-
-            if (response.status === 404) {
-                errorMessage = "❌ Image not found (404). The URL may be incorrect or the image may have been moved. Try a different image URL.";
-            } else if (response.status === 403) {
-                errorMessage = "❌ Access forbidden (403). This image may require authentication or be private.";
-            } else if (lastError?.message.includes('cors')) {
-                errorMessage = "CORS error - the image host doesn't allow direct linking. Try a different image or upload it to a service like imgur.com";
-            } else if (lastError?.message.includes('network') || lastError?.message.includes('fetch')) {
-                errorMessage = "Network error - cannot reach the image server. Check the URL and your internet connection";
-            }
-
-            return { valid: false, error: errorMessage };
-        }
-
-        const contentType = response.headers.get('content-type') || '';
-        const contentLength = response.headers.get('content-length');
-
-        const validContentTypes = [
-            'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
-            'image/webp', 'image/bmp', 'image/svg+xml', 'image/avif',
-            'image/x-icon', 'image/vnd.microsoft.icon', 'image/tiff'
-        ];
-
-        const isValidContentType = validContentTypes.some(type =>
-            contentType.toLowerCase().includes(type)
-        );
-
-        if (!isValidContentType && !contentType.startsWith('image/')) {
-            return { valid: false, error: `URL does not point to a supported image format. Found: ${contentType || 'unknown'}` };
-        }
-
-        if (contentLength && parseInt(contentLength) > 10 * 1024 * 1024) {
-            return { valid: false, error: "Image file is too large (max 10MB)." };
-        }
-
-        if (urlObj.pathname.toLowerCase().endsWith('.svg') || contentType.includes('svg')) {
-            try {
-                const svgResponse = await fetch(encodedUrl, {
-                    headers: { 'User-Agent': 'Pal-Profile-Validator/1.0' },
-                    mode: 'cors'
+            img.onerror = () => {
+                clearTimeout(timer);
+                resolve({ 
+                    valid: false, 
+                    error: "Could not load image. Ensure it's a direct link to an image file." 
                 });
-                const svgText = await svgResponse.text();
+            };
 
-                if (svgText.includes('<script>') || svgText.includes('javascript:')) {
-                    return { valid: false, error: "SVG contains potentially unsafe content." };
-                }
-            } catch (err) {
-                return { valid: false, error: "Cannot validate SVG content." };
-            }
-        }
+            img.src = encodedUrl;
+        });
 
-        return { valid: true, url: url };
     } catch (error) {
-        if (error.message.includes('URL constructor')) {
-            return { valid: false, error: "Invalid URL format. Please check the link and try again." };
-        }
-        return { valid: false, error: "Validation failed. Please try a different image URL." };
+        return { valid: false, error: "That doesn't look like a valid URL." };
     }
 }
 
@@ -493,120 +412,20 @@ async function handleAvatarInput() {
         return;
     }
 
-    updatePreview(currentAvatarUrl, "⏳ Validating URL...", true);
+    // Clear old timer if user is still typing
+    if (previewTimeout) clearTimeout(previewTimeout);
 
-    if (previewTimeout) {
-        clearTimeout(previewTimeout);
-    }
+    updatePreview(currentAvatarUrl, "⏳ Validating...", true);
 
     previewTimeout = setTimeout(async () => {
         const validation = await validateImageUrl(url);
 
         if (validation.valid) {
-            const imageUrl = validation.url || url;
-            updatePreview(imageUrl, "🔍 Loading image...");
-
-            const loadImageWithRetry = async (imageUrl, maxRetries = 3) => {
-                console.log('Loading image with retry:', imageUrl);
-                for (let attempt = 1; attempt <= maxRetries; attempt++) {
-                    try {
-                        const img = new Image();
-
-                        const timeoutPromise = new Promise((_, reject) => {
-                            setTimeout(() => reject(new Error('Image load timeout')), 10000);
-                        });
-
-                        const loadPromise = new Promise((resolve, reject) => {
-                            img.onload = () => resolve(img);
-                            img.onerror = () => reject(new Error('Image load failed'));
-
-                            img.src = imageUrl;
-                        });
-
-                        const loadedImg = await Promise.race([loadPromise, timeoutPromise]);
-
-                        if (loadedImg.naturalWidth === 0 || loadedImg.naturalHeight === 0) {
-                            throw new Error('Invalid image dimensions');
-                        }
-
-                        if (loadedImg.naturalWidth < 20 || loadedImg.naturalHeight < 20) {
-                            throw new Error('Image too small (minimum 20x20 pixels)');
-                        }
-
-                        if (loadedImg.naturalWidth > 4096 || loadedImg.naturalHeight > 4096) {
-                            throw new Error('Image too large (maximum 4096x4096 pixels)');
-                        }
-
-                        return loadedImg;
-                    } catch (error) {
-                        console.warn(`Image load attempt ${attempt} failed:`, error.message);
-                        if (attempt === maxRetries) {
-                            throw error;
-                        }
-                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-                    }
-                }
-            };
-
-            try {
-                await loadImageWithRetry(url);
-                updatePreview(url, "✅ Image loaded successfully");
-                return;
-            } catch (error) {
-                let errorMessage = "❌ Failed to load image";
-
-                if (error.message.includes('timeout')) {
-                    errorMessage = "❌ Image load timed out - try a faster host or smaller image";
-                } else if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
-                    errorMessage = "❌ CORS blocked - the image host doesn't allow direct linking. Try a different image or upload it to a public hosting service";
-                } else if (error.message.includes('404') || error.message.includes('not found')) {
-                    errorMessage = "❌ Image not found. The URL may be incorrect or the image may have been moved.";
-                } else if (error.message.includes('too small')) {
-                    errorMessage = "❌ Image too small (minimum 20x20 pixels)";
-                } else if (error.message.includes('too large')) {
-                    errorMessage = "❌ Image too large (maximum 4096x4096 pixels)";
-                } else if (error.message.includes('Invalid image dimensions')) {
-                    errorMessage = "❌ Invalid image file - may be corrupted";
-                } else {
-                    errorMessage = "❌ Cannot load image - try a different URL or host";
-                }
-
-                updatePreview("", errorMessage);
-            }
+            // Success! The image rendered in the hidden validation test.
+            updatePreview(validation.url, "✅ Image loaded successfully");
         } else {
-            let errorMessage = `❌ ${validation.error}`;
-
-            if (validation.error.includes('CORS error')) {
-                errorMessage += " Try uploading to a public image hosting service or using a different image";
-            } else if (validation.error.includes('Cannot access image URL')) {
-                errorMessage += " Make sure the link is public and not behind a login/firewall";
-            } else if (validation.error.includes('Network error')) {
-                errorMessage += " Check if the website is down or the URL is correct";
-            }
-
-            if (validation.error.includes('Network error') || validation.error.includes('Cannot access image URL')) {
-                updatePreview(url, "🔄 Attempting direct load...", true);
-
-                const img = new Image();
-                img.onload = () => {
-                    console.log('Direct image load success for:', url);
-                    console.log('Image dimensions:', img.naturalWidth, 'x', img.naturalHeight);
-                    if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-                        updatePreview(url, "✅ Image loaded (direct access)");
-                    } else {
-                        updatePreview("", "❌ Invalid image - try a different URL");
-                    }
-                };
-                img.onerror = () => {
-                    console.log('Direct image load failed for:', url);
-                    updatePreview("", "❌ Failed to load image directly");
-                };
-
-                img.crossOrigin = 'anonymous';
-                img.src = url;
-            } else {
-                updatePreview("", errorMessage);
-            }
+            // Failure! Show the specific error from our bulletproof function.
+            updatePreview("", `❌ ${validation.error}`);
         }
     }, 500);
 }
