@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test User Accessories</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-container { margin: 20px 0; }
+        .avatar-container { 
+            width: 150px; 
+            height: 150px; 
+            border-radius: 50%; 
+            border: 2px solid #ccc; 
+            position: relative; 
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .avatar-with-accessories {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+        }
+        .accessory-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .log { 
+            background: #f5f5f5; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Accessories Test</h1>
+    
+    <div class="test-container">
+        <h3>Test Avatar</h3>
+        <div class="avatar-container">
+            <div class="avatar-with-accessories" id="userAvatarWithAccessories">
+                <div style="width: 100%; height: 100%; background: #2563eb; border-radius: 50%;"></div>
+                <div class="accessory-layer" id="userAccessoryLayer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="log" id="log"></div>
+
+    <script src="/profile/accessories.js"></script>
+    <script src="/users/script.js"></script>
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message) {
+            log.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Test with sample accessories data
+        const testAccessories = {
+            hats: 'paper_hat',
+            glasses: 'none',
+            mouths: 'none',
+            face_accessories: 'none',
+            backgrounds: 'none'
+        };
+
+        addLog('Starting accessories test...');
+        addLog('ACCESSORY_LIBRARY available: ' + (typeof window.ACCESSORY_LIBRARY !== 'undefined'));
+
+        // Wait for accessories library to load
+        setTimeout(() => {
+            addLog('ACCESSORY_LIBRARY available after timeout: ' + (typeof window.ACCESSORY_LIBRARY !== 'undefined'));
+            
+            if (window.ACCESSORY_LIBRARY) {
+                addLog('Available hat categories: ' + Object.keys(window.ACCESSORY_LIBRARY.hats || {}).join(', '));
+                
+                // Test rendering
+                addLog('Calling renderUserAccessories...');
+                renderUserAccessories(testAccessories);
+                
+                setTimeout(() => {
+                    const accessoryLayer = document.getElementById('userAccessoryLayer');
+                    const accessoryElements = accessoryLayer.querySelectorAll('.accessory-element');
+                    addLog('Accessory elements rendered: ' + accessoryElements.length);
+                    
+                    accessoryElements.forEach((el, i) => {
+                        addLog('Element ' + i + ': ' + el.className + ' - ' + (el.dataset.category || 'no category'));
+                    });
+                }, 500);
+            } else {
+                addLog('ERROR: ACCESSORY_LIBRARY still not available');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

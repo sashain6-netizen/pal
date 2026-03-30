@@ -6,32 +6,54 @@ function renderUserAccessories(accessoriesData) {
 
     const accessories = accessoriesData.accessories || accessoriesData || {};
 
-    Object.keys(accessories).forEach(category => {
-        const accessoryKey = accessories[category];
-
-        if (window.ACCESSORY_LIBRARY && window.ACCESSORY_LIBRARY[category] && window.ACCESSORY_LIBRARY[category][accessoryKey]) {
-            const accessory = window.ACCESSORY_LIBRARY[category][accessoryKey];
-            if (accessory.svg) {
-                renderAccessoryElement(accessoryLayer, accessory, category, accessoryKey);
-            }
+    // Wait for ACCESSORY_LIBRARY to be available
+    const tryRenderAccessories = () => {
+        if (!window.ACCESSORY_LIBRARY) {
+            // If library isn't loaded yet, try again in 100ms
+            setTimeout(tryRenderAccessories, 100);
+            return;
         }
-    });
+
+        Object.keys(accessories).forEach(category => {
+            const accessoryKey = accessories[category];
+
+            if (window.ACCESSORY_LIBRARY[category] && window.ACCESSORY_LIBRARY[category][accessoryKey]) {
+                const accessory = window.ACCESSORY_LIBRARY[category][accessoryKey];
+                if (accessory.svg) {
+                    renderAccessoryElement(accessoryLayer, accessory, category, accessoryKey);
+                }
+            }
+        });
+    };
+
+    tryRenderAccessories();
 }
 
 function renderAccessoryElement(container, accessory, category, accessoryKey) {
     const element = document.createElement('div');
     element.className = `accessory-element ${category.replace('_', '-')}`;
+    element.dataset.category = category;
+    element.dataset.accessoryKey = accessoryKey;
+
+    element.innerHTML = accessory.svg;
 
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
 
-    element.style.left = `${defaultPos.x}%`;
-    element.style.top = `${defaultPos.y}%`;
-    element.style.transform = `translate(-50%, -50%) scale(${defaultPos.scale}) rotate(${defaultPos.rotation}deg)`;
-    element.style.opacity = defaultPos.opacity;
-    element.style.pointerEvents = 'none';
-    element.style.position = 'absolute';
+    const isBackground = category === 'backgrounds';
+    const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
+    const zIndex = isBackground ? 1 : 4;
 
-    element.innerHTML = accessory.svg;
+    element.style.cssText = `
+        position: absolute;
+        left: ${defaultPos.x}%;
+        top: ${defaultPos.y}%;
+        transform: translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg);
+        opacity: ${defaultPos.opacity};
+        pointer-events: none;
+        z-index: ${zIndex};
+        width: ${isBackground ? '120%' : 'auto'};
+        height: ${isBackground ? '120%' : 'auto'};
+    `;
 
     container.appendChild(element);
 }
