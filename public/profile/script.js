@@ -360,8 +360,13 @@ function updatePreview(url, status, keepCurrentImage = false) {
 
     if (!previewImage || !previewStatus || !avatarUrlGroup) return;
 
+    // Fix for Wikia/Fandom: Tells the browser not to reveal our site's 
+    // identity, which bypasses hotlink protection.
+    previewImage.referrerPolicy = "no-referrer";
+
     avatarUrlGroup.classList.remove('has-success', 'has-error');
 
+    // Visual feedback: Add loading class if we are validating or fetching
     if (status.includes("⏳") || status.includes("🔍")) {
         previewImage.classList.add('loading');
     } else {
@@ -374,17 +379,21 @@ function updatePreview(url, status, keepCurrentImage = false) {
             previewImage.src = url;
             currentAvatarUrl = url;
         } else if (!url) {
+            // Fallback to default SVG if no URL is provided
             const themeColor = document.getElementById('themeColor')?.value || '#2563eb';
-            const defaultAvatar = window.generateDefaultAvatarSVG(themeColor);
+            const defaultAvatar = window.generateDefaultAvatarSVG ? 
+                window.generateDefaultAvatarSVG(themeColor) : "/default-avatar.png";
             previewImage.src = defaultAvatar;
             currentAvatarUrl = "";
         }
 
+        // Sync with accessories (hats, glasses, etc.)
         if (window.accessoryManager) {
             window.accessoryManager.updatePreview();
         }
     }
 
+    // Update status text and styling
     previewStatus.textContent = status;
     previewStatus.className = "preview-status";
 
