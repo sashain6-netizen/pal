@@ -322,10 +322,18 @@ class UniversalAccessorySystem {
         element.style.opacity = defaultPos.opacity ?? 1;
         element.style.pointerEvents = 'none';
         element.style.zIndex = isBackground ? '0' : '2';
+        element.style.width = 'auto';
+        element.style.height = 'auto';
 
         if (isBackground) {
             element.style.width = '120%';
             element.style.height = '120%';
+        }
+
+        const svg = element.querySelector('svg');
+        if (svg) {
+            svg.style.display = 'block';
+            svg.style.overflow = 'visible';
         }
 
         container.appendChild(element);
