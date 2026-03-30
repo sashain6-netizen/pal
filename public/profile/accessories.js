@@ -120,12 +120,12 @@ const ACCESSORY_LIBRARY = {
     },
 
     glasses: {
-        none: { 
-            name: 'Natural Eyes', 
-            rarity: 'Starter', 
-            description: 'Simple, natural eyes.', 
-            price: 0, 
-            xpRequired: 0, 
+        none: {
+            name: 'Natural Eyes',
+            rarity: 'Starter',
+            description: 'Simple, natural eyes.',
+            price: 0,
+            xpRequired: 0,
             category: 'glasses',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="37" cy="45" rx="4" ry="5" fill="#2d3748"/>
@@ -239,12 +239,12 @@ const ACCESSORY_LIBRARY = {
     },
 
     mouths: {
-        none: { 
-            name: 'Gentle Smile', 
-            rarity: 'Starter', 
-            description: 'A soft, natural smile.', 
-            price: 0, 
-            xpRequired: 0, 
+        none: {
+            name: 'Gentle Smile',
+            rarity: 'Starter',
+            description: 'A soft, natural smile.',
+            price: 0,
+            xpRequired: 0,
             category: 'mouths',
             svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path d="M42 58 C47 63 53 63 58 58" stroke="#7c4a36" stroke-width="2.5" fill="none" stroke-linecap="round"/>
@@ -614,7 +614,6 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = { ACCESSORY_LIBRARY, DEFAULT_ACCESSORIES, DEFAULT_OWNED_ACCESSORIES, ACCESSORY_CONTROLS };
 }
 
-// Expose to global scope for universal accessories system
 if (typeof window !== 'undefined') {
     window.ACCESSORY_LIBRARY = ACCESSORY_LIBRARY;
     window.DEFAULT_ACCESSORIES = DEFAULT_ACCESSORIES;

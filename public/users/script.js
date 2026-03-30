@@ -20,7 +20,7 @@ function renderUserAccessories(accessoriesData) {
 
 function renderAccessoryElement(container, accessory, category, accessoryKey) {
     const element = document.createElement('div');
-    element.className = `accessory-element ${category.replace('_', '-')}`; // Use proper CSS classes
+    element.className = `accessory-element ${category.replace('_', '-')}`;
 
     const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
 

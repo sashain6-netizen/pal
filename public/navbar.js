@@ -192,20 +192,18 @@ function injectNavbar() {
     } else {
         document.body.insertAdjacentHTML('afterbegin', navbarHTML.replace('<div id="toast-container"></div>', ''));
     }
-    
-    // Load universal accessories system for navbar profile icon
+
     if (!window.universalAccessorySystem) {
         const script = document.createElement('script');
         script.src = '/utils/universal-accessories.js';
         script.onload = () => {
-            // Initialize accessories system after script loads
             if (window.universalAccessorySystem) {
                 window.universalAccessorySystem.init();
             }
         };
         document.head.appendChild(script);
     }
-    
+
     window.navbarHasLoaded = true;
 
     setupMobileMenu();

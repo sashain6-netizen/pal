@@ -300,16 +300,15 @@ class AccessoryManager {
         element.innerHTML = accessory.svg;
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
-        
-        // Backgrounds need to be larger to cover the entire avatar
+
         const isBackground = category === 'backgrounds';
         const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
-        
+
         element.style.left = `${defaultPos.x}%`;
         element.style.top = `${defaultPos.y}%`;
         element.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${defaultPos.rotation}deg)`;
         element.style.opacity = defaultPos.opacity ?? 1;
-        
+
         if (isBackground) {
             element.style.width = '120%';
             element.style.height = '120%';

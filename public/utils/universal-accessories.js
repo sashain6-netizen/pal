@@ -61,11 +61,10 @@ class UniversalAccessorySystem {
                 document.head.appendChild(script);
             });
 
-            // Wait a bit for the script to fully execute and set window.ACCESSORY_LIBRARY
             await new Promise(resolve => setTimeout(resolve, 50));
-            
+
             this.accessoryLibrary = window.ACCESSORY_LIBRARY;
-            
+
             if (!this.accessoryLibrary) {
                 throw new Error('ACCESSORY_LIBRARY not found after loading accessories.js');
             }
@@ -80,7 +79,9 @@ class UniversalAccessorySystem {
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach((node) => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
-                            this.applyAccessoriesToNode(node);
+                            setTimeout(() => {
+                                this.applyAccessoriesToNode(node);
+                            }, 100);
                         }
                     });
                 }
@@ -140,7 +141,7 @@ class UniversalAccessorySystem {
         try {
             const userData = await this.extractUserData(avatarElement);
             console.log('Extracted user data:', userData);
-            
+
             if (!userData || !userData.accessories) {
                 console.log('No user data or accessories found for:', avatarElement);
                 return;
@@ -165,7 +166,7 @@ class UniversalAccessorySystem {
         let userData = null;
 
         const userId = avatarElement.dataset.userId || avatarElement.dataset.username;
-        
+
         if (userId) {
             userData = await this.fetchUserData(userId);
         }
@@ -185,7 +186,6 @@ class UniversalAccessorySystem {
             }
         }
 
-        // Also check if the avatar element itself has data-user attribute
         if (!userData && avatarElement.dataset.user) {
             try {
                 userData = JSON.parse(avatarElement.dataset.user || '{}');
@@ -269,8 +269,7 @@ class UniversalAccessorySystem {
         element.innerHTML = accessory.svg;
 
         const defaultPos = accessory.defaultPosition || { x: 50, y: 50, scale: 1, rotation: 0, opacity: 1 };
-        
-        // Backgrounds need to be larger to cover the entire avatar
+
         const isBackground = category === 'backgrounds';
         const scale = isBackground ? (defaultPos.scale || 1) * 1.5 : defaultPos.scale;
         const zIndex = isBackground ? 1 : 4;

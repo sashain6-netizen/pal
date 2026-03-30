@@ -601,4 +601,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
