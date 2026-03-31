@@ -201,7 +201,7 @@ export function getDefaultOwnedAccessories() {
         ACCESSORY_CATEGORIES.map(category => [
             category,
             Object.entries(ACCESSORY_CATALOG[category])
-                .filter(([, item]) => item.starter || item.price === 0 && item.xpRequired === 0)
+                .filter(([, item]) => item.starter || (item.price === 0 && item.xpRequired === 0))
                 .map(([key]) => key)
         ])
     );
@@ -234,7 +234,8 @@ export function grantEarnedAccessories(user) {
 
     for (const category of ACCESSORY_CATEGORIES) {
         for (const [accessoryKey, item] of Object.entries(ACCESSORY_CATALOG[category])) {
-            if (item.xpRequired > 0 && xp >= item.xpRequired && !normalizedOwned[category].includes(accessoryKey)) {
+            // Only grant accessories that are XP-locked (price === 0), not coin-locked ones
+            if (item.price === 0 && item.xpRequired > 0 && xp >= item.xpRequired && !normalizedOwned[category].includes(accessoryKey)) {
                 normalizedOwned[category].push(accessoryKey);
                 changed = true;
             }
