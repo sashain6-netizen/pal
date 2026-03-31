@@ -81,9 +81,9 @@ export async function onRequestPost(context) {
                         if (!imageResponse.ok || !imageResponse.headers.get('content-type')) {
                             imageResponse = await fetch(urlStr, {
                                 method: 'GET',
-                                headers: { 
+                                headers: {
                                     'User-Agent': 'Pal-Profile-Validator/1.0',
-                                    'Range': 'bytes=0-0' 
+                                    'Range': 'bytes=0-0'
                                 },
                                 redirect: 'follow'
                             });
@@ -106,7 +106,7 @@ export async function onRequestPost(context) {
 
                     } catch (fetchError) {
 
-                        avatarUrl = urlStr; 
+                        avatarUrl = urlStr;
                     }
 
                 } catch (urlError) {

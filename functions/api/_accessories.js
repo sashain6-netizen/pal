@@ -9,7 +9,7 @@ export const ACCESSORY_CATALOG = {
         pirate_hat: { price: 12000, xpRequired: 2800, starter: false },
         laurel_crown: { price: 26000, xpRequired: 6000, starter: false },
         royal_crown: { price: 46000, xpRequired: 8000, starter: false },
-        
+
         fedora: { price: 57000, xpRequired: 8600, starter: false },
         chef_hat: { price: 58200, xpRequired: 8640, starter: false },
         flower_crown: { price: 59400, xpRequired: 8680, starter: false },
@@ -57,7 +57,7 @@ export const ACCESSORY_CATALOG = {
         heart_glasses: { price: 13000, xpRequired: 3000, starter: false },
         star_glasses: { price: 28000, xpRequired: 6200, starter: false },
         cyber_visor: { price: 46000, xpRequired: 8100, starter: false },
-        
+
         frost_rim: { price: 57000, xpRequired: 8600, starter: false },
         neon_rim_glasses: { price: 58250, xpRequired: 8640, starter: false },
         golden_monocle: { price: 59450, xpRequired: 8680, starter: false },
@@ -104,7 +104,7 @@ export const ACCESSORY_CATALOG = {
         big_smile: { price: 1800, xpRequired: 350, starter: false },
         laugh: { price: 5000, xpRequired: 1100, starter: false },
         fang_grin: { price: 14000, xpRequired: 3500, starter: false },
-        
+
         plasma_smile: { price: 57000, xpRequired: 8600, starter: false },
         cosmic_grin: { price: 58550, xpRequired: 8650, starter: false },
         void_mouth: { price: 60100, xpRequired: 8700, starter: false },
@@ -145,7 +145,7 @@ export const ACCESSORY_CATALOG = {
         eye_patch: { price: 4500, xpRequired: 1100, starter: false },
         mask: { price: 12000, xpRequired: 2800, starter: false },
         golden_piercing: { price: 26000, xpRequired: 6000, starter: false },
-        
+
         plasma_tattoo: { price: 57000, xpRequired: 8600, starter: false },
         cosmic_marking: { price: 58550, xpRequired: 8650, starter: false },
         void_symbol: { price: 60100, xpRequired: 8700, starter: false },
@@ -234,7 +234,6 @@ export function grantEarnedAccessories(user) {
 
     for (const category of ACCESSORY_CATEGORIES) {
         for (const [accessoryKey, item] of Object.entries(ACCESSORY_CATALOG[category])) {
-            // Only grant accessories that are XP-locked (price === 0), not coin-locked ones
             if (item.price === 0 && item.xpRequired > 0 && xp >= item.xpRequired && !normalizedOwned[category].includes(accessoryKey)) {
                 normalizedOwned[category].push(accessoryKey);
                 changed = true;

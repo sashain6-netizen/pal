@@ -1,234 +1,251 @@
-;(function applyAccessoryCorrections() {
+(function applyAccessoryCorrections() {
 
     if (typeof ACCESSORY_LIBRARY === 'undefined') {
         console.error('[accessories_corrections] ACCESSORY_LIBRARY not found. Load accessories_library.js first.');
         return;
     }
 
-    // Progression philosophy:
-    //
-    //   Starter   — always free, no gate. Onboarding.
-    //   Common    — cheap coins, zero or tiny XP. Teaches coin loop.
-    //   Uncommon  — moderate coins + small XP gate. Introduces dual-resource management.
-    //   Rare      — real investment. First "milestone" feel.
-    //   Epic      — major achievement. High on both axes.
-    //   Legendary — serious long-term commitment. XP is now the bottleneck.
-    //   Mythic    — prestige gate. Marks a true veteran.
-    //   Elite     — full endgame ladder of ~30-40 items, linearly spread
-    //               from 57 000 coins / 8 600 XP up to 100 000 / 10 000.
-    //               Each category uses an even step so every unlock feels
-    //               like meaningful progress rather than a wall.
+    const TIER_PRICES = {
+        'Starter':     0,
+        'Common':      500,
+        'Uncommon':    1500,
+        'Rare':        4500,
+        'Epic':        12000,
+        'Legendary':   30000,
+        'Mythic':      75000,
+        'Elite':       150000
+    };
+
+    const TIER_XP = {
+        'Starter':     0,
+        'Common':      100,
+        'Uncommon':    300,
+        'Rare':        900,
+        'Epic':        2500,
+        'Legendary':   6000,
+        'Mythic':      15000,
+        'Elite':       30000
+    };
 
     const CORRECTIONS = {
 
-        // ── HATS ─────────────────────────────────────────────────────────────
-        // 9 pre-Elite items, then 37 Elite items (fedora → royal_turban).
-        // Elite price step ≈ 1 200 coins | XP step = 40.
         hats: [
-            ['none',              'Starter',    0,       0    ],
-            ['paper_hat',         'Starter',    0,       0    ],
-            ['beanie',            'Common',     300,     0    ],  // coin-only; first real purchase
-            ['cap',               'Common',     600,     100  ],  // tiny XP intro
-            ['bucket_hat',        'Uncommon',   1500,    300  ],
-            ['headphones',        'Rare',       5000,    1000 ],
-            ['pirate_hat',        'Epic',       12000,   2800 ],
-            ['laurel_crown',      'Legendary',  26000,   6000 ],
-            ['royal_crown',       'Mythic',     46000,   8000 ],
+            ['none',                    'Starter',    0,         0],
+            ['paper_hat',               'Starter',    0,         0],
 
-            ['fedora',            'Elite',      57000,   8600 ],
-            ['chef_hat',          'Elite',      58200,   8640 ],
-            ['flower_crown',      'Elite',      59400,   8680 ],
-            ['bunny_ears',        'Elite',      60600,   8720 ],
-            ['cat_ears',          'Elite',      61800,   8760 ],
-            ['santa_hat',         'Elite',      63000,   8800 ],
-            ['construction_hat',  'Elite',      64200,   8840 ],
-            ['nurse_cap',         'Elite',      65400,   8880 ],
-            ['police_cap',        'Elite',      66600,   8920 ],
-            ['graduation_cap',    'Elite',      67800,   8960 ],
-            ['pirate_bandana',    'Elite',      69000,   9000 ],
-            ['tribal_mask',       'Elite',      70200,   9040 ],
-            ['crystal_tiara',     'Elite',      71400,   9080 ],
-            ['neon_mohawk',       'Elite',      72600,   9120 ],
-            ['steampunk_goggles', 'Elite',      73800,   9160 ],
-            ['phoenix_crown',     'Elite',      75000,   9200 ],
-            ['devil_horns',       'Elite',      76200,   9240 ],
-            ['crown_of_thorns',   'Elite',      77400,   9280 ],
-            ['cosmic_turban',     'Elite',      78600,   9320 ],
-            ['dragon_helm',       'Elite',      79800,   9360 ],
-            ['rainbow_mohawk',    'Elite',      81000,   9400 ],
-            ['angel_wings',       'Elite',      82200,   9440 ],
-            ['viking_horn',       'Elite',      83400,   9480 ],
-            ['cyberpunk_helmet',  'Elite',      84600,   9520 ],
-            ['nature_crown',      'Elite',      85800,   9560 ],
-            ['wizard_hat',        'Elite',      87000,   9600 ],
-            ['samurai_helmet',    'Elite',      88200,   9640 ],
-            ['halo',              'Elite',      89400,   9680 ],
-            ['astronaut_helmet',  'Elite',      90600,   9720 ],
-            ['space_helmet',      'Elite',      91800,   9760 ],
-            ['ancient_crown',     'Elite',      93000,   9800 ],
-            ['ice_crown',         'Elite',      94200,   9840 ],
-            ['fire_crown',        'Elite',      95400,   9880 ],
-            ['shadow_crown',      'Elite',      96600,   9920 ],
-            ['light_crown',       'Elite',      97800,   9960 ],
-            ['mecha_head',        'Elite',      99000,   9980 ],
-            ['royal_turban',      'Elite',      100000,  10000],
+            ['beanie',                  'Common',     500,       100],
+            ['cap',                     'Common',     600,       120],
+            ['fedora',                  'Common',     700,       140],
+            ['chef_hat',                'Common',     800,       160],
+
+            ['bucket_hat',              'Uncommon',   1500,      300],
+            ['flower_crown',            'Uncommon',   1700,      340],
+            ['bunny_ears',              'Uncommon',   1900,      380],
+            ['cat_ears',                'Uncommon',   2100,      420],
+            ['santa_hat',               'Uncommon',   2300,      460],
+            ['construction_hat',        'Uncommon',   2500,      500],
+
+            ['headphones',              'Rare',       4500,      900],
+            ['pirate_hat',              'Rare',       4800,      960],
+            ['nurse_cap',               'Rare',       5100,      1020],
+            ['police_cap',              'Rare',       5400,      1080],
+            ['graduation_cap',          'Rare',       5700,      1140],
+            ['pirate_bandana',          'Rare',       6000,      1200],
+            ['tribal_mask',             'Rare',       6300,      1260],
+            ['crystal_tiara',           'Rare',       6600,      1320],
+
+            ['laurel_crown',            'Epic',       12000,     2500],
+            ['neon_mohawk',             'Epic',       13000,     2700],
+            ['steampunk_goggles',       'Epic',       14000,     2900],
+            ['phoenix_crown',           'Epic',       15000,     3100],
+            ['devil_horns',             'Epic',       16000,     3300],
+            ['crown_of_thorns',         'Epic',       17000,     3500],
+            ['cosmic_turban',           'Epic',       18000,     3700],
+            ['dragon_helm',             'Epic',       19000,     3900],
+
+            ['royal_crown',             'Legendary',  30000,     6000],
+            ['rainbow_mohawk',          'Legendary',  32000,     6400],
+            ['angel_wings',             'Legendary',  34000,     6800],
+            ['viking_horn',             'Legendary',  36000,     7200],
+            ['cyberpunk_helmet',        'Legendary',  38000,     7600],
+            ['nature_crown',            'Legendary',  40000,     8000],
+
+            ['wizard_hat',              'Mythic',     75000,     15000],
+            ['samurai_helmet',          'Mythic',     80000,     16000],
+            ['halo',                    'Mythic',     85000,     17000],
+            ['astronaut_helmet',        'Mythic',     90000,     18000],
+
+            ['ancient_crown',           'Elite',      150000,    30000],
+            ['royal_turban',            'Elite',      150000,    30000],
         ],
 
-        // ── GLASSES ──────────────────────────────────────────────────────────
-        // 8 pre-Elite items, then 36 Elite items (frost_rim → ultimate_vision).
-        // Elite price step ≈ 1 229 coins | XP step = 40.
         glasses: [
-            ['none',                   'Starter',    0,       0    ],
-            ['cracked_glasses',        'Starter',    0,       0    ],
-            ['regular_glasses',        'Common',     400,     0    ],
-            ['sunglasses',             'Uncommon',   1800,    350  ],
-            ['gamer_glasses',          'Rare',       5500,    1100 ],
-            ['heart_glasses',          'Epic',       13000,   3000 ],
-            ['star_glasses',           'Legendary',  28000,   6200 ],
-            ['cyber_visor',            'Mythic',     46000,   8100 ],
+            ['none',                    'Starter',    0,         0],
+            ['cracked_glasses',         'Starter',    0,         0],
 
-            ['frost_rim',              'Elite',      57000,   8600 ],
-            ['neon_rim_glasses',       'Elite',      58250,   8640 ],
-            ['golden_monocle',         'Elite',      59450,   8680 ],
-            ['steampunk_monocle',      'Elite',      60700,   8720 ],
-            ['matrix_shades',          'Elite',      61900,   8760 ],
-            ['digital_display',        'Elite',      63150,   8800 ],
-            ['shadow_weaver',          'Elite',      64400,   8840 ],
-            ['psychic_vision',         'Elite',      65600,   8880 ],
-            ['quantum_goggles',        'Elite',      66850,   8920 ],
-            ['electric_arc',           'Elite',      68050,   8960 ],
-            ['void_lenses',            'Elite',      69300,   9000 ],
-            ['demonic_visage',         'Elite',      70550,   9040 ],
-            ['angelic_halo',           'Elite',      71750,   9080 ],
-            ['tech_commander',         'Elite',      73000,   9120 ],
-            ['crystal_lenses',         'Elite',      74200,   9160 ],
-            ['holographic_shades',     'Elite',      75450,   9200 ],
-            ['rainbow_visor',          'Elite',      76700,   9240 ],
-            ['lunar_eclipse',          'Elite',      77900,   9280 ],
-            ['solar_flare',            'Elite',      79150,   9320 ],
-            ['plasma_lenses',          'Elite',      80350,   9360 ],
-            ['cyber_eye',              'Elite',      81600,   9400 ],
-            ['void_walker',            'Elite',      82850,   9440 ],
-            ['cosmic_observer',        'Elite',      84050,   9480 ],
-            ['temporal_distortion',    'Elite',      85300,   9520 ],
-            ['dimensional_rift',       'Elite',      86500,   9560 ],
-            ['stellar_navigator',      'Elite',      87750,   9600 ],
-            ['quantum_reality',        'Elite',      88950,   9640 ],
-            ['holographic_projector',  'Elite',      90200,   9680 ],
-            ['neural_interface',       'Elite',      91450,   9720 ],
-            ['antimatter_lenses',      'Elite',      92650,   9760 ],
-            ['quantum_entanglement',   'Elite',      93900,   9800 ],
-            ['paradox_resolver',       'Elite',      95150,   9840 ],
-            ['infinity_observer',      'Elite',      96350,   9880 ],
-            ['cosmic_conductor',       'Elite',      97600,   9920 ],
-            ['reality_bender',         'Elite',      98800,   9960 ],
-            ['ultimate_vision',        'Elite',      100000,  10000],
+            ['regular_glasses',         'Common',     600,       120],
+            ['frost_rim',               'Common',     700,       140],
+            ['neon_rim_glasses',        'Common',     800,       160],
+            ['golden_monocle',          'Common',     900,       180],
+
+            ['sunglasses',              'Uncommon',   1800,      360],
+            ['steampunk_monocle',       'Uncommon',   2000,      400],
+            ['matrix_shades',           'Uncommon',   2200,      440],
+            ['digital_display',         'Uncommon',   2400,      480],
+            ['shadow_weaver',           'Uncommon',   2600,      520],
+            ['psychic_vision',          'Uncommon',   2800,      560],
+
+            ['gamer_glasses',           'Rare',       4800,      960],
+            ['quantum_goggles',         'Rare',       5100,      1020],
+            ['electric_arc',            'Rare',       5400,      1080],
+            ['void_lenses',             'Rare',       5700,      1140],
+            ['demonic_visage',          'Rare',       6000,      1200],
+            ['angelic_halo',            'Rare',       6300,      1260],
+            ['tech_commander',          'Rare',       6600,      1320],
+            ['crystal_lenses',          'Rare',       6900,      1380],
+
+            ['heart_glasses',           'Epic',       12500,     2600],
+            ['holographic_shades',      'Epic',       13500,     2800],
+            ['rainbow_visor',           'Epic',       14500,     3000],
+            ['lunar_eclipse',           'Epic',       15500,     3200],
+            ['solar_flare',             'Epic',       16500,     3400],
+            ['plasma_lenses',           'Epic',       17500,     3600],
+            ['cyber_eye',               'Epic',       18500,     3800],
+            ['void_walker',             'Epic',       19500,     4000],
+
+            ['star_glasses',            'Legendary',  32000,     6400],
+            ['cosmic_observer',         'Legendary',  34000,     6800],
+            ['temporal_distortion',     'Legendary',  36000,     7200],
+            ['dimensional_rift',        'Legendary',  38000,     7600],
+            ['stellar_navigator',       'Legendary',  40000,     8000],
+            ['quantum_reality',         'Legendary',  42000,     8400],
+
+            ['cyber_visor',             'Mythic',     78000,     15600],
+            ['holographic_projector',   'Mythic',     82000,     16400],
+            ['neural_interface',        'Mythic',     86000,     17200],
+            ['antimatter_lenses',       'Mythic',     90000,     18000],
+
+            ['ultimate_vision',         'Elite',      150000,    30000],
+            ['reality_bender',          'Elite',      150000,    30000],
         ],
 
-        // ── MOUTHS ───────────────────────────────────────────────────────────
-        // 8 pre-Elite items (no Legendary/Mythic — designed gap before Elite),
-        // then 29 Elite items (plasma_smile → ultimate_expression).
-        // Elite price step = 1 550 coins | XP step = 50 (clean round numbers).
         mouths: [
-            ['none',                'Starter',    0,       0    ],
-            ['crooked_grin',        'Starter',    0,       0    ],
-            ['frown',               'Common',     350,     0    ],
-            ['smile',               'Common',     500,     0    ],
-            ['surprised',           'Uncommon',   1300,    280  ],
-            ['big_smile',           'Uncommon',   1800,    350  ],
-            ['laugh',               'Rare',       5000,    1100 ],
-            ['fang_grin',           'Epic',       14000,   3500 ],
+            ['none',                    'Starter',    0,         0],
+            ['crooked_grin',            'Starter',    0,         0],
 
-            ['plasma_smile',        'Elite',      57000,   8600 ],
-            ['cosmic_grin',         'Elite',      58550,   8650 ],
-            ['void_mouth',          'Elite',      60100,   8700 ],
-            ['golden_smile',        'Elite',      61650,   8750 ],
-            ['rainbow_grin',        'Elite',      63200,   8800 ],
-            ['electric_jaw',        'Elite',      64750,   8850 ],
-            ['crystal_mouth',       'Elite',      66300,   8900 ],
-            ['shadow_maw',          'Elite',      67850,   8950 ],
-            ['fire_breath',         'Elite',      69400,   9000 ],
-            ['ice_frost',           'Elite',      70950,   9050 ],
-            ['nature_bloom',        'Elite',      72500,   9100 ],
-            ['tech_interface',      'Elite',      74050,   9150 ],
-            ['angelic_voice',       'Elite',      75600,   9200 ],
-            ['demonic_roar',        'Elite',      77150,   9250 ],
-            ['quantum_speak',       'Elite',      78700,   9300 ],
-            ['stellar_whisper',     'Elite',      80250,   9350 ],
-            ['temporal_echo',       'Elite',      81800,   9400 ],
-            ['dimensional_gate',    'Elite',      83350,   9450 ],
-            ['psychic_wave',        'Elite',      84900,   9500 ],
-            ['neural_link',         'Elite',      86450,   9550 ],
-            ['hologram_speak',      'Elite',      88000,   9600 ],
-            ['antimatter_void',     'Elite',      89550,   9650 ],
-            ['quantum_field',       'Elite',      91100,   9700 ],
-            ['stellar_portal',      'Elite',      92650,   9750 ],
-            ['paradox_loop',        'Elite',      94200,   9800 ],
-            ['infinity_gate',       'Elite',      95750,   9850 ],
-            ['cosmic_conduit',      'Elite',      97300,   9900 ],
-            ['reality_warp',        'Elite',      98850,   9950 ],
-            ['ultimate_expression', 'Elite',      100000,  10000],
+            ['frown',                   'Common',     500,       100],
+            ['smile',                   'Common',     600,       120],
+            ['plasma_smile',            'Common',     700,       140],
+            ['cosmic_grin',             'Common',     800,       160],
+
+            ['surprised',               'Uncommon',   1600,      320],
+            ['big_smile',               'Uncommon',   1800,      360],
+            ['void_mouth',              'Uncommon',   2000,      400],
+            ['golden_smile',            'Uncommon',   2200,      440],
+            ['rainbow_grin',            'Uncommon',   2400,      480],
+            ['electric_jaw',            'Uncommon',   2600,      520],
+
+            ['laugh',                   'Rare',       4700,      940],
+            ['crystal_mouth',           'Rare',       5000,      1000],
+            ['shadow_maw',              'Rare',       5300,      1060],
+            ['fire_breath',             'Rare',       5600,      1120],
+            ['ice_frost',               'Rare',       5900,      1180],
+            ['nature_bloom',            'Rare',       6200,      1240],
+            ['tech_interface',          'Rare',       6500,      1300],
+            ['angelic_voice',           'Rare',       6800,      1360],
+
+            ['fang_grin',               'Epic',       12500,     2600],
+            ['demonic_roar',            'Epic',       13500,     2800],
+            ['quantum_speak',           'Epic',       14500,     3000],
+            ['stellar_whisper',         'Epic',       15500,     3200],
+            ['temporal_echo',           'Epic',       16500,     3400],
+            ['dimensional_gate',        'Epic',       17500,     3600],
+            ['psychic_wave',            'Epic',       18500,     3800],
+            ['neural_link',             'Epic',       19500,     4000],
+
+            ['hologram_speak',          'Legendary',  32000,     6400],
+            ['antimatter_void',         'Legendary',  34000,     6800],
+            ['quantum_field',           'Legendary',  36000,     7200],
+            ['stellar_portal',          'Legendary',  38000,     7600],
+            ['paradox_loop',            'Legendary',  40000,     8000],
+            ['infinity_gate',           'Legendary',  42000,     8400],
+
+            ['cosmic_conduit',          'Mythic',     78000,     15600],
+            ['reality_warp',            'Mythic',     82000,     16400],
+            ['ultimate_expression',     'Mythic',     86000,     17200],
+            ['ethereal_whisper',        'Mythic',     90000,     18000],
+
+            ['primordial_roar',         'Elite',      150000,    30000],
+            ['infinite_voice',          'Elite',      150000,    30000],
         ],
 
-        // ── FACE ACCESSORIES ─────────────────────────────────────────────────
-        // 9 pre-Elite items (through Legendary, no Mythic),
-        // then 29 Elite items (plasma_tattoo → ultimate_essence).
-        // Elite price step = 1 550 coins | XP step = 50.
         face_accessories: [
-            ['none',              'Starter',    0,       0    ],
-            ['bandaid',           'Starter',    0,       0    ],
-            ['freckles',          'Common',     400,     0    ],
-            ['blush',             'Common',     500,     100  ],
-            ['mustache',          'Common',     700,     200  ],
-            ['beard',             'Uncommon',   1800,    450  ],
-            ['eye_patch',         'Rare',       4500,    1100 ],
-            ['mask',              'Epic',       12000,   2800 ],
-            ['golden_piercing',   'Legendary',  26000,   6000 ],
+            ['none',                    'Starter',    0,         0],
+            ['bandaid',                 'Starter',    0,         0],
 
-            ['plasma_tattoo',     'Elite',      57000,   8600 ],
-            ['cosmic_marking',    'Elite',      58550,   8650 ],
-            ['void_symbol',       'Elite',      60100,   8700 ],
-            ['golden_rune',       'Elite',      61650,   8750 ],
-            ['rainbow_crystal',   'Elite',      63200,   8800 ],
-            ['electric_circuit',  'Elite',      64750,   8850 ],
-            ['crystal_fragment',  'Elite',      66300,   8900 ],
-            ['shadow_emblem',     'Elite',      67850,   8950 ],
-            ['fire_ember',        'Elite',      69400,   9000 ],
-            ['ice_shard',         'Elite',      70950,   9050 ],
-            ['nature_vine',       'Elite',      72500,   9100 ],
-            ['tech_chip',         'Elite',      74050,   9150 ],
-            ['angelic_mark',      'Elite',      75600,   9200 ],
-            ['demonic_seal',      'Elite',      77150,   9250 ],
-            ['quantum_particle',  'Elite',      78700,   9300 ],
-            ['stellar_dust',      'Elite',      80250,   9350 ],
-            ['temporal_rift',     'Elite',      81800,   9400 ],
-            ['dimensional_scar',  'Elite',      83350,   9450 ],
-            ['psychic_eye',       'Elite',      84900,   9500 ],
-            ['neural_port',       'Elite',      86450,   9550 ],
-            ['hologram_tag',      'Elite',      88000,   9600 ],
-            ['antimatter_core',   'Elite',      89550,   9650 ],
-            ['quantum_flux',      'Elite',      91100,   9700 ],
-            ['stellar_gateway',   'Elite',      92650,   9750 ],
-            ['paradox_mark',      'Elite',      94200,   9800 ],
-            ['infinity_sigil',    'Elite',      95750,   9850 ],
-            ['cosmic_conduit',    'Elite',      97300,   9900 ],
-            ['reality_fragment',  'Elite',      98850,   9950 ],
-            ['ultimate_essence',  'Elite',      100000,  10000],
+            ['freckles',                'Common',     500,       100],
+            ['blush',                   'Common',     600,       120],
+            ['mustache',                'Common',     700,       140],
+            ['plasma_tattoo',           'Common',     800,       160],
+
+            ['beard',                   'Uncommon',   1700,      340],
+            ['cosmic_marking',          'Uncommon',   1900,      380],
+            ['void_symbol',             'Uncommon',   2100,      420],
+            ['golden_rune',             'Uncommon',   2300,      460],
+            ['rainbow_crystal',         'Uncommon',   2500,      500],
+            ['electric_circuit',        'Uncommon',   2700,      540],
+
+            ['eye_patch',               'Rare',       4600,      920],
+            ['crystal_fragment',        'Rare',       4900,      980],
+            ['shadow_emblem',           'Rare',       5200,      1040],
+            ['fire_ember',              'Rare',       5500,      1100],
+            ['ice_shard',               'Rare',       5800,      1160],
+            ['nature_vine',             'Rare',       6100,      1220],
+            ['tech_chip',               'Rare',       6400,      1280],
+            ['angelic_mark',            'Rare',       6700,      1340],
+
+            ['mask',                    'Epic',       12500,     2600],
+            ['demonic_seal',            'Epic',       13500,     2800],
+            ['quantum_particle',        'Epic',       14500,     3000],
+            ['stellar_dust',            'Epic',       15500,     3200],
+            ['temporal_rift',           'Epic',       16500,     3400],
+            ['dimensional_scar',        'Epic',       17500,     3600],
+            ['psychic_eye',             'Epic',       18500,     3800],
+            ['neural_port',             'Epic',       19500,     4000],
+
+            ['golden_piercing',         'Legendary',  31000,     6200],
+            ['hologram_tag',            'Legendary',  33000,     6600],
+            ['antimatter_core',         'Legendary',  35000,     7000],
+            ['quantum_flux',            'Legendary',  37000,     7400],
+            ['stellar_gateway',         'Legendary',  39000,     7800],
+            ['paradox_mark',            'Legendary',  41000,     8200],
+
+            ['infinity_sigil',          'Mythic',     77000,     15400],
+            ['cosmic_conduit',          'Mythic',     81000,     16200],
+            ['reality_fragment',        'Mythic',     85000,     17000],
+            ['ultimate_essence',        'Mythic',     89000,     17800],
+
+            ['primordial_mark',         'Elite',      150000,    30000],
+            ['infinite_essence',        'Elite',      150000,    30000],
         ],
 
-        // ── BACKGROUNDS ──────────────────────────────────────────────────────
-        // Only 8 items so each tier gets a big milestone feel.
-        // The jump from galaxy_halo → royal_aura (54k→100k coins, 8500→10000 XP)
-        // is intentionally enormous — royal_aura is the ultimate flex.
         backgrounds: [
-            ['none',        'Starter',    0,       0    ],
-            ['scribble',    'Starter',    0,       0    ],
-            ['sparkles',    'Common',     600,     75   ],
-            ['stars',       'Rare',       6000,    1200 ],
-            ['sunset_ring', 'Epic',       16000,   3500 ],
-            ['neon_grid',   'Legendary',  34000,   7000 ],
-            ['galaxy_halo', 'Mythic',     54000,   8500 ],
-            ['royal_aura',  'Elite',      100000,  10000],
+            ['none',                    'Starter',    0,         0],
+            ['scribble',                'Starter',    0,         0],
+
+            ['sparkles',                'Common',     800,       160],
+
+            ['stars',                   'Uncommon',   2500,      500],
+
+            ['sunset_ring',             'Rare',       7000,      1400],
+
+            ['neon_grid',               'Epic',       18000,     3600],
+
+            ['galaxy_halo',             'Legendary',  45000,     9000],
+
+            ['cosmic_vortex',           'Mythic',     100000,    20000],
+
+            ['royal_aura',              'Elite',      150000,    30000],
         ],
 
     };
@@ -238,7 +255,10 @@
 
     for (const [cat, items] of Object.entries(CORRECTIONS)) {
         const category = ACCESSORY_LIBRARY[cat];
-        if (!category) { console.warn(`[accessories_corrections] Unknown category: ${cat}`); continue; }
+        if (!category) {
+            console.warn(`[accessories_corrections] Unknown category: ${cat}`);
+            continue;
+        }
 
         for (const [key, rarity, price, xpRequired] of items) {
             const item = category[key];
@@ -247,9 +267,9 @@
                 missing++;
                 continue;
             }
-            item.rarity      = rarity;
-            item.price       = price;
-            item.xpRequired  = xpRequired;
+            item.rarity = rarity;
+            item.price = price;
+            item.xpRequired = xpRequired;
             patched++;
         }
     }
@@ -259,7 +279,7 @@
         if (!category) continue;
 
         const orderedKeys = CORRECTIONS[cat].map(([key]) => key);
-        const snapshot    = Object.fromEntries(Object.entries(category));
+        const snapshot = Object.fromEntries(Object.entries(category));
 
         for (const k of Object.keys(category)) delete category[k];
 
@@ -271,36 +291,27 @@
         }
     }
 
-    console.log(
-        `[accessories_corrections] Done. ` +
-        `${patched} items patched, ${missing} missing, ` +
-        `all categories re-sorted by ascending price.`
-    );
+    const tierStats = {
+        'Starter': 0, 'Common': 0, 'Uncommon': 0, 'Rare': 0,
+        'Epic': 0, 'Legendary': 0, 'Mythic': 0, 'Elite': 0
+    };
 
-    if (typeof window !== 'undefined' && window.location && location.hostname === 'localhost') {
-        let errors = 0;
-        for (const [cat, items] of Object.entries(CORRECTIONS)) {
-            let lastPrice = -1;
-            for (const [key, , price] of items) {
-                const item = ACCESSORY_LIBRARY[cat]?.[key];
-                if (!item) continue;
-                if (item.price < lastPrice) {
-                    console.error(`[check] ${cat}.${key} price ${item.price} < previous ${lastPrice} (out of order)`);
-                    errors++;
-                }
-                if (item.xpRequired > 10000) {
-                    console.error(`[check] ${cat}.${key} xpRequired ${item.xpRequired} > 10000`);
-                    errors++;
-                }
-                if (item.price > 100000) {
-                    console.error(`[check] ${cat}.${key} price ${item.price} > 100000`);
-                    errors++;
-                }
-                lastPrice = item.price;
-            }
+    for (const [cat, items] of Object.entries(CORRECTIONS)) {
+        for (const [, tier] of items) {
+            tierStats[tier]++;
         }
-        if (errors === 0) console.log('[check] All price/xp constraints pass ✓');
     }
+
+    console.log('[accessories_corrections] Tier distribution:');
+    for (const [tier, count] of Object.entries(tierStats)) {
+        const bar = '█'.repeat(Math.floor(count / 2));
+        console.log(`  ${tier.padEnd(10)}: ${count.toString().padStart(2)} items ${bar}`);
+    }
+
+    console.log(
+        `\n[accessories_corrections] Complete reboot finished. ` +
+        `${patched} items patched, ${missing} missing.`
+    );
 
 })();
 

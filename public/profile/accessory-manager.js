@@ -36,7 +36,6 @@ class AccessoryManager {
         const normalized = {};
         console.log('Normalizing owned accessories:', data);
 
-        // If no data provided, use defaults for new users
         if (!data || typeof data !== 'object') {
             Object.keys(DEFAULT_OWNED_ACCESSORIES).forEach(category => {
                 normalized[category] = [...DEFAULT_OWNED_ACCESSORIES[category]];
@@ -45,12 +44,10 @@ class AccessoryManager {
             return normalized;
         }
 
-        // Use server data as the source of truth, merge with defaults for any missing starter items
         Object.keys(DEFAULT_OWNED_ACCESSORIES).forEach(category => {
             const fromServer = Array.isArray(data[category]) ? data[category] : [];
             const defaults = DEFAULT_OWNED_ACCESSORIES[category];
-            
-            // Start with server data, then add any missing defaults
+
             normalized[category] = [...new Set([...fromServer, ...defaults])];
             console.log(`${category}: server=[${fromServer}], defaults=[${defaults}], normalized=[${normalized[category]}]`);
         });

@@ -307,37 +307,35 @@ async function validateImageUrl(url) {
         const trimmedUrl = url.trim();
         const isAlreadyEncoded = trimmedUrl !== decodeURI(trimmedUrl);
         const encodedUrl = isAlreadyEncoded ? trimmedUrl : encodeURI(trimmedUrl);
-        new URL(encodedUrl); 
+        new URL(encodedUrl);
 
         return new Promise((resolve) => {
             const img = new Image();
-            
-            // CRITICAL: Must be set BEFORE setting img.src
+
             img.referrerPolicy = "no-referrer";
 
             const timer = setTimeout(() => {
-                img.src = ""; 
+                img.src = "";
                 resolve({ valid: false, error: "The image took too long to respond." });
             }, 8000);
 
             img.onload = () => {
                 clearTimeout(timer);
-                // Catching the 1x1 "blocked" pixel
                 if (img.naturalWidth > 1 && img.naturalHeight > 1) {
                     resolve({ valid: true, url: encodedUrl });
                 } else {
-                    resolve({ 
-                        valid: false, 
-                        error: "This host blocks external links. Please re-host on Imgur." 
+                    resolve({
+                        valid: false,
+                        error: "This host blocks external links. Please re-host on Imgur."
                     });
                 }
             };
 
             img.onerror = () => {
                 clearTimeout(timer);
-                resolve({ 
-                    valid: false, 
-                    error: "Could not load image. Link might be broken or private." 
+                resolve({
+                    valid: false,
+                    error: "Could not load image. Link might be broken or private."
                 });
             };
 
@@ -355,13 +353,10 @@ function updatePreview(url, status, keepCurrentImage = false) {
 
     if (!previewImage || !previewStatus || !avatarUrlGroup) return;
 
-    // 1. Force the Referrer Policy BEFORE setting the src.
-    // This is the "cloaking device" that makes Wikia/Fandom images work.
     previewImage.referrerPolicy = "no-referrer";
 
     avatarUrlGroup.classList.remove('has-success', 'has-error');
 
-    // 2. Manage visual loading states
     if (status.includes("⏳") || status.includes("🔍")) {
         previewImage.classList.add('loading');
     } else {
@@ -370,26 +365,22 @@ function updatePreview(url, status, keepCurrentImage = false) {
 
     if (!keepCurrentImage) {
         if (url) {
-            // We set the src; the browser now fetches it without a Referer header
             previewImage.src = url;
             currentAvatarUrl = url;
         } else {
-            // Revert to default if URL is empty/null
             const themeColor = document.getElementById('themeColor')?.value || '#2563eb';
-            const defaultAvatar = window.generateDefaultAvatarSVG 
-                ? window.generateDefaultAvatarSVG(themeColor) 
+            const defaultAvatar = window.generateDefaultAvatarSVG
+                ? window.generateDefaultAvatarSVG(themeColor)
                 : "/default-avatar.png";
             previewImage.src = defaultAvatar;
             currentAvatarUrl = "";
         }
 
-        // Keep hats/glasses in sync with the new image
         if (window.accessoryManager) {
             window.accessoryManager.updatePreview();
         }
     }
 
-    // 3. Status Text and CSS Class Logic
     previewStatus.textContent = status;
     previewStatus.className = "preview-status";
 
@@ -419,7 +410,6 @@ async function handleAvatarInput() {
         return;
     }
 
-    // Clear old timer if user is still typing
     if (previewTimeout) clearTimeout(previewTimeout);
 
     updatePreview(currentAvatarUrl, "⏳ Validating...", true);
@@ -428,10 +418,8 @@ async function handleAvatarInput() {
         const validation = await validateImageUrl(url);
 
         if (validation.valid) {
-            // Success! The image rendered in the hidden validation test.
             updatePreview(validation.url, "✅ Image loaded successfully");
         } else {
-            // Failure! Show the specific error from our bulletproof function.
             updatePreview("", `❌ ${validation.error}`);
         }
     }, 500);
