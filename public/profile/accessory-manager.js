@@ -260,6 +260,9 @@ class AccessoryManager {
             return { success: true, equipped: true };
         }
 
+        console.log(`Attempting to purchase: ${this.activeCategory}.${this.activeAccessoryKey}`);
+        console.log('Item data:', state.item);
+
         const response = await fetch('/api/purchase-accessory', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

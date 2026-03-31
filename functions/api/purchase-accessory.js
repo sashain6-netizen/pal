@@ -31,9 +31,15 @@ export async function onRequestPost(context) {
         user.ownedAccessories = unlockResult.ownedAccessories;
 
         const { category, accessoryKey } = await request.json();
+        console.log(`Purchase request: ${category}.${accessoryKey}`);
         const item = ACCESSORY_CATALOG?.[category]?.[accessoryKey];
 
         if (!item) {
+            console.error(`Invalid accessory: ${category}.${accessoryKey} not found in catalog`);
+            console.error('Available categories:', Object.keys(ACCESSORY_CATALOG || {}));
+            if (ACCESSORY_CATALOG?.[category]) {
+                console.error(`Available ${category}:`, Object.keys(ACCESSORY_CATALOG[category]));
+            }
             return new Response(JSON.stringify({ error: "Invalid accessory" }), {
                 status: 400,
                 headers: { "Content-Type": "application/json" }
