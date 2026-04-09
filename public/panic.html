@@ -1,0 +1,80 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Panic</title>
+</head>
+<body>
+<script>
+(function(){
+	try {
+		const raw = localStorage.getItem("site_settings");
+		let parsed = {};
+		try { parsed = raw ? JSON.parse(raw) : {}; } catch (e) { parsed = {}; }
+
+		const safetySettings = {
+			...parsed,
+			cloaking: true,
+			leaveConfirm: true,
+			autoStealth: true,
+			notifications: {
+				enabled: false,
+				inbox: false,
+				privateChats: false,
+				pinnedForums: false,
+				inApp: false,
+				browser: false
+			}
+		};
+
+		localStorage.setItem("site_settings", JSON.stringify(safetySettings));
+		window.dispatchEvent(new CustomEvent("siteSettingsUpdated", { detail: safetySettings }));
+	} catch (e) {
+	}
+
+	const getPanicUrl = () => {
+		try {
+			const s = localStorage.getItem("site_settings");
+			const parsed = s ? JSON.parse(s) : {};
+			return parsed.panicUrl || "https://classroom.google.com";
+		} catch {
+			return "https://classroom.google.com";
+		}
+	};
+
+	const panicUrl = getPanicUrl();
+
+	try {
+		const win = window.open("about:blank", "_blank");
+		if (win) {
+			try {
+				const doc = win.document;
+				doc.title = "Google Docs";
+				const link = doc.createElement("link");
+				link.rel = "icon";
+				link.href = "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico";
+				doc.head.appendChild(link);
+
+				const iframe = doc.createElement("iframe");
+				iframe.src = window.location.href;
+				iframe.style.cssText = "width:100vw;height:100vh;border:none;position:fixed;top:0;left:0;margin:0;padding:0;";
+				doc.body.style.margin = "0";
+				doc.body.style.overflow = "hidden";
+				doc.body.appendChild(iframe);
+
+				win.focus();
+				window.location.replace(panicUrl);
+				return;
+			} catch (e) {
+			}
+		}
+	} catch (e) {
+	}
+
+	window.location.replace(panicUrl);
+})();
+</script>
+</body>
+</html>
