@@ -32,6 +32,20 @@ function loadLinks() {
                 url: 'https://plane65k.github.io/chatify-public/',
                 description: 'A simple chat app for everyone',
                 image: 'https://github.com/plane65k/realworkingchatapp/blob/main/SDG_log.png?raw=true'
+            },
+            {
+                id: Date.now() + 4,
+                title: 'Void',
+                url: 'https://kym.sulevkivastik.ee/?/',
+                description: 'A good proxy for your browsing',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRy421nTqbcy0k_AStaaWwTDPt9EO-_r0vezA&s'
+            },
+            {
+                id: Date.now() + 5,
+                title: 'Dogeub',
+                url: 'https://storage.googleapis.com/canvas-lms/index.html#/search',
+                description: 'All in one for your every need',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRy421nTqbcy0k_AStaaWwTDPt9EO-_r0vezA&s'
             }
         ];
         saveLinks();
