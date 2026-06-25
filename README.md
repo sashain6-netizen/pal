@@ -75,6 +75,8 @@ pal/
 └── README.md                # This file
 ```
 
+## This repository is constantly updates, so there may be times in which this list does not fully reflec tthe repository's order.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
